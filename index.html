@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pakapol Samaikeaw (Feel) | Portfolio - IoT Developer & AI Enthusiast</title>
+    <meta name="description" content="แฟ้มสะสมผลงาน (Portfolio) ของ นายภคพล สมัยแก้ว (ฟีล / Feel) - IoT Developer | AI Enthusiast | Video Editor & Creator">
+    
+    <!-- Google Fonts (Kanit & Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            cyan: '#06b6d4',
+                            accent: '#8b5cf6'
+                        },
+                        dark: {
+                            950: '#020617',
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Kanit', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 3s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 15px rgba(59, 130, 246, 0.3)' },
+                            '100%': { boxShadow: '0 0 30px rgba(6, 182, 212, 0.6)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Kanit', 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+        }
+
+        /* Glassmorphism utility */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .glass-nav {
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6;
+        }
+
+        /* Slide Animation */
+        .hero-slide {
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+            transform: scale(1.03);
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+        }
+        .hero-slide.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        /* Gradient Glow Effects */
+        .radial-glow {
+            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.15) 0%, rgba(2, 6, 23, 0) 70%);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #06b6d4 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 selection:bg-brand-500 selection:text-white flex flex-col justify-between">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-20 right-5 z-50 flex flex-col gap-3 max-w-sm pointer-events-none"></div>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="fixed top-0 left-0 right-0 z-40 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#home" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-cyan to-brand-accent p-0.5 shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform duration-300">
+                    <div class="w-full h-full bg-dark-950 rounded-[10px] flex items-center justify-center font-extrabold text-xl text-brand-400">
+                        F
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-xl font-bold tracking-tight text-white group-hover:text-brand-400 transition-colors">
+                        Pakapol<span class="text-brand-cyan">.Feel</span>
+                    </span>
+                    <span class="text-[10px] text-slate-400 font-mono tracking-widest uppercase">IoT & AI Portfolio</span>
+                </div>
+            </a>
+
+            <!-- Desktop Menu Links -->
+            <nav class="hidden md:flex items-center gap-1 lg:gap-2 text-sm font-medium text-slate-300">
+                <a href="#home" class="px-3 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition-all">หน้าแรก</a>
+                <a href="#about" class="px-3 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition-all">เกี่ยวกับฉัน</a>
+                <a href="#experience" class="px-3 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition-all">ประสบการณ์</a>
+                <a href="#skills" class="px-3 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition-all">ทักษะ</a>
+                <a href="#education" class="px-3 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition-all">การศึกษา</a>
+                <a href="#projects" class="px-3 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition-all">ผลงาน</a>
+                <a href="#contact" class="px-3 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition-all">ติดต่อ</a>
+            </nav>
+
+            <!-- Admin Status / Auth Lock Button -->
+            <div class="flex items-center gap-3">
+                <div id="admin-status-badge" class="hidden items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span class="hidden sm:inline">Admin Mode</span>
+                    <button onclick="logoutAdmin()" class="ml-1 text-slate-400 hover:text-rose-400 transition-colors" title="ออกจากระบบ Admin">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+
+                <button id="admin-login-btn" onclick="openAdminModal()" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-brand-600 text-slate-300 hover:text-white border border-slate-700/60 hover:border-brand-500 transition-all duration-300 group shadow-md" title="Admin Login">
+                    <i class="fa-solid fa-lock text-sm group-hover:scale-110 transition-transform"></i>
+                </button>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl bg-slate-800/80 text-slate-300 hover:text-white border border-slate-700/60">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-slate-800 bg-dark-950/95 backdrop-blur-xl px-4 pt-3 pb-6 space-y-2">
+            <a href="#home" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-lg text-slate-200 hover:bg-brand-600/20 hover:text-brand-400 font-medium">หน้าแรก</a>
+            <a href="#about" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-lg text-slate-200 hover:bg-brand-600/20 hover:text-brand-400 font-medium">เกี่ยวกับฉัน</a>
+            <a href="#experience" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-lg text-slate-200 hover:bg-brand-600/20 hover:text-brand-400 font-medium">ประสบการณ์</a>
+            <a href="#skills" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-lg text-slate-200 hover:bg-brand-600/20 hover:text-brand-400 font-medium">ทักษะ</a>
+            <a href="#education" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-lg text-slate-200 hover:bg-brand-600/20 hover:text-brand-400 font-medium">การศึกษา</a>
+            <a href="#projects" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-lg text-slate-200 hover:bg-brand-600/20 hover:text-brand-400 font-medium">ผลงาน</a>
+            <a href="#contact" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-lg text-slate-200 hover:bg-brand-600/20 hover:text-brand-400 font-medium">ติดต่อ</a>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <!-- HERO SECTION WITH AUTOMATED IMAGE SLIDER -->
+        <section id="home" class="relative min-h-[calc(100vh-5rem)] flex items-center justify-center overflow-hidden py-16 lg:py-24">
+            <!-- Background Radial Lighting -->
+            <div class="absolute inset-0 radial-glow pointer-events-none"></div>
+
+            <!-- HERO SLIDESHOW CONTAINER -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+                
+                <!-- Left Column: Bio Text & Action Buttons -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-400 text-xs sm:text-sm font-semibold tracking-wide shadow-inner">
+                        <span class="w-2 h-2 rounded-full bg-brand-cyan animate-pulse"></span>
+                        พร้อมเรียนรู้และสร้างสรรค์นวัตกรรมใหม่ๆ
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                        สวัสดีครับผม <br>
+                        <span class="gradient-text">ภคพล สมัยแก้ว (ฟีล)</span>
+                    </h1>
+
+                    <div class="text-lg sm:text-xl font-medium text-slate-300 flex flex-wrap items-center justify-center lg:justify-start gap-2">
+                        <span class="px-3 py-1 rounded-md bg-slate-800/80 border border-slate-700 text-brand-400 font-mono text-sm">IoT Developer</span>
+                        <span class="text-slate-600">•</span>
+                        <span class="px-3 py-1 rounded-md bg-slate-800/80 border border-slate-700 text-brand-cyan font-mono text-sm">AI Enthusiast</span>
+                        <span class="text-slate-600">•</span>
+                        <span class="px-3 py-1 rounded-md bg-slate-800/80 border border-slate-700 text-purple-400 font-mono text-sm">Video Editor & Creator</span>
+                    </div>
+
+                    <p class="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
+                        นักเรียนระดับ ปวช.3 จากวิทยาลัยอาชีวศึกษานครศรีธรรมราช หลงใหลในการพัฒนาไมโครคอนโทรลเลอร์ (ESP32 / ESP8266), การประยุกต์ใช้ AI ในชีวิตจริง และการสร้างสรรค์คอนเทนต์วิดีโอที่มีคุณภาพ
+                    </p>
+
+                    <!-- CTAs & Social Links -->
+                    <div class="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                        <a href="#projects" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-brand-600 via-brand-cyan to-brand-accent text-white font-semibold shadow-lg shadow-brand-600/30 hover:shadow-brand-500/50 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-diagram-project"></i>
+                            ดูผลงานของผม
+                        </a>
+                        <a href="#contact" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700 font-semibold hover:border-slate-500 transition-all duration-300 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane text-brand-cyan"></i>
+                            ติดต่องาน / พูดคุย
+                        </a>
+                    </div>
+
+                    <div class="pt-6 flex items-center justify-center lg:justify-start gap-5 text-slate-400">
+                        <span class="text-xs uppercase tracking-widest text-slate-500 font-mono">Socials:</span>
+                        <a href="https://www.facebook.com/fexl07" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-brand-600 hover:border-brand-500 transition-all shadow-sm hover:scale-110" title="Facebook">
+                            <i class="fa-brands fa-facebook-f text-base"></i>
+                        </a>
+                        <a href="mailto:feel0627546143@gmail.com" class="w-10 h-10 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-rose-600 hover:border-rose-500 transition-all shadow-sm hover:scale-110" title="Email">
+                            <i class="fa-solid fa-envelope text-base"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Column: Automated Hero Image Carousel / Showcase -->
+                <div class="lg:col-span-5 flex flex-col items-center">
+                    <div class="relative w-full max-w-md aspect-[4/5] rounded-3xl p-2 bg-gradient-to-b from-brand-500/20 via-brand-cyan/20 to-purple-500/20 border border-slate-700/50 shadow-2xl shadow-brand-500/10 group">
+                        
+                        <!-- Inner Container for Slides -->
+                        <div id="hero-slider-container" class="relative w-full h-full rounded-2xl overflow-hidden bg-dark-900 shadow-inner">
+                            
+                            <!-- Slide 1 (Local Photo) -->
+                            <div class="hero-slide active">
+                                <img src="./ตัวเอง.jpg" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80'" alt="ภคพล สมัยแก้ว (Feel)" class="w-full h-full object-cover object-center">
+                                <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent opacity-80"></div>
+                                <div class="absolute bottom-4 left-4 right-4 p-4 rounded-xl glass-card">
+                                    <h3 class="text-white font-bold text-lg">ภคพล สมัยแก้ว (ฟีล)</h3>
+                                    <p class="text-xs text-brand-cyan font-mono">ปวช.3 วิทยาลัยอาชีวศึกษานครศรีธรรมราช</p>
+                                </div>
+                            </div>
+
+                            <!-- Slide 2 (Local Photo Sea 1) -->
+                            <div class="hero-slide">
+                                <img src="./ตัวเองที่ทะเล.jpg" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80'" alt="Feel Lifestyle" class="w-full h-full object-cover object-center">
+                                <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent opacity-80"></div>
+                                <div class="absolute bottom-4 left-4 right-4 p-4 rounded-xl glass-card">
+                                    <h3 class="text-white font-bold text-lg">IoT & Hardware Maker</h3>
+                                    <p class="text-xs text-brand-400 font-mono">ESP32 • Sensors • Circuit Wiring</p>
+                                </div>
+                            </div>
+
+                            <!-- Slide 3 (Local Photo Sea 2) -->
+                            <div class="hero-slide">
+                                <img src="./ตัวเองที่ทะเล2.jpeg" onerror="this.src='https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=800&q=80'" alt="Feel Travel" class="w-full h-full object-cover object-center">
+                                <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent opacity-80"></div>
+                                <div class="absolute bottom-4 left-4 right-4 p-4 rounded-xl glass-card">
+                                    <h3 class="text-white font-bold text-lg">AI & Video Creator</h3>
+                                    <p class="text-xs text-purple-400 font-mono">Video Editing • Prompt Engineering</p>
+                                </div>
+                            </div>
+
+                            <!-- Slide 4 (Local Photo Training/Internship) -->
+                            <div class="hero-slide">
+                                <img src="./ตัวเองตอน ฝึกดร..JPG" onerror="this.src='https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80'" alt="Feel Internship" class="w-full h-full object-cover object-center">
+                                <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent opacity-80"></div>
+                                <div class="absolute bottom-4 left-4 right-4 p-4 rounded-xl glass-card">
+                                    <h3 class="text-white font-bold text-lg">ประสบการณ์ทำงานปี 2567</h3>
+                                    <p class="text-xs text-emerald-400 font-mono">บริษัท เชียร์ คอมมูนิเคชั่น จำกัด</p>
+                                </div>
+                            </div>
+
+                            <!-- Slide 5 (Local Photo Sea 3) -->
+                            <div class="hero-slide">
+                                <img src="./ตัวเองที่ทะเล3.jpg" onerror="this.src='https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80'" alt="Feel Sea View" class="w-full h-full object-cover object-center">
+                                <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent opacity-80"></div>
+                                <div class="absolute bottom-4 left-4 right-4 p-4 rounded-xl glass-card">
+                                    <h3 class="text-white font-bold text-lg">สร้างสรรค์อนาคตด้วยเทคโนโลยี</h3>
+                                    <p class="text-xs text-amber-400 font-mono">Always Learning & Growing</p>
+                                </div>
+                            </div>
+
+                            <!-- Navigation Controls (Prev / Next Buttons) -->
+                            <button onclick="prevHeroSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-dark-950/70 hover:bg-brand-600 text-white border border-slate-700/60 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100" title="รูปก่อนหน้า">
+                                <i class="fa-solid fa-chevron-left text-sm"></i>
+                            </button>
+                            <button onclick="nextHeroSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-dark-950/70 hover:bg-brand-600 text-white border border-slate-700/60 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100" title="รูปถัดไป">
+                                <i class="fa-solid fa-chevron-right text-sm"></i>
+                            </button>
+                        </div>
+
+                        <!-- Dots Indicators -->
+                        <div id="hero-dots" class="flex items-center justify-center gap-2 mt-4">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ABOUT ME SECTION -->
+        <section id="about" class="py-20 bg-slate-900/40 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-xs font-mono font-bold tracking-widest text-brand-cyan uppercase mb-2">About Me</h2>
+                    <p class="text-3xl sm:text-4xl font-extrabold text-white">เกี่ยวกับตัวผม</p>
+                    <div class="w-16 h-1 bg-gradient-to-r from-brand-500 to-brand-cyan mx-auto mt-4 rounded-full"></div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                    
+                    <!-- Bio Overview Card -->
+                    <div class="lg:col-span-7 glass-card rounded-2xl p-6 sm:p-8 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                                <i class="fa-solid fa-user-astronaut text-brand-400"></i>
+                                ข้อมูลส่วนตัว
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed font-light">
+                                ผมชื่อ <strong class="text-white font-semibold">นายภคพล สมัยแก้ว</strong> ชื่อเล่น <strong class="text-brand-cyan font-semibold">ฟีล (Feel)</strong> เกิดเมื่อวันที่ <strong class="text-white font-semibold">10 ธันวาคม 2550</strong> ปัจจุบันกำลังศึกษาในระดับ ปวช.3 ที่วิทยาลัยอาชีวศึกษานครศรีธรรมราช
+                            </p>
+                            <p class="text-slate-300 leading-relaxed font-light">
+                                มีความเชี่ยวชาญและความสนใจในด้านฮาร์ดแวร์และไมโครคอนโทรลเลอร์ (ESP32/ESP8266), การต่อวงจรอิเล็กทรอนิกส์, การตัดต่อวิดีโอและสื่อสร้างสรรค์, การประยุกต์ใช้ AI Tools ช่วยในกระบวนการทำงาน รวมถึงความชอบในเกมสไตล์ AFK Games
+                            </p>
+                        </div>
+
+                        <!-- Key Facts Table Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 pt-6 border-t border-slate-800">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-brand-500/10 text-brand-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-cake-candles"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs text-slate-400 block font-mono">วันเกิด</span>
+                                    <span class="text-sm font-semibold text-white">10 ธันวาคม 2550</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-brand-cyan/10 text-brand-cyan flex items-center justify-center">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs text-slate-400 block font-mono">การศึกษาปัจจุบัน</span>
+                                    <span class="text-sm font-semibold text-white">ปวช.3 อาชีวศึกษานครศรีฯ</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-briefcase"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs text-slate-400 block font-mono">ประสบการณ์ทำงาน</span>
+                                    <span class="text-sm font-semibold text-white">เชียร์ คอมมูนิเคชั่น (2567)</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-gamepad"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs text-slate-400 block font-mono">งานอดิเรก</span>
+                                    <span class="text-sm font-semibold text-white">AFK Games & Video Creation</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Highlight Highlights Cards -->
+                    <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                        <div class="glass-card rounded-2xl p-6 border-l-4 border-brand-500 hover:scale-[1.02] transition-transform">
+                            <div class="text-brand-400 font-mono text-xs uppercase mb-1">Passionate Focus</div>
+                            <h4 class="text-xl font-bold text-white mb-2">Hardware & IoT Solutions</h4>
+                            <p class="text-xs text-slate-400">พัฒนาอุปกรณ์อัจฉริยะ การเชื่อมต่อเซนเซอร์ วัดค่าประมวลผลผ่าน ESP32 และ ESP8266</p>
+                        </div>
+
+                        <div class="glass-card rounded-2xl p-6 border-l-4 border-brand-cyan hover:scale-[1.02] transition-transform">
+                            <div class="text-brand-cyan font-mono text-xs uppercase mb-1">Creative Media</div>
+                            <h4 class="text-xl font-bold text-white mb-2">Video Editing & Illustration</h4>
+                            <p class="text-xs text-slate-400">ตัดต่อคลิปวิดีโอ การเล่าเรื่องด้วยสื่อออนไลน์ การสร้างสรรค์ภาพประกอบและมัลติมีเดีย</p>
+                        </div>
+
+                        <div class="glass-card rounded-2xl p-6 border-l-4 border-purple-500 hover:scale-[1.02] transition-transform sm:col-span-2 lg:col-span-1">
+                            <div class="text-purple-400 font-mono text-xs uppercase mb-1">Modern Workflow</div>
+                            <h4 class="text-xl font-bold text-white mb-2">AI Tools Integration</h4>
+                            <p class="text-xs text-slate-400">นำ Generative AI ช่วยวิเคราะห์ เขียนโค้ด ออกแบบบท และเพิ่มประสิทธิภาพในการทำงาน</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- EXPERIENCE SECTION -->
+        <section id="experience" class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-xs font-mono font-bold tracking-widest text-brand-cyan uppercase mb-2">Work Experience</h2>
+                    <p class="text-3xl sm:text-4xl font-extrabold text-white">ประวัติการทำงาน</p>
+                    <div class="w-16 h-1 bg-gradient-to-r from-brand-500 to-brand-cyan mx-auto mt-4 rounded-full"></div>
+                </div>
+
+                <!-- Timeline item -->
+                <div class="max-w-4xl mx-auto relative pl-6 sm:pl-10 border-l-2 border-slate-800 space-y-12">
+                    
+                    <div class="relative group">
+                        <!-- Dot Icon -->
+                        <div class="absolute -left-[31px] sm:-left-[47px] top-0 w-10 h-10 rounded-full bg-dark-950 border-2 border-brand-500 text-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-building text-sm"></i>
+                        </div>
+
+                        <div class="glass-card rounded-2xl p-6 sm:p-8 hover:border-brand-500/50 transition-colors">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                                <div>
+                                    <span class="px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-400 text-xs font-mono font-semibold">
+                                        พ.ศ. 2567
+                                    </span>
+                                    <h3 class="text-2xl font-bold text-white mt-2">บริษัท เชียร์ คอมมูนิเคชั่น จำกัด</h3>
+                                    <p class="text-slate-400 text-sm">Cheer Communication Co., Ltd.</p>
+                                </div>
+                                <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-md self-start sm:self-center">
+                                    ประสบการณ์ฝึกงาน / ทำงาน
+                                </span>
+                            </div>
+
+                            <p class="text-slate-300 leading-relaxed text-sm sm:text-base font-light">
+                                ได้ร่วมงานและเรียนรู้ระบบงานในสายเทคโนโลยีและการสื่อสาร พัฒนาทักษะการทำงานจริง การแก้ปัญหาเฉพาะหน้า การทำงานร่วมกับทีม และการประยุกต์ใช้เทคโนโลยีสมัยใหม่ในการปฏิบัติงาน
+                            </p>
+
+                            <div class="flex flex-wrap gap-2 mt-6">
+                                <span class="px-2.5 py-1 rounded-md bg-slate-800 text-xs font-mono text-slate-300">Communication Systems</span>
+                                <span class="px-2.5 py-1 rounded-md bg-slate-800 text-xs font-mono text-slate-300">Team Collaboration</span>
+                                <span class="px-2.5 py-1 rounded-md bg-slate-800 text-xs font-mono text-slate-300">Technical Support</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SKILLS SECTION -->
+        <section id="skills" class="py-20 bg-slate-900/40 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-xs font-mono font-bold tracking-widest text-brand-cyan uppercase mb-2">Technical Skills & Expertise</h2>
+                    <p class="text-3xl sm:text-4xl font-extrabold text-white">ทักษะและความสามารถ</p>
+                    <div class="w-16 h-1 bg-gradient-to-r from-brand-500 to-brand-cyan mx-auto mt-4 rounded-full"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    
+                    <!-- Skill Card 1: Hardware & IoT -->
+                    <div class="glass-card rounded-2xl p-6 hover:border-brand-500/60 transition-all duration-300 group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-microchip"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">Hardware & IoT</h3>
+                        <p class="text-xs text-slate-400 mb-4">การต่อวงจรและเขียนโปรแกรมควบคุมอุปกรณ์ไมโครคอนโทรลเลอร์</p>
+                        
+                        <div class="space-y-2">
+                            <span class="inline-block px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200 font-mono">ESP32</span>
+                            <span class="inline-block px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200 font-mono">ESP8266</span>
+                            <span class="inline-block px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200 font-mono">Circuit Wiring</span>
+                            <span class="inline-block px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200 font-mono">Arduino IDE</span>
+                        </div>
+                    </div>
+
+                    <!-- Skill Card 2: Creative & Video -->
+                    <div class="glass-card rounded-2xl p-6 hover:border-brand-cyan/60 transition-all duration-300 group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-cyan/10 text-brand-cyan flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-film"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">Video & Creative</h3>
+                        <p class="text-xs text-slate-400 mb-4">การตัดต่อวิดีโอ คอนเทนต์สร้างสรรค์ และงานกราฟิกภาพประกอบ</p>
+                        
+                        <div class="space-y-2">
+                            <span class="inline-block px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200 font-mono">Video Editing</span>
+                            <span class="inline-block px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200 font-mono">Illustration</span>
+                            <span class="inline-block px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200 font-mono">Storyboarding</span>
+                        </div>
+                    </div>
+
+                    <!-- Skill Card 3: AI Tools -->
+                    <div class="glass-card rounded-2xl p-6 hover:border-purple-500/60 transition-all duration-300 group">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">AI Tools</h3>
+                        <p class="text-xs text-slate-400 mb-4">ประยุกต์ใช้เครื่องมือ ปัญญาประดิษฐ์ เพื่อเพิ่มความเร็วในการทำงาน</p>
+                        
+                        <div class="space-y-2">
+                            <span class="inline-block px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200 font-mono">Prompt Engineering</span>
+                            <span class="inline-block px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200 font-mono">Generative AI</span>
+                            <span class="inline-block px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200 font-mono">AI Code Assistant</span>
+                        </div>
+                    </div>
+
+                    <!-- Skill Card 4: Interests & Gaming -->
+                    <div class="glass-card rounded-2xl p-6 hover:border-emerald-500/60 transition-all duration-300 group">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">Interests & Hobbies</h3>
+                        <p class="text-xs text-slate-400 mb-4">ความสนใจส่วนตัว การบริหารจัดการเวลา และงานอดิเรก</p>
+                        
+                        <div class="space-y-2">
+                            <span class="inline-block px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200 font-mono">AFK Games</span>
+                            <span class="inline-block px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200 font-mono">Resource Mgmt</span>
+                            <span class="inline-block px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200 font-mono">Tech Trends</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- EDUCATION SECTION -->
+        <section id="education" class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-xs font-mono font-bold tracking-widest text-brand-cyan uppercase mb-2">Educational Journey</h2>
+                    <p class="text-3xl sm:text-4xl font-extrabold text-white">ประวัติการศึกษา</p>
+                    <div class="w-16 h-1 bg-gradient-to-r from-brand-500 to-brand-cyan mx-auto mt-4 rounded-full"></div>
+                </div>
+
+                <div class="max-w-4xl mx-auto space-y-6">
+                    
+                    <!-- Current Education Card (Highlight) -->
+                    <div class="glass-card rounded-2xl p-6 sm:p-8 border-l-4 border-brand-500 shadow-xl shadow-brand-500/5 relative overflow-hidden">
+                        <div class="absolute -right-8 -bottom-8 opacity-5 text-brand-400 text-9xl font-black select-none pointer-events-none">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+                            <span class="px-3 py-1 rounded-full bg-brand-500/20 text-brand-400 text-xs font-mono font-bold">
+                                ปัจจุบัน (ระดับ ปวช.3)
+                            </span>
+                            <span class="text-xs font-mono text-slate-400">ระดับประกาศนียบัตรวิชาชีพ</span>
+                        </div>
+                        <h3 class="text-2xl font-extrabold text-white mb-1">วิทยาลัยอาชีวศึกษานครศรีธรรมราช</h3>
+                        <p class="text-slate-300 text-sm">มุ่งเน้นการศึกษาในสายอาชีวศึกษา การปฏิบัติจริง และงานนวัตกรรมเทคโนโลยี</p>
+                    </div>
+
+                    <!-- Past Education List Timeline -->
+                    <div class="glass-card rounded-2xl p-6 space-y-4">
+                        <h4 class="text-sm font-mono font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">
+                            สถานศึกษาในอดีต
+                        </h4>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-slate-700/80 text-brand-cyan flex items-center justify-center text-sm font-bold">1</div>
+                                <div>
+                                    <h5 class="text-white font-semibold text-sm">โรงเรียนราชประชานุเคราะห์ 19</h5>
+                                    <p class="text-xs text-slate-400">ระดับการศึกษาเดิม</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-slate-700/80 text-brand-cyan flex items-center justify-center text-sm font-bold">2</div>
+                                <div>
+                                    <h5 class="text-white font-semibold text-sm">ศูนย์การศึกษาพิเศษพัทลุง</h5>
+                                    <p class="text-xs text-slate-400">ระดับการศึกษาเดิม</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-slate-700/80 text-brand-cyan flex items-center justify-center text-sm font-bold">3</div>
+                                <div>
+                                    <h5 class="text-white font-semibold text-sm">โรงเรียนอิศรานุสรณ์</h5>
+                                    <p class="text-xs text-slate-400">ระดับการศึกษาเดิม</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-slate-700/80 text-brand-cyan flex items-center justify-center text-sm font-bold">4</div>
+                                <div>
+                                    <h5 class="text-white font-semibold text-sm">โรงเรียนเทศบาล 4</h5>
+                                    <p class="text-xs text-slate-400">ระดับการศึกษาเดิม</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- PROJECTS SECTION (WITH CRUD CMS & LOCALSTORAGE) -->
+        <section id="projects" class="py-20 bg-slate-900/40 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                    <div>
+                        <h2 class="text-xs font-mono font-bold tracking-widest text-brand-cyan uppercase mb-2">Featured Projects</h2>
+                        <p class="text-3xl sm:text-4xl font-extrabold text-white">ผลงานและโครงการพัฒนา</p>
+                        <div class="w-16 h-1 bg-gradient-to-r from-brand-500 to-brand-cyan mt-4 rounded-full"></div>
+                    </div>
+
+                    <!-- Add Project Button (Shown only when Admin is logged in) -->
+                    <button id="add-project-btn" onclick="openProjectModal()" class="hidden px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-semibold shadow-lg shadow-emerald-600/30 hover:scale-105 transition-all items-center gap-2">
+                        <i class="fa-solid fa-plus-circle"></i>
+                        <span>+ เพิ่มผลงานใหม่</span>
+                    </button>
+                </div>
+
+                <!-- Category Filters -->
+                <div class="flex flex-wrap items-center gap-2 mb-8" id="category-filters">
+                    <button onclick="filterProjects('all')" class="cat-btn active px-4 py-2 rounded-xl text-sm font-medium bg-brand-600 text-white border border-brand-500 transition-all">ทั้งหมด</button>
+                    <button onclick="filterProjects('IoT & Hardware')" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-slate-500 transition-all">IoT & Hardware</button>
+                    <button onclick="filterProjects('AI & Software')" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-slate-500 transition-all">AI & Software</button>
+                    <button onclick="filterProjects('Video & Media')" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-slate-500 transition-all">Video & Media</button>
+                </div>
+
+                <!-- Project Grid Container -->
+                <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Populated dynamically via JavaScript from LocalStorage -->
+                </div>
+
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION -->
+        <section id="contact" class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-xs font-mono font-bold tracking-widest text-brand-cyan uppercase mb-2">Get In Touch</h2>
+                    <p class="text-3xl sm:text-4xl font-extrabold text-white">ช่องทางการติดต่อ</p>
+                    <div class="w-16 h-1 bg-gradient-to-r from-brand-500 to-brand-cyan mx-auto mt-4 rounded-full"></div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-5xl mx-auto">
+                    
+                    <!-- Left: Direct Contact Information -->
+                    <div class="lg:col-span-5 space-y-6">
+                        
+                        <div class="glass-card rounded-2xl p-6 border-l-4 border-brand-500">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs text-slate-400 block font-mono">Email Address</span>
+                                    <a href="mailto:feel0627546143@gmail.com" class="text-sm font-bold text-white hover:text-brand-400 transition-colors break-all">
+                                        feel0627546143@gmail.com
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card rounded-2xl p-6 border-l-4 border-brand-cyan">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-brand-cyan/10 text-brand-cyan flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-brands fa-facebook"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs text-slate-400 block font-mono">Facebook Profile</span>
+                                    <a href="https://www.facebook.com/fexl07" target="_blank" rel="noopener noreferrer" class="text-sm font-bold text-white hover:text-brand-cyan transition-colors">
+                                        facebook.com/fexl07
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card rounded-2xl p-6 border-l-4 border-purple-500">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs text-slate-400 block font-mono">Location</span>
+                                    <span class="text-sm font-bold text-white">
+                                        จังหวัดนครศรีธรรมราช, ประเทศไทย
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right: Quick Message Form -->
+                    <div class="lg:col-span-7 glass-card rounded-2xl p-6 sm:p-8">
+                        <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane text-brand-cyan"></i>
+                            ส่งข้อความถึงผม
+                        </h3>
+
+                        <form id="contact-form" onsubmit="handleContactSubmit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-mono text-slate-300 uppercase mb-1">ชื่อผู้ติดต่อ / Name</label>
+                                <input type="text" required placeholder="กรอกชื่อของคุณ" class="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700/70 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-mono text-slate-300 uppercase mb-1">อีเมลตอบกลับ / Email</label>
+                                <input type="email" required placeholder="your.email@example.com" class="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700/70 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-mono text-slate-300 uppercase mb-1">ข้อความ / Message</label>
+                                <textarea rows="4" required placeholder="พิมพ์ข้อความรายละเอียดของคุณที่นี่..." class="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700/70 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors resize-none"></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-brand-cyan hover:from-brand-500 hover:to-brand-cyan text-white font-semibold shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>ส่งข้อความ</span>
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 bg-dark-950 py-8 text-slate-400 text-xs font-mono">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <span class="text-white font-bold">Pakapol Samaikeaw (Feel)</span>
+                <span>© 2026 • Single Page Portfolio</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span>Built with HTML, Tailwind CSS & JS</span>
+                <a href="#home" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-brand-600 text-white flex items-center justify-center transition-colors" title="ขึ้นไปบนสุด">
+                    <i class="fa-solid fa-arrow-up"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="admin-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-dark-950/80 backdrop-blur-md">
+        <div class="glass-card rounded-2xl p-6 sm:p-8 max-w-md w-full border border-slate-700/80 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-brand-500/10 border border-brand-500/30 text-brand-400 flex items-center justify-center text-2xl mx-auto mb-3">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white">ระบบสำหรับ Admin</h3>
+                <p class="text-xs text-slate-400 mt-1">กรอกรหัสผ่านเพื่อเข้าสู่โหมดจัดการผลงาน (CMS)</p>
+            </div>
+
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-mono text-slate-300 uppercase mb-1">รหัสผ่าน (Password)</label>
+                    <div class="relative">
+                        <input type="password" id="admin-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-brand-500 font-mono tracking-widest">
+                        <button type="button" onclick="togglePasswordVisibility('admin-password')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-sm">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="admin-login-error" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+                    <i class="fa-solid fa-circle-exclamation text-sm"></i>
+                    <span>รหัสผ่านไม่ถูกต้อง! โปรดลองใหม่อีกครั้ง</span>
+                </div>
+
+                <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-brand-cyan hover:from-brand-500 hover:to-brand-cyan text-white font-semibold shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-key"></i>
+                    <span>เข้าสู่ระบบ Admin</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PROJECT ADD / EDIT MODAL -->
+    <div id="project-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-dark-950/80 backdrop-blur-md overflow-y-auto">
+        <div class="glass-card rounded-2xl p-6 sm:p-8 max-w-xl w-full border border-slate-700/80 shadow-2xl relative my-8">
+            <button onclick="closeProjectModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <h3 id="project-modal-title" class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-plus-circle text-emerald-400"></i>
+                <span>เพิ่มผลงานใหม่</span>
+            </h3>
+
+            <form id="project-form" onsubmit="saveProject(event)" class="space-y-4">
+                <input type="hidden" id="project-id">
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-300 uppercase mb-1">ชื่อโปรเจกต์ (Project Title) *</label>
+                    <input type="text" id="project-title" required placeholder="เช่น ระบบรดน้ำต้นไม้อัตโนมัติด้วย ESP32" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-brand-500 text-sm">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-mono text-slate-300 uppercase mb-1">หมวดหมู่ (Category) *</label>
+                        <select id="project-category" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-brand-500 text-sm">
+                            <option value="IoT & Hardware">IoT & Hardware</option>
+                            <option value="AI & Software">AI & Software</option>
+                            <option value="Video & Media">Video & Media</option>
+                            <option value="Other">อื่นๆ</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-slate-300 uppercase mb-1">เทคโนโลยีที่ใช้ (Comma separated)</label>
+                        <input type="text" id="project-tags" placeholder="ESP32, Sensors, Blynk, WiFi" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-brand-500 text-sm font-mono">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-300 uppercase mb-1">คำอธิบายรายละเอียด *</label>
+                    <textarea id="project-desc" rows="3" required placeholder="รายละเอียดเกี่ยวกับผลงาน สิ่งที่ทำและจุดเด่นของโครงการ..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-brand-500 text-sm resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-300 uppercase mb-1">
+                        URL รูปภาพ (คั่นด้วยเครื่องหมาย Comma หากมีหลายรูปเพื่อทำสไลด์) *
+                    </label>
+                    <input type="text" id="project-images" required placeholder="./ตัวเอง.jpg, https://images.unsplash.com/..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-brand-500 text-sm font-mono">
+                    <span class="text-[11px] text-slate-400 block mt-1">สามารถระบุเป็นไฟล์ในเครื่อง (เช่น ./ตัวเอง.jpg) หรือ Image URL บนอินเทอร์เน็ตได้</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-mono text-slate-300 uppercase mb-1">ลิงก์ GitHub (ถ้ามี)</label>
+                        <input type="url" id="project-github" placeholder="https://github.com/..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-brand-500 text-sm font-mono">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-slate-300 uppercase mb-1">ลิงก์ Demo / Website (ถ้ามี)</label>
+                        <input type="url" id="project-demo" placeholder="https://demo-link.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-brand-500 text-sm font-mono">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="closeProjectModal()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition-colors">
+                        ยกเลิก
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 text-white text-sm font-semibold shadow-lg shadow-emerald-600/20 hover:scale-105 transition-all">
+                        บันทึกผลงาน
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // ==========================================
+        // INITIAL MOCK DATA & APP STATE MANAGEMENT
+        // ==========================================
+        const ADMIN_PASS = "140963";
+        let isAdmin = sessionStorage.getItem('feel_admin_logged_in') === 'true';
+        let currentFilter = 'all';
+        let heroSlideIndex = 0;
+        let heroInterval = null;
+
+        // Default initial projects if LocalStorage is empty
+        const defaultProjects = [
+            {
+                id: "p1",
+                title: "ระบบควบคุมและตรวจวัดฟาร์มอัจฉริยะด้วย ESP32",
+                category: "IoT & Hardware",
+                tags: ["ESP32", "Sensors", "Circuit Wiring", "Blynk IoT"],
+                description: "โครงการพัฒนาบอร์ด ESP32 เชื่อมต่อกับเซนเซอร์วัดความชื้นในดิน อุณหภูมิ และแสง ควบคุมระบบรดน้ำอัตโนมัติพร้อมรายงานผลผ่านระบบคลาวด์และแจ้งเตือนเข้าสมาร์ทโฟน",
+                images: ["./ตัวเอง.jpg", "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"],
+                github: "https://github.com/fexl07",
+                demo: "https://facebook.com/fexl07"
+            },
+            {
+                id: "p2",
+                title: "AI Video Editing & Content Generation Showcase",
+                category: "AI & Software",
+                tags: ["AI Tools", "Video Editing", "Illustration", "Premiere Pro"],
+                description: "ผลงานการประยุกต์ใช้ AI ช่วยในกระบวนการเขียนบทภาพยนตร์ สร้างภาพประกอบเรื่องราว และตัดต่อวิดีโอระดับมืออาชีพสำหรับสื่อโซเชียลมีเดีย",
+                images: ["./ตัวเองที่ทะเล.jpg", "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80"],
+                github: "",
+                demo: "https://facebook.com/fexl07"
+            }
+        ];
+
+        // Ensure Projects in LocalStorage
+        function getStoredProjects() {
+            const data = localStorage.getItem('feel_portfolio_projects');
+            if (!data) {
+                localStorage.setItem('feel_portfolio_projects', JSON.stringify(defaultProjects));
+                return defaultProjects;
+            }
+            try {
+                return JSON.parse(data);
+            } catch (e) {
+                return defaultProjects;
+            }
+        }
+
+        function saveProjectsToStore(projects) {
+            localStorage.setItem('feel_portfolio_projects', JSON.stringify(projects));
+        }
+
+        // Toast Notification System
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgClass = type === 'success' ? 'bg-emerald-600/90 border-emerald-500' : 'bg-rose-600/90 border-rose-500';
+            const iconClass = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
+
+            toast.className = `${bgClass} text-white px-4 py-3 rounded-xl border shadow-xl backdrop-blur-md text-sm font-medium flex items-center gap-3 transition-all duration-300 pointer-events-auto opacity-0 translate-y-2`;
+            toast.innerHTML = `
+                <i class="fa-solid ${iconClass} text-lg"></i>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // ==========================================
+        // HERO AUTOMATED SLIDESHOW CAROUSEL
+        // ==========================================
+        function initHeroSlider() {
+            const slides = document.querySelectorAll('.hero-slide');
+            const dotsContainer = document.getElementById('hero-dots');
+            if (!slides.length) return;
+
+            dotsContainer.innerHTML = '';
+            slides.forEach((_, idx) => {
+                const dot = document.createElement('button');
+                dot.className = `w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === 0 ? 'bg-brand-400 w-8' : 'bg-slate-700 hover:bg-slate-500'}`;
+                dot.onclick = () => goToHeroSlide(idx);
+                dot.setAttribute('title', `ไปยังรูปที่ ${idx + 1}`);
+                dotsContainer.appendChild(dot);
+            });
+
+            startHeroAutoPlay();
+        }
+
+        function updateHeroSlideUI() {
+            const slides = document.querySelectorAll('.hero-slide');
+            const dots = document.querySelectorAll('#hero-dots button');
+
+            slides.forEach((slide, idx) => {
+                if (idx === heroSlideIndex) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            dots.forEach((dot, idx) => {
+                if (idx === heroSlideIndex) {
+                    dot.className = 'w-8 h-2.5 rounded-full bg-brand-cyan transition-all duration-300';
+                } else {
+                    dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-700 hover:bg-slate-500 transition-all duration-300';
+                }
+            });
+        }
+
+        function nextHeroSlide() {
+            const slides = document.querySelectorAll('.hero-slide');
+            heroSlideIndex = (heroSlideIndex + 1) % slides.length;
+            updateHeroSlideUI();
+            resetHeroTimer();
+        }
+
+        function prevHeroSlide() {
+            const slides = document.querySelectorAll('.hero-slide');
+            heroSlideIndex = (heroSlideIndex - 1 + slides.length) % slides.length;
+            updateHeroSlideUI();
+            resetHeroTimer();
+        }
+
+        function goToHeroSlide(idx) {
+            heroSlideIndex = idx;
+            updateHeroSlideUI();
+            resetHeroTimer();
+        }
+
+        function startHeroAutoPlay() {
+            if (heroInterval) clearInterval(heroInterval);
+            heroInterval = setInterval(() => {
+                nextHeroSlide();
+            }, 4000); // 4 Seconds Interval
+        }
+
+        function resetHeroTimer() {
+            startHeroAutoPlay();
+        }
+
+        // ==========================================
+        // ADMIN AUTHENTICATION & CMS
+        // ==========================================
+        function updateAdminUI() {
+            const badge = document.getElementById('admin-status-badge');
+            const loginBtn = document.getElementById('admin-login-btn');
+            const addBtn = document.getElementById('add-project-btn');
+
+            if (isAdmin) {
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+                loginBtn.classList.add('hidden');
+                addBtn.classList.remove('hidden');
+                addBtn.classList.add('flex');
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+                loginBtn.classList.remove('hidden');
+                addBtn.classList.add('hidden');
+                addBtn.classList.remove('flex');
+            }
+
+            renderProjects();
+        }
+
+        function openAdminModal() {
+            document.getElementById('admin-modal').classList.remove('hidden');
+            document.getElementById('admin-login-error').classList.add('hidden');
+            document.getElementById('admin-password').value = '';
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-modal').classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pwdInput = document.getElementById('admin-password').value.trim();
+            
+            if (pwdInput === ADMIN_PASS) {
+                isAdmin = true;
+                sessionStorage.setItem('feel_admin_logged_in', 'true');
+                closeAdminModal();
+                updateAdminUI();
+                showToast('เข้าสู่ระบบ Admin สำเร็จแล้ว!', 'success');
+            } else {
+                document.getElementById('admin-login-error').classList.remove('hidden');
+                showToast('รหัสผ่านไม่ถูกต้อง!', 'error');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            sessionStorage.removeItem('feel_admin_logged_in');
+            updateAdminUI();
+            showToast('ออกจากระบบ Admin เรียบร้อยแล้ว', 'success');
+        }
+
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // ==========================================
+        // PROJECT CRUD OPERATIONS
+        // ==========================================
+        function renderProjects() {
+            const grid = document.getElementById('projects-grid');
+            const projects = getStoredProjects();
+
+            const filtered = currentFilter === 'all' 
+                ? projects 
+                : projects.filter(p => p.category === currentFilter);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-16 text-center text-slate-400 glass-card rounded-2xl">
+                        <i class="fa-solid fa-folder-open text-4xl text-slate-600 mb-3 block"></i>
+                        <p class="text-base">ยังไม่มีผลงานในหมวดหมู่นี้</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => {
+                const imgList = (typeof p.images === 'string' ? p.images.split(',') : (p.images || []))
+                    .map(img => img.trim())
+                    .filter(Boolean);
+                
+                const coverImg = imgList[0] || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80';
+                
+                const tagsHtml = (p.tags || []).map(t => 
+                    `<span class="px-2.5 py-1 rounded-md bg-slate-800 text-[11px] font-mono text-brand-400 border border-slate-700/60">${t}</span>`
+                ).join(' ');
+
+                const adminControlsHtml = isAdmin ? `
+                    <div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2 mt-4">
+                        <span class="text-[10px] text-emerald-400 font-mono">Admin Control</span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="editProject('${p.id}')" class="px-3 py-1 rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500 hover:text-white text-xs font-semibold transition-colors flex items-center gap-1">
+                                <i class="fa-solid fa-pen-to-square"></i> แก้ไข
+                            </button>
+                            <button onclick="deleteProject('${p.id}')" class="px-3 py-1 rounded-lg bg-rose-500/20 text-rose-300 hover:bg-rose-500 hover:text-white text-xs font-semibold transition-colors flex items-center gap-1">
+                                <i class="fa-solid fa-trash"></i> ลบ
+                            </button>
+                        </div>
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between hover:border-brand-500/60 transition-all duration-300 group shadow-lg">
+                        <div>
+                            <!-- Project Image Cover Showcase -->
+                            <div class="relative h-48 sm:h-56 overflow-hidden bg-slate-950">
+                                <img src="${coverImg}" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80'" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute top-3 left-3">
+                                    <span class="px-3 py-1 rounded-full bg-dark-950/80 backdrop-blur-md text-xs font-mono font-semibold text-brand-cyan border border-brand-500/30">
+                                        ${p.category}
+                                    </span>
+                                </div>
+                                ${imgList.length > 1 ? `
+                                    <div class="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-dark-950/80 backdrop-blur-md text-[11px] font-mono text-white flex items-center gap-1">
+                                        <i class="fa-solid fa-images"></i> ${imgList.length} รูป
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white group-hover:text-brand-400 transition-colors mb-2 leading-snug">
+                                    ${p.title}
+                                </h3>
+                                <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-3 font-light">
+                                    ${p.description}
+                                </p>
+                                <div class="flex flex-wrap gap-1.5 mb-4">
+                                    ${tagsHtml}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Footer Links -->
+                        <div class="px-6 pb-6">
+                            <div class="flex items-center gap-3">
+                                ${p.github ? `
+                                    <a href="${p.github}" target="_blank" rel="noopener noreferrer" class="flex-1 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 text-center transition-colors flex items-center justify-center gap-1.5">
+                                        <i class="fa-brands fa-github"></i> GitHub
+                                    </a>
+                                ` : ''}
+                                ${p.demo ? `
+                                    <a href="${p.demo}" target="_blank" rel="noopener noreferrer" class="flex-1 py-2 rounded-xl bg-brand-600/20 hover:bg-brand-600 text-brand-400 hover:text-white text-xs font-semibold border border-brand-500/30 text-center transition-colors flex items-center justify-center gap-1.5">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Demo
+                                    </a>
+                                ` : ''}
+                            </div>
+                            ${adminControlsHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterProjects(category) {
+            currentFilter = category;
+            const buttons = document.querySelectorAll('#category-filters .cat-btn');
+            buttons.forEach(btn => {
+                if ((category === 'all' && btn.innerText.includes('ทั้งหมด')) || btn.innerText.includes(category)) {
+                    btn.className = 'cat-btn active px-4 py-2 rounded-xl text-sm font-medium bg-brand-600 text-white border border-brand-500 transition-all';
+                } else {
+                    btn.className = 'cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-slate-500 transition-all';
+                }
+            });
+            renderProjects();
+        }
+
+        function openProjectModal(editId = null) {
+            document.getElementById('project-modal').classList.remove('hidden');
+            const form = document.getElementById('project-form');
+            form.reset();
+
+            if (editId) {
+                document.getElementById('project-modal-title').innerHTML = `
+                    <i class="fa-solid fa-pen-to-square text-amber-400"></i>
+                    <span>แก้ไขผลงาน</span>
+                `;
+                const projects = getStoredProjects();
+                const target = projects.find(p => p.id === editId);
+                if (target) {
+                    document.getElementById('project-id').value = target.id;
+                    document.getElementById('project-title').value = target.title;
+                    document.getElementById('project-category').value = target.category;
+                    document.getElementById('project-tags').value = (target.tags || []).join(', ');
+                    document.getElementById('project-desc').value = target.description;
+                    document.getElementById('project-images').value = (typeof target.images === 'string' ? target.images : (target.images || []).join(', '));
+                    document.getElementById('project-github').value = target.github || '';
+                    document.getElementById('project-demo').value = target.demo || '';
+                }
+            } else {
+                document.getElementById('project-modal-title').innerHTML = `
+                    <i class="fa-solid fa-plus-circle text-emerald-400"></i>
+                    <span>เพิ่มผลงานใหม่</span>
+                `;
+                document.getElementById('project-id').value = '';
+            }
+        }
+
+        function closeProjectModal() {
+            document.getElementById('project-modal').classList.add('hidden');
+        }
+
+        function saveProject(e) {
+            e.preventDefault();
+            const id = document.getElementById('project-id').value;
+            const title = document.getElementById('project-title').value.trim();
+            const category = document.getElementById('project-category').value;
+            const tagsRaw = document.getElementById('project-tags').value;
+            const desc = document.getElementById('project-desc').value.trim();
+            const imagesRaw = document.getElementById('project-images').value;
+            const github = document.getElementById('project-github').value.trim();
+            const demo = document.getElementById('project-demo').value.trim();
+
+            const tags = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+            const images = imagesRaw.split(',').map(i => i.trim()).filter(Boolean);
+
+            let projects = getStoredProjects();
+
+            if (id) {
+                // Update
+                projects = projects.map(p => {
+                    if (p.id === id) {
+                        return { ...p, title, category, tags, description: desc, images, github, demo };
+                    }
+                    return p;
+                });
+                showToast('อัปเดตข้อมูลผลงานเรียบร้อยแล้ว', 'success');
+            } else {
+                // Create
+                const newProject = {
+                    id: 'p_' + Date.now(),
+                    title,
+                    category,
+                    tags,
+                    description: desc,
+                    images,
+                    github,
+                    demo
+                };
+                projects.unshift(newProject);
+                showToast('เพิ่มผลงานใหม่เข้าสู่ระบบเรียบร้อยแล้ว', 'success');
+            }
+
+            saveProjectsToStore(projects);
+            closeProjectModal();
+            renderProjects();
+        }
+
+        function editProject(id) {
+            openProjectModal(id);
+        }
+
+        function deleteProject(id) {
+            if (confirm('คุณต้องการลบผลงานชิ้นนี้ออกจากระบบใช่หรือไม่?')) {
+                let projects = getStoredProjects();
+                projects = projects.filter(p => p.id !== id);
+                saveProjectsToStore(projects);
+                renderProjects();
+                showToast('ลบผลงานเรียบร้อยแล้ว', 'success');
+            }
+        }
+
+        // Contact Form Handler
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            showToast('ขอบคุณสำหรับข้อความ! ภคพลจะติดต่อกลับโดยเร็วที่สุด', 'success');
+            document.getElementById('contact-form').reset();
+        }
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // App Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            initHeroSlider();
+            updateAdminUI();
+        });
+    </script>
+</body>
+</html>

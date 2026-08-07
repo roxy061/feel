@@ -880,7 +880,7 @@
                 category: "เกียรติบัตร",
                 tags: ["เกียรติบัตร", "รางวัลคนเก่ง", "อาชีวศึกษา"],
                 description: "เกียรติบัตรยกย่องเชิดชูเกียรติผู้มีความรู้ความสามารถและผลงานดีเด่น ประจำปีการศึกษา",
-                images: ["https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=800&q=80"],
+                images: [],
                 github: "",
                 demo: "./เกียรติบัตร คนเก่ง -.pdf"
             },
@@ -890,7 +890,7 @@
                 category: "เกียรติบัตร",
                 tags: ["เกียรติบัตร", "ทักษะวิทยาศาสตร์", "ระดับจังหวัด"],
                 description: "เกียรติบัตรการเข้าร่วมและได้รับรางวัลในการแข่งขันทักษะวิชาการด้านวิทยาศาสตร์และเทคโนโลยี ระดับจังหวัด",
-                images: ["https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&w=800&q=80"],
+                images: [],
                 github: "",
                 demo: "./เกียรติบัตร วิท จังหวัด.pdf"
             },
@@ -900,29 +900,9 @@
                 category: "เกียรติบัตร",
                 tags: ["เกียรติบัตร", "ทักษะวิทยาศาสตร์", "ระดับภาค"],
                 description: "เกียรติบัตรการเข้าร่วมและได้รับรางวัลในการแข่งขันทักษะสิ่งประดิษฐ์และนวัตกรรมวิทยาศาสตร์ ระดับภาค",
-                images: ["https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=800&q=80"],
+                images: [],
                 github: "",
                 demo: "./เกียรติบัตร วิท ภาค.pdf"
-            },
-            {
-                id: "p1",
-                title: "ระบบควบคุมและตรวจวัดฟาร์มอัจฉริยะด้วย ESP32",
-                category: "IoT & Hardware",
-                tags: ["ESP32", "Sensors", "Circuit Wiring", "Blynk IoT"],
-                description: "โครงการพัฒนาบอร์ด ESP32 เชื่อมต่อกับเซนเซอร์วัดความชื้นในดิน อุณหภูมิ และแสง ควบคุมระบบรดน้ำอัตโนมัติพร้อมรายงานผลผ่านระบบคลาวด์และแจ้งเตือนเข้าสมาร์ทโฟน",
-                images: ["./ตัวเอง.jpg", "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"],
-                github: "https://github.com/fexl07",
-                demo: "https://facebook.com/fexl07"
-            },
-            {
-                id: "p2",
-                title: "AI Video Editing & Content Generation Showcase",
-                category: "AI & Software",
-                tags: ["AI Tools", "Video Editing", "Illustration", "Premiere Pro"],
-                description: "ผลงานการประยุกต์ใช้ AI ช่วยในกระบวนการเขียนบทภาพยนตร์ สร้างภาพประกอบเรื่องราว และตัดต่อวิดีโอระดับมืออาชีพสำหรับสื่อโซเชียลมีเดีย",
-                images: ["./ตัวเองที่ทะเล.jpg", "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80"],
-                github: "",
-                demo: "https://facebook.com/fexl07"
             }
         ];
 
@@ -934,14 +914,15 @@
                 return defaultProjects;
             }
             try {
-                const parsed = JSON.parse(data);
-                // Ensure certificate entries exist
+                let parsed = JSON.parse(data);
+                // Remove sample projects p1 and p2 as requested
+                parsed = parsed.filter(p => p.id !== 'p1' && p.id !== 'p2');
+                // Ensure default certificate entries exist
                 const hasCerts = parsed.some(p => p.category === 'เกียรติบัตร' || p.id.startsWith('cert'));
                 if (!hasCerts) {
-                    const merged = [...defaultProjects.filter(d => d.category === 'เกียรติบัตร'), ...parsed];
-                    localStorage.setItem('feel_portfolio_projects', JSON.stringify(merged));
-                    return merged;
+                    parsed = [...defaultProjects, ...parsed];
                 }
+                localStorage.setItem('feel_portfolio_projects', JSON.stringify(parsed));
                 return parsed;
             } catch (e) {
                 return defaultProjects;
@@ -1159,23 +1140,42 @@
                     </div>
                 ` : '';
 
+                const isCert = p.category === 'เกียรติบัตร';
+                const headerHtml = isCert ? `
+                    <div class="h-28 bg-gradient-to-tr from-slate-900 via-brand-600/10 to-brand-cyan/10 border-b border-slate-800/80 flex items-center justify-between px-6 relative overflow-hidden">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-2xl shadow-inner">
+                                <i class="fa-solid fa-award"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs font-mono text-brand-cyan block">Official Certificate</span>
+                                <span class="text-xs font-semibold text-slate-300">วิทยาลัยอาชีวศึกษานครศรีฯ</span>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-dark-950/80 text-[11px] font-mono text-brand-cyan border border-brand-500/30">
+                            ${p.category}
+                        </span>
+                    </div>
+                ` : `
+                    <div class="relative h-48 sm:h-56 overflow-hidden bg-slate-950">
+                        <img src="${coverImg}" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80'" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-3 left-3">
+                            <span class="px-3 py-1 rounded-full bg-dark-950/80 backdrop-blur-md text-xs font-mono font-semibold text-brand-cyan border border-brand-500/30">
+                                ${p.category}
+                            </span>
+                        </div>
+                        ${imgList.length > 1 ? `
+                            <div class="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-dark-950/80 backdrop-blur-md text-[11px] font-mono text-white flex items-center gap-1">
+                                <i class="fa-solid fa-images"></i> ${imgList.length} รูป
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+
                 return `
                     <div class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between hover:border-brand-500/60 transition-all duration-300 group shadow-lg">
                         <div>
-                            <!-- Project Image Cover Showcase -->
-                            <div class="relative h-48 sm:h-56 overflow-hidden bg-slate-950">
-                                <img src="${coverImg}" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80'" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                <div class="absolute top-3 left-3">
-                                    <span class="px-3 py-1 rounded-full bg-dark-950/80 backdrop-blur-md text-xs font-mono font-semibold text-brand-cyan border border-brand-500/30">
-                                        ${p.category}
-                                    </span>
-                                </div>
-                                ${imgList.length > 1 ? `
-                                    <div class="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-dark-950/80 backdrop-blur-md text-[11px] font-mono text-white flex items-center gap-1">
-                                        <i class="fa-solid fa-images"></i> ${imgList.length} รูป
-                                    </div>
-                                ` : ''}
-                            </div>
+                            ${headerHtml}
 
                             <!-- Card Body -->
                             <div class="p-6">

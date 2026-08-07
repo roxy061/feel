@@ -262,51 +262,26 @@
                             <!-- Slide 1 (Local Photo) -->
                             <div class="hero-slide active">
                                 <img src="./ตัวเอง.jpg" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80'" alt="ภคพล สมัยแก้ว (Feel)" class="w-full h-full object-cover object-center">
-                                <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent opacity-80"></div>
-                                <div class="absolute bottom-4 left-4 right-4 p-4 rounded-xl glass-card">
-                                    <h3 class="text-white font-bold text-lg">ภคพล สมัยแก้ว (ฟีล)</h3>
-                                    <p class="text-xs text-brand-cyan font-mono">ปวส.1 วิทยาลัยอาชีวศึกษานครศรีธรรมราช</p>
-                                </div>
                             </div>
 
                             <!-- Slide 2 (Local Photo Sea 1) -->
                             <div class="hero-slide">
                                 <img src="./ตัวเองที่ทะเล.jpg" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80'" alt="Feel Lifestyle" class="w-full h-full object-cover object-center">
-                                <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent opacity-80"></div>
-                                <div class="absolute bottom-4 left-4 right-4 p-4 rounded-xl glass-card">
-                                    <h3 class="text-white font-bold text-lg">IoT & Hardware Maker</h3>
-                                    <p class="text-xs text-brand-400 font-mono">ESP32 • Sensors • Circuit Wiring</p>
-                                </div>
                             </div>
 
                             <!-- Slide 3 (Local Photo Sea 2) -->
                             <div class="hero-slide">
                                 <img src="./ตัวเองที่ทะเล2.jpeg" onerror="this.src='https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=800&q=80'" alt="Feel Travel" class="w-full h-full object-cover object-center">
-                                <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent opacity-80"></div>
-                                <div class="absolute bottom-4 left-4 right-4 p-4 rounded-xl glass-card">
-                                    <h3 class="text-white font-bold text-lg">AI & Video Creator</h3>
-                                    <p class="text-xs text-purple-400 font-mono">Video Editing • Prompt Engineering</p>
-                                </div>
                             </div>
 
                             <!-- Slide 4 (Local Photo Training/Internship) -->
                             <div class="hero-slide">
                                 <img src="./ตัวเองตอน ฝึกดร..JPG" onerror="this.src='https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80'" alt="Feel Internship" class="w-full h-full object-cover object-center">
-                                <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent opacity-80"></div>
-                                <div class="absolute bottom-4 left-4 right-4 p-4 rounded-xl glass-card">
-                                    <h3 class="text-white font-bold text-lg">ประสบการณ์ทำงานปี 2567</h3>
-                                    <p class="text-xs text-emerald-400 font-mono">บริษัท เชียร์ คอมมูนิเคชั่น จำกัด</p>
-                                </div>
                             </div>
 
                             <!-- Slide 5 (Local Photo Sea 3) -->
                             <div class="hero-slide">
                                 <img src="./ตัวเองที่ทะเล3.jpg" onerror="this.src='https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80'" alt="Feel Sea View" class="w-full h-full object-cover object-center">
-                                <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent opacity-80"></div>
-                                <div class="absolute bottom-4 left-4 right-4 p-4 rounded-xl glass-card">
-                                    <h3 class="text-white font-bold text-lg">สร้างสรรค์อนาคตด้วยเทคโนโลยี</h3>
-                                    <p class="text-xs text-amber-400 font-mono">Always Learning & Growing</p>
-                                </div>
                             </div>
 
                             <!-- Navigation Controls (Prev / Next Buttons) -->
@@ -632,8 +607,8 @@
                 
                 <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                     <div>
-                        <h2 class="text-xs font-mono font-bold tracking-widest text-brand-cyan uppercase mb-2">Featured Projects</h2>
-                        <p class="text-3xl sm:text-4xl font-extrabold text-white">ผลงานและโครงการพัฒนา</p>
+                        <h2 class="text-xs font-mono font-bold tracking-widest text-brand-cyan uppercase mb-2">Portfolio & Certificates</h2>
+                        <p class="text-3xl sm:text-4xl font-extrabold text-white">ผลงาน & เกียรติบัตร</p>
                         <div class="w-16 h-1 bg-gradient-to-r from-brand-500 to-brand-cyan mt-4 rounded-full"></div>
                     </div>
 
@@ -647,6 +622,7 @@
                 <!-- Category Filters -->
                 <div class="flex flex-wrap items-center gap-2 mb-8" id="category-filters">
                     <button onclick="filterProjects('all')" class="cat-btn active px-4 py-2 rounded-xl text-sm font-medium bg-brand-600 text-white border border-brand-500 transition-all">ทั้งหมด</button>
+                    <button onclick="filterProjects('เกียรติบัตร')" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-slate-500 transition-all">📜 เกียรติบัตร</button>
                     <button onclick="filterProjects('IoT & Hardware')" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-slate-500 transition-all">IoT & Hardware</button>
                     <button onclick="filterProjects('AI & Software')" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-slate-500 transition-all">AI & Software</button>
                     <button onclick="filterProjects('Video & Media')" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-slate-500 transition-all">Video & Media</button>
@@ -834,6 +810,7 @@
                     <div>
                         <label class="block text-xs font-mono text-slate-300 uppercase mb-1">หมวดหมู่ (Category) *</label>
                         <select id="project-category" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-brand-500 text-sm">
+                            <option value="เกียรติบัตร">เกียรติบัตร (Certificates)</option>
                             <option value="IoT & Hardware">IoT & Hardware</option>
                             <option value="AI & Software">AI & Software</option>
                             <option value="Video & Media">Video & Media</option>
@@ -898,6 +875,36 @@
         // Default initial projects if LocalStorage is empty
         const defaultProjects = [
             {
+                id: "cert1",
+                title: "เกียรติบัตรรางวัลคนเก่ง (Certificate of Excellence)",
+                category: "เกียรติบัตร",
+                tags: ["เกียรติบัตร", "รางวัลคนเก่ง", "อาชีวศึกษา"],
+                description: "เกียรติบัตรยกย่องเชิดชูเกียรติผู้มีความรู้ความสามารถและผลงานดีเด่น ประจำปีการศึกษา",
+                images: ["https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=800&q=80"],
+                github: "",
+                demo: "./เกียรติบัตร คนเก่ง -.pdf"
+            },
+            {
+                id: "cert2",
+                title: "เกียรติบัตรการแข่งขันทักษะทางวิทยาศาสตร์ (ระดับจังหวัด)",
+                category: "เกียรติบัตร",
+                tags: ["เกียรติบัตร", "ทักษะวิทยาศาสตร์", "ระดับจังหวัด"],
+                description: "เกียรติบัตรการเข้าร่วมและได้รับรางวัลในการแข่งขันทักษะวิชาการด้านวิทยาศาสตร์และเทคโนโลยี ระดับจังหวัด",
+                images: ["https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&w=800&q=80"],
+                github: "",
+                demo: "./เกียรติบัตร วิท จังหวัด.pdf"
+            },
+            {
+                id: "cert3",
+                title: "เกียรติบัตรการแข่งขันทักษะทางวิทยาศาสตร์ (ระดับภาค)",
+                category: "เกียรติบัตร",
+                tags: ["เกียรติบัตร", "ทักษะวิทยาศาสตร์", "ระดับภาค"],
+                description: "เกียรติบัตรการเข้าร่วมและได้รับรางวัลในการแข่งขันทักษะสิ่งประดิษฐ์และนวัตกรรมวิทยาศาสตร์ ระดับภาค",
+                images: ["https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=800&q=80"],
+                github: "",
+                demo: "./เกียรติบัตร วิท ภาค.pdf"
+            },
+            {
                 id: "p1",
                 title: "ระบบควบคุมและตรวจวัดฟาร์มอัจฉริยะด้วย ESP32",
                 category: "IoT & Hardware",
@@ -927,7 +934,15 @@
                 return defaultProjects;
             }
             try {
-                return JSON.parse(data);
+                const parsed = JSON.parse(data);
+                // Ensure certificate entries exist
+                const hasCerts = parsed.some(p => p.category === 'เกียรติบัตร' || p.id.startsWith('cert'));
+                if (!hasCerts) {
+                    const merged = [...defaultProjects.filter(d => d.category === 'เกียรติบัตร'), ...parsed];
+                    localStorage.setItem('feel_portfolio_projects', JSON.stringify(merged));
+                    return merged;
+                }
+                return parsed;
             } catch (e) {
                 return defaultProjects;
             }
@@ -1186,7 +1201,7 @@
                                 ` : ''}
                                 ${p.demo ? `
                                     <a href="${p.demo}" target="_blank" rel="noopener noreferrer" class="flex-1 py-2 rounded-xl bg-brand-600/20 hover:bg-brand-600 text-brand-400 hover:text-white text-xs font-semibold border border-brand-500/30 text-center transition-colors flex items-center justify-center gap-1.5">
-                                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Demo
+                                        <i class="fa-solid ${p.category === 'เกียรติบัตร' ? 'fa-file-pdf text-rose-400' : 'fa-arrow-up-right-from-square'}"></i> ${p.category === 'เกียรติบัตร' ? 'เปิดดูเกียรติบัตร (PDF)' : 'Demo'}
                                     </a>
                                 ` : ''}
                             </div>

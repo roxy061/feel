@@ -1138,10 +1138,7 @@
                                 จังหวัดนครศรีธรรมราช
                             </span>
                         </div>
-                        <div class="pt-4 mt-4 border-t border-google-border dark:border-google-dark-border flex items-center gap-1.5 text-xs text-google-text-muted dark:text-google-dark-text-muted font-medium">
-                            <i class="fa-solid fa-graduation-cap text-google-blue"></i>
-                            <span id="contact-inst-dept">แผนกวิชาคอมพิวเตอร์ธุรกิจ (ปวส.1)</span>
-                        </div>
+
                     </div>
 
                 </div>
@@ -1667,10 +1664,7 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">แผนกวิชา / ชั้นปี</label>
-                        <input type="text" id="form-contact-inst-dept" class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
-                    </div>
+
 
                     <div>
                         <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">
@@ -1999,7 +1993,7 @@
                 lineUrl: "https://line.me/ti/p/CdqbkYbcUv",
                 locationTitle: "วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
                 locationSub: "จังหวัดนครศรีธรรมราช",
-                department: "แผนกวิชาคอมพิวเตอร์ธุรกิจ (ปวส.1)",
+
                 driveFolderUrl: "https://drive.google.com/drive/folders/13JPid47x7QZvmnHwQI0uZ5hVPatEi3Ow?usp=sharing",
                 socials: {
                     facebook: "https://www.facebook.com/fexl07",
@@ -2785,10 +2779,8 @@
                 // Location / Institution
                 const instTitle = document.getElementById('contact-inst-title');
                 const instSub = document.getElementById('contact-inst-sub');
-                const instDept = document.getElementById('contact-inst-dept');
                 if (instTitle && c.locationTitle) instTitle.textContent = c.locationTitle;
                 if (instSub && c.locationSub) instSub.textContent = c.locationSub;
-                if (instDept && c.department) instDept.textContent = c.department;
 
                 // Drive Folder URL
                 if (c.driveFolderUrl) {
@@ -2963,8 +2955,7 @@
                 if (elCInstT) elCInstT.value = c.locationTitle || '';
                 const elCInstS = document.getElementById('form-contact-inst-sub');
                 if (elCInstS) elCInstS.value = c.locationSub || '';
-                const elCInstD = document.getElementById('form-contact-inst-dept');
-                if (elCInstD) elCInstD.value = c.department || '';
+
                 const elCDrive = document.getElementById('form-contact-drive-url');
                 if (elCDrive) elCDrive.value = c.driveFolderUrl || '';
                 if (c.socials) {
@@ -3161,7 +3152,7 @@
                     lineUrl: (document.getElementById('form-contact-line-url')?.value || '').trim(),
                     locationTitle: (document.getElementById('form-contact-inst-title')?.value || '').trim(),
                     locationSub: (document.getElementById('form-contact-inst-sub')?.value || '').trim(),
-                    department: (document.getElementById('form-contact-inst-dept')?.value || '').trim(),
+
                     driveFolderUrl: (document.getElementById('form-contact-drive-url')?.value || '').trim(),
                     socials: {
                         ...(portfolioData.contact?.socials || {}),

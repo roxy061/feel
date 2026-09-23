@@ -219,6 +219,17 @@
     <!-- Toast Notification Container (Google Snackbar) -->
     <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 max-w-md pointer-events-none"></div>
 
+    <!-- Auto-Save Status Indicator -->
+    <div id="auto-save-indicator" class="hidden fixed bottom-6 left-6 z-50 flex items-center gap-2 px-3.5 py-2 rounded-full bg-white dark:bg-google-dark-surface shadow-google-lg border border-google-border dark:border-google-dark-border text-google-text-muted dark:text-google-dark-text-muted pointer-events-none transition-all duration-300">
+        <!-- Filled by JS -->
+    </div>
+
+    <!-- Offline Network Status Banner -->
+    <div id="network-status-indicator" class="hidden fixed top-16 sm:top-20 left-0 right-0 z-40 flex items-center justify-center gap-2 py-2 bg-amber-500 text-white text-xs font-semibold shadow-md">
+        <i class="fa-solid fa-wifi-slash"></i>
+        <span>คุณออฟไลน์อยู่ — ข้อมูลจะถูกบันทึกลงเซิร์ฟเวอร์เมื่อเชื่อมต่ออินเทอร์เน็ตอีกครั้ง</span>
+    </div>
+
     <!-- ========================================== -->
     <!-- HEADER / NAVIGATION (Google Material Appbar) -->
     <!-- ========================================== -->
@@ -283,6 +294,12 @@
                 <button id="admin-manage-btn" onclick="openAdminContentModal('hero')" class="hidden items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-google-blue hover:bg-google-blue-hover text-white text-xs font-semibold shadow-xs transition-all cursor-pointer" title="จัดการและแก้ไขข้อมูลเว็บไซต์ทั้งหมด">
                     <i class="fa-solid fa-sliders"></i>
                     <span class="inline">จัดการข้อมูลเว็บไซต์</span>
+                </button>
+
+                <!-- Quick Save Now Button (Visible to Admin, triggers immediate save) -->
+                <button id="admin-quick-save-btn" onclick="performAutoSave(true).then(()=>showToast('บันทึกข้อมูลสำเร็จแล้ว','success'))" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-google-green hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer" title="บันทึกข้อมูลทั้งหมดลงเซิร์ฟเวอร์ทันที">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span class="hidden sm:inline">บันทึกทันที</span>
                 </button>
 
                 <!-- Admin Login Button -->
@@ -2075,6 +2092,111 @@
         }
 
         // ==========================================
+        // AUTO-SAVE & STABILITY SYSTEM
+        // ==========================================
+        let _autoSaveTimer = null;
+        let _lastSavedHash = null;
+        let _pendingSave = false;
+        let _saveRetryCount = 0;
+        const MAX_SAVE_RETRIES = 3;
+
+        // Hash function for change detection
+        function _hashData(data) {
+            try {
+                return JSON.stringify(data).length + '_' + (JSON.stringify(data).slice(0, 200));
+            } catch (e) { return Date.now().toString(); }
+        }
+
+        // Debounced auto-save (saves 30s after last change)
+        function scheduleAutoSave() {
+            if (_autoSaveTimer) clearTimeout(_autoSaveTimer);
+            _pendingSave = true;
+            _updateSaveIndicator('pending');
+            _autoSaveTimer = setTimeout(async () => {
+                await performAutoSave();
+            }, 30000);
+        }
+
+        async function performAutoSave(force = false) {
+            if (!portfolioData) return;
+            const currentHash = _hashData(portfolioData);
+            if (!force && currentHash === _lastSavedHash) {
+                _pendingSave = false;
+                _updateSaveIndicator('saved');
+                return;
+            }
+            _updateSaveIndicator('saving');
+            try {
+                const result = await savePortfolioDataToServer(portfolioData);
+                if (result && result.success) {
+                    _lastSavedHash = currentHash;
+                    _pendingSave = false;
+                    _saveRetryCount = 0;
+                    _updateSaveIndicator('saved');
+                    console.log('[AutoSave] บันทึกข้อมูลอัตโนมัติสำเร็จ');
+                } else {
+                    throw new Error(result?.message || 'Save failed');
+                }
+            } catch (err) {
+                _saveRetryCount++;
+                console.warn('[AutoSave] ล้มเหลว ครั้งที่', _saveRetryCount, err.message);
+                _updateSaveIndicator('error');
+                if (_saveRetryCount <= MAX_SAVE_RETRIES) {
+                    const retryDelay = _saveRetryCount * 5000;
+                    console.log('[AutoSave] จะลองใหม่ใน', retryDelay / 1000, 'วินาที...');
+                    setTimeout(() => performAutoSave(true), retryDelay);
+                } else {
+                    _saveRetryCount = 0;
+                    showToast('⚠️ ไม่สามารถบันทึกข้อมูลลงเซิร์ฟเวอร์ได้ ข้อมูลถูกเก็บในเครื่องแล้ว', 'error');
+                }
+            }
+        }
+
+        // Visual save status indicator
+        function _updateSaveIndicator(status) {
+            const el = document.getElementById('auto-save-indicator');
+            if (!el) return;
+            const states = {
+                idle:    { text: '', icon: '', cls: 'hidden' },
+                pending: { text: 'มีการเปลี่ยนแปลง...', icon: 'fa-circle text-amber-400 animate-pulse', cls: '' },
+                saving:  { text: 'กำลังบันทึก...', icon: 'fa-spinner fa-spin text-google-blue', cls: '' },
+                saved:   { text: 'บันทึกแล้ว', icon: 'fa-circle-check text-google-green', cls: '' },
+                error:   { text: 'บันทึกล้มเหลว', icon: 'fa-circle-exclamation text-google-red', cls: '' }
+            };
+            const s = states[status] || states.idle;
+            if (s.cls === 'hidden') { el.classList.add('hidden'); return; }
+            el.classList.remove('hidden');
+            el.innerHTML = `<i class="fa-solid ${s.icon} text-xs"></i><span class="text-xs">${s.text}</span>`;
+        }
+
+        // Online / offline detection
+        function _initNetworkMonitor() {
+            const indicator = document.getElementById('network-status-indicator');
+            function updateNet() {
+                if (!indicator) return;
+                if (navigator.onLine) {
+                    indicator.classList.add('hidden');
+                    // Retry pending saves when back online
+                    if (_pendingSave) performAutoSave(true);
+                } else {
+                    indicator.classList.remove('hidden');
+                }
+            }
+            window.addEventListener('online', updateNet);
+            window.addEventListener('offline', updateNet);
+            updateNet();
+        }
+
+        // Warn on close if unsaved
+        window.addEventListener('beforeunload', (e) => {
+            if (_pendingSave) {
+                e.preventDefault();
+                e.returnValue = 'มีข้อมูลที่ยังไม่ได้บันทึก คุณต้องการออกจากหน้านี้หรือไม่?';
+                return e.returnValue;
+            }
+        });
+
+        // ==========================================
         // COLLAPSIBLE SHOWCASE CONTROLLER (ย่อ/ขยาย)
         // ==========================================
         let isProjectsCollapsed = false;
@@ -2139,8 +2261,10 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             
-            const isSuccess = type === 'success';
-            const iconClass = isSuccess ? 'fa-circle-check text-emerald-400' : 'fa-circle-exclamation text-rose-400';
+            let iconClass;
+            if (type === 'success') iconClass = 'fa-circle-check text-emerald-400';
+            else if (type === 'info') iconClass = 'fa-circle-info text-sky-400';
+            else iconClass = 'fa-circle-exclamation text-rose-400';
 
             toast.className = 'bg-[#323232] text-white px-4 py-3 rounded-xl shadow-google-lg text-xs sm:text-sm font-medium flex items-center gap-3 transition-all duration-300 pointer-events-auto opacity-0 translate-y-2 border border-white/10';
             toast.innerHTML = `
@@ -3068,7 +3192,12 @@
                 }
 
                 // Save to Server + localStorage
-                await savePortfolioDataToServer(portfolioData);
+                const saveResult = await savePortfolioDataToServer(portfolioData);
+                if (saveResult && saveResult.success) {
+                    _lastSavedHash = _hashData(portfolioData);
+                    _pendingSave = false;
+                    _updateSaveIndicator('saved');
+                }
 
                 // Immediate DOM update
                 renderSiteContent();
@@ -3097,6 +3226,7 @@
             const loginBtn = document.getElementById('admin-login-btn');
             const addBtn = document.getElementById('add-project-btn');
             const manageBtn = document.getElementById('admin-manage-btn');
+            const quickSaveBtn = document.getElementById('admin-quick-save-btn');
 
             if (isAdmin) {
                 badge.classList.remove('hidden');
@@ -3108,6 +3238,10 @@
                     manageBtn.classList.remove('hidden');
                     manageBtn.classList.add('inline-flex');
                 }
+                if (quickSaveBtn) {
+                    quickSaveBtn.classList.remove('hidden');
+                    quickSaveBtn.classList.add('inline-flex');
+                }
             } else {
                 badge.classList.add('hidden');
                 badge.classList.remove('flex');
@@ -3117,6 +3251,10 @@
                 if (manageBtn) {
                     manageBtn.classList.add('hidden');
                     manageBtn.classList.remove('inline-flex');
+                }
+                if (quickSaveBtn) {
+                    quickSaveBtn.classList.add('hidden');
+                    quickSaveBtn.classList.remove('inline-flex');
                 }
             }
 
@@ -3593,6 +3731,17 @@
             await loadSiteData();
             updateAdminUI();
             initGallery();
+            _initNetworkMonitor();
+            // Set initial hash so auto-save only triggers on real changes
+            if (portfolioData) {
+                _lastSavedHash = _hashData(portfolioData);
+            }
+            // Hook admin CMS form inputs to schedule auto-save
+            const adminForm = document.getElementById('admin-content-form');
+            if (adminForm) {
+                adminForm.addEventListener('input', () => scheduleAutoSave());
+                adminForm.addEventListener('change', () => scheduleAutoSave());
+            }
         });
     </script>
 </body>

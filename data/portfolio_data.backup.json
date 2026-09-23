@@ -1,201 +1,266 @@
 {
-  "adminPassword": "140369",
-  "hero": {
-    "statusBadge": "แฟ้มสะสมผลงานทางการ (Official Portfolio)",
-    "name": "นายภคพล สมัยแก้ว",
-    "nickname": "(ฟีล / Feel)",
-    "focusTags": [
-      { "text": "IoT & Embedded Developer", "icon": "fa-solid fa-microchip", "color": "text-google-blue" },
-      { "text": "AI Enthusiast", "icon": "fa-solid fa-brain", "color": "text-google-green" },
-      { "text": "Video Editor & Media Creator", "icon": "fa-solid fa-video", "color": "text-google-red" }
+    "adminPassword": "140369",
+    "hero": {
+        "statusBadge": "แฟ้มสะสมผลงานทางการ (Official Portfolio)",
+        "name": "นายภคพล สมัยแก้ว",
+        "nickname": "(ฟีล / Feel)",
+        "focusTags": [
+            {
+                "text": "IoT & Embedded Developer",
+                "icon": "fa-solid fa-microchip",
+                "color": "text-google-blue"
+            },
+            {
+                "text": "AI Enthusiast",
+                "icon": "fa-solid fa-brain",
+                "color": "text-google-green"
+            },
+            {
+                "text": "Video Editor & Media Creator",
+                "icon": "fa-solid fa-video",
+                "color": "text-google-red"
+            }
+        ],
+        "bio": "นักศึกษาระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) วิทยาลัยอาชีวศึกษานครศรีธรรมราช มีความสนใจและความเชี่ยวชาญในการพัฒนาระบบสมองกลฝังตัว (ESP32, ESP8266), ระบบเครือข่ายอินเทอร์เน็ตของสรรพสิ่ง (IoT), การประยุกต์ใช้ปัญญาประดิษฐ์ (AI Tools) ในการทำงาน ตลอดจนการสร้างสรรค์สื่อวิดีโอคุณภาพสูง",
+        "slides": [
+            {
+                "src": "./ตัวเอง.jpg",
+                "title": "นายภคพล สมัยแก้ว (ฟีล)",
+                "subtitle": "ปวส.1 วิทยาลัยอาชีวศึกษานครศรีธรรมราช"
+            },
+            {
+                "src": "./ตัวเองตอน ฝึกดร..JPG",
+                "title": "ประสบการณ์ฝึกงาน",
+                "subtitle": "บริษัท เชียร์ คอมมูนิเคชั่น จำกัด"
+            },
+            {
+                "src": "./ตัวเองที่ทะเล.jpg",
+                "title": "ภาพกิจกรรมทั่วไป",
+                "subtitle": "ภคพล สมัยแก้ว"
+            },
+            {
+                "src": "./ตัวเองที่ทะเล2.jpeg",
+                "title": "ภาพกิจกรรมภายนอก",
+                "subtitle": "กิจกรรมและการใช้ชีวิต"
+            },
+            {
+                "src": "./ตัวเองที่ทะเล3.jpg",
+                "title": "ภาพกิจกรรมนักศึกษา",
+                "subtitle": "วิทยาลัยอาชีวศึกษานครศรีธรรมราช"
+            }
+        ]
+    },
+    "about": {
+        "title": "สรุปข้อมูลประวัติส่วนตัว",
+        "subtitle": "นายภคพล สมัยแก้ว (ฟีล)",
+        "paragraphs": [
+            "กระผม นายภคพล สมัยแก้ว (ชื่อเล่น: ฟีล / Feel) เกิดเมื่อวันที่ 10 ธันวาคม พ.ศ. 2550 ปัจจุบันกำลังศึกษาอยู่ในระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) ณ วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
+            "ตลอดระยะเวลาการศึกษา ได้ให้ความสนใจและมุ่งมั่นศึกษาด้านเทคโนโลยีคอมพิวเตอร์และระบบสมองกลฝังตัว โดยเฉพาะการประยุกต์ใช้ไมโครคอนโทรลเลอร์ ESP32 และ ESP8266 ในการเชื่อมต่อเซนเซอร์และระบบ IoT Dashboard รวมถึงการติดตามความก้าวหน้าของเทคโนโลยีปัญญาประดิษฐ์ (AI Engineering & Prompting) และทักษะการสร้างสรรค์สื่อดิจิทัล",
+            "มีความพร้อมในการเรียนรู้สิ่งใหม่ มุ่งมั่นในการทำงานอย่างมีวินัย รอบคอบ มีมนุษยสัมพันธ์ดี และสามารถร่วมงานกับผู้อื่นในระดับองค์กรได้อย่างมีประสิทธิภาพ"
+        ],
+        "birthdate": "10 ธันวาคม 2550",
+        "educationLevel": "ปวส.1 อาชีวศึกษานครศรีฯ",
+        "internship": "เชียร์ คอมมูนิเคชั่น (2567)",
+        "location": "จ.นครศรีธรรมราช",
+        "highlights": [
+            {
+                "icon": "fa-solid fa-microchip",
+                "color": "text-google-blue",
+                "bg": "bg-google-blue-light dark:bg-blue-950/50",
+                "title": "ความเชี่ยวชาญด้าน IoT & Hardware",
+                "desc": "การต่อวงจรอิเล็กทรอนิกส์, การเขียนโปรแกรมควบคุมไมโครคอนโทรลเลอร์ ESP32/ESP8266, เซนเซอร์ตรวจวัด และการส่งข้อมูลเข้าสู่ระบบคลาวด์"
+            },
+            {
+                "icon": "fa-solid fa-brain",
+                "color": "text-google-green",
+                "bg": "bg-google-green-light dark:bg-emerald-950/50",
+                "title": "การประยุกต์ใช้ AI ในงานจริง",
+                "desc": "การประยุกต์ใช้ Generative AI และเครื่องมือ AI สมัยใหม่เพื่อเพิ่มประสิทธิภาพในการพัฒนาโค้ด การวิเคราะห์ข้อมูล และแก้ปัญหาอย่างมีระบบ"
+            },
+            {
+                "icon": "fa-solid fa-photo-film",
+                "color": "text-google-red",
+                "bg": "bg-google-red-light dark:bg-rose-950/50",
+                "title": "การตัดต่อสื่อและวิดีโอสร้างสรรค์",
+                "desc": "การตัดต่อวิดีโอนำเสนอผลงาน ลำดับเรื่องราวอย่างกระชับ น่าสนใจ และสร้างสรรค์สื่อดิจิทัลให้ตรงตามวัตถุประสงค์ของการสื่อสาร"
+            }
+        ]
+    },
+    "skills": [
+        {
+            "icon": "fa-solid fa-wifi",
+            "iconColor": "text-google-blue",
+            "bg": "bg-google-blue-light dark:bg-google-dark-subtle",
+            "title": "Hardware & IoT Systems",
+            "desc": "มีความเข้าใจในหลักการต่อวงจรอิเล็กทรอนิกส์ ไมโครคอนโทรลเลอร์ การตรวจวัดค่าผ่านเซนเซอร์ และระบบสื่อสารไร้สาย",
+            "tags": [
+                "ESP32",
+                "ESP8266",
+                "Arduino IDE",
+                "Sensors & Relays",
+                "Blynk IoT"
+            ]
+        },
+        {
+            "icon": "fa-solid fa-brain",
+            "iconColor": "text-google-green",
+            "bg": "bg-google-green-light dark:bg-google-dark-subtle",
+            "title": "AI Tools & Software Development",
+            "desc": "การประยุกต์ใช้ AI ช่วยเขียนโปรแกรม พัฒนาเว็บแอปพลิเคชันพื้นฐาน และสร้างโซลูชันระบบสารสนเทศ",
+            "tags": [
+                "AI Prompting",
+                "Python",
+                "HTML5 / CSS3",
+                "Tailwind CSS",
+                "JavaScript"
+            ]
+        },
+        {
+            "icon": "fa-solid fa-photo-film",
+            "iconColor": "text-google-yellow",
+            "bg": "bg-google-yellow-light dark:bg-google-dark-subtle",
+            "title": "Media & Content Creation",
+            "desc": "การตัดต่อสื่อวิดีโอนำเสนอผลงาน การสร้างกราฟิก และการจัดเตรียมเนื้อหาให้น่าสนใจ เข้าใจง่าย",
+            "tags": [
+                "CapCut",
+                "Video Editing",
+                "Canva Design",
+                "Digital Storytelling"
+            ]
+        }
     ],
-    "bio": "นักศึกษาระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) วิทยาลัยอาชีวศึกษานครศรีธรรมราช มีความสนใจและความเชี่ยวชาญในการพัฒนาระบบสมองกลฝังตัว (ESP32, ESP8266), ระบบเครือข่ายอินเทอร์เน็ตของสรรพสิ่ง (IoT), การประยุกต์ใช้ปัญญาประดิษฐ์ (AI Tools) ในการทำงาน ตลอดจนการสร้างสรรค์สื่อวิดีโอคุณภาพสูง",
-    "slides": [
-      {
-        "src": "./ตัวเอง.jpg",
-        "title": "นายภคพล สมัยแก้ว (ฟีล)",
-        "subtitle": "ปวส.1 วิทยาลัยอาชีวศึกษานครศรีธรรมราช"
-      },
-      {
-        "src": "./ตัวเองตอน ฝึกดร..JPG",
-        "title": "ประสบการณ์ฝึกงาน",
-        "subtitle": "บริษัท เชียร์ คอมมูนิเคชั่น จำกัด"
-      },
-      {
-        "src": "./ตัวเองที่ทะเล.jpg",
-        "title": "ภาพกิจกรรมทั่วไป",
-        "subtitle": "ภคพล สมัยแก้ว"
-      },
-      {
-        "src": "./ตัวเองที่ทะเล2.jpeg",
-        "title": "ภาพกิจกรรมภายนอก",
-        "subtitle": "กิจกรรมและการใช้ชีวิต"
-      },
-      {
-        "src": "./ตัวเองที่ทะเล3.jpg",
-        "title": "ภาพกิจกรรมนักศึกษา",
-        "subtitle": "วิทยาลัยอาชีวศึกษานครศรีธรรมราช"
-      }
+    "experience": {
+        "work": [
+            {
+                "year": "พ.ศ. 2567",
+                "role": "เจ้าหน้าที่ฝึกงาน / สหกิจศึกษา",
+                "company": "บริษัท เชียร์ คอมมูนิเคชั่น จำกัด",
+                "desc": "ปฏิบัติงานร่วมกับทีมช่างเทคนิคและวิศวกรในการดูแล บำรุงรักษา และตรวจสอบระบบสื่อสารโทรคมนาคมและอุปกรณ์เชื่อมต่อเครือข่ายอย่างมืออาชีพ"
+            }
+        ],
+        "education": [
+            {
+                "year": "ปัจจุบัน (2567 - ปัจจุบัน)",
+                "level": "ระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1)",
+                "institution": "วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
+                "desc": "ศึกษาหลักสูตรทางด้านเทคโนโลยีคอมพิวเตอร์และระบบสารสนเทศ เน้นการพัฒนานวัตกรรม การประยุกต์ใช้เทคโนโลยี และความพร้อมในการปฏิบัติงานจริง"
+            }
+        ]
+    },
+    "contact": {
+        "email": "feel0627546143@gmail.com",
+        "lineId": "CdqbkYbcUv",
+        "lineUrl": "https://line.me/ti/p/CdqbkYbcUv",
+        "locationTitle": "วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
+        "locationSub": "จังหวัดนครศรีธรรมราช",
+        "department": "แผนกวิชาคอมพิวเตอร์ธุรกิจ (ปวส.1)",
+        "driveFolderUrl": "https://drive.google.com/drive/folders/13JPid47x7QZvmnHwQI0uZ5hVPatEi3Ow?usp=sharing",
+        "socials": {
+            "facebook": "https://www.facebook.com/fexl07",
+            "youtube": "https://youtube.com/@fe1401_?si=oK8ARDyj5KSZOoCv",
+            "tiktok": "https://www.tiktok.com/@feel1012feel?_r=1&_t=ZS-999qBB11drx",
+            "instagram": "https://www.instagram.com/fxxl_1403?igsi=MXFtZHBuZHlqNndl",
+            "discord": "https://discord.gg/SZpRyrjs",
+            "steam": "https://steamcommunity.com/profiles/76561199567513289",
+            "roblox": "https://www.roblox.com/th/users/3943361014/profile"
+        }
+    },
+    "projects": [
+        {
+            "id": "cert1",
+            "title": "เกียรติบัตรรางวัลคนเก่ง (Certificate of Excellence)",
+            "category": "เกียรติบัตร",
+            "tags": [
+                "เกียรติบัตรรางวัล",
+                "รางวัลคนเก่ง",
+                "อาชีวศึกษา"
+            ],
+            "description": "เกียรติบัตรยกย่องเชิดชูเกียรติผู้มีความรู้ความสามารถและผลงานดีเด่น ประจำปีการศึกษา วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
+            "images": [
+                "./cert_konkeng.jpg"
+            ],
+            "github": "",
+            "demo": "./เกียรติบัตร คนเก่ง -.pdf"
+        },
+        {
+            "id": "cert2",
+            "title": "เกียรติบัตรการแข่งขันทักษะทางวิทยาศาสตร์ (ระดับจังหวัด)",
+            "category": "เกียรติบัตร",
+            "tags": [
+                "ทักษะวิทยาศาสตร์",
+                "ระดับจังหวัด",
+                "สิ่งประดิษฐ์"
+            ],
+            "description": "เกียรติบัตรการเข้าร่วมและได้รับรางวัลในการแข่งขันทักษะวิชาการด้านวิทยาศาสตร์และนวัตกรรม ระดับจังหวัดนครศรีธรรมราช",
+            "images": [
+                "./cert_wit_prov.jpg"
+            ],
+            "github": "",
+            "demo": "./เกียรติบัตร วิท จังหวัด.pdf"
+        },
+        {
+            "id": "cert3",
+            "title": "เกียรติบัตรการแข่งขันทักษะทางวิทยาศาสตร์ (ระดับภาค)",
+            "category": "เกียรติบัตร",
+            "tags": [
+                "ทักษะวิทยาศาสตร์",
+                "ระดับภาค",
+                "การแข่งขันวิชาการ"
+            ],
+            "description": "เกียรติบัตรการเข้าร่วมและได้รับรางวัลในการแข่งขันทักษะสิ่งประดิษฐ์และนวัตกรรมวิทยาศาสตร์ ระดับภาคใต้",
+            "images": [
+                "./cert_wit_region.jpg"
+            ],
+            "github": "",
+            "demo": "./เกียรติบัตร วิท ภาค.pdf"
+        },
+        {
+            "id": "doc1",
+            "title": "เอกสารบริการและกิจกรรมนักเรียนนักศึกษา (Student Service)",
+            "category": "เอกสารการศึกษา",
+            "tags": [
+                "เอกสารการศึกษา",
+                "Student Service",
+                "ประวัติกิจกรรม"
+            ],
+            "description": "เอกสารหลักฐานการเข้าร่วมกิจกรรมและงานบริการนักเรียนนักศึกษา วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
+            "images": [
+                "./doc_studentservice.jpg"
+            ],
+            "github": "",
+            "demo": "./StudentService.pdf"
+        },
+        {
+            "id": "iot1",
+            "title": "ระบบตรวจวัดและแจ้งเตือนสภาพแวดล้อมด้วย IoT (ESP32)",
+            "category": "IoT & Hardware",
+            "tags": [
+                "ESP32",
+                "Sensors",
+                "Blynk IoT",
+                "WiFi"
+            ],
+            "description": "โครงงานพัฒนาอุปกรณ์ตรวจวัดค่าสภาพแวดล้อม เชื่อมต่อเซนเซอร์และส่งข้อมูลแบบ Real-time แสดงผลผ่าน Blynk Dashboard และแจ้งเตือนผ่าน LINE Notify",
+            "images": [
+                "./ตัวเองตอน ฝึกดร..JPG"
+            ],
+            "github": "https://github.com/",
+            "demo": ""
+        },
+        {
+            "id": "ai1",
+            "title": "ระบบผู้ช่วยอัจฉริยะและการเขียนโปรแกรมด้วย Generative AI",
+            "category": "AI & Software",
+            "tags": [
+                "AI Tools",
+                "Python",
+                "Automation",
+                "Workflow"
+            ],
+            "description": "การประยุกต์ใช้ AI Prompts ในการวิเคราะห์โครงสร้างข้อมูล ช่วยเขียนและทดสอบโค้ดระบบอัตโนมัติ เพื่อเพิ่มประสิทธิภาพการทำงาน",
+            "images": [],
+            "github": "https://github.com/",
+            "demo": ""
+        }
     ]
-  },
-  "about": {
-    "title": "สรุปข้อมูลประวัติส่วนตัว",
-    "subtitle": "นายภคพล สมัยแก้ว (ฟีล)",
-    "paragraphs": [
-      "กระผม นายภคพล สมัยแก้ว (ชื่อเล่น: ฟีล / Feel) เกิดเมื่อวันที่ 10 ธันวาคม พ.ศ. 2550 ปัจจุบันกำลังศึกษาอยู่ในระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) ณ วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
-      "ตลอดระยะเวลาการศึกษา ได้ให้ความสนใจและมุ่งมั่นศึกษาด้านเทคโนโลยีคอมพิวเตอร์และระบบสมองกลฝังตัว โดยเฉพาะการประยุกต์ใช้ไมโครคอนโทรลเลอร์ ESP32 และ ESP8266 ในการเชื่อมต่อเซนเซอร์และระบบ IoT Dashboard รวมถึงการติดตามความก้าวหน้าของเทคโนโลยีปัญญาประดิษฐ์ (AI Engineering & Prompting) และทักษะการสร้างสรรค์สื่อดิจิทัล",
-      "มีความพร้อมในการเรียนรู้สิ่งใหม่ มุ่งมั่นในการทำงานอย่างมีวินัย รอบคอบ มีมนุษยสัมพันธ์ดี และสามารถร่วมงานกับผู้อื่นในระดับองค์กรได้อย่างมีประสิทธิภาพ"
-    ],
-    "birthdate": "10 ธันวาคม 2550",
-    "educationLevel": "ปวส.1 อาชีวศึกษานครศรีฯ",
-    "internship": "เชียร์ คอมมูนิเคชั่น (2567)",
-    "location": "จ.นครศรีธรรมราช",
-    "highlights": [
-      {
-        "icon": "fa-solid fa-microchip",
-        "color": "text-google-blue",
-        "bg": "bg-google-blue-light dark:bg-blue-950/50",
-        "title": "ความเชี่ยวชาญด้าน IoT & Hardware",
-        "desc": "การต่อวงจรอิเล็กทรอนิกส์, การเขียนโปรแกรมควบคุมไมโครคอนโทรลเลอร์ ESP32/ESP8266, เซนเซอร์ตรวจวัด และการส่งข้อมูลเข้าสู่ระบบคลาวด์"
-      },
-      {
-        "icon": "fa-solid fa-brain",
-        "color": "text-google-green",
-        "bg": "bg-google-green-light dark:bg-emerald-950/50",
-        "title": "การประยุกต์ใช้ AI ในงานจริง",
-        "desc": "การประยุกต์ใช้ Generative AI และเครื่องมือ AI สมัยใหม่เพื่อเพิ่มประสิทธิภาพในการพัฒนาโค้ด การวิเคราะห์ข้อมูล และแก้ปัญหาอย่างมีระบบ"
-      },
-      {
-        "icon": "fa-solid fa-photo-film",
-        "color": "text-google-red",
-        "bg": "bg-google-red-light dark:bg-rose-950/50",
-        "title": "การตัดต่อสื่อและวิดีโอสร้างสรรค์",
-        "desc": "การตัดต่อวิดีโอนำเสนอผลงาน ลำดับเรื่องราวอย่างกระชับ น่าสนใจ และสร้างสรรค์สื่อดิจิทัลให้ตรงตามวัตถุประสงค์ของการสื่อสาร"
-      }
-    ]
-  },
-  "skills": [
-    {
-      "icon": "fa-solid fa-wifi",
-      "iconColor": "text-google-blue",
-      "bg": "bg-google-blue-light dark:bg-google-dark-subtle",
-      "title": "Hardware & IoT Systems",
-      "desc": "มีความเข้าใจในหลักการต่อวงจรอิเล็กทรอนิกส์ ไมโครคอนโทรลเลอร์ การตรวจวัดค่าผ่านเซนเซอร์ และระบบสื่อสารไร้สาย",
-      "tags": ["ESP32", "ESP8266", "Arduino IDE", "Sensors & Relays", "Blynk IoT"]
-    },
-    {
-      "icon": "fa-solid fa-brain",
-      "iconColor": "text-google-green",
-      "bg": "bg-google-green-light dark:bg-google-dark-subtle",
-      "title": "AI Tools & Software Development",
-      "desc": "การประยุกต์ใช้ AI ช่วยเขียนโปรแกรม พัฒนาเว็บแอปพลิเคชันพื้นฐาน และสร้างโซลูชันระบบสารสนเทศ",
-      "tags": ["AI Prompting", "Python", "HTML5 / CSS3", "Tailwind CSS", "JavaScript"]
-    },
-    {
-      "icon": "fa-solid fa-photo-film",
-      "iconColor": "text-google-yellow",
-      "bg": "bg-google-yellow-light dark:bg-google-dark-subtle",
-      "title": "Media & Content Creation",
-      "desc": "การตัดต่อสื่อวิดีโอนำเสนอผลงาน การสร้างกราฟิก และการจัดเตรียมเนื้อหาให้น่าสนใจ เข้าใจง่าย",
-      "tags": ["CapCut", "Video Editing", "Canva Design", "Digital Storytelling"]
-    }
-  ],
-  "experience": {
-    "work": [
-      {
-        "year": "พ.ศ. 2567",
-        "role": "เจ้าหน้าที่ฝึกงาน / สหกิจศึกษา",
-        "company": "บริษัท เชียร์ คอมมูนิเคชั่น จำกัด",
-        "desc": "ปฏิบัติงานร่วมกับทีมช่างเทคนิคและวิศวกรในการดูแล บำรุงรักษา และตรวจสอบระบบสื่อสารโทรคมนาคมและอุปกรณ์เชื่อมต่อเครือข่ายอย่างมืออาชีพ"
-      }
-    ],
-    "education": [
-      {
-        "year": "ปัจจุบัน (2567 - ปัจจุบัน)",
-        "level": "ระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1)",
-        "institution": "วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
-        "desc": "ศึกษาหลักสูตรทางด้านเทคโนโลยีคอมพิวเตอร์และระบบสารสนเทศ เน้นการพัฒนานวัตกรรม การประยุกต์ใช้เทคโนโลยี และความพร้อมในการปฏิบัติงานจริง"
-      }
-    ]
-  },
-  "contact": {
-    "email": "feel0627546143@gmail.com",
-    "lineId": "CdqbkYbcUv",
-    "lineUrl": "https://line.me/ti/p/CdqbkYbcUv",
-    "locationTitle": "วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
-    "locationSub": "จังหวัดนครศรีธรรมราช",
-    "department": "แผนกวิชาคอมพิวเตอร์ธุรกิจ (ปวส.1)",
-    "driveFolderUrl": "https://drive.google.com/drive/folders/13JPid47x7QZvmnHwQI0uZ5hVPatEi3Ow?usp=sharing",
-    "socials": {
-      "facebook": "https://www.facebook.com/fexl07",
-      "youtube": "https://youtube.com/@fe1401_?si=oK8ARDyj5KSZOoCv",
-      "tiktok": "https://www.tiktok.com/@feel1012feel?_r=1&_t=ZS-999qBB11drx",
-      "instagram": "https://www.instagram.com/fxxl_1403?igsi=MXFtZHBuZHlqNndl",
-      "discord": "https://discord.gg/SZpRyrjs",
-      "steam": "https://steamcommunity.com/profiles/76561199567513289",
-      "roblox": "https://www.roblox.com/th/users/3943361014/profile"
-    }
-  },
-  "projects": [
-    {
-      "id": "cert1",
-      "title": "เกียรติบัตรรางวัลคนเก่ง (Certificate of Excellence)",
-      "category": "เกียรติบัตร",
-      "tags": ["เกียรติบัตรรางวัล", "รางวัลคนเก่ง", "อาชีวศึกษา"],
-      "description": "เกียรติบัตรยกย่องเชิดชูเกียรติผู้มีความรู้ความสามารถและผลงานดีเด่น ประจำปีการศึกษา วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
-      "images": ["./cert_konkeng.jpg"],
-      "github": "",
-      "demo": "./เกียรติบัตร คนเก่ง -.pdf"
-    },
-    {
-      "id": "cert2",
-      "title": "เกียรติบัตรการแข่งขันทักษะทางวิทยาศาสตร์ (ระดับจังหวัด)",
-      "category": "เกียรติบัตร",
-      "tags": ["ทักษะวิทยาศาสตร์", "ระดับจังหวัด", "สิ่งประดิษฐ์"],
-      "description": "เกียรติบัตรการเข้าร่วมและได้รับรางวัลในการแข่งขันทักษะวิชาการด้านวิทยาศาสตร์และนวัตกรรม ระดับจังหวัดนครศรีธรรมราช",
-      "images": ["./cert_wit_prov.jpg"],
-      "github": "",
-      "demo": "./เกียรติบัตร วิท จังหวัด.pdf"
-    },
-    {
-      "id": "cert3",
-      "title": "เกียรติบัตรการแข่งขันทักษะทางวิทยาศาสตร์ (ระดับภาค)",
-      "category": "เกียรติบัตร",
-      "tags": ["ทักษะวิทยาศาสตร์", "ระดับภาค", "การแข่งขันวิชาการ"],
-      "description": "เกียรติบัตรการเข้าร่วมและได้รับรางวัลในการแข่งขันทักษะสิ่งประดิษฐ์และนวัตกรรมวิทยาศาสตร์ ระดับภาคใต้",
-      "images": ["./cert_wit_region.jpg"],
-      "github": "",
-      "demo": "./เกียรติบัตร วิท ภาค.pdf"
-    },
-    {
-      "id": "doc1",
-      "title": "เอกสารบริการและกิจกรรมนักเรียนนักศึกษา (Student Service)",
-      "category": "เอกสารการศึกษา",
-      "tags": ["เอกสารการศึกษา", "Student Service", "ประวัติกิจกรรม"],
-      "description": "เอกสารหลักฐานการเข้าร่วมกิจกรรมและงานบริการนักเรียนนักศึกษา วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
-      "images": ["./doc_studentservice.jpg"],
-      "github": "",
-      "demo": "./StudentService.pdf"
-    },
-    {
-      "id": "iot1",
-      "title": "ระบบตรวจวัดและแจ้งเตือนสภาพแวดล้อมด้วย IoT (ESP32)",
-      "category": "IoT & Hardware",
-      "tags": ["ESP32", "Sensors", "Blynk IoT", "WiFi"],
-      "description": "โครงงานพัฒนาอุปกรณ์ตรวจวัดค่าสภาพแวดล้อม เชื่อมต่อเซนเซอร์และส่งข้อมูลแบบ Real-time แสดงผลผ่าน Blynk Dashboard และแจ้งเตือนผ่าน LINE Notify",
-      "images": ["./ตัวเองตอน ฝึกดร..JPG"],
-      "github": "https://github.com/",
-      "demo": ""
-    },
-    {
-      "id": "ai1",
-      "title": "ระบบผู้ช่วยอัจฉริยะและการเขียนโปรแกรมด้วย Generative AI",
-      "category": "AI & Software",
-      "tags": ["AI Tools", "Python", "Automation", "Workflow"],
-      "description": "การประยุกต์ใช้ AI Prompts ในการวิเคราะห์โครงสร้างข้อมูล ช่วยเขียนและทดสอบโค้ดระบบอัตโนมัติ เพื่อเพิ่มประสิทธิภาพการทำงาน",
-      "images": [],
-      "github": "https://github.com/",
-      "demo": ""
-    }
-  ]
 }

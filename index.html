@@ -1394,6 +1394,10 @@
                     <i class="fa-solid fa-paper-plane"></i>
                     <span>ข้อมูลติดต่อ & โซเชียล</span>
                 </button>
+                <button type="button" onclick="switchAdminTab('projects')" id="tab-btn-projects" class="admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shrink-0 transition-all cursor-pointer text-google-text-muted hover:text-google-text hover:bg-google-subtle dark:hover:bg-google-dark-subtle">
+                    <i class="fa-solid fa-award"></i>
+                    <span>เกียรติบัตร & ผลงาน</span>
+                </button>
                 <button type="button" onclick="switchAdminTab('security')" id="tab-btn-security" class="admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shrink-0 transition-all cursor-pointer text-google-text-muted hover:text-google-text hover:bg-google-subtle dark:hover:bg-google-dark-subtle">
                     <i class="fa-solid fa-key"></i>
                     <span>รหัสผ่าน Admin</span>
@@ -1701,6 +1705,27 @@
                     </div>
                 </div>
 
+                <!-- Panel 7: Projects & Certificates Management -->
+                <div id="panel-projects" class="admin-tab-panel space-y-4 hidden">
+                    <div class="p-3.5 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 text-xs text-amber-800 dark:text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5">
+                            <i class="fa-solid fa-award text-amber-500 text-lg"></i>
+                            <div>
+                                <span class="font-bold text-sm text-google-text dark:text-google-dark-text">จัดการเกียรติบัตร เอกสาร และผลงานทั้งหมด</span>
+                                <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5">คุณสามารถเพิ่ม แก้ไข หรือกดลบรายการได้ทันที ข้อมูลจะถูกบันทึกลงฐานข้อมูลถาวร</p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="openProjectModal()" class="px-3.5 py-1.5 rounded-full bg-google-green hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer shrink-0 self-start sm:self-auto">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>+ เพิ่มรายการใหม่</span>
+                        </button>
+                    </div>
+
+                    <div id="admin-projects-list" class="space-y-2.5 max-h-[50vh] overflow-y-auto pr-1">
+                        <!-- Populated by renderAdminProjectsList() -->
+                    </div>
+                </div>
+
                 <!-- Panel 6: Security & Password -->
                 <div id="panel-security" class="admin-tab-panel space-y-4 hidden">
                     <div class="p-3 rounded-xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/30 text-xs text-google-red dark:text-rose-300 flex items-center gap-2">
@@ -1972,14 +1997,23 @@
             projects: defaultProjects
         };
 
-        // Initialize portfolioData immediately with default fallback
-        let portfolioData = JSON.parse(JSON.stringify(defaultPortfolioData));
+        // Initialize portfolioData immediately with localStorage cache if available, or default fallback
+        let portfolioData = null;
+        try {
+            const cached = localStorage.getItem('feel_portfolio_data');
+            if (cached) {
+                portfolioData = JSON.parse(cached);
+            }
+        } catch (e) {}
+        if (!portfolioData) {
+            portfolioData = JSON.parse(JSON.stringify(defaultPortfolioData));
+        }
 
         // Server Sync & Backend Storage Handler
         async function savePortfolioDataToServer(data) {
             try {
                 localStorage.setItem('feel_portfolio_data', JSON.stringify(data));
-                if (data.projects) {
+                if (Array.isArray(data.projects)) {
                     localStorage.setItem('feel_portfolio_projects_v4', JSON.stringify(data.projects));
                 }
                 const res = await fetch('save_data.php', {
@@ -2001,53 +2035,43 @@
             }
         }
 
-        // Retrieve stored projects
+        // Retrieve stored projects - Single Source of Truth
         function getStoredProjects() {
-            if (portfolioData && portfolioData.projects && portfolioData.projects.length) {
+            if (portfolioData && Array.isArray(portfolioData.projects)) {
                 return portfolioData.projects;
             }
             const STORAGE_KEY = 'feel_portfolio_projects_v4';
-            let data = localStorage.getItem(STORAGE_KEY);
-            if (!data) {
-                // If previous version exists in localStorage, migrate it
-                const oldData = localStorage.getItem('feel_portfolio_projects_v2') || localStorage.getItem('feel_portfolio_projects');
-                if (oldData) {
-                    try {
-                        const parsed = JSON.parse(oldData);
-                        parsed.forEach(p => {
-                            const def = defaultProjects.find(d => d.id === p.id);
-                            if (def && (!p.images || p.images.length === 0)) {
-                                p.images = def.images;
-                            }
-                        });
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data !== null) {
+                try {
+                    const parsed = JSON.parse(data);
+                    if (Array.isArray(parsed)) {
+                        if (portfolioData) portfolioData.projects = parsed;
                         return parsed;
-                    } catch (e) {}
-                }
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultProjects));
-                return defaultProjects;
-            }
-            try {
-                const list = JSON.parse(data);
-                list.forEach(p => {
-                    const def = defaultProjects.find(d => d.id === p.id);
-                    if (def && (!p.images || p.images.length === 0)) {
-                        p.images = def.images;
                     }
-                });
-                return list;
-            } catch (e) {
-                return defaultProjects;
+                } catch (e) {}
             }
+            const cachedData = localStorage.getItem('feel_portfolio_data');
+            if (cachedData !== null) {
+                try {
+                    const parsed = JSON.parse(cachedData);
+                    if (parsed && Array.isArray(parsed.projects)) {
+                        if (portfolioData) portfolioData.projects = parsed.projects;
+                        return parsed.projects;
+                    }
+                } catch (e) {}
+            }
+            return defaultProjects;
         }
 
         async function saveProjectsToStore(projects) {
-            localStorage.setItem('feel_portfolio_projects_v4', JSON.stringify(projects));
             if (!portfolioData) {
                 portfolioData = JSON.parse(JSON.stringify(defaultPortfolioData));
             }
             portfolioData.projects = projects;
-            await savePortfolioDataToServer(portfolioData);
+            localStorage.setItem('feel_portfolio_projects_v4', JSON.stringify(projects));
+            localStorage.setItem('feel_portfolio_data', JSON.stringify(portfolioData));
+            return await savePortfolioDataToServer(portfolioData);
         }
 
         // ==========================================
@@ -2426,9 +2450,15 @@
             try {
                 const res = await fetch('data/portfolio_data.json?v=' + Date.now());
                 if (res.ok) {
-                    portfolioData = await res.json();
-                    localStorage.setItem('feel_portfolio_data', JSON.stringify(portfolioData));
-                    loaded = true;
+                    const serverData = await res.json();
+                    if (serverData && typeof serverData === 'object') {
+                        portfolioData = serverData;
+                        localStorage.setItem('feel_portfolio_data', JSON.stringify(portfolioData));
+                        if (Array.isArray(portfolioData.projects)) {
+                            localStorage.setItem('feel_portfolio_projects_v4', JSON.stringify(portfolioData.projects));
+                        }
+                        loaded = true;
+                    }
                 }
             } catch (e) {
                 console.warn('Could not fetch portfolio_data.json from server, fallback to local storage:', e);
@@ -2444,10 +2474,15 @@
                 }
             }
 
-            if (portfolioData) {
-                renderSiteContent();
+            if (!portfolioData) {
+                portfolioData = JSON.parse(JSON.stringify(defaultPortfolioData));
             }
+
+            renderSiteContent();
             renderProjects();
+            if (typeof renderAdminProjectsList === 'function') {
+                renderAdminProjectsList();
+            }
         }
 
         function renderSiteContent() {
@@ -2837,10 +2872,11 @@
 
             switchAdminTab(activeTab);
             document.getElementById('admin-content-modal').classList.remove('hidden');
+            renderAdminProjectsList();
         }
 
         function switchAdminTab(tabId) {
-            const tabs = ['hero', 'about', 'skills', 'experience', 'contact', 'security'];
+            const tabs = ['hero', 'about', 'skills', 'experience', 'contact', 'projects', 'security'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`tab-btn-${t}`);
                 const panel = document.getElementById(`panel-${t}`);
@@ -2853,6 +2889,9 @@
                     panel.classList.add('hidden');
                 }
             });
+            if (tabId === 'projects') {
+                renderAdminProjectsList();
+            }
         }
 
         function closeAdminContentModal() {
@@ -2865,6 +2904,9 @@
             // Ensure portfolioData is initialized
             if (!portfolioData) {
                 portfolioData = JSON.parse(JSON.stringify(defaultPortfolioData));
+            }
+            if (!Array.isArray(portfolioData.projects)) {
+                portfolioData.projects = getStoredProjects();
             }
 
             const saveBtn = document.getElementById('admin-save-btn');
@@ -3362,6 +3404,57 @@
             }).join('');
         }
 
+        // Render projects list in Admin CMS Modal
+        function renderAdminProjectsList() {
+            const container = document.getElementById('admin-projects-list');
+            if (!container) return;
+            const projects = getStoredProjects();
+            if (!projects || projects.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 text-center bg-google-subtle/50 dark:bg-google-dark-subtle/50 rounded-2xl border border-dashed border-google-border dark:border-google-dark-border text-google-text-muted dark:text-google-dark-text-muted">
+                        <i class="fa-solid fa-folder-open text-3xl mb-2 text-slate-400 block"></i>
+                        <p class="text-sm font-semibold text-google-text dark:text-google-dark-text">ยังไม่มีข้อมูลเกียรติบัตรหรือผลงานในระบบ</p>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted mt-1">คลิกปุ่ม "+ เพิ่มรายการใหม่" ด้านบนเพื่อเพิ่มข้อมูล</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = projects.map(p => {
+                const imgList = (typeof p.images === 'string' ? p.images.split(',') : (p.images || [])).map(i => i.trim()).filter(Boolean);
+                const thumb = imgList[0] || '';
+                const isPdf = (p.demo && p.demo.toLowerCase().endsWith('.pdf')) || p.category === 'เกียรติบัตร' || p.category === 'เอกสารการศึกษา';
+                
+                return `
+                    <div class="flex items-center justify-between p-3.5 bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border rounded-xl shadow-xs hover:border-google-blue transition-colors gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-12 h-12 rounded-lg bg-slate-100 dark:bg-zinc-800 border border-google-border dark:border-google-dark-border overflow-hidden shrink-0 flex items-center justify-center">
+                                ${thumb ? `<img src="${thumb}" alt="${p.title}" class="w-full h-full object-cover">` : 
+                                  `<i class="fa-solid ${isPdf ? 'fa-file-pdf text-red-500' : 'fa-image text-slate-400'} text-lg"></i>`}
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h4 class="text-sm font-semibold text-google-text dark:text-google-dark-text truncate max-w-[280px] sm:max-w-md">${p.title}</h4>
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-google-subtle dark:bg-google-dark-subtle text-google-text-muted border border-google-border dark:border-google-dark-border">${p.category || 'ผลงาน'}</span>
+                                </div>
+                                <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted truncate max-w-[300px] sm:max-w-lg mt-0.5">${p.description || '-'}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button type="button" onclick="editProject('${p.id}')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-300 hover:bg-amber-600 hover:text-white transition-colors flex items-center gap-1 cursor-pointer" title="แก้ไขรายการ">
+                                <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                                <span class="hidden sm:inline">แก้ไข</span>
+                            </button>
+                            <button type="button" onclick="deleteProject('${p.id}')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-300 hover:bg-rose-600 hover:text-white transition-colors flex items-center gap-1 cursor-pointer" title="ลบรายการนี้">
+                                <i class="fa-solid fa-trash text-[10px]"></i>
+                                <span class="hidden sm:inline">ลบ</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         function openProjectModal(editId = null) {
             document.getElementById('project-modal').classList.remove('hidden');
             const form = document.getElementById('project-form');
@@ -3444,6 +3537,9 @@
             await saveProjectsToStore(projects);
             closeProjectModal();
             renderProjects();
+            if (typeof renderAdminProjectsList === 'function') {
+                renderAdminProjectsList();
+            }
         }
 
         function editProject(id) {
@@ -3451,12 +3547,35 @@
         }
 
         async function deleteProject(id) {
-            if (confirm('คุณต้องการลบข้อมูลรายการนี้ใช่หรือไม่?')) {
+            if (!confirm('คุณต้องการลบข้อมูลรายการนี้ใช่หรือไม่?')) return;
+            try {
                 let projects = getStoredProjects();
-                projects = projects.filter(p => p.id !== id);
-                await saveProjectsToStore(projects);
+                const initialLength = projects.length;
+                projects = projects.filter(p => String(p.id) !== String(id));
+                
+                if (projects.length === initialLength) {
+                    console.warn('Item with id not found in store:', id);
+                }
+                
+                if (!portfolioData) {
+                    portfolioData = JSON.parse(JSON.stringify(defaultPortfolioData));
+                }
+                portfolioData.projects = projects;
+                
+                const saveResult = await saveProjectsToStore(projects);
                 renderProjects();
-                showToast('ลบข้อมูลเรียบร้อยแล้ว', 'success');
+                if (typeof renderAdminProjectsList === 'function') {
+                    renderAdminProjectsList();
+                }
+                
+                if (saveResult && saveResult.success) {
+                    showToast('ลบข้อมูลและบันทึกลงฐานข้อมูลเรียบร้อยแล้ว', 'success');
+                } else {
+                    showToast('ลบข้อมูลเรียบร้อยแล้ว', 'success');
+                }
+            } catch (err) {
+                console.error('Error deleting project:', err);
+                showToast('เกิดข้อผิดพลาดในการลบ: ' + err.message, 'error');
             }
         }
 
@@ -3468,10 +3587,10 @@
         }
 
         // Application Initialization
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             initTheme();
             initHeroSlider();
-            loadSiteData();
+            await loadSiteData();
             updateAdminUI();
             initGallery();
         });

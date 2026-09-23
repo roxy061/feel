@@ -279,6 +279,12 @@
                     </button>
                 </div>
 
+                <!-- Admin Manage Website Button (Visible when logged in) -->
+                <button id="admin-manage-btn" onclick="openAdminContentModal('hero')" class="hidden items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-google-blue hover:bg-google-blue-hover text-white text-xs font-semibold shadow-xs transition-all cursor-pointer" title="จัดการและแก้ไขข้อมูลเว็บไซต์ทั้งหมด">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span class="hidden sm:inline">จัดการข้อมูลเว็บไซต์</span>
+                </button>
+
                 <!-- Admin Login Button -->
                 <button id="admin-login-btn" onclick="openAdminModal()" class="w-10 h-10 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors shadow-sm" title="เข้าสู่ระบบ Admin CMS">
                     <i class="fa-solid fa-lock text-xs"></i>
@@ -330,24 +336,29 @@
                     <!-- Left Column: Official Profile Intro -->
                     <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
                         
-                        <!-- Official Status Badge -->
-                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-google-blue-light dark:bg-google-blue/15 border border-google-blue/30 text-google-blue dark:text-sky-300 text-xs sm:text-sm font-semibold tracking-wide">
-                            <i class="fa-solid fa-shield-check text-google-green"></i>
-                            <span>แฟ้มสะสมผลงานทางการ (Official Portfolio)</span>
+                        <!-- Official Status Badge & Quick Edit Button -->
+                        <div class="flex items-center justify-center lg:justify-start gap-2 flex-wrap">
+                            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-google-blue-light dark:bg-google-blue/15 border border-google-blue/30 text-google-blue dark:text-sky-300 text-xs sm:text-sm font-semibold tracking-wide">
+                                <i class="fa-solid fa-shield-check text-google-green"></i>
+                                <span id="hero-badge-text">แฟ้มสะสมผลงานทางการ (Official Portfolio)</span>
+                            </div>
+                            <button onclick="openAdminContentModal('hero')" class="admin-quick-edit hidden px-3 py-1 rounded-full bg-google-blue-light dark:bg-google-blue/20 text-google-blue dark:text-sky-300 text-xs font-semibold hover:bg-google-blue hover:text-white transition-all cursor-pointer shadow-xs" title="แก้ไขข้อมูลแนะนำตัวและโปรไฟล์">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i>แก้ไขข้อมูลส่วนนี้
+                            </button>
                         </div>
 
                         <!-- Name & Title -->
                         <div class="space-y-2">
-                            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-google-text dark:text-google-dark-text tracking-tight font-heading leading-tight">
+                            <h1 id="hero-name" class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-google-text dark:text-google-dark-text tracking-tight font-heading leading-tight">
                                 นายภคพล สมัยแก้ว
                             </h1>
-                            <p class="text-xl sm:text-2xl font-semibold text-google-blue dark:text-sky-400 font-heading">
+                            <p id="hero-nickname" class="text-xl sm:text-2xl font-semibold text-google-blue dark:text-sky-400 font-heading">
                                 (ฟีล / Feel)
                             </p>
                         </div>
 
                         <!-- Academic & Professional Focus Chips -->
-                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-1">
+                        <div id="hero-focus-tags" class="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-1">
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-medium text-google-text-body dark:text-google-dark-text-body shadow-xs">
                                 <i class="fa-solid fa-microchip text-google-blue"></i>
                                 IoT & Embedded Developer
@@ -363,7 +374,7 @@
                         </div>
 
                         <!-- Official Bio Description -->
-                        <p class="text-google-text-muted dark:text-google-dark-text-muted text-sm sm:text-base leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal">
+                        <p id="hero-bio" class="text-google-text-muted dark:text-google-dark-text-muted text-sm sm:text-base leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal">
                             นักศึกษาระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) วิทยาลัยอาชีวศึกษานครศรีธรรมราช มีความสนใจและความเชี่ยวชาญในการพัฒนาระบบสมองกลฝังตัว (ESP32, ESP8266), ระบบเครือข่ายอินเทอร์เน็ตของสรรพสิ่ง (IoT), การประยุกต์ใช้ปัญญาประดิษฐ์ (AI Tools) ในการทำงาน ตลอดจนการสร้างสรรค์สื่อวิดีโอคุณภาพสูง
                         </p>
 
@@ -384,17 +395,17 @@
                             <span class="text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted uppercase tracking-wider block mb-3">
                                 ช่องทางติดต่อหลัก (Official Channels):
                             </span>
-                            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2">
-                                <a href="mailto:feel0627546143@gmail.com" class="chip text-xs hover:border-google-blue" title="ส่งอีเมล">
+                            <div id="hero-quick-channels" class="flex flex-wrap items-center justify-center lg:justify-start gap-2">
+                                <a id="hero-quick-email" href="mailto:feel0627546143@gmail.com" class="chip text-xs hover:border-google-blue" title="ส่งอีเมล">
                                     <i class="fa-solid fa-envelope text-google-red mr-2"></i> feel0627546143@gmail.com
                                 </a>
-                                <a href="https://line.me/ti/p/CdqbkYbcUv" target="_blank" rel="noopener noreferrer" class="chip text-xs hover:border-google-green" title="LINE Contact">
+                                <a id="hero-quick-line" href="https://line.me/ti/p/CdqbkYbcUv" target="_blank" rel="noopener noreferrer" class="chip text-xs hover:border-google-green" title="LINE Contact">
                                     <i class="fa-brands fa-line text-emerald-500 mr-2 text-sm"></i> LINE Contact
                                 </a>
-                                <a href="https://www.facebook.com/fexl07" target="_blank" rel="noopener noreferrer" class="chip text-xs hover:border-google-blue" title="Facebook">
+                                <a id="hero-quick-facebook" href="https://www.facebook.com/fexl07" target="_blank" rel="noopener noreferrer" class="chip text-xs hover:border-google-blue" title="Facebook">
                                     <i class="fa-brands fa-facebook-f text-blue-600 mr-2"></i> Facebook
                                 </a>
-                                <a href="https://youtube.com/@fe1401_?si=oK8ARDyj5KSZOoCv" target="_blank" rel="noopener noreferrer" class="chip text-xs hover:border-google-red" title="YouTube">
+                                <a id="hero-quick-youtube" href="https://youtube.com/@fe1401_?si=oK8ARDyj5KSZOoCv" target="_blank" rel="noopener noreferrer" class="chip text-xs hover:border-google-red" title="YouTube">
                                     <i class="fa-brands fa-youtube text-red-600 mr-2"></i> YouTube
                                 </a>
                             </div>
@@ -491,9 +502,14 @@
                         <i class="fa-solid fa-user-check"></i>
                         <span>About Me</span>
                     </div>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
-                        ประวัติและข้อมูลส่วนตัว
-                    </h2>
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
+                            ประวัติและข้อมูลส่วนตัว
+                        </h2>
+                        <button onclick="openAdminContentModal('about')" class="admin-quick-edit hidden px-3 py-1 rounded-full bg-google-blue-light dark:bg-google-blue/20 text-google-blue dark:text-sky-300 text-xs font-semibold hover:bg-google-blue hover:text-white transition-all cursor-pointer shadow-xs" title="แก้ไขประวัติและข้อมูลส่วนตัว">
+                            <i class="fa-solid fa-pen-to-square mr-1"></i>แก้ไขข้อมูลส่วนนี้
+                        </button>
+                    </div>
                     <p class="text-google-text-muted dark:text-google-dark-text-muted text-sm sm:text-base mt-1">
                         ข้อมูลประวัติการศึกษาและประวัติส่วนตัวอย่างเป็นทางการ
                     </p>
@@ -508,16 +524,16 @@
                                 <i class="fa-solid fa-address-card"></i>
                             </div>
                             <div>
-                                <h3 class="text-lg font-bold text-google-text dark:text-google-dark-text font-heading">
+                                <h3 id="about-card-title" class="text-lg font-bold text-google-text dark:text-google-dark-text font-heading">
                                     สรุปข้อมูลประวัติส่วนตัว
                                 </h3>
-                                <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">
+                                <p id="about-card-subtitle" class="text-xs text-google-text-muted dark:text-google-dark-text-muted">
                                     นายภคพล สมัยแก้ว (ฟีล)
                                 </p>
                             </div>
                         </div>
 
-                        <div class="space-y-4 text-google-text-body dark:text-google-dark-text-body text-sm sm:text-base leading-relaxed">
+                        <div id="about-paragraphs" class="space-y-4 text-google-text-body dark:text-google-dark-text-body text-sm sm:text-base leading-relaxed">
                             <p>
                                 กระผม <strong class="text-google-text dark:text-google-dark-text font-semibold">นายภคพล สมัยแก้ว</strong> (ชื่อเล่น: <strong>ฟีล / Feel</strong>) เกิดเมื่อวันที่ <strong>10 ธันวาคม พ.ศ. 2550</strong> ปัจจุบันกำลังศึกษาอยู่ในระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) ณ วิทยาลัยอาชีวศึกษานครศรีธรรมราช
                             </p>
@@ -538,7 +554,7 @@
                                 </div>
                                 <div>
                                     <span class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted block">วันเดือนปีเกิด</span>
-                                    <span class="text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text">10 ธันวาคม 2550</span>
+                                    <span id="about-birthdate" class="text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text">10 ธันวาคม 2550</span>
                                 </div>
                             </div>
 
@@ -548,7 +564,7 @@
                                 </div>
                                 <div>
                                     <span class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted block">ระดับการศึกษา</span>
-                                    <span class="text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text">ปวส.1 อาชีวศึกษานครศรีฯ</span>
+                                    <span id="about-education-level" class="text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text">ปวส.1 อาชีวศึกษานครศรีฯ</span>
                                 </div>
                             </div>
 
@@ -558,7 +574,7 @@
                                 </div>
                                 <div>
                                     <span class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted block">ประวัติฝึกงาน</span>
-                                    <span class="text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text">เชียร์ คอมมูนิเคชั่น (2567)</span>
+                                    <span id="about-internship" class="text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text">เชียร์ คอมมูนิเคชั่น (2567)</span>
                                 </div>
                             </div>
 
@@ -568,7 +584,7 @@
                                 </div>
                                 <div>
                                     <span class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted block">ภูมิลำเนา</span>
-                                    <span class="text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text">จ.นครศรีธรรมราช</span>
+                                    <span id="about-location" class="text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text">จ.นครศรีธรรมราช</span>
                                 </div>
                             </div>
 
@@ -576,7 +592,7 @@
                     </div>
 
                     <!-- Highlight Highlights Column (Google Feature List) -->
-                    <div class="lg:col-span-5 space-y-4">
+                    <div id="about-highlights" class="lg:col-span-5 space-y-4">
                         
                         <div class="g-card p-5 flex items-start gap-4">
                             <div class="w-11 h-11 rounded-xl bg-google-blue-light dark:bg-blue-950/50 text-google-blue flex items-center justify-center text-xl shrink-0">
@@ -639,15 +655,20 @@
                         <i class="fa-solid fa-wrench"></i>
                         <span>Skills & Capabilities</span>
                     </div>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
-                        ทักษะและความสามารถทางวิชาชีพ
-                    </h2>
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
+                            ทักษะและความสามารถทางวิชาชีพ
+                        </h2>
+                        <button onclick="openAdminContentModal('skills')" class="admin-quick-edit hidden px-3 py-1 rounded-full bg-google-blue-light dark:bg-google-blue/20 text-google-blue dark:text-sky-300 text-xs font-semibold hover:bg-google-blue hover:text-white transition-all cursor-pointer shadow-xs" title="แก้ไขทักษะความสามารถ">
+                            <i class="fa-solid fa-pen-to-square mr-1"></i>แก้ไขข้อมูลส่วนนี้
+                        </button>
+                    </div>
                     <p class="text-google-text-muted dark:text-google-dark-text-muted text-sm sm:text-base mt-1">
                         ทักษะด้านฮาร์ดแวร์ ซอฟต์แวร์ และการสร้างสรรค์สื่อที่นำมาใช้ในการพัฒนานวัตกรรม
                     </p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                <div id="skills-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
                     
                     <!-- Card 1: Hardware & IoT -->
                     <div class="g-card p-6 flex flex-col justify-between">
@@ -731,9 +752,14 @@
                         <i class="fa-solid fa-clock-rotate-left"></i>
                         <span>Experience & Education</span>
                     </div>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
-                        ประวัติการศึกษาและประสบการณ์ทำงาน
-                    </h2>
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
+                            ประวัติการศึกษาและประสบการณ์ทำงาน
+                        </h2>
+                        <button onclick="openAdminContentModal('experience')" class="admin-quick-edit hidden px-3 py-1 rounded-full bg-google-blue-light dark:bg-google-blue/20 text-google-blue dark:text-sky-300 text-xs font-semibold hover:bg-google-blue hover:text-white transition-all cursor-pointer shadow-xs" title="แก้ไขประวัติการศึกษาและการทำงาน">
+                            <i class="fa-solid fa-pen-to-square mr-1"></i>แก้ไขข้อมูลส่วนนี้
+                        </button>
+                    </div>
                     <p class="text-google-text-muted dark:text-google-dark-text-muted text-sm sm:text-base mt-1">
                         ลำดับเวลาและประวัติการฝึกปฏิบัติงานจริงในสถานประกอบการ
                     </p>
@@ -752,7 +778,7 @@
                             </h3>
                         </div>
 
-                        <div class="relative pl-6 border-l-2 border-google-blue space-y-6">
+                        <div id="experience-work-timeline" class="relative pl-6 border-l-2 border-google-blue space-y-6">
                             <div class="relative">
                                 <div class="absolute -left-[31px] top-1 w-3.5 h-3.5 rounded-full bg-google-blue border-3 border-white dark:border-google-dark-surface"></div>
                                 <span class="px-2.5 py-0.5 rounded-full bg-google-blue-light dark:bg-blue-950/60 text-google-blue dark:text-sky-300 text-xs font-semibold">
@@ -782,7 +808,7 @@
                             </h3>
                         </div>
 
-                        <div class="relative pl-6 border-l-2 border-google-green space-y-6">
+                        <div id="experience-edu-timeline" class="relative pl-6 border-l-2 border-google-green space-y-6">
                             <div class="relative">
                                 <div class="absolute -left-[31px] top-1 w-3.5 h-3.5 rounded-full bg-google-green border-3 border-white dark:border-google-dark-surface"></div>
                                 <span class="px-2.5 py-0.5 rounded-full bg-google-green-light dark:bg-emerald-950/60 text-google-green dark:text-emerald-300 text-xs font-semibold">
@@ -1024,9 +1050,14 @@
                         <i class="fa-solid fa-paper-plane"></i>
                         <span>Contact Information</span>
                     </div>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
-                        ช่องทางการติดต่อประสานงาน
-                    </h2>
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
+                            ช่องทางการติดต่อประสานงาน
+                        </h2>
+                        <button onclick="openAdminContentModal('contact')" class="admin-quick-edit hidden px-3 py-1 rounded-full bg-google-blue-light dark:bg-google-blue/20 text-google-blue dark:text-sky-300 text-xs font-semibold hover:bg-google-blue hover:text-white transition-all cursor-pointer shadow-xs" title="แก้ไขข้อมูลติดต่อ">
+                            <i class="fa-solid fa-pen-to-square mr-1"></i>แก้ไขข้อมูลส่วนนี้
+                        </button>
+                    </div>
                     <p class="text-google-text-muted dark:text-google-dark-text-muted text-sm sm:text-base mt-1">
                         สามารถติดต่อประสานงาน หรือสอบถามข้อมูลเพิ่มเติมได้ผ่านช่องทางด้านล่างนี้
                     </p>
@@ -1036,13 +1067,13 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     
                     <!-- Email Card -->
-                    <a href="mailto:feel0627546143@gmail.com" class="g-card p-6 flex flex-col justify-between group hover:border-google-blue transition-all">
+                    <a id="contact-email-link" href="mailto:feel0627546143@gmail.com" class="g-card p-6 flex flex-col justify-between group hover:border-google-blue transition-all">
                         <div>
                             <div class="w-12 h-12 rounded-2xl bg-google-red-light dark:bg-rose-950/50 text-google-red flex items-center justify-center text-xl mb-4 group-hover:scale-105 transition-transform">
                                 <i class="fa-solid fa-envelope"></i>
                             </div>
                             <span class="text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted block mb-1">อีเมลติดต่อ (Official Email)</span>
-                            <span class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text group-hover:text-google-blue transition-colors break-all">
+                            <span id="contact-email-val" class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text group-hover:text-google-blue transition-colors break-all">
                                 feel0627546143@gmail.com
                             </span>
                         </div>
@@ -1053,13 +1084,13 @@
                     </a>
 
                     <!-- LINE Card -->
-                    <a href="https://line.me/ti/p/CdqbkYbcUv" target="_blank" rel="noopener noreferrer" class="g-card p-6 flex flex-col justify-between group hover:border-emerald-500 transition-all">
+                    <a id="contact-line-link" href="https://line.me/ti/p/CdqbkYbcUv" target="_blank" rel="noopener noreferrer" class="g-card p-6 flex flex-col justify-between group hover:border-emerald-500 transition-all">
                         <div>
                             <div class="w-12 h-12 rounded-2xl bg-google-green-light dark:bg-emerald-950/50 text-google-green flex items-center justify-center text-2xl mb-4 group-hover:scale-105 transition-transform">
                                 <i class="fa-brands fa-line"></i>
                             </div>
                             <span class="text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted block mb-1">LINE Application</span>
-                            <span class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                            <span id="contact-line-val" class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                                 LINE ID: CdqbkYbcUv
                             </span>
                         </div>
@@ -1076,16 +1107,16 @@
                                 <i class="fa-solid fa-location-dot"></i>
                             </div>
                             <span class="text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted block mb-1">สถานที่ศึกษาและภูมิลำเนา</span>
-                            <span class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text leading-snug">
+                            <span id="contact-inst-title" class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text leading-snug">
                                 วิทยาลัยอาชีวศึกษานครศรีธรรมราช
                             </span>
-                            <span class="text-xs text-google-text-muted dark:text-google-dark-text-muted block mt-1">
+                            <span id="contact-inst-sub" class="text-xs text-google-text-muted dark:text-google-dark-text-muted block mt-1">
                                 จังหวัดนครศรีธรรมราช
                             </span>
                         </div>
                         <div class="pt-4 mt-4 border-t border-google-border dark:border-google-dark-border flex items-center gap-1.5 text-xs text-google-text-muted dark:text-google-dark-text-muted font-medium">
                             <i class="fa-solid fa-graduation-cap text-google-blue"></i>
-                            <span>แผนกวิชาคอมพิวเตอร์ธุรกิจ (ปวส.1)</span>
+                            <span id="contact-inst-dept">แผนกวิชาคอมพิวเตอร์ธุรกิจ (ปวส.1)</span>
                         </div>
                     </div>
 
@@ -1103,7 +1134,7 @@
                         </p>
                     </div>
 
-                    <div class="flex flex-wrap gap-2.5">
+                    <div id="contact-socials-list" class="flex flex-wrap gap-2.5">
                         <a href="https://www.facebook.com/fexl07" target="_blank" rel="noopener noreferrer" class="chip hover:border-blue-600 hover:text-blue-600 py-2 px-3.5 text-xs sm:text-sm">
                             <i class="fa-brands fa-facebook-f text-blue-600 mr-2"></i> Facebook
                         </a>
@@ -1308,6 +1339,409 @@
     </div>
 
     <!-- ========================================== -->
+    <!-- ADMIN CONTENT MANAGER MODAL (CMS)          -->
+    <!-- ========================================== -->
+    <div id="admin-content-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 hidden">
+        <div class="bg-white dark:bg-google-dark-surface w-full max-w-4xl max-h-[92vh] flex flex-col rounded-2xl shadow-2xl border border-google-border dark:border-google-dark-border overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between px-6 py-4 border-b border-google-border dark:border-google-dark-border shrink-0 bg-google-bg/60 dark:bg-google-dark-bg/60">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-google-blue-light dark:bg-google-dark-subtle text-google-blue flex items-center justify-center text-lg shadow-xs">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                            <span>จัดการข้อมูลเว็บไซต์ (Content Manager)</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-google-green-light dark:bg-emerald-950/60 text-google-green dark:text-emerald-400 font-semibold">Admin CMS</span>
+                        </h3>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">
+                            แก้ไขข้อมูลส่วนตัว, ประวัติ, ทักษะ และการติดต่อได้ทันทีโดยไม่ต้องแก้ไขโค้ด
+                        </p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeAdminContentModal()" class="w-8 h-8 rounded-full hover:bg-google-subtle dark:hover:bg-google-dark-subtle text-google-text-muted hover:text-google-text dark:hover:text-white flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Tab Navigation Bar -->
+            <div class="flex items-center gap-1.5 px-4 sm:px-6 border-b border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface overflow-x-auto shrink-0 py-2.5">
+                <button type="button" onclick="switchAdminTab('hero')" id="tab-btn-hero" class="admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shrink-0 transition-all cursor-pointer bg-google-blue text-white shadow-xs">
+                    <i class="fa-solid fa-house"></i>
+                    <span>แนะนำตัว (Hero)</span>
+                </button>
+                <button type="button" onclick="switchAdminTab('about')" id="tab-btn-about" class="admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shrink-0 transition-all cursor-pointer text-google-text-muted hover:text-google-text hover:bg-google-subtle dark:hover:bg-google-dark-subtle">
+                    <i class="fa-solid fa-user"></i>
+                    <span>ประวัติส่วนตัว</span>
+                </button>
+                <button type="button" onclick="switchAdminTab('skills')" id="tab-btn-skills" class="admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shrink-0 transition-all cursor-pointer text-google-text-muted hover:text-google-text hover:bg-google-subtle dark:hover:bg-google-dark-subtle">
+                    <i class="fa-solid fa-wrench"></i>
+                    <span>ทักษะวิชาชีพ</span>
+                </button>
+                <button type="button" onclick="switchAdminTab('experience')" id="tab-btn-experience" class="admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shrink-0 transition-all cursor-pointer text-google-text-muted hover:text-google-text hover:bg-google-subtle dark:hover:bg-google-dark-subtle">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>ประสบการณ์/ศึกษา</span>
+                </button>
+                <button type="button" onclick="switchAdminTab('contact')" id="tab-btn-contact" class="admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shrink-0 transition-all cursor-pointer text-google-text-muted hover:text-google-text hover:bg-google-subtle dark:hover:bg-google-dark-subtle">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>ข้อมูลติดต่อ & โซเชียล</span>
+                </button>
+                <button type="button" onclick="switchAdminTab('security')" id="tab-btn-security" class="admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shrink-0 transition-all cursor-pointer text-google-text-muted hover:text-google-text hover:bg-google-subtle dark:hover:bg-google-dark-subtle">
+                    <i class="fa-solid fa-key"></i>
+                    <span>รหัสผ่าน Admin</span>
+                </button>
+            </div>
+
+            <!-- Form Body with Scroll -->
+            <form id="admin-content-form" onsubmit="handleSaveAdminContent(event)" class="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6">
+                
+                <!-- Panel 1: Hero Section -->
+                <div id="panel-hero" class="admin-tab-panel space-y-4">
+                    <div class="p-3 rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-900/30 text-xs text-google-blue dark:text-sky-300 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>แก้ไขข้อมูลหัวเรื่อง, สโลแกน และข้อความแนะนำตัวในหน้าแรก</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ชื่อ-นามสกุลทางการ *</label>
+                            <input type="text" id="form-hero-name" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ชื่อเล่น / วงเล็บย่อ *</label>
+                            <input type="text" id="form-hero-nickname" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ข้อความป้ายสถานะ (Status Badge) *</label>
+                        <input type="text" id="form-hero-badge" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ความเชี่ยวชาญ / ป้ายโฟกัสหลัก (คั่นด้วยเครื่องหมายจุลภาค ,)</label>
+                        <input type="text" id="form-hero-tags" class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">คำโปรยแนะนำตัวอย่างเป็นทางการ (Bio Description) *</label>
+                        <textarea id="form-hero-bio" rows="3" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue leading-relaxed"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ลิงก์รูปภาพสไลด์แนะนำตัว (บรรทัดละ 1 รูป หรือคั่นด้วยเครื่องหมายจุลภาค)</label>
+                        <textarea id="form-hero-slides" rows="3" class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm font-mono focus:outline-none focus:border-google-blue"></textarea>
+                    </div>
+                </div>
+
+                <!-- Panel 2: About Me Section -->
+                <div id="panel-about" class="admin-tab-panel space-y-4 hidden">
+                    <div class="p-3 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-900/30 text-xs text-google-green dark:text-emerald-300 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>แก้ไขประวัติส่วนตัว, วันเกิด, สถาบัน และจุดเด่น 3 ด้าน</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">วันเดือนปีเกิด *</label>
+                            <input type="text" id="form-about-birthdate" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ระดับการศึกษา *</label>
+                            <input type="text" id="form-about-level" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ประวัติการฝึกงาน *</label>
+                            <input type="text" id="form-about-internship" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ภูมิลำเนา *</label>
+                            <input type="text" id="form-about-location" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ย่อหน้าประวัติส่วนตัว 1 *</label>
+                        <textarea id="form-about-p1" rows="2" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ย่อหน้าประวัติส่วนตัว 2 (ความสนใจและสิ่งที่ศึกษา) *</label>
+                        <textarea id="form-about-p2" rows="2" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ย่อหน้าประวัติส่วนตัว 3 (ทัศนคติและความพร้อมในการทำงาน) *</label>
+                        <textarea id="form-about-p3" rows="2" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue"></textarea>
+                    </div>
+
+                    <!-- Highlight Cards -->
+                    <div class="pt-3 border-t border-google-border dark:border-google-dark-border space-y-3">
+                        <span class="text-xs font-bold text-google-text dark:text-google-dark-text block">การ์ดจุดเด่น 3 ด้าน:</span>
+                        
+                        <div class="p-3 rounded-xl border border-google-border dark:border-google-dark-border bg-google-bg/40 dark:bg-google-dark-bg/40 space-y-2">
+                            <input type="text" id="form-about-h1-title" placeholder="หัวข้อจุดเด่น 1 (เช่น IoT & Hardware)" class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                            <textarea id="form-about-h1-desc" rows="2" placeholder="คำอธิบายจุดเด่น 1..." class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs"></textarea>
+                        </div>
+
+                        <div class="p-3 rounded-xl border border-google-border dark:border-google-dark-border bg-google-bg/40 dark:bg-google-dark-bg/40 space-y-2">
+                            <input type="text" id="form-about-h2-title" placeholder="หัวข้อจุดเด่น 2 (เช่น AI ในงานจริง)" class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                            <textarea id="form-about-h2-desc" rows="2" placeholder="คำอธิบายจุดเด่น 2..." class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs"></textarea>
+                        </div>
+
+                        <div class="p-3 rounded-xl border border-google-border dark:border-google-dark-border bg-google-bg/40 dark:bg-google-dark-bg/40 space-y-2">
+                            <input type="text" id="form-about-h3-title" placeholder="หัวข้อจุดเด่น 3 (เช่น การตัดต่อสื่อสร้างสรรค์)" class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                            <textarea id="form-about-h3-desc" rows="2" placeholder="คำอธิบายจุดเด่น 3..." class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 3: Skills Section -->
+                <div id="panel-skills" class="admin-tab-panel space-y-4 hidden">
+                    <div class="p-3 rounded-xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/30 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>แก้ไขทักษะความสามารถ 3 หมวดหมู่หลัก พร้อมรายการแท็กชิป</span>
+                    </div>
+
+                    <!-- Skill 1 -->
+                    <div class="p-4 rounded-xl border border-google-border dark:border-google-dark-border bg-google-bg/40 dark:bg-google-dark-bg/40 space-y-2.5">
+                        <span class="text-xs font-bold text-google-blue block flex items-center gap-1.5">
+                            <i class="fa-solid fa-wifi"></i> หมวด 1: Hardware & IoT
+                        </span>
+                        <input type="text" id="form-skill-1-title" placeholder="ชื่อหมวดหมู่ 1" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-sm font-semibold">
+                        <textarea id="form-skill-1-desc" rows="2" placeholder="คำอธิบายทักษะ..." class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs"></textarea>
+                        <div>
+                            <label class="block text-[11px] text-google-text-muted mb-1">แท็กชิป (คั่นด้วยเครื่องหมายจุลภาค ,)</label>
+                            <input type="text" id="form-skill-1-tags" placeholder="ESP32, ESP8266, Arduino IDE, ..." class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono">
+                        </div>
+                    </div>
+
+                    <!-- Skill 2 -->
+                    <div class="p-4 rounded-xl border border-google-border dark:border-google-dark-border bg-google-bg/40 dark:bg-google-dark-bg/40 space-y-2.5">
+                        <span class="text-xs font-bold text-google-green block flex items-center gap-1.5">
+                            <i class="fa-solid fa-brain"></i> หมวด 2: AI & Software Development
+                        </span>
+                        <input type="text" id="form-skill-2-title" placeholder="ชื่อหมวดหมู่ 2" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-sm font-semibold">
+                        <textarea id="form-skill-2-desc" rows="2" placeholder="คำอธิบายทักษะ..." class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs"></textarea>
+                        <div>
+                            <label class="block text-[11px] text-google-text-muted mb-1">แท็กชิป (คั่นด้วยเครื่องหมายจุลภาค ,)</label>
+                            <input type="text" id="form-skill-2-tags" placeholder="AI Prompting, Python, JavaScript, ..." class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono">
+                        </div>
+                    </div>
+
+                    <!-- Skill 3 -->
+                    <div class="p-4 rounded-xl border border-google-border dark:border-google-dark-border bg-google-bg/40 dark:bg-google-dark-bg/40 space-y-2.5">
+                        <span class="text-xs font-bold text-amber-500 block flex items-center gap-1.5">
+                            <i class="fa-solid fa-photo-film"></i> หมวด 3: Media & Content Creation
+                        </span>
+                        <input type="text" id="form-skill-3-title" placeholder="ชื่อหมวดหมู่ 3" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-sm font-semibold">
+                        <textarea id="form-skill-3-desc" rows="2" placeholder="คำอธิบายทักษะ..." class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs"></textarea>
+                        <div>
+                            <label class="block text-[11px] text-google-text-muted mb-1">แท็กชิป (คั่นด้วยเครื่องหมายจุลภาค ,)</label>
+                            <input type="text" id="form-skill-3-tags" placeholder="CapCut, Video Editing, Canva, ..." class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 4: Experience & Education Timeline -->
+                <div id="panel-experience" class="admin-tab-panel space-y-4 hidden">
+                    <div class="p-3 rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-900/30 text-xs text-google-blue dark:text-sky-300 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>แก้ไขประวัติการฝึกงานและประวัติการศึกษาในไทม์ไลน์</span>
+                    </div>
+
+                    <!-- Work Experience -->
+                    <div class="p-4 rounded-xl border border-google-border dark:border-google-dark-border bg-google-bg/40 dark:bg-google-dark-bg/40 space-y-3">
+                        <span class="text-xs font-bold text-google-blue block flex items-center gap-1.5">
+                            <i class="fa-solid fa-briefcase"></i> ประสบการณ์ฝึกงาน / สหกิจศึกษา
+                        </span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] text-google-text-muted mb-1">ปี พ.ศ. *</label>
+                                <input type="text" id="form-exp-work-year" required class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-google-text-muted mb-1">ตำแหน่งงาน *</label>
+                                <input type="text" id="form-exp-work-role" required class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-google-text-muted mb-1">บริษัท / สถานประกอบการ *</label>
+                            <input type="text" id="form-exp-work-company" required class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-google-text-muted mb-1">รายละเอียดการปฏิบัติงาน *</label>
+                            <textarea id="form-exp-work-desc" rows="2" required class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs leading-relaxed"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Education -->
+                    <div class="p-4 rounded-xl border border-google-border dark:border-google-dark-border bg-google-bg/40 dark:bg-google-dark-bg/40 space-y-3">
+                        <span class="text-xs font-bold text-google-green block flex items-center gap-1.5">
+                            <i class="fa-solid fa-graduation-cap"></i> ประวัติการศึกษา
+                        </span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] text-google-text-muted mb-1">ปีการศึกษา *</label>
+                                <input type="text" id="form-exp-edu-year" required class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-google-text-muted mb-1">ระดับการศึกษา *</label>
+                                <input type="text" id="form-exp-edu-level" required class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-google-text-muted mb-1">สถาบันการศึกษา *</label>
+                            <input type="text" id="form-exp-edu-inst" required class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-google-text-muted mb-1">รายละเอียดหลักสูตร / สาขาวิชา *</label>
+                            <textarea id="form-exp-edu-desc" rows="2" required class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs leading-relaxed"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 5: Contact & Socials -->
+                <div id="panel-contact" class="admin-tab-panel space-y-4 hidden">
+                    <div class="p-3 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/50 dark:border-purple-900/30 text-xs text-purple-600 dark:text-purple-300 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>แก้ไขอีเมล, LINE, โซเชียลมีเดีย และลิงก์โฟลเดอร์ Google Drive</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">อีเมลติดต่อทางการ *</label>
+                            <input type="email" id="form-contact-email" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">LINE ID *</label>
+                            <input type="text" id="form-contact-line-id" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ลิงก์เพิ่มเพื่อนใน LINE (URL) *</label>
+                        <input type="url" id="form-contact-line-url" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm font-mono focus:outline-none focus:border-google-blue">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ชื่อสถาบันศึกษา *</label>
+                            <input type="text" id="form-contact-inst-title" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">จังหวัด / ภูมิลำเนา *</label>
+                            <input type="text" id="form-contact-inst-sub" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">แผนกวิชา / ชั้นปี *</label>
+                        <input type="text" id="form-contact-inst-dept" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm focus:outline-none focus:border-google-blue">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">
+                            <i class="fa-brands fa-google-drive text-google-blue mr-1"></i> ลิงก์โฟลเดอร์ Google Drive คลังภาพถ่าย *
+                        </label>
+                        <input type="url" id="form-contact-drive-url" required class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm font-mono focus:outline-none focus:border-google-blue">
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="pt-3 border-t border-google-border dark:border-google-dark-border space-y-3">
+                        <span class="text-xs font-bold text-google-text dark:text-google-dark-text block">ลิงก์โซเชียลมีเดีย:</span>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] text-google-text-muted mb-1"><i class="fa-brands fa-facebook-f text-blue-600 mr-1"></i> Facebook</label>
+                                <input type="url" id="form-social-facebook" class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-google-text-muted mb-1"><i class="fa-brands fa-youtube text-red-600 mr-1"></i> YouTube</label>
+                                <input type="url" id="form-social-youtube" class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] text-google-text-muted mb-1"><i class="fa-brands fa-tiktok mr-1"></i> TikTok</label>
+                                <input type="url" id="form-social-tiktok" class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-google-text-muted mb-1"><i class="fa-brands fa-instagram text-pink-500 mr-1"></i> Instagram</label>
+                                <input type="url" id="form-social-instagram" class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-[11px] text-google-text-muted mb-1"><i class="fa-brands fa-discord text-indigo-500 mr-1"></i> Discord</label>
+                                <input type="url" id="form-social-discord" class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-google-text-muted mb-1"><i class="fa-brands fa-steam text-slate-500 mr-1"></i> Steam</label>
+                                <input type="url" id="form-social-steam" class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-google-text-muted mb-1"><i class="fa-solid fa-gamepad text-rose-500 mr-1"></i> Roblox</label>
+                                <input type="url" id="form-social-roblox" class="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 6: Security & Password -->
+                <div id="panel-security" class="admin-tab-panel space-y-4 hidden">
+                    <div class="p-3 rounded-xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/30 text-xs text-google-red dark:text-rose-300 flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>ตั้งค่ารหัสผ่านผู้ดูแลระบบ (Admin Password)</span>
+                    </div>
+
+                    <div class="p-4 rounded-xl border border-google-border dark:border-google-dark-border bg-google-bg/40 dark:bg-google-dark-bg/40 space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">รหัสผ่านปัจจุบัน</label>
+                            <input type="text" id="form-current-password" readonly class="w-full px-4 py-2 rounded-xl bg-google-subtle dark:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-google-text-muted dark:text-google-dark-text-muted text-sm font-mono cursor-not-allowed">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">รหัสผ่านใหม่ (หากต้องการเปลี่ยน ให้กรอกช่องนี้)</label>
+                            <input type="password" id="form-new-password" placeholder="เว้นว่างไว้หากไม่ต้องการเปลี่ยน" class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm font-mono focus:outline-none focus:border-google-blue">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-google-text-body dark:text-google-dark-text-body mb-1.5">ยืนยันรหัสผ่านใหม่</label>
+                            <input type="password" id="form-confirm-password" placeholder="ยืนยันรหัสผ่านใหม่อีกครั้ง" class="w-full px-4 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text dark:text-google-dark-text text-sm font-mono focus:outline-none focus:border-google-blue">
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 border-t border-google-border dark:border-google-dark-border bg-google-bg/60 dark:bg-google-dark-bg/60 flex items-center justify-between shrink-0">
+                <span id="admin-save-status" class="text-xs text-google-text-muted dark:text-google-dark-text-muted flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-info text-google-blue"></i>
+                    บันทึกข้อมูลแล้วระบบจะอัปเดตหน้าจอทันที
+                </span>
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="closeAdminContentModal()" class="px-4 py-2 rounded-full bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body text-xs font-medium hover:bg-google-border transition-colors">
+                        ยกเลิก
+                    </button>
+                    <button type="button" onclick="document.getElementById('admin-content-form').requestSubmit()" id="admin-save-btn" class="px-6 py-2.5 rounded-full bg-google-blue hover:bg-google-blue-hover text-white text-xs font-semibold shadow-xs flex items-center gap-2 transition-all cursor-pointer">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>บันทึกข้อมูลเว็บไซต์</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================== -->
     <!-- PROJECT ADD / EDIT MODAL                   -->
     <!-- ========================================== -->
     <div id="project-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
@@ -1389,6 +1823,7 @@
     <script>
         const ADMIN_PASS = "140369";
         let isAdmin = sessionStorage.getItem('feel_admin_logged_in') === 'true';
+        let portfolioData = null;
         let currentFilter = 'all';
         let searchQuery = '';
         let heroSlideIndex = 0;
@@ -1458,8 +1893,27 @@
             }
         ];
 
+        // Server Sync & Backend Storage Handler
+        async function savePortfolioDataToServer(data) {
+            try {
+                localStorage.setItem('feel_portfolio_data', JSON.stringify(data));
+                const res = await fetch('save_data.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                return await res.json();
+            } catch (err) {
+                console.warn('Backend save notice:', err);
+                return { success: false, message: 'Saved to local cache' };
+            }
+        }
+
         // Retrieve stored projects
         function getStoredProjects() {
+            if (portfolioData && portfolioData.projects && portfolioData.projects.length) {
+                return portfolioData.projects;
+            }
             const STORAGE_KEY = 'feel_portfolio_projects_v4';
             let data = localStorage.getItem(STORAGE_KEY);
             if (!data) {
@@ -1497,6 +1951,10 @@
 
         function saveProjectsToStore(projects) {
             localStorage.setItem('feel_portfolio_projects_v4', JSON.stringify(projects));
+            if (portfolioData) {
+                portfolioData.projects = projects;
+                savePortfolioDataToServer(portfolioData);
+            }
         }
 
         // ==========================================
@@ -1868,12 +2326,552 @@
         }
 
         // ==========================================
+        // SITE DATA LOADER & CMS DYNAMIC RENDERER
+        // ==========================================
+        async function loadSiteData() {
+            let loaded = false;
+            try {
+                const res = await fetch('data/portfolio_data.json?v=' + Date.now());
+                if (res.ok) {
+                    portfolioData = await res.json();
+                    localStorage.setItem('feel_portfolio_data', JSON.stringify(portfolioData));
+                    loaded = true;
+                }
+            } catch (e) {
+                console.warn('Could not fetch portfolio_data.json from server, fallback to local storage:', e);
+            }
+
+            if (!loaded) {
+                const cached = localStorage.getItem('feel_portfolio_data');
+                if (cached) {
+                    try {
+                        portfolioData = JSON.parse(cached);
+                        loaded = true;
+                    } catch (e) {}
+                }
+            }
+
+            if (portfolioData) {
+                renderSiteContent();
+            }
+            renderProjects();
+        }
+
+        function renderSiteContent() {
+            if (!portfolioData) return;
+
+            // 1. Hero Section
+            if (portfolioData.hero) {
+                const h = portfolioData.hero;
+                const badgeEl = document.getElementById('hero-badge-text');
+                if (badgeEl && h.statusBadge) badgeEl.textContent = h.statusBadge;
+
+                const nameEl = document.getElementById('hero-name');
+                if (nameEl && h.name) nameEl.textContent = h.name;
+
+                const nickEl = document.getElementById('hero-nickname');
+                if (nickEl && h.nickname) nickEl.textContent = h.nickname;
+
+                const bioEl = document.getElementById('hero-bio');
+                if (bioEl && h.bio) bioEl.textContent = h.bio;
+
+                // Focus tags
+                const tagsEl = document.getElementById('hero-focus-tags');
+                if (tagsEl && h.focusTags) {
+                    tagsEl.innerHTML = h.focusTags.map(tag => {
+                        const icon = tag.icon || 'fa-solid fa-star';
+                        const color = tag.color || 'text-google-blue';
+                        const text = typeof tag === 'string' ? tag : tag.text;
+                        return `
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-medium text-google-text-body dark:text-google-dark-text-body shadow-xs">
+                                <i class="${icon} ${color}"></i>
+                                ${text}
+                            </span>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // 2. About Section
+            if (portfolioData.about) {
+                const a = portfolioData.about;
+                const pEl = document.getElementById('about-paragraphs');
+                if (pEl && a.paragraphs && a.paragraphs.length) {
+                    pEl.innerHTML = a.paragraphs.map(p => `<p>${p}</p>`).join('');
+                }
+
+                const bEl = document.getElementById('about-birthdate');
+                if (bEl && a.birthdate) bEl.textContent = a.birthdate;
+
+                const lEl = document.getElementById('about-education-level');
+                if (lEl && a.educationLevel) lEl.textContent = a.educationLevel;
+
+                const iEl = document.getElementById('about-internship');
+                if (iEl && a.internship) iEl.textContent = a.internship;
+
+                const locEl = document.getElementById('about-location');
+                if (locEl && a.location) locEl.textContent = a.location;
+
+                // Highlights
+                const hlEl = document.getElementById('about-highlights');
+                if (hlEl && a.highlights && a.highlights.length) {
+                    hlEl.innerHTML = a.highlights.map(hl => `
+                        <div class="g-card p-5 flex items-start gap-4">
+                            <div class="w-11 h-11 rounded-xl ${hl.bg || 'bg-google-blue-light dark:bg-blue-950/50'} ${hl.color || 'text-google-blue'} flex items-center justify-center text-xl shrink-0">
+                                <i class="${hl.icon || 'fa-solid fa-star'}"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-base font-bold text-google-text dark:text-google-dark-text font-heading">
+                                    ${hl.title}
+                                </h4>
+                                <p class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted mt-1 leading-relaxed">
+                                    ${hl.desc}
+                                </p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // 3. Skills Section
+            if (portfolioData.skills && portfolioData.skills.length) {
+                const skEl = document.getElementById('skills-grid');
+                if (skEl) {
+                    skEl.innerHTML = portfolioData.skills.map(s => {
+                        const tagsHtml = (s.tags || []).map(t => `<span class="chip text-xs">${t}</span>`).join(' ');
+                        return `
+                            <div class="g-card p-6 flex flex-col justify-between">
+                                <div>
+                                    <div class="w-12 h-12 rounded-xl ${s.bg || 'bg-google-blue-light dark:bg-google-dark-subtle'} ${s.iconColor || 'text-google-blue'} flex items-center justify-center text-2xl mb-5">
+                                        <i class="${s.icon || 'fa-solid fa-wrench'}"></i>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-google-text dark:text-google-dark-text font-heading mb-2">
+                                        ${s.title}
+                                    </h3>
+                                    <p class="text-google-text-muted dark:text-google-dark-text-muted text-xs sm:text-sm leading-relaxed mb-6">
+                                        ${s.desc}
+                                    </p>
+                                </div>
+                                <div class="flex flex-wrap gap-2 pt-4 border-t border-google-border dark:border-google-dark-border">
+                                    ${tagsHtml}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // 4. Experience & Education
+            if (portfolioData.experience) {
+                const exp = portfolioData.experience;
+                const workEl = document.getElementById('experience-work-timeline');
+                if (workEl && exp.work && exp.work.length) {
+                    workEl.innerHTML = exp.work.map(w => `
+                        <div class="relative">
+                            <div class="absolute -left-[31px] top-1 w-3.5 h-3.5 rounded-full bg-google-blue border-3 border-white dark:border-google-dark-surface"></div>
+                            <span class="px-2.5 py-0.5 rounded-full bg-google-blue-light dark:bg-blue-950/60 text-google-blue dark:text-sky-300 text-xs font-semibold">
+                                ${w.year}
+                            </span>
+                            <h4 class="text-base font-bold text-google-text dark:text-google-dark-text mt-1">
+                                ${w.role}
+                            </h4>
+                            <p class="text-xs sm:text-sm font-medium text-google-blue dark:text-sky-400">
+                                ${w.company}
+                            </p>
+                            <p class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted mt-2 leading-relaxed">
+                                ${w.desc}
+                            </p>
+                        </div>
+                    `).join('');
+                }
+
+                const eduEl = document.getElementById('experience-edu-timeline');
+                if (eduEl && exp.education && exp.education.length) {
+                    eduEl.innerHTML = exp.education.map(e => `
+                        <div class="relative">
+                            <div class="absolute -left-[31px] top-1 w-3.5 h-3.5 rounded-full bg-google-green border-3 border-white dark:border-google-dark-surface"></div>
+                            <span class="px-2.5 py-0.5 rounded-full bg-google-green-light dark:bg-emerald-950/60 text-google-green dark:text-emerald-300 text-xs font-semibold">
+                                ${e.year}
+                            </span>
+                            <h4 class="text-base font-bold text-google-text dark:text-google-dark-text mt-1">
+                                ${e.level}
+                            </h4>
+                            <p class="text-xs sm:text-sm font-medium text-google-green dark:text-emerald-400">
+                                ${e.institution}
+                            </p>
+                            <p class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted mt-2 leading-relaxed">
+                                ${e.desc}
+                            </p>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // 5. Contact Section
+            if (portfolioData.contact) {
+                const c = portfolioData.contact;
+                
+                // Email
+                const emailVal = document.getElementById('contact-email-val');
+                const emailLink = document.getElementById('contact-email-link');
+                const heroEmail = document.getElementById('hero-quick-email');
+                if (emailVal && c.email) emailVal.textContent = c.email;
+                if (emailLink && c.email) emailLink.href = 'mailto:' + c.email;
+                if (heroEmail && c.email) {
+                    heroEmail.href = 'mailto:' + c.email;
+                    heroEmail.innerHTML = `<i class="fa-solid fa-envelope text-google-red mr-2"></i> ${c.email}`;
+                }
+
+                // LINE
+                const lineVal = document.getElementById('contact-line-val');
+                const lineLink = document.getElementById('contact-line-link');
+                const heroLine = document.getElementById('hero-quick-line');
+                if (lineVal && c.lineId) lineVal.textContent = 'LINE ID: ' + c.lineId;
+                if (lineLink && c.lineUrl) lineLink.href = c.lineUrl;
+                if (heroLine && c.lineUrl) heroLine.href = c.lineUrl;
+
+                // Location / Institution
+                const instTitle = document.getElementById('contact-inst-title');
+                const instSub = document.getElementById('contact-inst-sub');
+                const instDept = document.getElementById('contact-inst-dept');
+                if (instTitle && c.locationTitle) instTitle.textContent = c.locationTitle;
+                if (instSub && c.locationSub) instSub.textContent = c.locationSub;
+                if (instDept && c.department) instDept.textContent = c.department;
+
+                // Drive Folder URL
+                if (c.driveFolderUrl) {
+                    const driveBtn = document.getElementById('gallery-drive-folder-btn');
+                    if (driveBtn) driveBtn.href = c.driveFolderUrl;
+                    const topDriveBtn = document.getElementById('gallery-top-drive-btn');
+                    if (topDriveBtn) topDriveBtn.href = c.driveFolderUrl;
+                }
+
+                // Socials
+                if (c.socials) {
+                    const s = c.socials;
+                    const heroFb = document.getElementById('hero-quick-facebook');
+                    if (heroFb && s.facebook) heroFb.href = s.facebook;
+                    const heroYt = document.getElementById('hero-quick-youtube');
+                    if (heroYt && s.youtube) heroYt.href = s.youtube;
+
+                    const socEl = document.getElementById('contact-socials-list');
+                    if (socEl) {
+                        const socItems = [
+                            { key: 'facebook', name: 'Facebook', icon: 'fa-brands fa-facebook-f text-blue-600', hover: 'hover:border-blue-600 hover:text-blue-600', url: s.facebook },
+                            { key: 'youtube', name: 'YouTube', icon: 'fa-brands fa-youtube text-red-600', hover: 'hover:border-red-600 hover:text-red-600', url: s.youtube },
+                            { key: 'tiktok', name: 'TikTok', icon: 'fa-brands fa-tiktok', hover: 'hover:border-black dark:hover:border-white', url: s.tiktok },
+                            { key: 'instagram', name: 'Instagram', icon: 'fa-brands fa-instagram text-pink-500', hover: 'hover:border-pink-500 hover:text-pink-500', url: s.instagram },
+                            { key: 'discord', name: 'Discord', icon: 'fa-brands fa-discord text-indigo-500', hover: 'hover:border-indigo-500 hover:text-indigo-500', url: s.discord },
+                            { key: 'steam', name: 'Steam', icon: 'fa-brands fa-steam text-slate-500', hover: 'hover:border-slate-500', url: s.steam },
+                            { key: 'roblox', name: 'Roblox', icon: 'fa-solid fa-gamepad text-rose-500', hover: 'hover:border-rose-500 hover:text-rose-500', url: s.roblox }
+                        ];
+
+                        socEl.innerHTML = socItems.filter(item => Boolean(item.url)).map(item => `
+                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="chip ${item.hover} py-2 px-3.5 text-xs sm:text-sm">
+                                <i class="${item.icon} mr-2"></i> ${item.name}
+                            </a>
+                        `).join('');
+                    }
+                }
+            }
+        }
+
+        // ==========================================
+        // ADMIN CONTENT MODAL CONTROLLER
+        // ==========================================
+        function openAdminContentModal(activeTab = 'hero') {
+            if (!isAdmin) {
+                openAdminModal();
+                return;
+            }
+            if (!portfolioData) return;
+
+            // Populate Hero
+            if (portfolioData.hero) {
+                const h = portfolioData.hero;
+                document.getElementById('form-hero-name').value = h.name || '';
+                document.getElementById('form-hero-nickname').value = h.nickname || '';
+                document.getElementById('form-hero-badge').value = h.statusBadge || '';
+                document.getElementById('form-hero-tags').value = (h.focusTags || []).map(t => typeof t === 'string' ? t : t.text).join(', ');
+                document.getElementById('form-hero-bio').value = h.bio || '';
+                document.getElementById('form-hero-slides').value = (h.slides || []).map(s => s.src).join('\n');
+            }
+
+            // Populate About
+            if (portfolioData.about) {
+                const a = portfolioData.about;
+                document.getElementById('form-about-birthdate').value = a.birthdate || '';
+                document.getElementById('form-about-level').value = a.educationLevel || '';
+                document.getElementById('form-about-internship').value = a.internship || '';
+                document.getElementById('form-about-location').value = a.location || '';
+                const p = a.paragraphs || [];
+                document.getElementById('form-about-p1').value = p[0] || '';
+                document.getElementById('form-about-p2').value = p[1] || '';
+                document.getElementById('form-about-p3').value = p[2] || '';
+                const hl = a.highlights || [];
+                if (hl[0]) {
+                    document.getElementById('form-about-h1-title').value = hl[0].title || '';
+                    document.getElementById('form-about-h1-desc').value = hl[0].desc || '';
+                }
+                if (hl[1]) {
+                    document.getElementById('form-about-h2-title').value = hl[1].title || '';
+                    document.getElementById('form-about-h2-desc').value = hl[1].desc || '';
+                }
+                if (hl[2]) {
+                    document.getElementById('form-about-h3-title').value = hl[2].title || '';
+                    document.getElementById('form-about-h3-desc').value = hl[2].desc || '';
+                }
+            }
+
+            // Populate Skills
+            if (portfolioData.skills) {
+                const sk = portfolioData.skills;
+                if (sk[0]) {
+                    document.getElementById('form-skill-1-title').value = sk[0].title || '';
+                    document.getElementById('form-skill-1-desc').value = sk[0].desc || '';
+                    document.getElementById('form-skill-1-tags').value = (sk[0].tags || []).join(', ');
+                }
+                if (sk[1]) {
+                    document.getElementById('form-skill-2-title').value = sk[1].title || '';
+                    document.getElementById('form-skill-2-desc').value = sk[1].desc || '';
+                    document.getElementById('form-skill-2-tags').value = (sk[1].tags || []).join(', ');
+                }
+                if (sk[2]) {
+                    document.getElementById('form-skill-3-title').value = sk[2].title || '';
+                    document.getElementById('form-skill-3-desc').value = sk[2].desc || '';
+                    document.getElementById('form-skill-3-tags').value = (sk[2].tags || []).join(', ');
+                }
+            }
+
+            // Populate Experience
+            if (portfolioData.experience) {
+                const exp = portfolioData.experience;
+                if (exp.work && exp.work[0]) {
+                    document.getElementById('form-exp-work-year').value = exp.work[0].year || '';
+                    document.getElementById('form-exp-work-role').value = exp.work[0].role || '';
+                    document.getElementById('form-exp-work-company').value = exp.work[0].company || '';
+                    document.getElementById('form-exp-work-desc').value = exp.work[0].desc || '';
+                }
+                if (exp.education && exp.education[0]) {
+                    document.getElementById('form-exp-edu-year').value = exp.education[0].year || '';
+                    document.getElementById('form-exp-edu-level').value = exp.education[0].level || '';
+                    document.getElementById('form-exp-edu-inst').value = exp.education[0].institution || '';
+                    document.getElementById('form-exp-edu-desc').value = exp.education[0].desc || '';
+                }
+            }
+
+            // Populate Contact
+            if (portfolioData.contact) {
+                const c = portfolioData.contact;
+                document.getElementById('form-contact-email').value = c.email || '';
+                document.getElementById('form-contact-line-id').value = c.lineId || '';
+                document.getElementById('form-contact-line-url').value = c.lineUrl || '';
+                document.getElementById('form-contact-inst-title').value = c.locationTitle || '';
+                document.getElementById('form-contact-inst-sub').value = c.locationSub || '';
+                document.getElementById('form-contact-inst-dept').value = c.department || '';
+                document.getElementById('form-contact-drive-url').value = c.driveFolderUrl || '';
+                if (c.socials) {
+                    const s = c.socials;
+                    document.getElementById('form-social-facebook').value = s.facebook || '';
+                    document.getElementById('form-social-youtube').value = s.youtube || '';
+                    document.getElementById('form-social-tiktok').value = s.tiktok || '';
+                    document.getElementById('form-social-instagram').value = s.instagram || '';
+                    document.getElementById('form-social-discord').value = s.discord || '';
+                    document.getElementById('form-social-steam').value = s.steam || '';
+                    document.getElementById('form-social-roblox').value = s.roblox || '';
+                }
+            }
+
+            // Security tab
+            document.getElementById('form-current-password').value = portfolioData.adminPassword || ADMIN_PASS;
+            document.getElementById('form-new-password').value = '';
+            document.getElementById('form-confirm-password').value = '';
+
+            switchAdminTab(activeTab);
+            document.getElementById('admin-content-modal').classList.remove('hidden');
+        }
+
+        function switchAdminTab(tabId) {
+            const tabs = ['hero', 'about', 'skills', 'experience', 'contact', 'security'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const panel = document.getElementById(`panel-${t}`);
+                if (!btn || !panel) return;
+                if (t === tabId) {
+                    btn.className = 'admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shrink-0 transition-all cursor-pointer bg-google-blue text-white shadow-xs';
+                    panel.classList.remove('hidden');
+                } else {
+                    btn.className = 'admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shrink-0 transition-all cursor-pointer text-google-text-muted hover:text-google-text hover:bg-google-subtle dark:hover:bg-google-dark-subtle';
+                    panel.classList.add('hidden');
+                }
+            });
+        }
+
+        function closeAdminContentModal() {
+            document.getElementById('admin-content-modal').classList.add('hidden');
+        }
+
+        async function handleSaveAdminContent(e) {
+            e.preventDefault();
+            if (!portfolioData) return;
+
+            const saveBtn = document.getElementById('admin-save-btn');
+            const originalBtnHtml = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>กำลังบันทึกข้อมูล...</span>';
+            saveBtn.disabled = true;
+
+            try {
+                // Collect Hero
+                const heroTags = document.getElementById('form-hero-tags').value
+                    .split(',')
+                    .map(t => t.trim())
+                    .filter(Boolean)
+                    .map(t => {
+                        const existing = (portfolioData.hero.focusTags || []).find(e => (typeof e === 'string' ? e : e.text) === t);
+                        return existing || { text: t, icon: 'fa-solid fa-star', color: 'text-google-blue' };
+                    });
+
+                const slidesRaw = document.getElementById('form-hero-slides').value.split('\n').map(s => s.trim()).filter(Boolean);
+                const slides = slidesRaw.map(url => {
+                    const existing = (portfolioData.hero.slides || []).find(s => s.src === url);
+                    return existing || { src: url, title: portfolioData.hero.name || '', subtitle: '' };
+                });
+
+                portfolioData.hero = {
+                    ...portfolioData.hero,
+                    name: document.getElementById('form-hero-name').value.trim(),
+                    nickname: document.getElementById('form-hero-nickname').value.trim(),
+                    statusBadge: document.getElementById('form-hero-badge').value.trim(),
+                    focusTags: heroTags,
+                    bio: document.getElementById('form-hero-bio').value.trim(),
+                    slides: slides.length ? slides : portfolioData.hero.slides
+                };
+
+                // Collect About
+                portfolioData.about = {
+                    ...portfolioData.about,
+                    birthdate: document.getElementById('form-about-birthdate').value.trim(),
+                    educationLevel: document.getElementById('form-about-level').value.trim(),
+                    internship: document.getElementById('form-about-internship').value.trim(),
+                    location: document.getElementById('form-about-location').value.trim(),
+                    paragraphs: [
+                        document.getElementById('form-about-p1').value.trim(),
+                        document.getElementById('form-about-p2').value.trim(),
+                        document.getElementById('form-about-p3').value.trim()
+                    ].filter(Boolean),
+                    highlights: [
+                        {
+                            ...(portfolioData.about.highlights?.[0] || {}),
+                            title: document.getElementById('form-about-h1-title').value.trim(),
+                            desc: document.getElementById('form-about-h1-desc').value.trim()
+                        },
+                        {
+                            ...(portfolioData.about.highlights?.[1] || {}),
+                            title: document.getElementById('form-about-h2-title').value.trim(),
+                            desc: document.getElementById('form-about-h2-desc').value.trim()
+                        },
+                        {
+                            ...(portfolioData.about.highlights?.[2] || {}),
+                            title: document.getElementById('form-about-h3-title').value.trim(),
+                            desc: document.getElementById('form-about-h3-desc').value.trim()
+                        }
+                    ]
+                };
+
+                // Collect Skills
+                portfolioData.skills = [
+                    {
+                        ...(portfolioData.skills?.[0] || {}),
+                        title: document.getElementById('form-skill-1-title').value.trim(),
+                        desc: document.getElementById('form-skill-1-desc').value.trim(),
+                        tags: document.getElementById('form-skill-1-tags').value.split(',').map(t => t.trim()).filter(Boolean)
+                    },
+                    {
+                        ...(portfolioData.skills?.[1] || {}),
+                        title: document.getElementById('form-skill-2-title').value.trim(),
+                        desc: document.getElementById('form-skill-2-desc').value.trim(),
+                        tags: document.getElementById('form-skill-2-tags').value.split(',').map(t => t.trim()).filter(Boolean)
+                    },
+                    {
+                        ...(portfolioData.skills?.[2] || {}),
+                        title: document.getElementById('form-skill-3-title').value.trim(),
+                        desc: document.getElementById('form-skill-3-desc').value.trim(),
+                        tags: document.getElementById('form-skill-3-tags').value.split(',').map(t => t.trim()).filter(Boolean)
+                    }
+                ];
+
+                // Collect Experience
+                portfolioData.experience = {
+                    work: [{
+                        year: document.getElementById('form-exp-work-year').value.trim(),
+                        role: document.getElementById('form-exp-work-role').value.trim(),
+                        company: document.getElementById('form-exp-work-company').value.trim(),
+                        desc: document.getElementById('form-exp-work-desc').value.trim()
+                    }],
+                    education: [{
+                        year: document.getElementById('form-exp-edu-year').value.trim(),
+                        level: document.getElementById('form-exp-edu-level').value.trim(),
+                        institution: document.getElementById('form-exp-edu-inst').value.trim(),
+                        desc: document.getElementById('form-exp-edu-desc').value.trim()
+                    }]
+                };
+
+                // Collect Contact
+                portfolioData.contact = {
+                    email: document.getElementById('form-contact-email').value.trim(),
+                    lineId: document.getElementById('form-contact-line-id').value.trim(),
+                    lineUrl: document.getElementById('form-contact-line-url').value.trim(),
+                    locationTitle: document.getElementById('form-contact-inst-title').value.trim(),
+                    locationSub: document.getElementById('form-contact-inst-sub').value.trim(),
+                    department: document.getElementById('form-contact-inst-dept').value.trim(),
+                    driveFolderUrl: document.getElementById('form-contact-drive-url').value.trim(),
+                    socials: {
+                        facebook: document.getElementById('form-social-facebook').value.trim(),
+                        youtube: document.getElementById('form-social-youtube').value.trim(),
+                        tiktok: document.getElementById('form-social-tiktok').value.trim(),
+                        instagram: document.getElementById('form-social-instagram').value.trim(),
+                        discord: document.getElementById('form-social-discord').value.trim(),
+                        steam: document.getElementById('form-social-steam').value.trim(),
+                        roblox: document.getElementById('form-social-roblox').value.trim()
+                    }
+                };
+
+                // Security / Change Password
+                const newPass = document.getElementById('form-new-password').value.trim();
+                const confirmPass = document.getElementById('form-confirm-password').value.trim();
+                if (newPass) {
+                    if (newPass !== confirmPass) {
+                        showToast('รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน', 'error');
+                        saveBtn.innerHTML = originalBtnHtml;
+                        saveBtn.disabled = false;
+                        return;
+                    }
+                    portfolioData.adminPassword = newPass;
+                    showToast('อัปเดตรหัสผ่าน Admin ใหม่เรียบร้อยแล้ว', 'info');
+                }
+
+                // Save to Server + localStorage
+                await savePortfolioDataToServer(portfolioData);
+                renderSiteContent();
+                closeAdminContentModal();
+                showToast('บันทึกข้อมูลเว็บไซต์และซิงค์ข้อมูลเรียบร้อยแล้ว', 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
+            } finally {
+                saveBtn.innerHTML = originalBtnHtml;
+                saveBtn.disabled = false;
+            }
+        }
+
+        // ==========================================
         // ADMIN AUTH & CRUD OPERATIONS
         // ==========================================
         function updateAdminUI() {
             const badge = document.getElementById('admin-status-badge');
             const loginBtn = document.getElementById('admin-login-btn');
             const addBtn = document.getElementById('add-project-btn');
+            const manageBtn = document.getElementById('admin-manage-btn');
 
             if (isAdmin) {
                 badge.classList.remove('hidden');
@@ -1881,13 +2879,32 @@
                 loginBtn.classList.add('hidden');
                 addBtn.classList.remove('hidden');
                 addBtn.classList.add('inline-flex');
+                if (manageBtn) {
+                    manageBtn.classList.remove('hidden');
+                    manageBtn.classList.add('inline-flex');
+                }
             } else {
                 badge.classList.add('hidden');
                 badge.classList.remove('flex');
                 loginBtn.classList.remove('hidden');
                 addBtn.classList.add('hidden');
                 addBtn.classList.remove('inline-flex');
+                if (manageBtn) {
+                    manageBtn.classList.add('hidden');
+                    manageBtn.classList.remove('inline-flex');
+                }
             }
+
+            // Quick edit buttons on sections
+            document.querySelectorAll('.admin-quick-edit').forEach(btn => {
+                if (isAdmin) {
+                    btn.classList.remove('hidden');
+                    btn.classList.add('inline-flex');
+                } else {
+                    btn.classList.add('hidden');
+                    btn.classList.remove('inline-flex');
+                }
+            });
 
             renderProjects();
         }
@@ -1906,8 +2923,9 @@
         function handleAdminLogin(e) {
             e.preventDefault();
             const pwdInput = document.getElementById('admin-password').value.trim();
+            const activePass = (portfolioData && portfolioData.adminPassword) ? portfolioData.adminPassword : ADMIN_PASS;
             
-            if (pwdInput === ADMIN_PASS) {
+            if (pwdInput === activePass) {
                 isAdmin = true;
                 sessionStorage.setItem('feel_admin_logged_in', 'true');
                 closeAdminModal();
@@ -2256,6 +3274,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
             initHeroSlider();
+            loadSiteData();
             updateAdminUI();
             initGallery();
         });

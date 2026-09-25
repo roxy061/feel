@@ -2113,6 +2113,10 @@
 
         async function performAutoSave(force = false) {
             if (!portfolioData) return;
+            // Collect any active changes from the admin modal form
+            if (typeof collectAdminFormData === 'function') {
+                collectAdminFormData();
+            }
             const currentHash = _hashData(portfolioData);
             if (!force && currentHash === _lastSavedHash) {
                 _pendingSave = false;
@@ -2122,7 +2126,7 @@
             _updateSaveIndicator('saving');
             try {
                 const result = await savePortfolioDataToServer(portfolioData);
-                if (result && result.success) {
+                if (result && (result.success || result.message === 'Saved to local cache')) {
                     _lastSavedHash = currentHash;
                     _pendingSave = false;
                     _saveRetryCount = 0;
@@ -2610,16 +2614,16 @@
             if (portfolioData.hero) {
                 const h = portfolioData.hero;
                 const badgeEl = document.getElementById('hero-badge-text');
-                if (badgeEl && h.statusBadge) badgeEl.textContent = h.statusBadge;
+                if (badgeEl && h.statusBadge !== undefined) badgeEl.textContent = h.statusBadge;
 
                 const nameEl = document.getElementById('hero-name');
-                if (nameEl && h.name) nameEl.textContent = h.name;
+                if (nameEl && h.name !== undefined) nameEl.textContent = h.name;
 
                 const nickEl = document.getElementById('hero-nickname');
-                if (nickEl && h.nickname) nickEl.textContent = h.nickname;
+                if (nickEl && h.nickname !== undefined) nickEl.textContent = h.nickname;
 
                 const bioEl = document.getElementById('hero-bio');
-                if (bioEl && h.bio) bioEl.textContent = h.bio;
+                if (bioEl && h.bio !== undefined) bioEl.textContent = h.bio;
 
                 // Focus tags
                 const tagsEl = document.getElementById('hero-focus-tags');
@@ -2636,6 +2640,35 @@
                         `;
                     }).join('');
                 }
+
+                // Hero Slider Carousel Images
+                if (h.slides && h.slides.length) {
+                    const sliderContainer = document.getElementById('hero-slider-container');
+                    if (sliderContainer) {
+                        const slidesHtml = h.slides.map((s, idx) => `
+                            <div class="hero-slide ${idx === 0 ? 'active' : ''}">
+                                <img src="${s.src}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80'" alt="${s.title || ''}" class="w-full h-full object-cover object-center">
+                                <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 text-white">
+                                    <p class="text-sm font-bold">${s.title || h.name || 'ภคพล สมัยแก้ว'}</p>
+                                    <p class="text-xs text-slate-200">${s.subtitle || ''}</p>
+                                </div>
+                            </div>
+                        `).join('');
+
+                        const navBtnsHtml = `
+                            <button onclick="prevHeroSlide()" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-google-text border border-google-border flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-sm" title="รูปก่อนหน้า">
+                                <i class="fa-solid fa-chevron-left text-xs"></i>
+                            </button>
+                            <button onclick="nextHeroSlide()" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-google-text border border-google-border flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-sm" title="รูปถัดไป">
+                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </button>
+                        `;
+
+                        sliderContainer.innerHTML = slidesHtml + navBtnsHtml;
+                        heroSlideIndex = 0;
+                        initHeroSlider();
+                    }
+                }
             }
 
             // 2. About Section
@@ -2647,16 +2680,16 @@
                 }
 
                 const bEl = document.getElementById('about-birthdate');
-                if (bEl && a.birthdate) bEl.textContent = a.birthdate;
+                if (bEl && a.birthdate !== undefined) bEl.textContent = a.birthdate;
 
                 const lEl = document.getElementById('about-education-level');
-                if (lEl && a.educationLevel) lEl.textContent = a.educationLevel;
+                if (lEl && a.educationLevel !== undefined) lEl.textContent = a.educationLevel;
 
                 const iEl = document.getElementById('about-internship');
-                if (iEl && a.internship) iEl.textContent = a.internship;
+                if (iEl && a.internship !== undefined) iEl.textContent = a.internship;
 
                 const locEl = document.getElementById('about-location');
-                if (locEl && a.location) locEl.textContent = a.location;
+                if (locEl && a.location !== undefined) locEl.textContent = a.location;
 
                 // Highlights
                 const hlEl = document.getElementById('about-highlights');
@@ -2775,6 +2808,9 @@
                 if (lineVal && c.lineId) lineVal.textContent = 'LINE ID: ' + c.lineId;
                 if (lineLink && c.lineUrl) lineLink.href = c.lineUrl;
                 if (heroLine && c.lineUrl) heroLine.href = c.lineUrl;
+                if (heroLine && c.lineId) {
+                    heroLine.innerHTML = `<i class="fa-brands fa-line text-google-green mr-1.5"></i> ${c.lineId}`;
+                }
 
                 // Location / Institution
                 const instTitle = document.getElementById('contact-inst-title');
@@ -3013,10 +3049,7 @@
             document.getElementById('admin-content-modal').classList.add('hidden');
         }
 
-        async function handleSaveAdminContentDirectly(e) {
-            if (e && e.preventDefault) e.preventDefault();
-
-            // Ensure portfolioData is initialized
+        function collectAdminFormData() {
             if (!portfolioData) {
                 portfolioData = JSON.parse(JSON.stringify(defaultPortfolioData));
             }
@@ -3024,21 +3057,21 @@
                 portfolioData.projects = getStoredProjects();
             }
 
-            const saveBtn = document.getElementById('admin-save-btn');
-            const originalBtnHtml = saveBtn ? saveBtn.innerHTML : '';
-            if (saveBtn) {
-                saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i><span>กำลังบันทึกข้อมูล...</span>';
-                saveBtn.disabled = true;
-            }
+            // Collect Hero
+            const elName = document.getElementById('form-hero-name');
+            const elNickname = document.getElementById('form-hero-nickname');
+            const elBadge = document.getElementById('form-hero-badge');
+            const elBio = document.getElementById('form-hero-bio');
+            const elTags = document.getElementById('form-hero-tags');
+            const elSlides = document.getElementById('form-hero-slides');
 
-            try {
-                // Collect Hero
-                const nameVal = (document.getElementById('form-hero-name')?.value || '').trim();
-                const nicknameVal = (document.getElementById('form-hero-nickname')?.value || '').trim();
-                const badgeVal = (document.getElementById('form-hero-badge')?.value || '').trim();
-                const bioVal = (document.getElementById('form-hero-bio')?.value || '').trim();
-                const tagsRaw = (document.getElementById('form-hero-tags')?.value || '').trim();
-                const slidesRaw = (document.getElementById('form-hero-slides')?.value || '').trim();
+            if (elName) {
+                const nameVal = elName.value.trim();
+                const nicknameVal = (elNickname?.value || '').trim();
+                const badgeVal = (elBadge?.value || '').trim();
+                const bioVal = (elBio?.value || '').trim();
+                const tagsRaw = (elTags?.value || '').trim();
+                const slidesRaw = (elSlides?.value || '').trim();
 
                 const heroTags = tagsRaw
                     .split(',')
@@ -3050,7 +3083,7 @@
                     });
 
                 const slidesList = slidesRaw
-                    .split('\n')
+                    .split(/[\n,]+/)
                     .map(s => s.trim())
                     .filter(Boolean)
                     .map(url => {
@@ -3063,16 +3096,26 @@
                     name: nameVal || portfolioData.hero?.name || 'นายภคพล สมัยแก้ว',
                     nickname: nicknameVal || portfolioData.hero?.nickname || '(ฟีล / Feel)',
                     statusBadge: badgeVal || portfolioData.hero?.statusBadge || 'แฟ้มสะสมผลงานทางการ (Official Portfolio)',
-                    focusTags: heroTags.length ? heroTags : (portfolioData.hero?.focusTags || []),
-                    bio: bioVal || portfolioData.hero?.bio || '',
-                    slides: slidesList.length ? slidesList : (portfolioData.hero?.slides || [])
+                    focusTags: heroTags,
+                    bio: bioVal,
+                    slides: slidesList
                 };
+            }
 
-                // Collect About
-                const p1 = (document.getElementById('form-about-p1')?.value || '').trim();
+            // Collect About
+            const elP1 = document.getElementById('form-about-p1');
+            if (elP1) {
+                const p1 = (elP1.value || '').trim();
                 const p2 = (document.getElementById('form-about-p2')?.value || '').trim();
                 const p3 = (document.getElementById('form-about-p3')?.value || '').trim();
                 const paragraphs = [p1, p2, p3].filter(Boolean);
+
+                const h1T = (document.getElementById('form-about-h1-title')?.value || '').trim();
+                const h1D = (document.getElementById('form-about-h1-desc')?.value || '').trim();
+                const h2T = (document.getElementById('form-about-h2-title')?.value || '').trim();
+                const h2D = (document.getElementById('form-about-h2-desc')?.value || '').trim();
+                const h3T = (document.getElementById('form-about-h3-title')?.value || '').trim();
+                const h3D = (document.getElementById('form-about-h3-desc')?.value || '').trim();
 
                 portfolioData.about = {
                     ...(portfolioData.about || {}),
@@ -3080,57 +3123,71 @@
                     educationLevel: (document.getElementById('form-about-level')?.value || '').trim(),
                     internship: (document.getElementById('form-about-internship')?.value || '').trim(),
                     location: (document.getElementById('form-about-location')?.value || '').trim(),
-                    paragraphs: paragraphs.length ? paragraphs : (portfolioData.about?.paragraphs || []),
+                    paragraphs: paragraphs,
                     highlights: [
                         {
-                            ...(portfolioData.about?.highlights?.[0] || {}),
-                            title: (document.getElementById('form-about-h1-title')?.value || '').trim() || portfolioData.about?.highlights?.[0]?.title || 'IoT & Hardware',
-                            desc: (document.getElementById('form-about-h1-desc')?.value || '').trim() || portfolioData.about?.highlights?.[0]?.desc || ''
+                            ...(portfolioData.about?.highlights?.[0] || { icon: 'fa-solid fa-microchip', color: 'text-google-blue', bg: 'bg-google-blue-light dark:bg-blue-950/50' }),
+                            title: h1T,
+                            desc: h1D
                         },
                         {
-                            ...(portfolioData.about?.highlights?.[1] || {}),
-                            title: (document.getElementById('form-about-h2-title')?.value || '').trim() || portfolioData.about?.highlights?.[1]?.title || 'AI ในงานจริง',
-                            desc: (document.getElementById('form-about-h2-desc')?.value || '').trim() || portfolioData.about?.highlights?.[1]?.desc || ''
+                            ...(portfolioData.about?.highlights?.[1] || { icon: 'fa-solid fa-brain', color: 'text-google-green', bg: 'bg-google-green-light dark:bg-emerald-950/50' }),
+                            title: h2T,
+                            desc: h2D
                         },
                         {
-                            ...(portfolioData.about?.highlights?.[2] || {}),
-                            title: (document.getElementById('form-about-h3-title')?.value || '').trim() || portfolioData.about?.highlights?.[2]?.title || 'การตัดต่อสื่อสร้างสรรค์',
-                            desc: (document.getElementById('form-about-h3-desc')?.value || '').trim() || portfolioData.about?.highlights?.[2]?.desc || ''
+                            ...(portfolioData.about?.highlights?.[2] || { icon: 'fa-solid fa-photo-film', color: 'text-google-red', bg: 'bg-google-red-light dark:bg-rose-950/50' }),
+                            title: h3T,
+                            desc: h3D
                         }
                     ]
                 };
+            }
 
-                // Collect Skills
+            // Collect Skills
+            const elS1T = document.getElementById('form-skill-1-title');
+            if (elS1T) {
+                const s1Title = elS1T.value.trim();
+                const s1Desc = (document.getElementById('form-skill-1-desc')?.value || '').trim();
                 const s1Tags = (document.getElementById('form-skill-1-tags')?.value || '').split(',').map(t => t.trim()).filter(Boolean);
+
+                const s2Title = (document.getElementById('form-skill-2-title')?.value || '').trim();
+                const s2Desc = (document.getElementById('form-skill-2-desc')?.value || '').trim();
                 const s2Tags = (document.getElementById('form-skill-2-tags')?.value || '').split(',').map(t => t.trim()).filter(Boolean);
+
+                const s3Title = (document.getElementById('form-skill-3-title')?.value || '').trim();
+                const s3Desc = (document.getElementById('form-skill-3-desc')?.value || '').trim();
                 const s3Tags = (document.getElementById('form-skill-3-tags')?.value || '').split(',').map(t => t.trim()).filter(Boolean);
 
                 portfolioData.skills = [
                     {
-                        ...(portfolioData.skills?.[0] || {}),
-                        title: (document.getElementById('form-skill-1-title')?.value || '').trim() || portfolioData.skills?.[0]?.title || 'Hardware & IoT',
-                        desc: (document.getElementById('form-skill-1-desc')?.value || '').trim() || portfolioData.skills?.[0]?.desc || '',
-                        tags: s1Tags.length ? s1Tags : (portfolioData.skills?.[0]?.tags || [])
+                        ...(portfolioData.skills?.[0] || { icon: 'fa-solid fa-wifi', iconColor: 'text-google-blue', bg: 'bg-google-blue-light dark:bg-google-dark-subtle' }),
+                        title: s1Title,
+                        desc: s1Desc,
+                        tags: s1Tags
                     },
                     {
-                        ...(portfolioData.skills?.[1] || {}),
-                        title: (document.getElementById('form-skill-2-title')?.value || '').trim() || portfolioData.skills?.[1]?.title || 'AI & Software Development',
-                        desc: (document.getElementById('form-skill-2-desc')?.value || '').trim() || portfolioData.skills?.[1]?.desc || '',
-                        tags: s2Tags.length ? s2Tags : (portfolioData.skills?.[1]?.tags || [])
+                        ...(portfolioData.skills?.[1] || { icon: 'fa-solid fa-brain', iconColor: 'text-google-green', bg: 'bg-google-green-light dark:bg-google-dark-subtle' }),
+                        title: s2Title,
+                        desc: s2Desc,
+                        tags: s2Tags
                     },
                     {
-                        ...(portfolioData.skills?.[2] || {}),
-                        title: (document.getElementById('form-skill-3-title')?.value || '').trim() || portfolioData.skills?.[2]?.title || 'Media & Content Creation',
-                        desc: (document.getElementById('form-skill-3-desc')?.value || '').trim() || portfolioData.skills?.[2]?.desc || '',
-                        tags: s3Tags.length ? s3Tags : (portfolioData.skills?.[2]?.tags || [])
+                        ...(portfolioData.skills?.[2] || { icon: 'fa-solid fa-photo-film', iconColor: 'text-google-red', bg: 'bg-google-red-light dark:bg-google-dark-subtle' }),
+                        title: s3Title,
+                        desc: s3Desc,
+                        tags: s3Tags
                     }
                 ];
+            }
 
-                // Collect Experience
+            // Collect Experience
+            const elWY = document.getElementById('form-exp-work-year');
+            if (elWY) {
                 portfolioData.experience = {
                     work: [{
                         ...(portfolioData.experience?.work?.[0] || {}),
-                        year: (document.getElementById('form-exp-work-year')?.value || '').trim(),
+                        year: elWY.value.trim(),
                         role: (document.getElementById('form-exp-work-role')?.value || '').trim(),
                         company: (document.getElementById('form-exp-work-company')?.value || '').trim(),
                         desc: (document.getElementById('form-exp-work-desc')?.value || '').trim()
@@ -3143,16 +3200,18 @@
                         desc: (document.getElementById('form-exp-edu-desc')?.value || '').trim()
                     }]
                 };
+            }
 
-                // Collect Contact
+            // Collect Contact
+            const elCEmail = document.getElementById('form-contact-email');
+            if (elCEmail) {
                 portfolioData.contact = {
                     ...(portfolioData.contact || {}),
-                    email: (document.getElementById('form-contact-email')?.value || '').trim(),
+                    email: elCEmail.value.trim(),
                     lineId: (document.getElementById('form-contact-line-id')?.value || '').trim(),
                     lineUrl: (document.getElementById('form-contact-line-url')?.value || '').trim(),
                     locationTitle: (document.getElementById('form-contact-inst-title')?.value || '').trim(),
                     locationSub: (document.getElementById('form-contact-inst-sub')?.value || '').trim(),
-
                     driveFolderUrl: (document.getElementById('form-contact-drive-url')?.value || '').trim(),
                     socials: {
                         ...(portfolioData.contact?.socials || {}),
@@ -3165,6 +3224,23 @@
                         roblox: (document.getElementById('form-social-roblox')?.value || '').trim()
                     }
                 };
+            }
+            return portfolioData;
+        }
+
+        async function handleSaveAdminContentDirectly(e) {
+            if (e && e.preventDefault) e.preventDefault();
+
+            const saveBtn = document.getElementById('admin-save-btn');
+            const originalBtnHtml = saveBtn ? saveBtn.innerHTML : '';
+            if (saveBtn) {
+                saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i><span>กำลังบันทึกข้อมูล...</span>';
+                saveBtn.disabled = true;
+            }
+
+            try {
+                // Collect all current form inputs into portfolioData
+                collectAdminFormData();
 
                 // Security / Change Password
                 const newPass = (document.getElementById('form-new-password')?.value || '').trim();
@@ -3184,7 +3260,7 @@
 
                 // Save to Server + localStorage
                 const saveResult = await savePortfolioDataToServer(portfolioData);
-                if (saveResult && saveResult.success) {
+                if (saveResult && (saveResult.success || saveResult.message === 'Saved to local cache')) {
                     _lastSavedHash = _hashData(portfolioData);
                     _pendingSave = false;
                     _updateSaveIndicator('saved');

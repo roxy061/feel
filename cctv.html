@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบตรวจการณ์กล้องวงจรปิดเรียลไทม์ (NST CCTV Monitor) | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="ระบบตรวจการณ์กล้องวงจรปิดเรียลไทม์ เทศบาลนครนครศรีธรรมราช (NST CCTV Live Monitor) กว่า 220 จุด พัฒนาและเชื่อมต่อโดย นายภคพล สมัยแก้ว (ฟีล)">
+
+    <!-- Google Fonts (Sarabun, Kanit, Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-hover': '#1557b0',
+                            'blue-light': '#e8f0fe',
+                            'blue-subtle': '#d2e3fc',
+                            red: '#d93025',
+                            'red-light': '#fce8e6',
+                            yellow: '#f9ab00',
+                            'yellow-light': '#fef7e0',
+                            green: '#1e8e3e',
+                            'green-light': '#e6f4ea',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            // Dark Mode Tokens
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['Consolas', 'Menlo', 'monospace']
+                    },
+                    boxShadow: {
+                        'google-sm': '0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15)',
+                        'google-md': '0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15)',
+                        'google-lg': '0 4px 14px 0 rgba(60,64,67,0.22)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.12), 0 1px 3px 1px rgba(60,64,67,0.08);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+
+        /* Camera item list hover and active */
+        .cam-item {
+            transition: all 0.15s ease-in-out;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .cam-item:hover {
+            background-color: #f1f3f4;
+            border-color: #dadce0;
+        }
+        .dark .cam-item:hover {
+            background-color: #35373a;
+            border-color: #444746;
+        }
+        .cam-item.active {
+            background-color: #e8f0fe !important;
+            border-color: #1a73e8 !important;
+            box-shadow: 0 0 0 1px #1a73e8 inset;
+        }
+        .dark .cam-item.active {
+            background-color: #004a77 !important;
+            border-color: #7cacf8 !important;
+            box-shadow: 0 0 0 1px #7cacf8 inset;
+        }
+        .cam-item.offline {
+            opacity: 0.55;
+        }
+
+        /* Clean Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #dadce0;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #444746;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1a73e8;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden antialiased selection:bg-google-blue selection:text-white">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- TOP NAVIGATION BAR (Google Material Appbar) -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar shrink-0 flex items-center justify-between px-4 sm:px-6 z-30">
+        <!-- Left: Back Button & Branding -->
+        <div class="flex items-center gap-3">
+            <a href="index.html" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก Portfolio</span>
+            </a>
+
+            <div class="h-5 w-[1px] bg-google-border dark:bg-google-dark-border mx-1 hidden sm:block"></div>
+
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-red-100 dark:bg-rose-950/60 border border-red-200 dark:border-red-900/60 flex items-center justify-center text-red-600 dark:text-rose-400 text-sm shadow-xs">
+                    <i class="fa-solid fa-video animate-pulse"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            นครศรีฯ CCTV เรียลไทม์
+                        </h1>
+                        <span class="hidden md:inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-red-100 dark:bg-rose-950/60 text-red-700 dark:text-rose-300 font-bold border border-red-200 dark:border-red-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-ping"></span>
+                            LIVE
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden sm:block leading-none">
+                        เทศบาลนครนครศรีธรรมราช • พัฒนาโดย นายภคพล สมัยแก้ว (ฟีล)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Actions & Theme Toggle -->
+        <div class="flex items-center gap-2">
+            <!-- Mobile View Tab Switcher (Show List / Show Player) -->
+            <div class="flex lg:hidden bg-google-subtle dark:bg-google-dark-subtle p-0.5 rounded-xl border border-google-border dark:border-google-dark-border text-xs">
+                <button id="tab-btn-list" onclick="setMobileView('list')" class="px-2.5 py-1 rounded-lg font-semibold bg-white dark:bg-google-dark-surface shadow-xs text-google-blue dark:text-sky-300">
+                    <i class="fa-solid fa-list-ul mr-1"></i> รายการ
+                </button>
+                <button id="tab-btn-player" onclick="setMobileView('player')" class="px-2.5 py-1 rounded-lg font-medium text-google-text-muted dark:text-google-dark-text-muted">
+                    <i class="fa-solid fa-display mr-1"></i> จอภาพ
+                </button>
+            </div>
+
+            <!-- Refresh Button -->
+            <button onclick="fetchAllData(true)" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-all shadow-xs" title="รีเฟรชข้อมูลกล้อง">
+                <i id="refresh-icon" class="fa-solid fa-arrows-rotate text-xs"></i>
+            </button>
+
+            <!-- Theme Toggle -->
+            <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-all shadow-xs" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN WORKSPACE (Split Screen Layout)       -->
+    <!-- ========================================== -->
+    <div class="flex-1 flex overflow-hidden relative">
+
+        <!-- ========================================== -->
+        <!-- LEFT SIDEBAR: CAMERA LIST & FILTERS        -->
+        <!-- ========================================== -->
+        <aside id="sidebar-panel" class="w-full lg:w-[420px] shrink-0 flex flex-col bg-white dark:bg-google-dark-surface border-r border-google-border dark:border-google-dark-border z-20 h-full">
+            
+            <!-- Quick Stats Bar (Google Cards) -->
+            <div class="p-3 sm:p-4 border-b border-google-border dark:border-google-dark-border bg-google-subtle/40 dark:bg-google-dark-subtle/30">
+                <div class="grid grid-cols-4 gap-2 text-center">
+                    <div class="p-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border shadow-xs">
+                        <span id="total-val" class="font-bold text-sm sm:text-base text-google-blue dark:text-sky-400 block font-heading">0</span>
+                        <label class="text-[10px] text-google-text-muted dark:text-google-dark-text-muted uppercase font-medium">ทั้งหมด</label>
+                    </div>
+                    <div class="p-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border shadow-xs">
+                        <span id="online-val" class="font-bold text-sm sm:text-base text-google-green dark:text-emerald-400 block font-heading">0</span>
+                        <label class="text-[10px] text-google-text-muted dark:text-google-dark-text-muted uppercase font-medium">ออนไลน์</label>
+                    </div>
+                    <div class="p-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border shadow-xs">
+                        <span id="offline-val" class="font-bold text-sm sm:text-base text-google-red dark:text-rose-400 block font-heading">0</span>
+                        <label class="text-[10px] text-google-text-muted dark:text-google-dark-text-muted uppercase font-medium">ออฟไลน์</label>
+                    </div>
+                    <div class="p-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border shadow-xs">
+                        <span id="view-val" class="font-bold text-sm sm:text-base text-google-yellow dark:text-amber-400 block font-heading">0</span>
+                        <label class="text-[10px] text-google-text-muted dark:text-google-dark-text-muted uppercase font-medium">คนดูสด</label>
+                    </div>
+                </div>
+
+                <!-- Google Style Search Input -->
+                <div class="relative mt-3">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-google-text-muted dark:text-google-dark-text-muted"></i>
+                    <input type="text" id="search" placeholder="ค้นหาชื่อจุดตรวจ, ถนน, โรงเรียน, แยก..." oninput="filterCameras()" 
+                        class="w-full pl-9 pr-9 py-2 text-xs sm:text-sm rounded-full bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border focus:border-google-blue dark:focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-google-blue/20 dark:focus:ring-sky-400/20 text-google-text dark:text-google-dark-text transition-all">
+                    <button id="search-clear-btn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-google-text-muted hover:text-google-text text-xs" title="ล้างการค้นหา">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Quick Filter Chips -->
+                <div class="flex items-center gap-1.5 overflow-x-auto pt-2.5 pb-0.5 text-xs no-scrollbar">
+                    <button onclick="setFilterCategory('all')" id="filter-all" class="filter-chip px-3 py-1 rounded-full bg-google-blue text-white font-semibold whitespace-nowrap shadow-xs text-xs">
+                        ทั้งหมด
+                    </button>
+                    <button onclick="setFilterCategory('online')" id="filter-online" class="filter-chip px-3 py-1 rounded-full bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text hover:bg-google-subtle whitespace-nowrap text-xs">
+                        เฉพาะออนไลน์
+                    </button>
+                    <button onclick="setFilterCategory('school')" id="filter-school" class="filter-chip px-3 py-1 rounded-full bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text hover:bg-google-subtle whitespace-nowrap text-xs">
+                        หน้าโรงเรียน
+                    </button>
+                    <button onclick="setFilterCategory('junction')" id="filter-junction" class="filter-chip px-3 py-1 rounded-full bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text hover:bg-google-subtle whitespace-nowrap text-xs">
+                        สี่แยก / จุดตรวจ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Camera List Container -->
+            <div id="cam-list" class="flex-1 overflow-y-auto p-2 sm:p-3 space-y-1">
+                <!-- Skeleton Loading -->
+                <div class="p-4 text-center text-google-text-muted dark:text-google-dark-text-muted text-sm animate-pulse space-y-2">
+                    <i class="fa-solid fa-circle-notch fa-spin text-xl text-google-blue"></i>
+                    <p>กำลังเชื่อมต่อ API และดึงข้อมูลกล้องกว่า 220 จุด...</p>
+                </div>
+            </div>
+
+            <!-- Sidebar Footer Bar -->
+            <div class="p-2.5 px-4 border-t border-google-border dark:border-google-dark-border bg-google-subtle/30 dark:bg-google-dark-subtle/20 flex items-center justify-between text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
+                <span id="list-count-label">กำลังโหลดข้อมูล...</span>
+                <span class="inline-flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    อัปเดตอัตโนมัติทุก 10 วิ
+                </span>
+            </div>
+        </aside>
+
+        <!-- ========================================== -->
+        <!-- RIGHT PANEL: VIDEO PLAYER & DETAILS        -->
+        <!-- ========================================== -->
+        <main id="player-panel" class="flex-1 flex flex-col bg-google-bg dark:bg-google-dark-bg overflow-y-auto p-3 sm:p-5 lg:p-6 h-full">
+            
+            <!-- Player Card Wrapper -->
+            <div class="g-card p-3 sm:p-5 flex flex-col flex-1 shadow-google-md max-w-6xl mx-auto w-full">
+                
+                <!-- Player Header Bar -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-3 border-b border-google-border dark:border-google-dark-border">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="w-8 h-8 rounded-lg bg-google-blue-light dark:bg-blue-950/60 text-google-blue dark:text-sky-300 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h2 id="current-cam-title" class="text-base sm:text-lg font-bold text-google-text dark:text-google-dark-text font-heading truncate">
+                                กรุณาเลือกกล้องจากรายการฝั่งซ้าย
+                            </h2>
+                            <p id="current-cam-group" class="text-xs text-google-text-muted dark:text-google-dark-text-muted truncate">
+                                ระบบตรวจการณ์เทศบาลนครนครศรีธรรมราช
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Quality Switcher & Controls -->
+                    <div id="mode-controls" class="hidden items-center gap-1.5 shrink-0 flex-wrap">
+                        <!-- Quality Switch Buttons -->
+                        <div class="flex bg-google-subtle dark:bg-google-dark-subtle p-0.5 rounded-full border border-google-border dark:border-google-dark-border text-xs">
+                            <button id="btn-sd" onclick="switchQuality(false)" class="px-3 py-1 rounded-full font-semibold bg-google-blue text-white shadow-xs transition-all">
+                                SD (โหลดไว)
+                            </button>
+                            <button id="btn-hd" onclick="switchQuality(true)" class="px-3 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all">
+                                HD (ชัดสูง)
+                            </button>
+                        </div>
+
+                        <!-- Reload Stream Button -->
+                        <button onclick="loadStream()" class="w-8 h-8 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-blue flex items-center justify-center transition-colors shadow-xs" title="รีโหลดสัญญาณ">
+                            <i class="fa-solid fa-rotate-right text-xs"></i>
+                        </button>
+
+                        <!-- Share / Copy Link Button -->
+                        <button onclick="copyCameraLink()" class="w-8 h-8 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-green flex items-center justify-center transition-colors shadow-xs" title="คัดลอกลิงก์กล้องนี้">
+                            <i class="fa-solid fa-share-nodes text-xs"></i>
+                        </button>
+
+                        <!-- Open in New Tab -->
+                        <button onclick="openStreamInNewTab()" class="w-8 h-8 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-blue flex items-center justify-center transition-colors shadow-xs" title="เปิดเต็มจอในหน้าต่างใหม่">
+                            <i class="fa-solid fa-up-right-from-square text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Video Frame Area -->
+                <div class="flex-1 min-h-[300px] sm:min-h-[420px] lg:min-h-[500px] relative rounded-xl overflow-hidden bg-black border border-google-border dark:border-google-dark-border shadow-inner flex items-center justify-center">
+                    
+                    <!-- Welcome / Empty State Placeholder -->
+                    <div id="placeholder-box" class="p-6 text-center max-w-md mx-auto space-y-4">
+                        <div class="w-16 h-16 rounded-2xl bg-google-blue/10 dark:bg-blue-950/40 text-google-blue dark:text-sky-400 mx-auto flex items-center justify-center text-3xl">
+                            <i class="fa-solid fa-video"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <h3 class="text-base sm:text-lg font-bold text-white font-heading">
+                                ยังไม่ได้เลือกกล้องที่ต้องการรับชม
+                            </h3>
+                            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                                เลือกกล้องจากรายการฝั่งซ้ายเพื่อรับชมสัญญาณภาพสดเรียลไทม์ พร้อมตรวจสอบจำนวนผู้เข้าชมในจุดต่าง ๆ
+                            </p>
+                        </div>
+                        <button onclick="pickFirstAvailableCamera()" class="px-5 py-2.5 rounded-full bg-google-blue hover:bg-google-blue-hover text-white text-xs sm:text-sm font-semibold transition-all inline-flex items-center gap-2 shadow-google-sm">
+                            <i class="fa-solid fa-play"></i>
+                            เริ่มดูจากจุดแรกที่พร้อมใช้งาน
+                        </button>
+                    </div>
+
+                    <!-- Offline Alert Box -->
+                    <div id="offline-box" class="hidden p-6 text-center max-w-md mx-auto space-y-3">
+                        <div class="w-14 h-14 rounded-2xl bg-rose-500/20 text-rose-400 mx-auto flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <h3 class="text-base font-bold text-white font-heading">
+                                กล้องจุดนี้อยู่ในสถานะออฟไลน์ (ปิดปรับปรุง)
+                            </h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                สัญญาณจากจุดนี้ขัดข้องชั่วคราวหรือกำลังอยู่ระหว่างการบำรุงรักษาโดยเทศบาลนครนครศรีธรรมราช กรุณาเลือกจุดอื่นจากรายการ
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Live Stream iframe -->
+                    <iframe id="video-frame" class="hidden w-full h-full border-none" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                </div>
+
+                <!-- Footer Info Bar & System Metadata -->
+                <div class="mt-3 pt-3 border-t border-google-border dark:border-google-dark-border flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-google-text-muted dark:text-google-dark-text-muted">
+                    <div class="flex items-center gap-2 flex-wrap text-center sm:text-left">
+                        <span class="inline-flex items-center gap-1.5 font-medium text-google-text-body dark:text-google-dark-text-body">
+                            <i class="fa-solid fa-server text-google-blue"></i>
+                            แหล่งสัญญาณสด: เทศบาลนครนครศรีธรรมราช
+                        </span>
+                        <span class="hidden sm:inline">•</span>
+                        <span>API Base: <a href="https://nstcctv.nakhoncity.org" target="_blank" rel="noopener" class="underline hover:text-google-blue">nstcctv.nakhoncity.org</a></span>
+                    </div>
+
+                    <div class="text-center sm:text-right">
+                        <span>พัฒนาและเชื่อมต่อโดย <strong class="text-google-text dark:text-google-dark-text">นายภคพล สมัยแก้ว (ฟีล)</strong></span>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- LOGIC & DATA CONTROLLER                    -->
+    <!-- ========================================== -->
+    <script>
+        const API_BASE = 'https://nstcctv.nakhoncity.org';
+        let allCams = [];
+        let camStatuses = {};
+        let liveViews = {};
+        let selectedCam = null;
+        let isHD = false;
+        let currentFilter = 'all';
+
+        // 1. Initializer & Theme Management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('feel_theme') || 
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(savedTheme);
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        // Mobile View Controller (List vs Player)
+        function setMobileView(view) {
+            const sidebar = document.getElementById('sidebar-panel');
+            const player = document.getElementById('player-panel');
+            const btnList = document.getElementById('tab-btn-list');
+            const btnPlayer = document.getElementById('tab-btn-player');
+
+            if (view === 'list') {
+                sidebar.classList.remove('hidden');
+                player.classList.add('hidden');
+                btnList.className = 'px-2.5 py-1 rounded-lg font-semibold bg-white dark:bg-google-dark-surface shadow-xs text-google-blue dark:text-sky-300';
+                btnPlayer.className = 'px-2.5 py-1 rounded-lg font-medium text-google-text-muted dark:text-google-dark-text-muted';
+            } else {
+                sidebar.classList.add('hidden');
+                player.classList.remove('hidden');
+                btnPlayer.className = 'px-2.5 py-1 rounded-lg font-semibold bg-white dark:bg-google-dark-surface shadow-xs text-google-blue dark:text-sky-300';
+                btnList.className = 'px-2.5 py-1 rounded-lg font-medium text-google-text-muted dark:text-google-dark-text-muted';
+            }
+        }
+
+        // 2. Fetch All Initial Data
+        async function fetchAllData(isManualRefresh = false) {
+            const refreshIcon = document.getElementById('refresh-icon');
+            if (refreshIcon) refreshIcon.classList.add('fa-spin');
+
+            try {
+                const [camsRes, statsRes, statusRes, viewRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/cameras/public`).then(r => r.json()),
+                    fetch(`${API_BASE}/api/stats`).then(r => r.json()).catch(() => ({})),
+                    fetch(`${API_BASE}/api/camera-status`, { cache: 'no-store' }).then(r => r.json()).catch(() => ({})),
+                    fetch(`${API_BASE}/api/live-stats?t=${Date.now()}`, { cache: 'no-store' }).then(r => r.json()).catch(() => ({}))
+                ]);
+
+                allCams = Array.isArray(camsRes) ? camsRes : [];
+                camStatuses = statusRes || {};
+                liveViews = (viewRes && viewRes.details) ? viewRes.details : {};
+
+                renderStats(statsRes);
+                filterCameras();
+
+                // Check URL query param e.g. ?cam=SC004
+                const params = new URLSearchParams(window.location.search);
+                const targetCamId = params.get('cam');
+                if (targetCamId && !selectedCam) {
+                    const found = allCams.find(c => c.id.toLowerCase() === targetCamId.toLowerCase());
+                    if (found) selectCamera(found);
+                }
+
+                if (isManualRefresh) {
+                    showToast('รีเฟรชข้อมูลกล้องและสถานะเรียบร้อยแล้ว', 'success');
+                }
+            } catch (err) {
+                console.error('Fetch error:', err);
+                document.getElementById('cam-list').innerHTML = `
+                    <div class="p-6 text-center text-google-red dark:text-rose-400 space-y-2">
+                        <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                        <p class="font-bold text-sm">ไม่สามารถเชื่อมต่อ API กล้องได้</p>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">
+                            อาจเกิดจากข้อจำกัดของเครือข่าย หรือเซิร์ฟเวอร์ปลายทาง กรุณาเปิดผ่าน Localhost หรือตรวจสอบการเชื่อมต่ออินเทอร์เน็ต
+                        </p>
+                        <button onclick="fetchAllData(true)" class="mt-2 px-4 py-1.5 rounded-full bg-google-blue text-white text-xs font-semibold">
+                            ลองใหม่อีกครั้ง
+                        </button>
+                    </div>
+                `;
+            } finally {
+                if (refreshIcon) {
+                    setTimeout(() => refreshIcon.classList.remove('fa-spin'), 600);
+                }
+            }
+        }
+
+        // 3. Realtime Status & Viewer Count Polling
+        async function updateRealtimeStatus() {
+            try {
+                const [statusRes, viewRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/camera-status`, { cache: 'no-store' }).then(r => r.json()),
+                    fetch(`${API_BASE}/api/live-stats?t=${Date.now()}`, { cache: 'no-store' }).then(r => r.json())
+                ]);
+
+                camStatuses = statusRes || {};
+                liveViews = (viewRes && viewRes.details) ? viewRes.details : {};
+
+                if (viewRes && viewRes.total !== undefined) {
+                    document.getElementById('view-val').innerText = Number(viewRes.total).toLocaleString();
+                }
+
+                // Update DOM items
+                allCams.forEach(cam => {
+                    const isOff = camStatuses[cam.id] === 'offline';
+                    const viewers = liveViews[cam.id] || 0;
+
+                    const itemEl = document.getElementById(`cam-item-${cam.id}`);
+                    const statusBadge = document.getElementById(`status-badge-${cam.id}`);
+                    const viewBadge = document.getElementById(`view-badge-${cam.id}`);
+
+                    if (itemEl && statusBadge) {
+                        if (isOff) {
+                            itemEl.classList.add('offline');
+                            statusBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900';
+                            statusBadge.innerText = 'OFF';
+                        } else {
+                            itemEl.classList.remove('offline');
+                            statusBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900';
+                            statusBadge.innerText = 'ON';
+                        }
+                    }
+
+                    if (viewBadge) {
+                        if (viewers > 0) {
+                            viewBadge.innerHTML = `<i class="fa-solid fa-eye text-[9px] mr-1"></i>${viewers}`;
+                            viewBadge.classList.remove('hidden');
+                        } else {
+                            viewBadge.classList.add('hidden');
+                        }
+                    }
+                });
+            } catch (e) {
+                console.warn('Realtime update skipped:', e);
+            }
+        }
+
+        // 4. Update Overview Stats
+        async function fetchStats() {
+            try {
+                const stats = await fetch(`${API_BASE}/api/stats`).then(r => r.json());
+                renderStats(stats);
+            } catch (e) {}
+        }
+
+        function renderStats(stats) {
+            const total = stats.total || allCams.length || 0;
+            const online = stats.online || 0;
+            const offline = stats.offline || (total - online);
+
+            document.getElementById('total-val').innerText = Number(total).toLocaleString();
+            document.getElementById('online-val').innerText = Number(online).toLocaleString();
+            document.getElementById('offline-val').innerText = Number(offline).toLocaleString();
+        }
+
+        // 5. Render Camera List (Grouped)
+        function renderList(cams) {
+            const container = document.getElementById('cam-list');
+            const countLabel = document.getElementById('list-count-label');
+
+            if (!cams || cams.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 text-center text-google-text-muted dark:text-google-dark-text-muted space-y-2">
+                        <i class="fa-solid fa-video-slash text-2xl"></i>
+                        <p class="text-sm font-semibold">ไม่พบกล้องที่ตรงกับเงื่อนไขการค้นหา</p>
+                        <button onclick="clearSearch()" class="text-xs text-google-blue hover:underline">ล้างคำค้นหา</button>
+                    </div>
+                `;
+                if (countLabel) countLabel.textContent = `พบ 0 จุด`;
+                return;
+            }
+
+            if (countLabel) countLabel.textContent = `แสดง ${cams.length} จาก ${allCams.length} จุด`;
+
+            // Group Cameras
+            const groups = {};
+            cams.forEach(cam => {
+                const g = cam.group || 'ทั่วไป / จุดสำคัญ';
+                if (!groups[g]) groups[g] = [];
+                groups[g].push(cam);
+            });
+
+            container.innerHTML = '';
+
+            for (const groupName in groups) {
+                const groupWrapper = document.createElement('div');
+                groupWrapper.className = 'mb-3';
+
+                // Group Title Header
+                const title = document.createElement('div');
+                title.className = 'flex items-center justify-between text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted uppercase tracking-wider px-2 py-1.5 mb-1';
+                title.innerHTML = `
+                    <span class="truncate"><i class="fa-solid fa-folder-closed mr-1.5 text-google-blue"></i>${groupName}</span>
+                    <span class="text-[10px] px-2 py-0.2 rounded-full bg-google-subtle dark:bg-google-dark-subtle font-mono">${groups[groupName].length}</span>
+                `;
+                groupWrapper.appendChild(title);
+
+                // Group Items
+                groups[groupName].forEach(cam => {
+                    const isOff = camStatuses[cam.id] === 'offline';
+                    const viewers = liveViews[cam.id] || 0;
+                    const isSelected = selectedCam && selectedCam.id === cam.id;
+
+                    const item = document.createElement('div');
+                    item.id = `cam-item-${cam.id}`;
+                    item.className = `cam-item p-2.5 rounded-xl mb-1 flex items-center justify-between gap-2.5 ${isOff ? 'offline' : ''} ${isSelected ? 'active' : 'bg-google-subtle/30 dark:bg-google-dark-subtle/40'}`;
+                    item.onclick = () => selectCamera(cam);
+
+                    const statusClass = isOff 
+                        ? 'bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900' 
+                        : 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900';
+
+                    item.innerHTML = `
+                        <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                            <div class="w-7 h-7 rounded-lg ${isSelected ? 'bg-google-blue text-white' : 'bg-white dark:bg-google-dark-surface text-google-text-muted'} border border-google-border dark:border-google-dark-border flex items-center justify-center text-xs shrink-0">
+                                <i class="fa-solid fa-video"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="text-xs sm:text-[13px] font-semibold text-google-text dark:text-google-dark-text truncate" title="${cam.name}">
+                                    ${cam.name}
+                                </div>
+                                <div class="text-[10px] text-google-text-muted dark:text-google-dark-text-muted font-mono truncate">
+                                    ID: ${cam.id}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <span id="view-badge-${cam.id}" class="text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-sky-100 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-900 ${viewers > 0 ? '' : 'hidden'}">
+                                <i class="fa-solid fa-eye text-[9px] mr-1"></i>${viewers}
+                            </span>
+                            <span id="status-badge-${cam.id}" class="text-[10px] px-2 py-0.5 rounded-full font-bold ${statusClass}">
+                                ${isOff ? 'OFF' : 'ON'}
+                            </span>
+                        </div>
+                    `;
+                    groupWrapper.appendChild(item);
+                });
+
+                container.appendChild(groupWrapper);
+            }
+        }
+
+        // 6. Camera Selection Handler
+        function selectCamera(cam) {
+            selectedCam = cam;
+
+            const isOff = camStatuses[cam.id] === 'offline';
+
+            // Highlight Active Item
+            document.querySelectorAll('.cam-item').forEach(el => el.classList.remove('active'));
+            const activeEl = document.getElementById(`cam-item-${cam.id}`);
+            if (activeEl) activeEl.classList.add('active');
+
+            // Update Player Header
+            document.getElementById('current-cam-title').innerText = `${cam.name} (${cam.id})`;
+            document.getElementById('current-cam-group').innerText = `หมวดหมู่: ${cam.group || 'ทั่วไป'} | จุดตรวจเทศบาลนครฯ`;
+            document.getElementById('mode-controls').classList.remove('hidden');
+            document.getElementById('mode-controls').classList.add('flex');
+
+            // Handle Stream or Offline Alert
+            const iframe = document.getElementById('video-frame');
+            const placeholder = document.getElementById('placeholder-box');
+            const offlineBox = document.getElementById('offline-box');
+
+            placeholder.classList.add('hidden');
+
+            if (isOff) {
+                iframe.classList.add('hidden');
+                iframe.src = 'about:blank';
+                offlineBox.classList.remove('hidden');
+                showToast(`จุดตรวจ "${cam.name}" กำลังออฟไลน์ (ปิดปรับปรุง)`, 'warning');
+            } else {
+                offlineBox.classList.add('hidden');
+                loadStream();
+            }
+
+            // On mobile, auto switch to player tab
+            if (window.innerWidth < 1024) {
+                setMobileView('player');
+            }
+
+            // Track view API
+            fetch(`${API_BASE}/api/track-view/${cam.id}`).catch(() => {});
+        }
+
+        // 7. Load Stream into iframe
+        function loadStream() {
+            if (!selectedCam) return;
+            const iframe = document.getElementById('video-frame');
+            const placeholder = document.getElementById('placeholder-box');
+            const offlineBox = document.getElementById('offline-box');
+
+            if (camStatuses[selectedCam.id] === 'offline') {
+                return;
+            }
+
+            placeholder.classList.add('hidden');
+            offlineBox.classList.add('hidden');
+            iframe.classList.remove('hidden');
+
+            // Stream URL Pattern
+            const streamUrl = isHD 
+                ? `${API_BASE}/cam/${selectedCam.id}/` 
+                : `${API_BASE}/cam/${selectedCam.id}_sub/`;
+
+            iframe.src = streamUrl;
+        }
+
+        // 8. Quality Switcher (SD / HD)
+        function switchQuality(wantHD) {
+            if (isHD === wantHD) return;
+            isHD = wantHD;
+
+            const btnSd = document.getElementById('btn-sd');
+            const btnHd = document.getElementById('btn-hd');
+
+            if (isHD) {
+                btnHd.className = 'px-3 py-1 rounded-full font-semibold bg-google-blue text-white shadow-xs transition-all';
+                btnSd.className = 'px-3 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all';
+                showToast('สลับเป็นสัญญาณภาพความละเอียดสูง (HD)', 'info');
+            } else {
+                btnSd.className = 'px-3 py-1 rounded-full font-semibold bg-google-blue text-white shadow-xs transition-all';
+                btnHd.className = 'px-3 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all';
+                showToast('สลับเป็นสัญญาณภาพมาตรฐาน (SD - โหลดไว)', 'info');
+            }
+
+            loadStream();
+        }
+
+        // 9. Quick Actions
+        function pickFirstAvailableCamera() {
+            const available = allCams.find(c => camStatuses[c.id] !== 'offline') || allCams[0];
+            if (available) selectCamera(available);
+        }
+
+        function openStreamInNewTab() {
+            if (!selectedCam) return;
+            const streamUrl = isHD 
+                ? `${API_BASE}/cam/${selectedCam.id}/` 
+                : `${API_BASE}/cam/${selectedCam.id}_sub/`;
+            window.open(streamUrl, '_blank');
+        }
+
+        function copyCameraLink() {
+            if (!selectedCam) return;
+            const url = new URL(window.location.href);
+            url.searchParams.set('cam', selectedCam.id);
+            navigator.clipboard.writeText(url.href).then(() => {
+                showToast(`คัดลอกลิงก์กล้อง ${selectedCam.id} เรียบร้อยแล้ว`, 'success');
+            }).catch(() => {
+                showToast('ไม่สามารถคัดลอกลิงก์ได้', 'error');
+            });
+        }
+
+        // 10. Filter & Search Handlers
+        function filterCameras() {
+            const searchInput = document.getElementById('search');
+            const clearBtn = document.getElementById('search-clear-btn');
+            const keyword = searchInput.value.trim().toLowerCase();
+
+            if (keyword.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
+            let filtered = allCams.filter(c => {
+                const matchKeyword = !keyword || 
+                    c.name.toLowerCase().includes(keyword) || 
+                    c.id.toLowerCase().includes(keyword) || 
+                    (c.group && c.group.toLowerCase().includes(keyword));
+
+                if (!matchKeyword) return false;
+
+                // Category filter
+                if (currentFilter === 'online') {
+                    return camStatuses[c.id] !== 'offline';
+                } else if (currentFilter === 'school') {
+                    return (c.name && c.name.includes('รร.')) || 
+                           (c.name && c.name.includes('โรงเรียน')) || 
+                           (c.group && c.group.includes('โรงเรียน'));
+                } else if (currentFilter === 'junction') {
+                    return (c.name && c.name.includes('แยก')) || 
+                           (c.name && c.name.includes('จุดตรวจ')) || 
+                           (c.name && c.name.includes('สี่แยก'));
+                }
+
+                return true;
+            });
+
+            renderList(filtered);
+        }
+
+        function clearSearch() {
+            document.getElementById('search').value = '';
+            filterCameras();
+        }
+
+        function setFilterCategory(category) {
+            currentFilter = category;
+            const buttons = ['all', 'online', 'school', 'junction'];
+            buttons.forEach(b => {
+                const el = document.getElementById(`filter-${b}`);
+                if (!el) return;
+                if (b === category) {
+                    el.className = 'filter-chip px-3 py-1 rounded-full bg-google-blue text-white font-semibold whitespace-nowrap shadow-xs text-xs';
+                } else {
+                    el.className = 'filter-chip px-3 py-1 rounded-full bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text hover:bg-google-subtle whitespace-nowrap text-xs';
+                }
+            });
+            filterCameras();
+        }
+
+        // 11. Toast Snackbar Helper
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const colors = {
+                success: 'bg-emerald-600 text-white',
+                warning: 'bg-amber-600 text-white',
+                error: 'bg-rose-600 text-white',
+                info: 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto px-4 py-2.5 rounded-xl shadow-google-lg text-xs font-semibold flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 ${colors[type] || colors.info}`;
+            toast.innerHTML = `
+                <i class="fa-solid fa-circle-info text-sm"></i>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // 12. Run on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            fetchAllData();
+
+            // Auto polling: 10s status check, 30s stats check
+            setInterval(updateRealtimeStatus, 10000);
+            setInterval(fetchStats, 30000);
+        });
+    </script>
+</body>
+</html>

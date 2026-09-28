@@ -270,6 +270,10 @@
                     คลังภาพ
                 </a>
                 <a href="#contact" class="nav-item px-4 py-2 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">ติดต่อ</a>
+                <a href="cctv.html" class="nav-item px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-bold text-red-600 dark:text-rose-400 hover:bg-red-50 dark:hover:bg-rose-950/40 transition-all flex items-center gap-1.5 ml-1 border border-red-200 dark:border-red-900/50 shadow-xs" title="รับชมกล้องวงจรปิดเทศบาลนครนครศรีธรรมราช">
+                    <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
+                    <span>CCTV สด</span>
+                </a>
             </nav>
 
             <!-- Actions: Theme Toggle + Mobile Hamburger -->
@@ -309,6 +313,12 @@
             </a>
             <a href="#contact" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
                 <i class="fa-solid fa-envelope w-6 text-google-blue"></i> ติดต่อ
+            </a>
+            <a href="cctv.html" class="block px-4 py-2.5 rounded-xl text-red-600 dark:text-rose-400 bg-red-50/80 dark:bg-rose-950/40 hover:bg-red-100 dark:hover:bg-rose-900/60 text-sm font-bold flex items-center justify-between border border-red-200 dark:border-red-900 mt-2">
+                <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-video w-6 text-red-600 animate-pulse"></i> กล้อง CCTV นครศรีฯ (สด)
+                </span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-600 text-white font-bold">LIVE</span>
             </a>
         </div>
     </header>
@@ -366,12 +376,17 @@
                         </p>
 
                         <!-- Google Style Action Buttons -->
-                        <div class="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
-                            <a href="#projects" class="w-full sm:w-auto px-7 py-3 rounded-full bg-google-blue hover:bg-google-blue-hover text-white font-medium text-sm shadow-google-sm hover:shadow-google-md transition-all flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-folder-open"></i>
-                                ดูเกียรติบัตรและผลงานทั้งหมด
+                        <div class="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 flex-wrap">
+                            <a href="cctv.html" class="w-full sm:w-auto px-6 py-3 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold text-sm shadow-google-sm hover:shadow-google-md transition-all flex items-center justify-center gap-2 group">
+                                <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
+                                <i class="fa-solid fa-video"></i>
+                                กล้อง CCTV นครศรีฯ (สด)
                             </a>
-                            <a href="#contact" class="w-full sm:w-auto px-7 py-3 rounded-full bg-white dark:bg-google-dark-surface text-google-text dark:text-google-dark-text border border-google-border dark:border-google-dark-border hover:bg-google-subtle dark:hover:bg-google-dark-subtle font-medium text-sm transition-all flex items-center justify-center gap-2">
+                            <a href="#projects" class="w-full sm:w-auto px-6 py-3 rounded-full bg-google-blue hover:bg-google-blue-hover text-white font-medium text-sm shadow-google-sm hover:shadow-google-md transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-folder-open"></i>
+                                ผลงาน & เกียรติบัตร
+                            </a>
+                            <a href="#contact" class="w-full sm:w-auto px-6 py-3 rounded-full bg-white dark:bg-google-dark-surface text-google-text dark:text-google-dark-text border border-google-border dark:border-google-dark-border hover:bg-google-subtle dark:hover:bg-google-dark-subtle font-medium text-sm transition-all flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-paper-plane text-google-blue"></i>
                                 ติดต่อประสานงาน
                             </a>
@@ -1301,6 +1316,16 @@
                 images: ["./cert_wit_region.jpg"],
                 github: "",
                 demo: "./เกียรติบัตร วิท ภาค.pdf"
+            },
+            {
+                id: "cctv-system",
+                title: "ระบบตรวจการณ์กล้องวงจรปิดเรียลไทม์ เทศบาลนครนครศรีธรรมราช (NST CCTV Live Monitor)",
+                category: "ระบบออนไลน์",
+                tags: ["CCTV Live Monitor", "REST API", "Tailwind CSS", "Google Material 3", "นครศรีธรรมราช"],
+                description: "ระบบเชื่อมต่อ API ถ่ายทอดสัญญาณภาพสดจากกล้อง CCTV ทั่วเขตเทศบาลนครนครศรีธรรมราชกว่า 220 จุด พร้อมระบบแสดงสถานะกล้องออนไลน์/ออฟไลน์ สถิติผู้รับชมสด และฟังก์ชันสลับความคมชัด SD/HD",
+                images: ["https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=800&q=80"],
+                github: "",
+                demo: "./cctv.html"
             }
         ];
 

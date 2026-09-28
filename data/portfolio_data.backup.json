@@ -245,6 +245,24 @@
             "images": [],
             "github": "https://github.com/",
             "demo": ""
+        },
+        {
+            "id": "cctv-system",
+            "title": "ระบบตรวจการณ์กล้องวงจรปิดเรียลไทม์ เทศบาลนครนครศรีธรรมราช (NST CCTV Live Monitor)",
+            "category": "ระบบออนไลน์",
+            "tags": [
+                "CCTV Live Monitor",
+                "REST API",
+                "Tailwind CSS",
+                "Google Material 3",
+                "นครศรีธรรมราช"
+            ],
+            "description": "ระบบเชื่อมต่อ API ถ่ายทอดสัญญาณภาพสดจากกล้อง CCTV ทั่วเขตเทศบาลนครนครศรีธรรมราชกว่า 220 จุด พร้อมระบบแสดงสถานะกล้องออนไลน์/ออฟไลน์ สถิติผู้รับชมสด และฟังก์ชันสลับความคมชัด SD/HD",
+            "images": [
+                "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=800&q=80"
+            ],
+            "github": "",
+            "demo": "./cctv.html"
         }
     ]
 }

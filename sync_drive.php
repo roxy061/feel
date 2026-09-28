@@ -56,9 +56,18 @@ foreach ($matches as $m) {
 $newDownloaded = 0;
 $errors = 0;
 
+// Excluded photos (deleted by user)
+$excludedFiles = [
+    'IMG_20250905_003049.jpg',
+    'IMG_20260507_021328.jpg'
+];
+
 // 3. Download newly discovered photos
 foreach ($extracted as $item) {
     $safeName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $item['name']);
+    if (in_array($safeName, $excludedFiles) || in_array($item['name'], $excludedFiles)) {
+        continue;
+    }
     $dest = $photosDir . DIRECTORY_SEPARATOR . $safeName;
     
     // Download if not already present or file is empty
@@ -85,6 +94,9 @@ foreach ($extracted as $item) {
 $manifest = [];
 $files = scandir($photosDir);
 foreach ($files as $f) {
+    if (in_array($f, $excludedFiles)) {
+        continue;
+    }
     if (preg_match('/\.(jpe?g|png)$/i', $f)) {
         $manifest[] = [
             'filename' => $f,

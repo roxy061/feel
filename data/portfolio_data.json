@@ -213,22 +213,52 @@
             "demo": "./เกียรติบัตร วิท ภาค.pdf"
         },
         {
-            "id": "cctv-system",
-            "title": "ระบบตรวจการณ์กล้องวงจรปิดเรียลไทม์ เทศบาลนครนครศรีธรรมราช (NST CCTV Live Monitor)",
-            "category": "ระบบออนไลน์",
+            "id": "doc1",
+            "title": "เอกสารบริการและกิจกรรมนักเรียนนักศึกษา (Student Service)",
+            "category": "เอกสาร",
             "tags": [
-                "CCTV Live Monitor",
-                "REST API",
-                "Tailwind CSS",
-                "Google Material 3",
-                "นครศรีธรรมราช"
+                "เอกสารการศึกษา",
+                "Student Service",
+                "ประวัติกิจกรรม"
             ],
-            "description": "ระบบเชื่อมต่อ API ถ่ายทอดสัญญาณภาพสดจากกล้อง CCTV ทั่วเขตเทศบาลนครนครศรีธรรมราชกว่า 220 จุด พร้อมระบบแสดงสถานะกล้องออนไลน์/ออฟไลน์ สถิติผู้รับชมสด และฟังก์ชันสลับความคมชัด SD/HD",
+            "description": "เอกสารหลักฐานการเข้าร่วมกิจกรรมและงานบริการนักเรียนนักศึกษา วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
             "images": [
-                "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=800&q=80"
+                "./doc_studentservice.jpg"
             ],
             "github": "",
-            "demo": "./cctv.html"
+            "demo": "./doc_studentservice.jpg"
+        },
+        {
+            "id": "iot1",
+            "title": "ระบบตรวจวัดและแจ้งเตือนสภาพแวดล้อมด้วย IoT (ESP32)",
+            "category": "ผลงาน",
+            "tags": [
+                "ESP32",
+                "Sensors",
+                "Blynk IoT",
+                "WiFi"
+            ],
+            "description": "โครงงานพัฒนาอุปกรณ์ตรวจวัดค่าสภาพแวดล้อม เชื่อมต่อเซนเซอร์และส่งข้อมูลแบบ Real-time แสดงผลผ่าน Blynk Dashboard และแจ้งเตือนผ่าน LINE Notify",
+            "images": [
+                "./ตัวเองตอน ฝึกดร..JPG"
+            ],
+            "github": "https://github.com/",
+            "demo": ""
+        },
+        {
+            "id": "ai1",
+            "title": "ระบบผู้ช่วยอัจฉริยะและการเขียนโปรแกรมด้วย Generative AI",
+            "category": "ผลงาน",
+            "tags": [
+                "AI Tools",
+                "Python",
+                "Automation",
+                "Workflow"
+            ],
+            "description": "การประยุกต์ใช้ AI Prompts ในการวิเคราะห์โครงสร้างข้อมูล ช่วยเขียนและทดสอบโค้ดระบบอัตโนมัติ เพื่อเพิ่มประสิทธิภาพการทำงาน",
+            "images": [],
+            "github": "https://github.com/",
+            "demo": ""
         }
     ]
 }

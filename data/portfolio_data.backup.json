@@ -1,5 +1,4 @@
 {
-    "adminPassword": "140369",
     "hero": {
         "statusBadge": "แฟ้มสะสมผลงานทางการ (Official Portfolio)",
         "name": "นายภคพล สมัยแก้ว",
@@ -153,7 +152,6 @@
         "lineUrl": "https://line.me/ti/p/CdqbkYbcUv",
         "locationTitle": "วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
         "locationSub": "จังหวัดนครศรีธรรมราช",
-        "department": "แผนกวิชาคอมพิวเตอร์ธุรกิจ (ปวส.1)",
         "driveFolderUrl": "https://drive.google.com/drive/folders/13JPid47x7QZvmnHwQI0uZ5hVPatEi3Ow?usp=sharing",
         "socials": {
             "facebook": "https://www.facebook.com/fexl07",
@@ -166,6 +164,22 @@
         }
     },
     "projects": [
+        {
+            "id": "cert1",
+            "title": "เกียรติบัตรรางวัลคนเก่ง (Certificate of Excellence)",
+            "category": "เกียรติบัตร",
+            "tags": [
+                "เกียรติบัตรรางวัล",
+                "รางวัลคนเก่ง",
+                "อาชีวศึกษา"
+            ],
+            "description": "เกียรติบัตรยกย่องเชิดชูเกียรติผู้มีความรู้ความสามารถและผลงานดีเด่น ประจำปีการศึกษา วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
+            "images": [
+                "./cert_konkeng.jpg"
+            ],
+            "github": "",
+            "demo": "./เกียรติบัตร คนเก่ง -.pdf"
+        },
         {
             "id": "cert2",
             "title": "เกียรติบัตรการแข่งขันทักษะทางวิทยาศาสตร์ (ระดับจังหวัด)",
@@ -201,7 +215,7 @@
         {
             "id": "doc1",
             "title": "เอกสารบริการและกิจกรรมนักเรียนนักศึกษา (Student Service)",
-            "category": "เอกสารการศึกษา",
+            "category": "เอกสาร",
             "tags": [
                 "เอกสารการศึกษา",
                 "Student Service",
@@ -212,12 +226,12 @@
                 "./doc_studentservice.jpg"
             ],
             "github": "",
-            "demo": "./StudentService.pdf"
+            "demo": "./doc_studentservice.jpg"
         },
         {
             "id": "iot1",
             "title": "ระบบตรวจวัดและแจ้งเตือนสภาพแวดล้อมด้วย IoT (ESP32)",
-            "category": "IoT & Hardware",
+            "category": "ผลงาน",
             "tags": [
                 "ESP32",
                 "Sensors",
@@ -234,7 +248,7 @@
         {
             "id": "ai1",
             "title": "ระบบผู้ช่วยอัจฉริยะและการเขียนโปรแกรมด้วย Generative AI",
-            "category": "AI & Software",
+            "category": "ผลงาน",
             "tags": [
                 "AI Tools",
                 "Python",
@@ -245,24 +259,6 @@
             "images": [],
             "github": "https://github.com/",
             "demo": ""
-        },
-        {
-            "id": "cctv-system",
-            "title": "ระบบตรวจการณ์กล้องวงจรปิดเรียลไทม์ เทศบาลนครนครศรีธรรมราช (NST CCTV Live Monitor)",
-            "category": "ระบบออนไลน์",
-            "tags": [
-                "CCTV Live Monitor",
-                "REST API",
-                "Tailwind CSS",
-                "Google Material 3",
-                "นครศรีธรรมราช"
-            ],
-            "description": "ระบบเชื่อมต่อ API ถ่ายทอดสัญญาณภาพสดจากกล้อง CCTV ทั่วเขตเทศบาลนครนครศรีธรรมราชกว่า 220 จุด พร้อมระบบแสดงสถานะกล้องออนไลน์/ออฟไลน์ สถิติผู้รับชมสด และฟังก์ชันสลับความคมชัด SD/HD",
-            "images": [
-                "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=800&q=80"
-            ],
-            "github": "",
-            "demo": "./cctv.html"
         }
     ]
 }

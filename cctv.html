@@ -150,6 +150,28 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #1a73e8;
         }
+
+        /* Fullscreen Viewport Mode */
+        #grid-viewport-wrapper:fullscreen {
+            background-color: #0b0f19 !important;
+            padding: 0.75rem !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            border-radius: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        #grid-viewport-wrapper:fullscreen #cctv-grid-container {
+            height: 100% !important;
+        }
+
+        .slot-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slot-card.active-target {
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.7), 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden antialiased selection:bg-google-blue selection:text-white">
@@ -303,8 +325,8 @@
                 <!-- Player Header Bar -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-3 border-b border-google-border dark:border-google-dark-border">
                     <div class="flex items-center gap-2.5 min-w-0">
-                        <div class="w-8 h-8 rounded-lg bg-google-blue-light dark:bg-blue-950/60 text-google-blue dark:text-sky-300 flex items-center justify-center shrink-0">
-                            <i class="fa-solid fa-camera"></i>
+                        <div id="player-header-icon-wrap" class="w-8 h-8 rounded-lg bg-google-blue-light dark:bg-blue-950/60 text-google-blue dark:text-sky-300 flex items-center justify-center shrink-0">
+                            <i id="player-header-icon" class="fa-solid fa-camera"></i>
                         </div>
                         <div class="min-w-0">
                             <h2 id="current-cam-title" class="text-base sm:text-lg font-bold text-google-text dark:text-google-dark-text font-heading truncate">
@@ -316,74 +338,264 @@
                         </div>
                     </div>
 
-                    <!-- Quality Switcher & Controls -->
-                    <div id="mode-controls" class="hidden items-center gap-1.5 shrink-0 flex-wrap">
-                        <!-- Quality Switch Buttons -->
-                        <div class="flex bg-google-subtle dark:bg-google-dark-subtle p-0.5 rounded-full border border-google-border dark:border-google-dark-border text-xs">
-                            <button id="btn-sd" onclick="switchQuality(false)" class="px-3 py-1 rounded-full font-semibold bg-google-blue text-white shadow-xs transition-all">
-                                SD (โหลดไว)
+                    <!-- Right Controls: Grid Mode Selector & Action Buttons -->
+                    <div class="flex items-center gap-2 shrink-0 flex-wrap">
+                        
+                        <!-- Grid Mode Selector: 1, 2, 4, 6 จอ -->
+                        <div class="flex items-center bg-google-subtle dark:bg-google-dark-subtle p-0.5 rounded-full border border-google-border dark:border-google-dark-border text-xs">
+                            <button onclick="setGridMode(1)" id="grid-btn-1" class="grid-mode-btn px-2.5 py-1 rounded-full font-semibold bg-google-blue text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer" title="ดูแบบ 1 จอ (เดี่ยว)">
+                                <i class="fa-solid fa-square text-[10px]"></i>
+                                <span>1 จอ</span>
                             </button>
-                            <button id="btn-hd" onclick="switchQuality(true)" class="px-3 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all">
-                                HD (ชัดสูง)
+                            <button onclick="setGridMode(2)" id="grid-btn-2" class="grid-mode-btn px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all flex items-center gap-1.5 cursor-pointer" title="ดูพร้อมกัน 2 จอ">
+                                <i class="fa-solid fa-table-columns text-[10px]"></i>
+                                <span>2 จอ</span>
+                            </button>
+                            <button onclick="setGridMode(4)" id="grid-btn-4" class="grid-mode-btn px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all flex items-center gap-1.5 cursor-pointer" title="ดูพร้อมกัน 4 จอ (2x2)">
+                                <i class="fa-solid fa-table-cells-large text-[10px]"></i>
+                                <span>4 จอ</span>
+                            </button>
+                            <button onclick="setGridMode(6)" id="grid-btn-6" class="grid-mode-btn px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all flex items-center gap-1.5 cursor-pointer" title="ดูพร้อมกัน 6 จอ (3x2)">
+                                <i class="fa-solid fa-table-cells text-[10px]"></i>
+                                <span>6 จอ</span>
                             </button>
                         </div>
 
-                        <!-- Reload Stream Button -->
-                        <button onclick="loadStream()" class="w-8 h-8 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-blue flex items-center justify-center transition-colors shadow-xs" title="รีโหลดสัญญาณ">
-                            <i class="fa-solid fa-rotate-right text-xs"></i>
-                        </button>
+                        <!-- Multi-mode Tools (shown when gridMode > 1) -->
+                        <div id="multi-mode-controls" class="hidden items-center gap-1.5">
+                            <button onclick="autoPopulateSlots()" class="px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/60 hover:bg-amber-100 text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer" title="สุ่มเติมกล้องออนไลน์ให้ครบทุกจอ">
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
+                                <span class="hidden sm:inline">สุ่มเติมกล้อง</span>
+                            </button>
+                            <button onclick="clearAllSlots()" class="px-2.5 py-1 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-rose-500 hover:border-rose-300 text-xs font-medium flex items-center gap-1.5 shadow-xs transition-all cursor-pointer" title="ล้างกล้องทุกจอ">
+                                <i class="fa-solid fa-trash-can"></i>
+                                <span class="hidden sm:inline">ล้างจอ</span>
+                            </button>
+                        </div>
 
-                        <!-- Share / Copy Link Button -->
-                        <button onclick="copyCameraLink()" class="w-8 h-8 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-green flex items-center justify-center transition-colors shadow-xs" title="คัดลอกลิงก์กล้องนี้">
-                            <i class="fa-solid fa-share-nodes text-xs"></i>
-                        </button>
+                        <!-- Single Mode Quality Switcher & Controls (shown when gridMode === 1) -->
+                        <div id="single-mode-controls" class="hidden items-center gap-1.5">
+                            <!-- Quality Switch Buttons -->
+                            <div class="flex bg-google-subtle dark:bg-google-dark-subtle p-0.5 rounded-full border border-google-border dark:border-google-dark-border text-xs">
+                                <button id="btn-sd" onclick="switchQuality(false)" class="px-2.5 py-1 rounded-full font-semibold bg-google-blue text-white shadow-xs transition-all cursor-pointer">
+                                    SD
+                                </button>
+                                <button id="btn-hd" onclick="switchQuality(true)" class="px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer">
+                                    HD
+                                </button>
+                            </div>
 
-                        <!-- Open in New Tab -->
-                        <button onclick="openStreamInNewTab()" class="w-8 h-8 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-blue flex items-center justify-center transition-colors shadow-xs" title="เปิดเต็มจอในหน้าต่างใหม่">
-                            <i class="fa-solid fa-up-right-from-square text-xs"></i>
+                            <!-- Reload Stream Button -->
+                            <button onclick="loadStream()" class="w-8 h-8 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-blue flex items-center justify-center transition-colors shadow-xs cursor-pointer" title="รีโหลดสัญญาณ">
+                                <i class="fa-solid fa-rotate-right text-xs"></i>
+                            </button>
+
+                            <!-- Share / Copy Link Button -->
+                            <button onclick="copyCameraLink()" class="w-8 h-8 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-green flex items-center justify-center transition-colors shadow-xs cursor-pointer" title="คัดลอกลิงก์กล้องนี้">
+                                <i class="fa-solid fa-share-nodes text-xs"></i>
+                            </button>
+
+                            <!-- Open in New Tab -->
+                            <button onclick="openStreamInNewTab()" class="w-8 h-8 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-blue flex items-center justify-center transition-colors shadow-xs cursor-pointer" title="เปิดเต็มจอในหน้าต่างใหม่">
+                                <i class="fa-solid fa-up-right-from-square text-xs"></i>
+                            </button>
+                        </div>
+
+                        <!-- Fullscreen Toggle Button -->
+                        <button onclick="toggleGridFullscreen()" class="w-8 h-8 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-blue flex items-center justify-center transition-colors shadow-xs cursor-pointer" title="ขยายเต็มจอ (Fullscreen)">
+                            <i class="fa-solid fa-expand text-xs"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Video Frame Area -->
-                <div class="flex-1 min-h-[300px] sm:min-h-[420px] lg:min-h-[500px] relative rounded-xl overflow-hidden bg-black border border-google-border dark:border-google-dark-border shadow-inner flex items-center justify-center">
+                <!-- Video Viewport & Multi-Screen Grid Area -->
+                <div id="grid-viewport-wrapper" class="flex-1 min-h-[360px] sm:min-h-[460px] lg:min-h-[520px] relative rounded-xl overflow-hidden bg-slate-950 border border-google-border dark:border-google-dark-border shadow-inner p-2 sm:p-2.5 flex flex-col">
                     
-                    <!-- Welcome / Empty State Placeholder -->
-                    <div id="placeholder-box" class="p-6 text-center max-w-md mx-auto space-y-4">
-                        <div class="w-16 h-16 rounded-2xl bg-google-blue/10 dark:bg-blue-950/40 text-google-blue dark:text-sky-400 mx-auto flex items-center justify-center text-3xl">
-                            <i class="fa-solid fa-video"></i>
+                    <!-- Grid Container: 1, 2, 4, 6 slots -->
+                    <div id="cctv-grid-container" class="grid grid-cols-1 gap-2 sm:gap-2.5 flex-1 w-full h-full">
+                        
+                        <!-- Slot 0 -->
+                        <div id="slot-card-0" class="slot-card relative flex flex-col rounded-xl overflow-hidden bg-slate-900 border border-slate-700/80 transition-all select-none group min-h-[160px]" onclick="selectSlot(0)">
+                            <div id="slot-header-0" class="h-8 px-2.5 bg-slate-950/90 backdrop-blur-xs border-b border-slate-800 flex items-center justify-between gap-1.5 shrink-0 z-10 text-xs">
+                                <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                                    <span id="slot-badge-0" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 border border-slate-700 shrink-0">จอ 1</span>
+                                    <span id="slot-title-0" class="font-medium text-white truncate text-[11px] sm:text-xs">ว่าง (คลิกเพื่อเลือก)</span>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <span id="slot-status-0" class="hidden text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ON</span>
+                                    <button onclick="event.stopPropagation(); toggleSlotQuality(0)" id="slot-hd-btn-0" class="hidden text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition-colors cursor-pointer" title="สลับ SD / HD">SD</button>
+                                    <button onclick="event.stopPropagation(); focusSlot(0)" id="slot-focus-btn-0" class="hidden w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" title="ดูจอนี้แบบเดี่ยว"><i class="fa-solid fa-expand text-[9px]"></i></button>
+                                    <button onclick="event.stopPropagation(); clearSlot(0)" id="slot-clear-btn-0" class="hidden w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer" title="นำกล้องออกจากจอนี้"><i class="fa-solid fa-xmark text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex-1 relative flex items-center justify-center bg-black overflow-hidden">
+                                <div id="slot-empty-0" class="p-4 text-center cursor-pointer text-slate-400 hover:text-white transition-colors space-y-2">
+                                    <div class="w-12 h-12 rounded-2xl bg-google-blue/10 text-google-blue dark:text-sky-400 flex items-center justify-center mx-auto text-xl group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-video"></i>
+                                    </div>
+                                    <div class="space-y-0.5">
+                                        <p class="text-xs sm:text-sm font-semibold text-white">เลือกกล้องจากรายการฝั่งซ้าย</p>
+                                        <p class="text-[11px] text-slate-400">คลิกเพื่อรับชมสัญญาณภาพสดแบบเรียลไทม์</p>
+                                    </div>
+                                    <button onclick="event.stopPropagation(); pickFirstAvailableCamera()" class="mt-2 px-4 py-1.5 rounded-full bg-google-blue hover:bg-google-blue-hover text-white text-xs font-semibold shadow-xs cursor-pointer">
+                                        เปิดกล้องแรกที่พร้อมใช้งาน
+                                    </button>
+                                </div>
+                                <div id="slot-offline-0" class="hidden p-4 text-center text-rose-400 space-y-1">
+                                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                                    <p class="text-xs font-semibold">กล้องออฟไลน์ (ปิดปรับปรุง)</p>
+                                    <p class="text-[10px] text-slate-400">กรุณาเลือกจุดอื่นจากรายการ</p>
+                                </div>
+                                <iframe id="slot-frame-0" src="about:blank" class="hidden w-full h-full border-none" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                            </div>
                         </div>
-                        <div class="space-y-1">
-                            <h3 class="text-base sm:text-lg font-bold text-white font-heading">
-                                ยังไม่ได้เลือกกล้องที่ต้องการรับชม
-                            </h3>
-                            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                                เลือกกล้องจากรายการฝั่งซ้ายเพื่อรับชมสัญญาณภาพสดเรียลไทม์ พร้อมตรวจสอบจำนวนผู้เข้าชมในจุดต่าง ๆ
-                            </p>
+
+                        <!-- Slot 1 -->
+                        <div id="slot-card-1" class="slot-card hidden relative flex flex-col rounded-xl overflow-hidden bg-slate-900 border border-slate-700/80 transition-all select-none group min-h-[160px]" onclick="selectSlot(1)">
+                            <div id="slot-header-1" class="h-8 px-2.5 bg-slate-950/90 backdrop-blur-xs border-b border-slate-800 flex items-center justify-between gap-1.5 shrink-0 z-10 text-xs">
+                                <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                                    <span id="slot-badge-1" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 border border-slate-700 shrink-0">จอ 2</span>
+                                    <span id="slot-title-1" class="font-medium text-white truncate text-[11px] sm:text-xs">ว่าง (คลิกเพื่อเลือก)</span>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <span id="slot-status-1" class="hidden text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ON</span>
+                                    <button onclick="event.stopPropagation(); toggleSlotQuality(1)" id="slot-hd-btn-1" class="hidden text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition-colors cursor-pointer" title="สลับ SD / HD">SD</button>
+                                    <button onclick="event.stopPropagation(); focusSlot(1)" id="slot-focus-btn-1" class="hidden w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" title="ดูจอนี้แบบเดี่ยว"><i class="fa-solid fa-expand text-[9px]"></i></button>
+                                    <button onclick="event.stopPropagation(); clearSlot(1)" id="slot-clear-btn-1" class="hidden w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer" title="นำกล้องออกจากจอนี้"><i class="fa-solid fa-xmark text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex-1 relative flex items-center justify-center bg-black overflow-hidden">
+                                <div id="slot-empty-1" class="p-3 text-center cursor-pointer text-slate-400 hover:text-white transition-colors space-y-1.5">
+                                    <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-slate-400 group-hover:scale-110 group-hover:text-sky-400 transition-all"><i class="fa-solid fa-plus text-xs"></i></div>
+                                    <p class="text-[11px] font-medium">คลิกเพื่อใส่กล้องลงใน จอ 2</p>
+                                </div>
+                                <div id="slot-offline-1" class="hidden p-3 text-center text-rose-400 space-y-1">
+                                    <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                                    <p class="text-[11px] font-semibold">กล้องออฟไลน์</p>
+                                </div>
+                                <iframe id="slot-frame-1" src="about:blank" class="hidden w-full h-full border-none" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                            </div>
                         </div>
-                        <button onclick="pickFirstAvailableCamera()" class="px-5 py-2.5 rounded-full bg-google-blue hover:bg-google-blue-hover text-white text-xs sm:text-sm font-semibold transition-all inline-flex items-center gap-2 shadow-google-sm">
-                            <i class="fa-solid fa-play"></i>
-                            เริ่มดูจากจุดแรกที่พร้อมใช้งาน
-                        </button>
+
+                        <!-- Slot 2 -->
+                        <div id="slot-card-2" class="slot-card hidden relative flex flex-col rounded-xl overflow-hidden bg-slate-900 border border-slate-700/80 transition-all select-none group min-h-[160px]" onclick="selectSlot(2)">
+                            <div id="slot-header-2" class="h-8 px-2.5 bg-slate-950/90 backdrop-blur-xs border-b border-slate-800 flex items-center justify-between gap-1.5 shrink-0 z-10 text-xs">
+                                <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                                    <span id="slot-badge-2" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 border border-slate-700 shrink-0">จอ 3</span>
+                                    <span id="slot-title-2" class="font-medium text-white truncate text-[11px] sm:text-xs">ว่าง (คลิกเพื่อเลือก)</span>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <span id="slot-status-2" class="hidden text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ON</span>
+                                    <button onclick="event.stopPropagation(); toggleSlotQuality(2)" id="slot-hd-btn-2" class="hidden text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition-colors cursor-pointer" title="สลับ SD / HD">SD</button>
+                                    <button onclick="event.stopPropagation(); focusSlot(2)" id="slot-focus-btn-2" class="hidden w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" title="ดูจอนี้แบบเดี่ยว"><i class="fa-solid fa-expand text-[9px]"></i></button>
+                                    <button onclick="event.stopPropagation(); clearSlot(2)" id="slot-clear-btn-2" class="hidden w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer" title="นำกล้องออกจากจอนี้"><i class="fa-solid fa-xmark text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex-1 relative flex items-center justify-center bg-black overflow-hidden">
+                                <div id="slot-empty-2" class="p-3 text-center cursor-pointer text-slate-400 hover:text-white transition-colors space-y-1.5">
+                                    <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-slate-400 group-hover:scale-110 group-hover:text-sky-400 transition-all"><i class="fa-solid fa-plus text-xs"></i></div>
+                                    <p class="text-[11px] font-medium">คลิกเพื่อใส่กล้องลงใน จอ 3</p>
+                                </div>
+                                <div id="slot-offline-2" class="hidden p-3 text-center text-rose-400 space-y-1">
+                                    <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                                    <p class="text-[11px] font-semibold">กล้องออฟไลน์</p>
+                                </div>
+                                <iframe id="slot-frame-2" src="about:blank" class="hidden w-full h-full border-none" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                            </div>
+                        </div>
+
+                        <!-- Slot 3 -->
+                        <div id="slot-card-3" class="slot-card hidden relative flex flex-col rounded-xl overflow-hidden bg-slate-900 border border-slate-700/80 transition-all select-none group min-h-[160px]" onclick="selectSlot(3)">
+                            <div id="slot-header-3" class="h-8 px-2.5 bg-slate-950/90 backdrop-blur-xs border-b border-slate-800 flex items-center justify-between gap-1.5 shrink-0 z-10 text-xs">
+                                <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                                    <span id="slot-badge-3" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 border border-slate-700 shrink-0">จอ 4</span>
+                                    <span id="slot-title-3" class="font-medium text-white truncate text-[11px] sm:text-xs">ว่าง (คลิกเพื่อเลือก)</span>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <span id="slot-status-3" class="hidden text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ON</span>
+                                    <button onclick="event.stopPropagation(); toggleSlotQuality(3)" id="slot-hd-btn-3" class="hidden text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition-colors cursor-pointer" title="สลับ SD / HD">SD</button>
+                                    <button onclick="event.stopPropagation(); focusSlot(3)" id="slot-focus-btn-3" class="hidden w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" title="ดูจอนี้แบบเดี่ยว"><i class="fa-solid fa-expand text-[9px]"></i></button>
+                                    <button onclick="event.stopPropagation(); clearSlot(3)" id="slot-clear-btn-3" class="hidden w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer" title="นำกล้องออกจากจอนี้"><i class="fa-solid fa-xmark text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex-1 relative flex items-center justify-center bg-black overflow-hidden">
+                                <div id="slot-empty-3" class="p-3 text-center cursor-pointer text-slate-400 hover:text-white transition-colors space-y-1.5">
+                                    <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-slate-400 group-hover:scale-110 group-hover:text-sky-400 transition-all"><i class="fa-solid fa-plus text-xs"></i></div>
+                                    <p class="text-[11px] font-medium">คลิกเพื่อใส่กล้องลงใน จอ 4</p>
+                                </div>
+                                <div id="slot-offline-3" class="hidden p-3 text-center text-rose-400 space-y-1">
+                                    <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                                    <p class="text-[11px] font-semibold">กล้องออฟไลน์</p>
+                                </div>
+                                <iframe id="slot-frame-3" src="about:blank" class="hidden w-full h-full border-none" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                            </div>
+                        </div>
+
+                        <!-- Slot 4 -->
+                        <div id="slot-card-4" class="slot-card hidden relative flex flex-col rounded-xl overflow-hidden bg-slate-900 border border-slate-700/80 transition-all select-none group min-h-[160px]" onclick="selectSlot(4)">
+                            <div id="slot-header-4" class="h-8 px-2.5 bg-slate-950/90 backdrop-blur-xs border-b border-slate-800 flex items-center justify-between gap-1.5 shrink-0 z-10 text-xs">
+                                <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                                    <span id="slot-badge-4" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 border border-slate-700 shrink-0">จอ 5</span>
+                                    <span id="slot-title-4" class="font-medium text-white truncate text-[11px] sm:text-xs">ว่าง (คลิกเพื่อเลือก)</span>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <span id="slot-status-4" class="hidden text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ON</span>
+                                    <button onclick="event.stopPropagation(); toggleSlotQuality(4)" id="slot-hd-btn-4" class="hidden text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition-colors cursor-pointer" title="สลับ SD / HD">SD</button>
+                                    <button onclick="event.stopPropagation(); focusSlot(4)" id="slot-focus-btn-4" class="hidden w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" title="ดูจอนี้แบบเดี่ยว"><i class="fa-solid fa-expand text-[9px]"></i></button>
+                                    <button onclick="event.stopPropagation(); clearSlot(4)" id="slot-clear-btn-4" class="hidden w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer" title="นำกล้องออกจากจอนี้"><i class="fa-solid fa-xmark text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex-1 relative flex items-center justify-center bg-black overflow-hidden">
+                                <div id="slot-empty-4" class="p-3 text-center cursor-pointer text-slate-400 hover:text-white transition-colors space-y-1.5">
+                                    <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-slate-400 group-hover:scale-110 group-hover:text-sky-400 transition-all"><i class="fa-solid fa-plus text-xs"></i></div>
+                                    <p class="text-[11px] font-medium">คลิกเพื่อใส่กล้องลงใน จอ 5</p>
+                                </div>
+                                <div id="slot-offline-4" class="hidden p-3 text-center text-rose-400 space-y-1">
+                                    <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                                    <p class="text-[11px] font-semibold">กล้องออฟไลน์</p>
+                                </div>
+                                <iframe id="slot-frame-4" src="about:blank" class="hidden w-full h-full border-none" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                            </div>
+                        </div>
+
+                        <!-- Slot 5 -->
+                        <div id="slot-card-5" class="slot-card hidden relative flex flex-col rounded-xl overflow-hidden bg-slate-900 border border-slate-700/80 transition-all select-none group min-h-[160px]" onclick="selectSlot(5)">
+                            <div id="slot-header-5" class="h-8 px-2.5 bg-slate-950/90 backdrop-blur-xs border-b border-slate-800 flex items-center justify-between gap-1.5 shrink-0 z-10 text-xs">
+                                <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                                    <span id="slot-badge-5" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 border border-slate-700 shrink-0">จอ 6</span>
+                                    <span id="slot-title-5" class="font-medium text-white truncate text-[11px] sm:text-xs">ว่าง (คลิกเพื่อเลือก)</span>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <span id="slot-status-5" class="hidden text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ON</span>
+                                    <button onclick="event.stopPropagation(); toggleSlotQuality(5)" id="slot-hd-btn-5" class="hidden text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition-colors cursor-pointer" title="สลับ SD / HD">SD</button>
+                                    <button onclick="event.stopPropagation(); focusSlot(5)" id="slot-focus-btn-5" class="hidden w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" title="ดูจอนี้แบบเดี่ยว"><i class="fa-solid fa-expand text-[9px]"></i></button>
+                                    <button onclick="event.stopPropagation(); clearSlot(5)" id="slot-clear-btn-5" class="hidden w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer" title="นำกล้องออกจากจอนี้"><i class="fa-solid fa-xmark text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex-1 relative flex items-center justify-center bg-black overflow-hidden">
+                                <div id="slot-empty-5" class="p-3 text-center cursor-pointer text-slate-400 hover:text-white transition-colors space-y-1.5">
+                                    <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-slate-400 group-hover:scale-110 group-hover:text-sky-400 transition-all"><i class="fa-solid fa-plus text-xs"></i></div>
+                                    <p class="text-[11px] font-medium">คลิกเพื่อใส่กล้องลงใน จอ 6</p>
+                                </div>
+                                <div id="slot-offline-5" class="hidden p-3 text-center text-rose-400 space-y-1">
+                                    <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                                    <p class="text-[11px] font-semibold">กล้องออฟไลน์</p>
+                                </div>
+                                <iframe id="slot-frame-5" src="about:blank" class="hidden w-full h-full border-none" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <!-- Offline Alert Box -->
-                    <div id="offline-box" class="hidden p-6 text-center max-w-md mx-auto space-y-3">
-                        <div class="w-14 h-14 rounded-2xl bg-rose-500/20 text-rose-400 mx-auto flex items-center justify-center text-2xl">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
+                    <!-- Multi-view Active Slot Bottom Helper Banner -->
+                    <div id="multi-slot-helper-bar" class="hidden mt-2 px-3 py-1.5 rounded-lg bg-slate-900/90 border border-slate-800 text-[11px] text-slate-300 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-google-blue animate-ping"></span>
+                            <span>กำลังเลือกใส่กล้องลงใน: <strong id="active-slot-label" class="text-sky-400 font-bold">จอ 1</strong> (คลิกกล้องที่ต้องการจากรายการฝั่งซ้าย)</span>
                         </div>
-                        <div class="space-y-1">
-                            <h3 class="text-base font-bold text-white font-heading">
-                                กล้องจุดนี้อยู่ในสถานะออฟไลน์ (ปิดปรับปรุง)
-                            </h3>
-                            <p class="text-xs text-slate-400 leading-relaxed">
-                                สัญญาณจากจุดนี้ขัดข้องชั่วคราวหรือกำลังอยู่ระหว่างการบำรุงรักษาโดยเทศบาลนครนครศรีธรรมราช กรุณาเลือกจุดอื่นจากรายการ
-                            </p>
-                        </div>
+                        <span class="text-slate-500 hidden sm:inline"><i class="fa-solid fa-hand-pointer mr-1"></i>คลิกที่กรอบจอเพื่อสลับเป้าหมาย</span>
                     </div>
 
-                    <!-- Live Stream iframe -->
-                    <iframe id="video-frame" class="hidden w-full h-full border-none" allow="autoplay; fullscreen" allowfullscreen></iframe>
                 </div>
 
                 <!-- Footer Info Bar & System Metadata -->
@@ -418,6 +630,14 @@
         let selectedCam = null;
         let isHD = false;
         let currentFilter = 'all';
+
+        // Multi-screen Grid State (1, 2, 4, 6 screens)
+        let gridMode = 1;
+        let activeSlotIndex = 0;
+        let slots = Array.from({ length: 6 }, () => ({
+            cam: null,
+            isHD: false
+        }));
 
         // 1. Initializer & Theme Management
         function initTheme() {
@@ -463,7 +683,450 @@
             }
         }
 
-        // 2. Fetch All Initial Data
+        // 2. Grid Mode Controller (1, 2, 4, 6)
+        function setGridMode(num) {
+            gridMode = num;
+
+            // Update mode selector button states
+            [1, 2, 4, 6].forEach(n => {
+                const btn = document.getElementById(`grid-btn-${n}`);
+                if (!btn) return;
+                if (n === num) {
+                    btn.className = 'grid-mode-btn px-2.5 py-1 rounded-full font-semibold bg-google-blue text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer';
+                } else {
+                    btn.className = 'grid-mode-btn px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all flex items-center gap-1.5 cursor-pointer';
+                }
+            });
+
+            const singleControls = document.getElementById('single-mode-controls');
+            const multiControls = document.getElementById('multi-mode-controls');
+            const helperBar = document.getElementById('multi-slot-helper-bar');
+
+            if (gridMode === 1) {
+                if (singleControls) {
+                    singleControls.classList.remove('hidden');
+                    singleControls.classList.add('flex');
+                }
+                if (multiControls) {
+                    multiControls.classList.add('hidden');
+                    multiControls.classList.remove('flex');
+                }
+                if (helperBar) {
+                    helperBar.classList.add('hidden');
+                    helperBar.classList.remove('flex');
+                }
+                activeSlotIndex = 0;
+            } else {
+                if (singleControls) {
+                    singleControls.classList.add('hidden');
+                    singleControls.classList.remove('flex');
+                }
+                if (multiControls) {
+                    multiControls.classList.remove('hidden');
+                    multiControls.classList.add('flex');
+                }
+                if (helperBar) {
+                    helperBar.classList.remove('hidden');
+                    helperBar.classList.add('flex');
+                }
+                if (activeSlotIndex >= gridMode) {
+                    activeSlotIndex = 0;
+                }
+            }
+
+            updateGridUI();
+            updateCamListIndicators();
+        }
+
+        // 3. Update Grid UI Layout & Cards
+        function updateGridUI() {
+            const container = document.getElementById('cctv-grid-container');
+            if (!container) return;
+
+            // Reset responsive grid layout classes
+            container.classList.remove(
+                'grid-cols-1', 'grid-cols-2', 'grid-cols-3',
+                'sm:grid-cols-2', 'md:grid-cols-2', 'lg:grid-cols-3'
+            );
+
+            if (gridMode === 1) {
+                container.classList.add('grid-cols-1');
+            } else if (gridMode === 2) {
+                container.classList.add('grid-cols-1', 'md:grid-cols-2');
+            } else if (gridMode === 4) {
+                container.classList.add('grid-cols-1', 'sm:grid-cols-2');
+            } else if (gridMode === 6) {
+                container.classList.add('grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3');
+            }
+
+            // Update slot cards
+            for (let i = 0; i < 6; i++) {
+                const card = document.getElementById(`slot-card-${i}`);
+                if (!card) continue;
+
+                if (i < gridMode) {
+                    card.classList.remove('hidden');
+                    card.classList.add('flex');
+
+                    if (gridMode > 1 && i === activeSlotIndex) {
+                        card.classList.add('active-target');
+                    } else {
+                        card.classList.remove('active-target');
+                    }
+
+                    renderSlot(i);
+                } else {
+                    card.classList.add('hidden');
+                    card.classList.remove('flex', 'active-target');
+                    const frame = document.getElementById(`slot-frame-${i}`);
+                    if (frame && frame.src !== 'about:blank') {
+                        frame.src = 'about:blank';
+                    }
+                }
+            }
+
+            const slotLabel = document.getElementById('active-slot-label');
+            if (slotLabel) {
+                slotLabel.textContent = `จอ ${activeSlotIndex + 1}`;
+            }
+
+            // Update Player Header Text & Icon
+            const headerTitle = document.getElementById('current-cam-title');
+            const headerGroup = document.getElementById('current-cam-group');
+            const headerIcon = document.getElementById('player-header-icon');
+
+            if (gridMode === 1) {
+                const currentSlot = slots[0];
+                if (currentSlot && currentSlot.cam) {
+                    headerTitle.textContent = `${currentSlot.cam.name} (${currentSlot.cam.id})`;
+                    headerGroup.textContent = `หมวดหมู่: ${currentSlot.cam.group || 'ทั่วไป'} | ระบบตรวจการณ์เทศบาลนครนครศรีธรรมราช`;
+                    if (headerIcon) headerIcon.className = 'fa-solid fa-camera';
+                } else {
+                    headerTitle.textContent = 'กรุณาเลือกกล้องจากรายการฝั่งซ้าย';
+                    headerGroup.textContent = 'ระบบตรวจการณ์เทศบาลนครนครศรีธรรมราช';
+                    if (headerIcon) headerIcon.className = 'fa-solid fa-camera';
+                }
+            } else {
+                const filledCount = slots.slice(0, gridMode).filter(s => s.cam).length;
+                headerTitle.textContent = `ระบบมัลติวิว ${gridMode} จอพร้อมกัน (${filledCount}/${gridMode} จุดตรวจ)`;
+                headerGroup.textContent = `คลิกเลือกช่องจอแล้วเลือกกล้องจากรายการซ้ายมือเพื่อเปิดชมพร้อมกัน หรือกด "สุ่มเติมกล้อง" เพื่อดูทันที`;
+                if (headerIcon) headerIcon.className = 'fa-solid fa-table-cells';
+            }
+        }
+
+        // 4. Render a single slot card
+        function renderSlot(idx) {
+            const slot = slots[idx];
+            if (!slot) return;
+
+            const titleEl = document.getElementById(`slot-title-${idx}`);
+            const statusEl = document.getElementById(`slot-status-${idx}`);
+            const hdBtnEl = document.getElementById(`slot-hd-btn-${idx}`);
+            const focusBtnEl = document.getElementById(`slot-focus-btn-${idx}`);
+            const clearBtnEl = document.getElementById(`slot-clear-btn-${idx}`);
+            const emptyEl = document.getElementById(`slot-empty-${idx}`);
+            const offlineEl = document.getElementById(`slot-offline-${idx}`);
+            const frameEl = document.getElementById(`slot-frame-${idx}`);
+
+            if (!slot.cam) {
+                if (titleEl) titleEl.textContent = `ว่าง (คลิกเพื่อเลือก)`;
+                if (statusEl) statusEl.classList.add('hidden');
+                if (hdBtnEl) hdBtnEl.classList.add('hidden');
+                if (focusBtnEl) focusBtnEl.classList.add('hidden');
+                if (clearBtnEl) clearBtnEl.classList.add('hidden');
+                if (emptyEl) emptyEl.classList.remove('hidden');
+                if (offlineEl) offlineEl.classList.add('hidden');
+                if (frameEl) {
+                    frameEl.classList.add('hidden');
+                    if (frameEl.src !== 'about:blank') frameEl.src = 'about:blank';
+                }
+                return;
+            }
+
+            const cam = slot.cam;
+            const isOff = camStatuses[cam.id] === 'offline';
+
+            if (titleEl) titleEl.textContent = `${cam.name} (${cam.id})`;
+            if (focusBtnEl) focusBtnEl.classList.remove('hidden');
+            if (clearBtnEl) clearBtnEl.classList.remove('hidden');
+
+            if (isOff) {
+                if (statusEl) {
+                    statusEl.classList.remove('hidden');
+                    statusEl.className = 'text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+                    statusEl.textContent = 'OFF';
+                }
+                if (hdBtnEl) hdBtnEl.classList.add('hidden');
+                if (emptyEl) emptyEl.classList.add('hidden');
+                if (offlineEl) offlineEl.classList.remove('hidden');
+                if (frameEl) {
+                    frameEl.classList.add('hidden');
+                    if (frameEl.src !== 'about:blank') frameEl.src = 'about:blank';
+                }
+            } else {
+                if (statusEl) {
+                    statusEl.classList.remove('hidden');
+                    statusEl.className = 'text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+                    statusEl.textContent = 'ON';
+                }
+                if (hdBtnEl) {
+                    hdBtnEl.classList.remove('hidden');
+                    hdBtnEl.textContent = slot.isHD ? 'HD' : 'SD';
+                    hdBtnEl.className = slot.isHD 
+                        ? 'text-[9px] font-mono px-1.5 py-0.5 rounded bg-google-blue text-white font-bold cursor-pointer' 
+                        : 'text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition-colors cursor-pointer';
+                }
+                if (emptyEl) emptyEl.classList.add('hidden');
+                if (offlineEl) offlineEl.classList.add('hidden');
+                if (frameEl) {
+                    frameEl.classList.remove('hidden');
+                    const targetUrl = slot.isHD 
+                        ? `${API_BASE}/cam/${cam.id}/` 
+                        : `${API_BASE}/cam/${cam.id}_sub/`;
+                    if (frameEl.src !== targetUrl) {
+                        frameEl.src = targetUrl;
+                    }
+                }
+            }
+        }
+
+        // 5. Select a Slot as Target
+        function selectSlot(idx) {
+            if (idx >= gridMode) return;
+            activeSlotIndex = idx;
+
+            for (let i = 0; i < gridMode; i++) {
+                const card = document.getElementById(`slot-card-${i}`);
+                if (!card) continue;
+                if (gridMode > 1 && i === activeSlotIndex) {
+                    card.classList.add('active-target');
+                } else {
+                    card.classList.remove('active-target');
+                }
+            }
+
+            const slotLabel = document.getElementById('active-slot-label');
+            if (slotLabel) {
+                slotLabel.textContent = `จอ ${activeSlotIndex + 1}`;
+            }
+        }
+
+        // 6. Camera Selection Handler
+        function selectCamera(cam) {
+            const isOff = camStatuses[cam.id] === 'offline';
+
+            if (gridMode === 1) {
+                slots[0].cam = cam;
+                slots[0].isHD = isHD;
+                selectedCam = cam;
+                updateSingleModeQualityButtons();
+                updateGridUI();
+
+                if (isOff) {
+                    showToast(`จุดตรวจ "${cam.name}" กำลังออฟไลน์ (ปิดปรับปรุง)`, 'warning');
+                }
+            } else {
+                const targetIdx = activeSlotIndex;
+                slots[targetIdx].cam = cam;
+                slots[targetIdx].isHD = false;
+
+                if (isOff) {
+                    showToast(`ใส่ "${cam.name}" ลงใน จอ ${targetIdx + 1} (กล้องออฟไลน์)`, 'warning');
+                } else {
+                    showToast(`กำหนด "${cam.name}" ลงใน จอ ${targetIdx + 1} เรียบร้อย`, 'success');
+                }
+
+                let nextSlot = -1;
+                for (let i = 0; i < gridMode; i++) {
+                    const checkIdx = (targetIdx + 1 + i) % gridMode;
+                    if (!slots[checkIdx].cam) {
+                        nextSlot = checkIdx;
+                        break;
+                    }
+                }
+                if (nextSlot !== -1) {
+                    activeSlotIndex = nextSlot;
+                } else {
+                    activeSlotIndex = (targetIdx + 1) % gridMode;
+                }
+
+                updateGridUI();
+            }
+
+            updateCamListIndicators();
+
+            if (window.innerWidth < 1024) {
+                setMobileView('player');
+            }
+
+            fetch(`${API_BASE}/api/track-view/${cam.id}`).catch(() => {});
+        }
+
+        // 7. Auto-populate slots with available online cameras
+        function autoPopulateSlots() {
+            const onlineCams = allCams.filter(c => camStatuses[c.id] !== 'offline');
+            if (onlineCams.length === 0) {
+                showToast('ไม่มีกล้องออนไลน์ที่พร้อมใช้งานในขณะนี้', 'warning');
+                return;
+            }
+
+            const shuffled = [...onlineCams].sort(() => 0.5 - Math.random());
+            const usedIds = new Set();
+
+            for (let i = 0; i < gridMode; i++) {
+                const pick = shuffled.find(c => !usedIds.has(c.id)) || shuffled[i % shuffled.length];
+                if (pick) {
+                    slots[i].cam = pick;
+                    slots[i].isHD = false;
+                    usedIds.add(pick.id);
+                }
+            }
+
+            activeSlotIndex = 0;
+            updateGridUI();
+            updateCamListIndicators();
+            showToast(`สุ่มเติมกล้องออนไลน์ลงใน ${gridMode} จอเรียบร้อยแล้ว`, 'success');
+        }
+
+        // 8. Clear Single Slot or All Slots
+        function clearSlot(idx) {
+            if (!slots[idx]) return;
+            const removedName = slots[idx].cam ? slots[idx].cam.name : `จอ ${idx + 1}`;
+            slots[idx].cam = null;
+            slots[idx].isHD = false;
+            activeSlotIndex = idx;
+            updateGridUI();
+            updateCamListIndicators();
+            showToast(`นำ ${removedName} ออกจากจอ ${idx + 1} แล้ว`, 'info');
+        }
+
+        function clearAllSlots() {
+            for (let i = 0; i < 6; i++) {
+                slots[i].cam = null;
+                slots[i].isHD = false;
+            }
+            activeSlotIndex = 0;
+            updateGridUI();
+            updateCamListIndicators();
+            showToast('ล้างกล้องทุกจอเรียบร้อยแล้ว', 'info');
+        }
+
+        // 9. Focus a Slot (expand to 1 screen mode)
+        function focusSlot(idx) {
+            const targetCam = slots[idx].cam;
+            if (!targetCam) return;
+
+            slots[0].cam = targetCam;
+            slots[0].isHD = slots[idx].isHD;
+            selectedCam = targetCam;
+            setGridMode(1);
+            showToast(`ขยาย "${targetCam.name}" เป็นโหมดจอเดี่ยว`, 'info');
+        }
+
+        // 10. Toggle Quality for a specific slot
+        function toggleSlotQuality(idx) {
+            const slot = slots[idx];
+            if (!slot || !slot.cam) return;
+
+            slot.isHD = !slot.isHD;
+            if (gridMode === 1 && idx === 0) {
+                isHD = slot.isHD;
+                updateSingleModeQualityButtons();
+            }
+            renderSlot(idx);
+            showToast(`จอ ${idx + 1} สลับเป็นความละเอียด ${slot.isHD ? 'HD' : 'SD'}`, 'info');
+        }
+
+        // 11. Single Mode Quality Controls
+        function switchQuality(wantHD) {
+            if (isHD === wantHD) return;
+            isHD = wantHD;
+            slots[0].isHD = wantHD;
+            updateSingleModeQualityButtons();
+            renderSlot(0);
+            showToast(isHD ? 'สลับเป็นสัญญาณภาพความละเอียดสูง (HD)' : 'สลับเป็นสัญญาณภาพมาตรฐาน (SD - โหลดไว)', 'info');
+        }
+
+        function updateSingleModeQualityButtons() {
+            const btnSd = document.getElementById('btn-sd');
+            const btnHd = document.getElementById('btn-hd');
+            if (!btnSd || !btnHd) return;
+
+            if (isHD) {
+                btnHd.className = 'px-2.5 py-1 rounded-full font-semibold bg-google-blue text-white shadow-xs transition-all cursor-pointer';
+                btnSd.className = 'px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer';
+            } else {
+                btnSd.className = 'px-2.5 py-1 rounded-full font-semibold bg-google-blue text-white shadow-xs transition-all cursor-pointer';
+                btnHd.className = 'px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer';
+            }
+        }
+
+        function loadStream() {
+            if (!slots[0].cam) return;
+            const frame = document.getElementById('slot-frame-0');
+            if (frame) {
+                const targetUrl = slots[0].isHD 
+                    ? `${API_BASE}/cam/${slots[0].cam.id}/?t=${Date.now()}` 
+                    : `${API_BASE}/cam/${slots[0].cam.id}_sub/?t=${Date.now()}`;
+                frame.src = targetUrl;
+                showToast('รีโหลดสัญญาณภาพสดเรียบร้อย', 'info');
+            }
+        }
+
+        function openStreamInNewTab() {
+            const cam = slots[0].cam || selectedCam;
+            if (!cam) {
+                showToast('กรุณาเลือกกล้องก่อน', 'warning');
+                return;
+            }
+            const streamUrl = isHD 
+                ? `${API_BASE}/cam/${cam.id}/` 
+                : `${API_BASE}/cam/${cam.id}_sub/`;
+            window.open(streamUrl, '_blank');
+        }
+
+        function copyCameraLink() {
+            const cam = slots[0].cam || selectedCam;
+            if (!cam) {
+                showToast('กรุณาเลือกกล้องก่อน', 'warning');
+                return;
+            }
+            const url = new URL(window.location.href);
+            url.searchParams.set('cam', cam.id);
+            navigator.clipboard.writeText(url.href).then(() => {
+                showToast(`คัดลอกลิงก์กล้อง ${cam.id} เรียบร้อยแล้ว`, 'success');
+            }).catch(() => {
+                showToast('ไม่สามารถคัดลอกลิงก์ได้', 'error');
+            });
+        }
+
+        function toggleGridFullscreen() {
+            const el = document.getElementById('grid-viewport-wrapper');
+            if (!el) return;
+
+            if (!document.fullscreenElement) {
+                if (el.requestFullscreen) {
+                    el.requestFullscreen();
+                } else if (el.webkitRequestFullscreen) {
+                    el.webkitRequestFullscreen();
+                } else if (el.msRequestFullscreen) {
+                    el.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        function pickFirstAvailableCamera() {
+            const available = allCams.find(c => camStatuses[c.id] !== 'offline') || allCams[0];
+            if (available) {
+                selectCamera(available);
+            }
+        }
+
+        // 12. Fetch All Initial Data
         async function fetchAllData(isManualRefresh = false) {
             const refreshIcon = document.getElementById('refresh-icon');
             if (refreshIcon) refreshIcon.classList.add('fa-spin');
@@ -483,12 +1146,17 @@
                 renderStats(statsRes);
                 filterCameras();
 
-                // Check URL query param e.g. ?cam=SC004
                 const params = new URLSearchParams(window.location.search);
                 const targetCamId = params.get('cam');
-                if (targetCamId && !selectedCam) {
+                if (targetCamId) {
                     const found = allCams.find(c => c.id.toLowerCase() === targetCamId.toLowerCase());
-                    if (found) selectCamera(found);
+                    if (found) {
+                        selectCamera(found);
+                    } else {
+                        pickFirstAvailableCamera();
+                    }
+                } else if (!slots[0].cam) {
+                    pickFirstAvailableCamera();
                 }
 
                 if (isManualRefresh) {
@@ -503,7 +1171,7 @@
                         <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">
                             อาจเกิดจากข้อจำกัดของเครือข่าย หรือเซิร์ฟเวอร์ปลายทาง กรุณาเปิดผ่าน Localhost หรือตรวจสอบการเชื่อมต่ออินเทอร์เน็ต
                         </p>
-                        <button onclick="fetchAllData(true)" class="mt-2 px-4 py-1.5 rounded-full bg-google-blue text-white text-xs font-semibold">
+                        <button onclick="fetchAllData(true)" class="mt-2 px-4 py-1.5 rounded-full bg-google-blue text-white text-xs font-semibold cursor-pointer">
                             ลองใหม่อีกครั้ง
                         </button>
                     </div>
@@ -515,7 +1183,7 @@
             }
         }
 
-        // 3. Realtime Status & Viewer Count Polling
+        // 13. Realtime Status & Viewer Count Polling
         async function updateRealtimeStatus() {
             try {
                 const [statusRes, viewRes] = await Promise.all([
@@ -530,7 +1198,6 @@
                     document.getElementById('view-val').innerText = Number(viewRes.total).toLocaleString();
                 }
 
-                // Update DOM items
                 allCams.forEach(cam => {
                     const isOff = camStatuses[cam.id] === 'offline';
                     const viewers = liveViews[cam.id] || 0;
@@ -560,12 +1227,18 @@
                         }
                     }
                 });
+
+                for (let i = 0; i < gridMode; i++) {
+                    if (slots[i].cam) {
+                        renderSlot(i);
+                    }
+                }
             } catch (e) {
                 console.warn('Realtime update skipped:', e);
             }
         }
 
-        // 4. Update Overview Stats
+        // 14. Update Overview Stats
         async function fetchStats() {
             try {
                 const stats = await fetch(`${API_BASE}/api/stats`).then(r => r.json());
@@ -583,7 +1256,7 @@
             document.getElementById('offline-val').innerText = Number(offline).toLocaleString();
         }
 
-        // 5. Render Camera List (Grouped)
+        // 15. Render Camera List (Grouped)
         function renderList(cams) {
             const container = document.getElementById('cam-list');
             const countLabel = document.getElementById('list-count-label');
@@ -593,7 +1266,7 @@
                     <div class="p-8 text-center text-google-text-muted dark:text-google-dark-text-muted space-y-2">
                         <i class="fa-solid fa-video-slash text-2xl"></i>
                         <p class="text-sm font-semibold">ไม่พบกล้องที่ตรงกับเงื่อนไขการค้นหา</p>
-                        <button onclick="clearSearch()" class="text-xs text-google-blue hover:underline">ล้างคำค้นหา</button>
+                        <button onclick="clearSearch()" class="text-xs text-google-blue hover:underline cursor-pointer">ล้างคำค้นหา</button>
                     </div>
                 `;
                 if (countLabel) countLabel.textContent = `พบ 0 จุด`;
@@ -602,7 +1275,6 @@
 
             if (countLabel) countLabel.textContent = `แสดง ${cams.length} จาก ${allCams.length} จุด`;
 
-            // Group Cameras
             const groups = {};
             cams.forEach(cam => {
                 const g = cam.group || 'ทั่วไป / จุดสำคัญ';
@@ -616,7 +1288,6 @@
                 const groupWrapper = document.createElement('div');
                 groupWrapper.className = 'mb-3';
 
-                // Group Title Header
                 const title = document.createElement('div');
                 title.className = 'flex items-center justify-between text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted uppercase tracking-wider px-2 py-1.5 mb-1';
                 title.innerHTML = `
@@ -625,15 +1296,13 @@
                 `;
                 groupWrapper.appendChild(title);
 
-                // Group Items
                 groups[groupName].forEach(cam => {
                     const isOff = camStatuses[cam.id] === 'offline';
                     const viewers = liveViews[cam.id] || 0;
-                    const isSelected = selectedCam && selectedCam.id === cam.id;
 
                     const item = document.createElement('div');
                     item.id = `cam-item-${cam.id}`;
-                    item.className = `cam-item p-2.5 rounded-xl mb-1 flex items-center justify-between gap-2.5 ${isOff ? 'offline' : ''} ${isSelected ? 'active' : 'bg-google-subtle/30 dark:bg-google-dark-subtle/40'}`;
+                    item.className = `cam-item p-2.5 rounded-xl mb-1 flex items-center justify-between gap-2.5 ${isOff ? 'offline' : ''} bg-google-subtle/30 dark:bg-google-dark-subtle/40`;
                     item.onclick = () => selectCamera(cam);
 
                     const statusClass = isOff 
@@ -642,7 +1311,7 @@
 
                     item.innerHTML = `
                         <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                            <div class="w-7 h-7 rounded-lg ${isSelected ? 'bg-google-blue text-white' : 'bg-white dark:bg-google-dark-surface text-google-text-muted'} border border-google-border dark:border-google-dark-border flex items-center justify-center text-xs shrink-0">
+                            <div class="cam-item-icon w-7 h-7 rounded-lg bg-white dark:bg-google-dark-surface text-google-text-muted border border-google-border dark:border-google-dark-border flex items-center justify-center text-xs shrink-0">
                                 <i class="fa-solid fa-video"></i>
                             </div>
                             <div class="min-w-0 flex-1">
@@ -668,121 +1337,58 @@
 
                 container.appendChild(groupWrapper);
             }
+
+            updateCamListIndicators();
         }
 
-        // 6. Camera Selection Handler
-        function selectCamera(cam) {
-            selectedCam = cam;
-
-            const isOff = camStatuses[cam.id] === 'offline';
-
-            // Highlight Active Item
-            document.querySelectorAll('.cam-item').forEach(el => el.classList.remove('active'));
-            const activeEl = document.getElementById(`cam-item-${cam.id}`);
-            if (activeEl) activeEl.classList.add('active');
-
-            // Update Player Header
-            document.getElementById('current-cam-title').innerText = `${cam.name} (${cam.id})`;
-            document.getElementById('current-cam-group').innerText = `หมวดหมู่: ${cam.group || 'ทั่วไป'} | จุดตรวจเทศบาลนครฯ`;
-            document.getElementById('mode-controls').classList.remove('hidden');
-            document.getElementById('mode-controls').classList.add('flex');
-
-            // Handle Stream or Offline Alert
-            const iframe = document.getElementById('video-frame');
-            const placeholder = document.getElementById('placeholder-box');
-            const offlineBox = document.getElementById('offline-box');
-
-            placeholder.classList.add('hidden');
-
-            if (isOff) {
-                iframe.classList.add('hidden');
-                iframe.src = 'about:blank';
-                offlineBox.classList.remove('hidden');
-                showToast(`จุดตรวจ "${cam.name}" กำลังออฟไลน์ (ปิดปรับปรุง)`, 'warning');
-            } else {
-                offlineBox.classList.add('hidden');
-                loadStream();
+        // 16. Update Camera List Indicators (Badges for active slots)
+        function updateCamListIndicators() {
+            const camToSlots = {};
+            for (let i = 0; i < gridMode; i++) {
+                if (slots[i].cam) {
+                    const cid = slots[i].cam.id;
+                    if (!camToSlots[cid]) camToSlots[cid] = [];
+                    camToSlots[cid].push(i + 1);
+                }
             }
 
-            // On mobile, auto switch to player tab
-            if (window.innerWidth < 1024) {
-                setMobileView('player');
-            }
+            allCams.forEach(cam => {
+                const item = document.getElementById(`cam-item-${cam.id}`);
+                if (!item) return;
 
-            // Track view API
-            fetch(`${API_BASE}/api/track-view/${cam.id}`).catch(() => {});
-        }
+                const assigned = camToSlots[cam.id];
+                let slotBadge = document.getElementById(`slot-tag-${cam.id}`);
 
-        // 7. Load Stream into iframe
-        function loadStream() {
-            if (!selectedCam) return;
-            const iframe = document.getElementById('video-frame');
-            const placeholder = document.getElementById('placeholder-box');
-            const offlineBox = document.getElementById('offline-box');
-
-            if (camStatuses[selectedCam.id] === 'offline') {
-                return;
-            }
-
-            placeholder.classList.add('hidden');
-            offlineBox.classList.add('hidden');
-            iframe.classList.remove('hidden');
-
-            // Stream URL Pattern
-            const streamUrl = isHD 
-                ? `${API_BASE}/cam/${selectedCam.id}/` 
-                : `${API_BASE}/cam/${selectedCam.id}_sub/`;
-
-            iframe.src = streamUrl;
-        }
-
-        // 8. Quality Switcher (SD / HD)
-        function switchQuality(wantHD) {
-            if (isHD === wantHD) return;
-            isHD = wantHD;
-
-            const btnSd = document.getElementById('btn-sd');
-            const btnHd = document.getElementById('btn-hd');
-
-            if (isHD) {
-                btnHd.className = 'px-3 py-1 rounded-full font-semibold bg-google-blue text-white shadow-xs transition-all';
-                btnSd.className = 'px-3 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all';
-                showToast('สลับเป็นสัญญาณภาพความละเอียดสูง (HD)', 'info');
-            } else {
-                btnSd.className = 'px-3 py-1 rounded-full font-semibold bg-google-blue text-white shadow-xs transition-all';
-                btnHd.className = 'px-3 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all';
-                showToast('สลับเป็นสัญญาณภาพมาตรฐาน (SD - โหลดไว)', 'info');
-            }
-
-            loadStream();
-        }
-
-        // 9. Quick Actions
-        function pickFirstAvailableCamera() {
-            const available = allCams.find(c => camStatuses[c.id] !== 'offline') || allCams[0];
-            if (available) selectCamera(available);
-        }
-
-        function openStreamInNewTab() {
-            if (!selectedCam) return;
-            const streamUrl = isHD 
-                ? `${API_BASE}/cam/${selectedCam.id}/` 
-                : `${API_BASE}/cam/${selectedCam.id}_sub/`;
-            window.open(streamUrl, '_blank');
-        }
-
-        function copyCameraLink() {
-            if (!selectedCam) return;
-            const url = new URL(window.location.href);
-            url.searchParams.set('cam', selectedCam.id);
-            navigator.clipboard.writeText(url.href).then(() => {
-                showToast(`คัดลอกลิงก์กล้อง ${selectedCam.id} เรียบร้อยแล้ว`, 'success');
-            }).catch(() => {
-                showToast('ไม่สามารถคัดลอกลิงก์ได้', 'error');
+                if (gridMode === 1) {
+                    if (slots[0].cam && slots[0].cam.id === cam.id) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                    if (slotBadge) slotBadge.classList.add('hidden');
+                } else {
+                    if (assigned && assigned.length > 0) {
+                        item.classList.add('active');
+                        if (!slotBadge) {
+                            slotBadge = document.createElement('span');
+                            slotBadge.id = `slot-tag-${cam.id}`;
+                            const statusBadge = document.getElementById(`status-badge-${cam.id}`);
+                            if (statusBadge && statusBadge.parentNode) {
+                                statusBadge.parentNode.insertBefore(slotBadge, statusBadge);
+                            }
+                        }
+                        slotBadge.className = 'text-[10px] px-1.5 py-0.5 rounded font-bold bg-google-blue/15 text-google-blue dark:text-sky-300 border border-google-blue/30';
+                        slotBadge.textContent = assigned.map(n => `จอ ${n}`).join(', ');
+                        slotBadge.classList.remove('hidden');
+                    } else {
+                        item.classList.remove('active');
+                        if (slotBadge) slotBadge.classList.add('hidden');
+                    }
+                }
             });
         }
 
-        // 10. Filter & Search Handlers
+        // 17. Filter & Search Handlers
         function filterCameras() {
             const searchInput = document.getElementById('search');
             const clearBtn = document.getElementById('search-clear-btn');
@@ -802,7 +1408,6 @@
 
                 if (!matchKeyword) return false;
 
-                // Category filter
                 if (currentFilter === 'online') {
                     return camStatuses[c.id] !== 'offline';
                 } else if (currentFilter === 'school') {
@@ -841,7 +1446,7 @@
             filterCameras();
         }
 
-        // 11. Toast Snackbar Helper
+        // 18. Toast Snackbar Helper
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             if (!container) return;
@@ -871,15 +1476,16 @@
             }, 3000);
         }
 
-        // 12. Run on page load
+        // 19. Run on page load
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
+            setGridMode(1);
             fetchAllData();
 
-            // Auto polling: 10s status check, 30s stats check
             setInterval(updateRealtimeStatus, 10000);
             setInterval(fetchStats, 30000);
         });
+
     </script>
 </body>
 </html>

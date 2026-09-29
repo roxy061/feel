@@ -1303,7 +1303,7 @@
                 <a id="lightbox-download-btn" href="#" download target="_blank" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors" title="ดาวน์โหลดภาพต้นฉบับ">
                     <i class="fa-solid fa-download text-xs"></i>
                 </a>
-                <a href="https://drive.google.com/drive/folders/13JPid47x7QZvmnHwQI0uZ5hVPatEi3Ow?usp=sharing" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-medium flex items-center gap-1.5 transition-colors" title="เปิดดูโฟลเดอร์ Google Drive">
+                <a id="lightbox-drive-btn" href="https://drive.google.com/drive/folders/13JPid47x7QZvmnHwQI0uZ5hVPatEi3Ow?usp=sharing" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-medium flex items-center gap-1.5 transition-colors" title="เปิดดูโฟลเดอร์ Google Drive">
                     <i class="fa-brands fa-google-drive text-amber-400"></i>
                     <span class="hidden sm:inline">Drive</span>
                 </a>
@@ -1377,34 +1377,37 @@
                 demo: "./เกียรติบัตร วิท ภาค.pdf"
             },
             {
-                id: "doc1",
-                title: "เอกสารบริการและกิจกรรมนักเรียนนักศึกษา (Student Service)",
-                category: "เอกสาร",
-                tags: ["เอกสารการศึกษา", "Student Service", "ประวัติกิจกรรม"],
-                description: "เอกสารหลักฐานการเข้าร่วมกิจกรรมและงานบริการนักเรียนนักศึกษา วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
-                images: ["./doc_studentservice.jpg"],
-                github: "",
-                demo: "./doc_studentservice.jpg"
-            },
-            {
-                id: "iot1",
-                title: "ระบบตรวจวัดและแจ้งเตือนสภาพแวดล้อมด้วย IoT (ESP32)",
+                id: "proj_vending",
+                title: "ตู้กดผ้าอนามัยแบบหยอดเหรียญและสแกน QR Code (Smart Sanitary Napkin Vending Machine)",
                 category: "ผลงาน",
-                tags: ["ESP32", "Sensors", "Blynk IoT", "WiFi"],
-                description: "โครงงานพัฒนาอุปกรณ์ตรวจวัดค่าสภาพแวดล้อม เชื่อมต่อเซนเซอร์และส่งข้อมูลแบบ Real-time แสดงผลผ่าน Blynk Dashboard และแจ้งเตือนผ่าน LINE Notify",
-                images: ["./ตัวเองตอน ฝึกดร..JPG"],
-                github: "https://github.com/",
-                demo: ""
-            },
-            {
-                id: "ai1",
-                title: "ระบบผู้ช่วยอัจฉริยะและการเขียนโปรแกรมด้วย Generative AI",
-                category: "ผลงาน",
-                tags: ["AI Tools", "Python", "Automation", "Workflow"],
-                description: "การประยุกต์ใช้ AI Prompts ในการวิเคราะห์โครงสร้างข้อมูล ช่วยเขียนและทดสอบโค้ดระบบอัตโนมัติ เพื่อเพิ่มประสิทธิภาพการทำงาน",
-                images: [],
-                github: "https://github.com/",
-                demo: ""
+                tags: [
+                    "ESP32 / ESP8266",
+                    "IoT & Hardware",
+                    "ระบบชำระเงิน QR Code",
+                    "ตู้หยอดเหรียญอัตโนมัติ",
+                    "โครงงาน ปวช.3"
+                ],
+                description: "โครงงานพัฒนาตู้กดผ้าอนามัยอัตโนมัติแบบ 2 ระบบ (หยอดเหรียญและสแกนจ่าย QR Code) เพื่อสุขอนามัยฉุกเฉินภายในสถานศึกษา ควบคุมด้วยบอร์ดไมโครคอนโทรลเลอร์ ESP32/ESP8266 ระบบขับเคลื่อน Servo MG996R ตรวจสอบการจ่ายด้วย IR Sensor และจอ LCD 16x2 แสดงสถานะ ติดตั้งใช้งานจริง ณ วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
+                images: [
+                    "./project_vending/IMG_20260218_114431.jpg",
+                    "./project_vending/VID_20260218_114349.jpg",
+                    "./project_vending/IMG_20260211_155129.jpg",
+                    "./project_vending/IMG_20260211_154927.jpg",
+                    "./project_vending/IMG_20260211_154934.jpg",
+                    "./project_vending/IMG_20260211_155204.jpg",
+                    "./project_vending/IMG_20260211_154903.jpg",
+                    "./project_vending/IMG_20260211_154945.jpg",
+                    "./project_vending/IMG_20260211_154951.jpg",
+                    "./project_vending/IMG_20260215_002229.jpg",
+                    "./project_vending/IMG_20260211_012454.jpg",
+                    "./project_vending/IMG_20260211_012503.jpg",
+                    "./project_vending/VID_20260207_204155.jpg",
+                    "./project_vending_machine.jpg"
+                ],
+                driveFolder: "https://drive.google.com/drive/folders/1gVwJP5P4sIL0CHV5UJUO55AlMwHmdA8i?usp=sharing",
+                github: "https://drive.google.com/drive/folders/1gVwJP5P4sIL0CHV5UJUO55AlMwHmdA8i?usp=sharing",
+                pdfDrive: "https://drive.google.com/file/d/13isFv_mZr_wQ9dRUV0In9HO7VG1xXkih/view?usp=sharing",
+                demo: "./โปรเจกค์โครงงาน ปวช3.pdf"
             }
         ];
 
@@ -2009,20 +2012,41 @@
         // ==========================================
         // LIGHTBOX CONTROLLER
         // ==========================================
-        function openLightbox(index) {
-            if (!galleryPhotos || !galleryPhotos[index]) return;
+        let currentLightboxList = null;
+        let currentLightboxTitle = null;
+        let currentLightboxDriveUrl = null;
+
+        function openLightbox(index, customList = null, customTitle = null, driveUrl = null) {
+            if (customList && Array.isArray(customList) && customList.length > 0) {
+                currentLightboxList = customList;
+                currentLightboxTitle = customTitle;
+                currentLightboxDriveUrl = driveUrl || 'https://drive.google.com/drive/folders/1gVwJP5P4sIL0CHV5UJUO55AlMwHmdA8i?usp=sharing';
+            } else {
+                currentLightboxList = galleryPhotos;
+                currentLightboxTitle = null;
+                currentLightboxDriveUrl = 'https://drive.google.com/drive/folders/13JPid47x7QZvmnHwQI0uZ5hVPatEi3Ow?usp=sharing';
+            }
+
+            if (!currentLightboxList || !currentLightboxList[index]) return;
             currentLightboxIndex = index;
             const modal = document.getElementById('lightbox-modal');
             const img = document.getElementById('lightbox-img');
             const title = document.getElementById('lightbox-title');
             const counter = document.getElementById('lightbox-counter');
             const downloadBtn = document.getElementById('lightbox-download-btn');
+            const driveBtn = document.getElementById('lightbox-drive-btn');
 
-            const photo = galleryPhotos[index];
-            img.src = photo.path;
-            title.textContent = photo.filename;
-            counter.textContent = `${index + 1} / ${galleryPhotos.length}`;
-            downloadBtn.href = photo.path;
+            const item = currentLightboxList[index];
+            const path = typeof item === 'string' ? item : item.path;
+            const filename = typeof item === 'string' 
+                ? (currentLightboxTitle ? `${currentLightboxTitle} • ภาพที่ ${index + 1}` : item.split('/').pop()) 
+                : (item.filename || 'รูปภาพ');
+
+            img.src = path;
+            title.textContent = filename;
+            counter.textContent = `${index + 1} / ${currentLightboxList.length}`;
+            if (downloadBtn) downloadBtn.href = path;
+            if (driveBtn) driveBtn.href = currentLightboxDriveUrl;
 
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -2030,21 +2054,46 @@
 
         function closeLightbox() {
             const modal = document.getElementById('lightbox-modal');
-            modal.classList.add('hidden');
+            if (modal) modal.classList.add('hidden');
             document.body.style.overflow = '';
+            currentLightboxList = null;
+            currentLightboxTitle = null;
+            currentLightboxDriveUrl = null;
         }
 
         function prevLightboxPhoto() {
-            if (!galleryPhotos.length) return;
-            currentLightboxIndex = (currentLightboxIndex - 1 + galleryPhotos.length) % galleryPhotos.length;
-            openLightbox(currentLightboxIndex);
+            const list = currentLightboxList || galleryPhotos;
+            if (!list || !list.length) return;
+            currentLightboxIndex = (currentLightboxIndex - 1 + list.length) % list.length;
+            openLightbox(currentLightboxIndex, currentLightboxList, currentLightboxTitle, currentLightboxDriveUrl);
         }
 
         function nextLightboxPhoto() {
-            if (!galleryPhotos.length) return;
-            currentLightboxIndex = (currentLightboxIndex + 1) % galleryPhotos.length;
-            openLightbox(currentLightboxIndex);
+            const list = currentLightboxList || galleryPhotos;
+            if (!list || !list.length) return;
+            currentLightboxIndex = (currentLightboxIndex + 1) % list.length;
+            openLightbox(currentLightboxIndex, currentLightboxList, currentLightboxTitle, currentLightboxDriveUrl);
         }
+
+        function openProjectPhotos(projectId, startIndex = 0) {
+            const projects = getStoredProjects();
+            const p = projects.find(item => item.id === projectId);
+            if (!p) return;
+            const imgList = (typeof p.images === 'string' ? p.images.split(',') : (p.images || [])).map(i => i.trim()).filter(Boolean);
+            if (!imgList.length) return;
+            const driveUrl = p.driveFolder || p.github || 'https://drive.google.com/drive/folders/1gVwJP5P4sIL0CHV5UJUO55AlMwHmdA8i?usp=sharing';
+            openLightbox(startIndex, imgList, p.title, driveUrl);
+        }
+
+        // Global Keyboard navigation for Lightbox
+        window.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('lightbox-modal');
+            if (modal && !modal.classList.contains('hidden')) {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') prevLightboxPhoto();
+                if (e.key === 'ArrowRight') nextLightboxPhoto();
+            }
+        });
 
         // ==========================================
         // SITE DATA LOADER & CMS DYNAMIC RENDERER
@@ -2059,7 +2108,7 @@
                         portfolioData = serverData;
                         localStorage.setItem('feel_portfolio_data', JSON.stringify(portfolioData));
                         if (Array.isArray(portfolioData.projects)) {
-                            localStorage.setItem('feel_portfolio_projects_v4', JSON.stringify(portfolioData.projects));
+                            localStorage.setItem('feel_portfolio_projects_v5', JSON.stringify(portfolioData.projects));
                         }
                         loaded = true;
                     }
@@ -2439,14 +2488,46 @@
                 }
             } else {
                 const projectImg = hasImage ? coverImg : 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80';
+                const hasMultiplePhotos = imgList.length > 1;
+                let clickAction = '';
+                let overlayLabel = '';
+
+                if (hasMultiplePhotos) {
+                    clickAction = `onclick="openProjectPhotos('${p.id}', 0)" role="button" title="คลิกเพื่อเปิดดูแกลเลอรีรูปภาพโครงการ (${imgList.length} ภาพ)"`;
+                    overlayLabel = `คลิกดูรูปภาพโครงงาน (${imgList.length} ภาพ)`;
+                } else if (isPdf) {
+                    clickAction = `onclick="openPdfModal('${p.title.replace(/'/g, "\\'")}', '${p.demo}')" role="button" title="คลิกเพื่อเปิดอ่านเล่มโครงงาน PDF"`;
+                    overlayLabel = `คลิกเปิดอ่านเล่มโครงงาน PDF`;
+                }
+
                 headerHtml = `
-                    <div class="relative h-48 overflow-hidden bg-slate-100 dark:bg-slate-800 border-b border-google-border dark:border-google-dark-border">
-                        <img src="${projectImg}" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80'" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="relative h-48 sm:h-52 overflow-hidden bg-slate-100 dark:bg-slate-800 border-b border-google-border dark:border-google-dark-border ${clickAction ? 'cursor-pointer group/thumb' : ''}" ${clickAction}>
+                        <img src="${projectImg}" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80'" alt="${p.title}" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300">
+                        ${overlayLabel ? `
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
+                                <span class="px-4 py-2 rounded-full bg-white/95 dark:bg-zinc-900/95 text-google-blue dark:text-sky-400 text-xs font-bold shadow-lg flex items-center gap-2 scale-95 group-hover/thumb:scale-100 transition-transform">
+                                    <i class="fa-solid ${hasMultiplePhotos ? 'fa-images text-amber-500' : 'fa-book-open text-google-red'}"></i> ${overlayLabel}
+                                </span>
+                            </div>
+                        ` : ''}
                         <div class="absolute top-3 left-3">
                             <span class="px-2.5 py-1 rounded-full bg-white/90 dark:bg-google-dark-surface/90 backdrop-blur-md text-xs font-semibold text-google-text dark:text-google-dark-text border border-google-border dark:border-google-dark-border shadow-xs flex items-center gap-1.5">
                                 <i class="fa-solid fa-laptop-code text-google-green"></i> ${p.category}
                             </span>
                         </div>
+                        ${hasMultiplePhotos ? `
+                            <div class="absolute top-3 right-3">
+                                <span class="px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-medium text-white flex items-center gap-1.5 border border-white/20">
+                                    <i class="fa-solid fa-camera text-amber-400"></i> ${imgList.length} ภาพถ่าย
+                                </span>
+                            </div>
+                        ` : (isPdf ? `
+                            <div class="absolute top-3 right-3">
+                                <span class="px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-medium text-white flex items-center gap-1 border border-white/20">
+                                    <i class="fa-solid fa-file-pdf text-google-red"></i> เล่มโครงงาน PDF
+                                </span>
+                            </div>
+                        ` : '')}
                     </div>
                 `;
             }
@@ -2468,18 +2549,86 @@
                     </div>
                 `;
             } else {
-                actionHtml = `
-                    <div class="flex items-center gap-2">
-                        ${p.github ? `
-                            <a href="${p.github}" target="_blank" rel="noopener noreferrer" class="flex-1 py-2.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text hover:bg-google-subtle text-xs font-medium text-center transition-all flex items-center justify-center gap-1.5 shadow-xs">
-                                <i class="fa-brands fa-github text-sm"></i> ซอร์สโค้ด
-                            </a>
-                        ` : ''}
-                        ${p.demo ? `
-                            <a href="${p.demo}" target="_blank" rel="noopener noreferrer" class="flex-1 py-2.5 rounded-full bg-google-blue hover:bg-google-blue-hover text-white text-xs font-semibold text-center transition-all flex items-center justify-center gap-1.5 shadow-xs">
-                                <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> ดูตัวอย่าง
-                            </a>
-                        ` : ''}
+                const hasPhotos = imgList.length > 0;
+                const drivePhotosUrl = p.driveFolder || (p.github && p.github.includes('drive.google.com/drive/folders') ? p.github : null);
+                const pdfUrl = p.demo && p.demo.toLowerCase().endsWith('.pdf') ? p.demo : null;
+
+                if (hasPhotos || pdfUrl) {
+                    actionHtml = `
+                        <div class="flex flex-col gap-2">
+                            <div class="flex items-center gap-2">
+                                ${hasPhotos ? `
+                                    <button onclick="openProjectPhotos('${p.id}', 0)" class="flex-1 py-2.5 rounded-full bg-google-blue hover:bg-google-blue-hover text-white text-xs font-semibold text-center transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer">
+                                        <i class="fa-solid fa-images text-amber-300"></i>
+                                        <span>ดูรูปภาพ (${imgList.length})</span>
+                                    </button>
+                                ` : ''}
+                                ${pdfUrl ? `
+                                    <button onclick="openPdfModal('${p.title.replace(/'/g, "\\'")}', '${pdfUrl}')" class="${hasPhotos ? 'px-3.5' : 'flex-1'} py-2.5 rounded-full bg-google-blue-light hover:bg-google-blue text-google-blue hover:text-white text-xs font-semibold border border-google-blue/30 text-center transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer" title="เปิดอ่านเล่มโครงงาน PDF">
+                                        <i class="fa-solid fa-book-open text-xs"></i>
+                                        <span class="${hasPhotos ? 'hidden sm:inline' : ''}">เล่มโครงงาน PDF</span>
+                                    </button>
+                                    <a href="${pdfUrl}" download target="_blank" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-blue flex items-center justify-center transition-colors shadow-xs" title="ดาวน์โหลดเล่มโครงงาน PDF">
+                                        <i class="fa-solid fa-download text-xs"></i>
+                                    </a>
+                                ` : ''}
+                            </div>
+                            ${drivePhotosUrl ? `
+                                <a href="${drivePhotosUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text hover:bg-google-subtle text-xs font-medium text-center transition-all flex items-center justify-center gap-1.5 shadow-xs">
+                                    <i class="fa-brands fa-google-drive text-amber-500"></i>
+                                    <span>เปิดอัลบั้มภาพบน Google Drive</span>
+                                </a>
+                            ` : (p.github ? `
+                                <a href="${p.github}" target="_blank" rel="noopener noreferrer" class="w-full py-2 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text hover:bg-google-subtle text-xs font-medium text-center transition-all flex items-center justify-center gap-1.5 shadow-xs">
+                                    <i class="fa-brands fa-github text-slate-700 dark:text-slate-300 text-sm"></i>
+                                    <span>ดูซอร์สโค้ด</span>
+                                </a>
+                            ` : '')}
+                        </div>
+                    `;
+                } else {
+                    actionHtml = `
+                        <div class="flex items-center gap-2">
+                            ${p.github ? `
+                                <a href="${p.github}" target="_blank" rel="noopener noreferrer" class="flex-1 py-2.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text hover:bg-google-subtle text-xs font-medium text-center transition-all flex items-center justify-center gap-1.5 shadow-xs">
+                                    <i class="fa-brands fa-github text-sm"></i> ซอร์สโค้ด
+                                </a>
+                            ` : ''}
+                            ${p.demo ? `
+                                <a href="${p.demo}" target="_blank" rel="noopener noreferrer" class="flex-1 py-2.5 rounded-full bg-google-blue hover:bg-google-blue-hover text-white text-xs font-semibold text-center transition-all flex items-center justify-center gap-1.5 shadow-xs">
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> ดูตัวอย่าง
+                                </a>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+            }
+
+            // Mini photo preview strip if multiple photos exist
+            let thumbsHtml = '';
+            if (!isCert && !isDoc && imgList.length > 1) {
+                thumbsHtml = `
+                    <div class="mt-4 pt-3 border-t border-google-border dark:border-google-dark-border">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted flex items-center gap-1.5">
+                                <i class="fa-solid fa-images text-google-blue"></i> รูปถ่ายโครงงานจริง
+                            </span>
+                            <button onclick="openProjectPhotos('${p.id}', 0)" class="text-[11px] font-semibold text-google-blue hover:text-google-blue-hover cursor-pointer transition-colors">
+                                เปิดดูทั้งหมด ${imgList.length} ภาพ &rarr;
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2">
+                            ${imgList.slice(0, 4).map((img, i) => `
+                                <div onclick="openProjectPhotos('${p.id}', ${i})" class="relative aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-zinc-800 border border-google-border dark:border-google-dark-border cursor-pointer group/th hover:border-google-blue shadow-2xs transition-all" title="ดูภาพที่ ${i + 1}">
+                                    <img src="${img}" alt="${p.title}" class="w-full h-full object-cover group-hover/th:scale-110 transition-transform duration-200">
+                                    ${i === 3 && imgList.length > 4 ? `
+                                        <div class="absolute inset-0 bg-black/65 backdrop-blur-xs flex items-center justify-center text-white text-xs font-bold">
+                                            +${imgList.length - 4}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 `;
             }
@@ -2498,6 +2647,7 @@
                             <div class="flex flex-wrap gap-1.5 mb-2">
                                 ${tagsHtml}
                             </div>
+                            ${thumbsHtml}
                         </div>
                     </div>
 
@@ -2506,6 +2656,7 @@
                     </div>
                 </div>
             `;
+
         }
 
         function renderProjects() {
@@ -2552,8 +2703,9 @@
                 if (documents.length === 0) {
                     docGrid.innerHTML = `
                         <div class="col-span-full py-10 text-center text-google-text-muted dark:text-google-dark-text-muted g-card">
-                            <i class="fa-solid fa-file-lines text-3xl text-slate-400 mb-2 block"></i>
-                            <p class="text-sm font-semibold text-google-text dark:text-google-dark-text">ไม่พบเอกสารที่ตรงกับการค้นหา</p>
+                            <i class="fa-solid fa-file-lines text-3xl text-slate-300 dark:text-slate-600 mb-2 block"></i>
+                            <p class="text-sm font-semibold text-google-text dark:text-google-dark-text">${searchQuery ? 'ไม่พบเอกสารที่ตรงกับการค้นหา' : 'อยู่ระหว่างการจัดเตรียมและอัปเดตเอกสารเพิ่มเติม'}</p>
+                            ${!searchQuery ? '<p class="text-xs text-google-text-muted dark:text-google-dark-text-muted mt-1">สามารถดูเอกสารและหลักฐานทางการศึกษาอื่นๆ ได้จากโฟลเดอร์ Google Drive ทางการ</p>' : ''}
                         </div>
                     `;
                 } else {
@@ -2569,8 +2721,9 @@
                 if (works.length === 0) {
                     workGrid.innerHTML = `
                         <div class="col-span-full py-10 text-center text-google-text-muted dark:text-google-dark-text-muted g-card">
-                            <i class="fa-solid fa-laptop-code text-3xl text-slate-400 mb-2 block"></i>
-                            <p class="text-sm font-semibold text-google-text dark:text-google-dark-text">ไม่พบผลงานที่ตรงกับการค้นหา</p>
+                            <i class="fa-solid fa-laptop-code text-3xl text-slate-300 dark:text-slate-600 mb-2 block"></i>
+                            <p class="text-sm font-semibold text-google-text dark:text-google-dark-text">${searchQuery ? 'ไม่พบผลงานที่ตรงกับการค้นหา' : 'อยู่ระหว่างการรวบรวมและอัปเดตผลงานโครงการเพิ่มเติม'}</p>
+                            ${!searchQuery ? '<p class="text-xs text-google-text-muted dark:text-google-dark-text-muted mt-1">สามารถติดตามผลงานสิ่งประดิษฐ์และนวัตกรรมได้จาก Google Drive หรือติดต่อสอบถามโดยตรง</p>' : ''}
                         </div>
                     `;
                 } else {

@@ -272,6 +272,10 @@
                     <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
                     <span>CCTV สด</span>
                 </a>
+                <a href="weather.html" class="nav-item px-3 py-1.5 rounded-full text-xs lg:text-sm font-bold text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40 transition-all flex items-center gap-1.5 border border-sky-200 dark:border-sky-900/50 shadow-xs" title="เรดาร์สภาพอากาศ & พายุฝน">
+                    <i class="fa-solid fa-cloud-bolt text-sky-500"></i>
+                    <span>เรดาร์อากาศ</span>
+                </a>
             </nav>
 
             <!-- Actions: Theme Toggle + Mobile Hamburger -->
@@ -323,6 +327,12 @@
                     <i class="fa-solid fa-video w-6 text-red-600 animate-pulse"></i> กล้อง CCTV นครศรีฯ (สด)
                 </span>
                 <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-600 text-white font-bold">LIVE</span>
+            </a>
+            <a href="weather.html" class="block px-4 py-2.5 rounded-xl text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/60 text-sm font-bold flex items-center justify-between border border-sky-200 dark:border-sky-900 mt-1.5">
+                <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-bolt w-6 text-sky-500"></i> เรดาร์สภาพอากาศ & พายุฝน
+                </span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-600 text-white font-bold">WINDY</span>
             </a>
         </div>
     </header>
@@ -381,16 +391,20 @@
 
                         <!-- Google Style Action Buttons -->
                         <div class="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 flex-wrap">
-                            <a href="cctv.html" class="w-full sm:w-auto px-6 py-3 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold text-sm shadow-google-sm hover:shadow-google-md transition-all flex items-center justify-center gap-2 group">
+                            <a href="cctv.html" class="w-full sm:w-auto px-5 py-2.5 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold text-sm shadow-google-sm hover:shadow-google-md transition-all flex items-center justify-center gap-2 group">
                                 <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
                                 <i class="fa-solid fa-video"></i>
                                 กล้อง CCTV นครศรีฯ (สด)
                             </a>
-                            <a href="#certificates" class="w-full sm:w-auto px-6 py-3 rounded-full bg-google-blue hover:bg-google-blue-hover text-white font-medium text-sm shadow-google-sm hover:shadow-google-md transition-all flex items-center justify-center gap-2">
+                            <a href="weather.html" class="w-full sm:w-auto px-5 py-2.5 rounded-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-semibold text-sm shadow-google-sm hover:shadow-google-md transition-all flex items-center justify-center gap-2 group">
+                                <i class="fa-solid fa-cloud-bolt"></i>
+                                เรดาร์สภาพอากาศสด
+                            </a>
+                            <a href="#certificates" class="w-full sm:w-auto px-5 py-2.5 rounded-full bg-google-blue hover:bg-google-blue-hover text-white font-medium text-sm shadow-google-sm hover:shadow-google-md transition-all flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-award"></i>
                                 เกียรติบัตร & ผลงาน
                             </a>
-                            <a href="#contact" class="w-full sm:w-auto px-6 py-3 rounded-full bg-white dark:bg-google-dark-surface text-google-text dark:text-google-dark-text border border-google-border dark:border-google-dark-border hover:bg-google-subtle dark:hover:bg-google-dark-subtle font-medium text-sm transition-all flex items-center justify-center gap-2">
+                            <a href="#contact" class="w-full sm:w-auto px-5 py-2.5 rounded-full bg-white dark:bg-google-dark-surface text-google-text dark:text-google-dark-text border border-google-border dark:border-google-dark-border hover:bg-google-subtle dark:hover:bg-google-dark-subtle font-medium text-sm transition-all flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-paper-plane text-google-blue"></i>
                                 ติดต่อประสานงาน
                             </a>

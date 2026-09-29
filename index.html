@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แฟ้มสะสมผลงาน (Portfolio) | นายภคพล สมัยแก้ว (ฟีล) - วิทยาลัยอาชีวศึกษานครศรีธรรมราช</title>
+    <title>แฟ้ม | นายภคพล สมัยแก้ว (ฟีล)</title>
     <meta name="description" content="แฟ้มสะสมผลงานอย่างเป็นทางการ (Official Portfolio) ของ นายภคพล สมัยแก้ว (ฟีล / Feel) นักศึกษาระดับ ปวส.1 วิทยาลัยอาชีวศึกษานครศรีธรรมราช - IoT Developer, AI Application & Media Creation">
     
     <!-- Google Fonts (Sarabun, Kanit, Inter) -->
@@ -216,6 +216,14 @@
 </head>
 <body class="min-h-screen selection:bg-google-blue selection:text-white flex flex-col justify-between relative overflow-x-hidden antialiased">
 
+    <!-- Google 4-Color Signature Accent Bar (Top Border) -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
     <!-- Toast Notification Container (Google Snackbar) -->
     <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 max-w-md pointer-events-none"></div>
 
@@ -237,10 +245,16 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between">
             
             <!-- Brand Logo & Official Affiliation -->
-            <a href="#home" class="flex items-center gap-3.5 group">
-                <!-- Google Style Circular Avatar / Monogram -->
-                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-google-blue-light dark:bg-google-dark-subtle border border-google-blue/30 dark:border-google-blue/40 flex items-center justify-center font-bold text-google-blue dark:text-sky-400 text-lg shadow-sm group-hover:scale-105 transition-transform">
+            <a href="#home" class="flex items-center gap-3 group">
+                <!-- Google Style Circular Avatar / Monogram with 4 Colors -->
+                <div class="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-google-blue-light dark:bg-google-dark-subtle border border-google-blue/30 dark:border-google-blue/40 flex items-center justify-center font-bold text-google-blue dark:text-sky-400 text-lg shadow-sm group-hover:scale-105 transition-transform">
                     <i class="fa-solid fa-graduation-cap"></i>
+                    <div class="absolute -bottom-0.5 -right-0.5 flex gap-0.5 p-0.5 rounded-full bg-white dark:bg-google-dark-surface shadow-xs">
+                        <span class="w-1.5 h-1.5 rounded-full bg-google-blue"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-google-red"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-google-yellow"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-google-green"></span>
+                    </div>
                 </div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-1.5">
@@ -257,46 +271,137 @@
                 </div>
             </a>
 
-            <!-- Desktop Navigation Links -->
-            <nav class="hidden md:flex items-center gap-1 bg-google-subtle dark:bg-google-dark-subtle/80 p-1.5 rounded-full border border-google-border dark:border-google-dark-border">
-                <a href="#home" class="nav-item px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">หน้าแรก</a>
-                <a href="#about" class="nav-item px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">ประวัติ</a>
-                <a href="#skills" class="nav-item px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">ทักษะ</a>
-                <a href="#experience" class="nav-item px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">ประสบการณ์</a>
-                <a href="#certificates" class="nav-item px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">เกียรติบัตร</a>
-                <a href="#documents" class="nav-item px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">เอกสาร</a>
-                <a href="#projects" class="nav-item px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">ผลงาน</a>
-                <a href="#gallery" class="nav-item px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">คลังภาพ</a>
-                <a href="#contact" class="nav-item px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">ติดต่อ</a>
-                <a href="cctv.html" class="nav-item px-3 py-1.5 rounded-full text-xs lg:text-sm font-bold text-red-600 dark:text-rose-400 hover:bg-red-50 dark:hover:bg-rose-950/40 transition-all flex items-center gap-1.5 ml-1 border border-red-200 dark:border-red-900/50 shadow-xs" title="รับชมกล้องวงจรปิดเทศบาลนครนครศรีธรรมราช">
+            <!-- Desktop Navigation Links (Google Clean Material Style) -->
+            <nav class="hidden xl:flex items-center gap-1 bg-google-subtle dark:bg-google-dark-subtle/80 p-1.5 rounded-full border border-google-border dark:border-google-dark-border">
+                <a href="#home" class="nav-item px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">หน้าแรก</a>
+                <a href="#quick-hub" class="nav-item px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">
+                    <i class="fa-solid fa-compass text-google-blue mr-1"></i>สารบัญด่วน
+                </a>
+                <a href="#about" class="nav-item px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">ประวัติ</a>
+                <a href="#skills" class="nav-item px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">ทักษะ</a>
+                <a href="#experience" class="nav-item px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">ประสบการณ์</a>
+                <a href="#certificates" class="nav-item px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">เกียรติบัตร & ผลงาน</a>
+                <a href="#gallery" class="nav-item px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">คลังภาพ</a>
+                <a href="#contact" class="nav-item px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue dark:hover:text-white hover:bg-white dark:hover:bg-google-dark-surface transition-all">ติดต่อ</a>
+            </nav>
+
+            <!-- Actions: Live Apps + 9-Dots Apps Launcher + Theme Switcher + Mobile Hamburger -->
+            <div class="flex items-center gap-2 sm:gap-2.5">
+                
+                <!-- Live CCTV Quick Button -->
+                <a href="cctv.html" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-red-600 dark:text-rose-400 bg-red-50 dark:bg-rose-950/40 hover:bg-red-100 dark:hover:bg-rose-900/60 border border-red-200 dark:border-red-900/50 transition-all shadow-xs" title="รับชมกล้องวงจรปิดเทศบาลนครนครศรีธรรมราช">
                     <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
                     <span>CCTV สด</span>
                 </a>
-                <a href="weather.html" class="nav-item px-3 py-1.5 rounded-full text-xs lg:text-sm font-bold text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40 transition-all flex items-center gap-1.5 border border-sky-200 dark:border-sky-900/50 shadow-xs" title="เรดาร์สภาพอากาศ & พายุฝน">
+
+                <!-- Live Weather Quick Button -->
+                <a href="weather.html" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/60 border border-sky-200 dark:border-sky-900/50 transition-all shadow-xs" title="เรดาร์สภาพอากาศ & พายุฝน">
                     <i class="fa-solid fa-cloud-bolt text-sky-500"></i>
                     <span>เรดาร์อากาศ</span>
                 </a>
-            </nav>
 
-            <!-- Actions: Theme Toggle + Mobile Hamburger -->
-            <div class="flex items-center gap-2 sm:gap-2.5">
-                
+                <!-- Google 9-Dots Apps Launcher Button & Dropdown -->
+                <div class="relative">
+                    <button onclick="toggleGoogleAppsMenu()" id="google-apps-btn" class="w-10 h-10 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors shadow-sm" title="Google Apps Menu • สารบัญด่วน">
+                        <i class="fa-solid fa-table-cells text-base text-google-text-muted dark:text-google-dark-text-muted"></i>
+                    </button>
+                    
+                    <!-- Google 9-Dots App Launcher Dropdown Sheet -->
+                    <div id="google-apps-dropdown" class="hidden absolute right-0 top-12 w-80 sm:w-88 bg-white dark:bg-google-dark-surface rounded-2xl shadow-google-lg border border-google-border dark:border-google-dark-border p-4 z-50 animate-in fade-in zoom-in-95 duration-150">
+                        <div class="flex items-center justify-between pb-3 mb-3 border-b border-google-border dark:border-google-dark-border">
+                            <span class="text-xs font-bold text-google-text dark:text-google-dark-text flex items-center gap-2">
+                                <i class="fa-solid fa-compass text-google-blue"></i> สารบัญด่วน (Google Portfolio Hub)
+                            </span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-google-blue-light dark:bg-blue-950/60 text-google-blue dark:text-sky-300 font-semibold">9 เมนู</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <a href="#home" onclick="toggleGoogleAppsMenu()" class="flex flex-col items-center justify-center p-2.5 rounded-xl hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors text-center group">
+                                <div class="w-10 h-10 rounded-full bg-google-blue-light dark:bg-blue-950/60 text-google-blue flex items-center justify-center text-base mb-1 group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-house"></i>
+                                </div>
+                                <span class="text-xs font-medium text-google-text dark:text-google-dark-text">หน้าแรก</span>
+                            </a>
+                            <a href="#about" onclick="toggleGoogleAppsMenu()" class="flex flex-col items-center justify-center p-2.5 rounded-xl hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors text-center group">
+                                <div class="w-10 h-10 rounded-full bg-google-blue-light dark:bg-blue-950/60 text-google-blue flex items-center justify-center text-base mb-1 group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-id-card"></i>
+                                </div>
+                                <span class="text-xs font-medium text-google-text dark:text-google-dark-text">ประวัติ</span>
+                            </a>
+                            <a href="#skills" onclick="toggleGoogleAppsMenu()" class="flex flex-col items-center justify-center p-2.5 rounded-xl hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors text-center group">
+                                <div class="w-10 h-10 rounded-full bg-google-green-light dark:bg-emerald-950/60 text-google-green flex items-center justify-center text-base mb-1 group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-cube"></i>
+                                </div>
+                                <span class="text-xs font-medium text-google-text dark:text-google-dark-text">ทักษะ & รูบิค</span>
+                            </a>
+                            <a href="#experience" onclick="toggleGoogleAppsMenu()" class="flex flex-col items-center justify-center p-2.5 rounded-xl hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors text-center group">
+                                <div class="w-10 h-10 rounded-full bg-google-yellow-light dark:bg-amber-950/60 text-google-yellow flex items-center justify-center text-base mb-1 group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-briefcase"></i>
+                                </div>
+                                <span class="text-xs font-medium text-google-text dark:text-google-dark-text">การศึกษา</span>
+                            </a>
+                            <a href="#certificates" onclick="toggleGoogleAppsMenu()" class="flex flex-col items-center justify-center p-2.5 rounded-xl hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors text-center group">
+                                <div class="w-10 h-10 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center text-base mb-1 group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-award"></i>
+                                </div>
+                                <span class="text-xs font-medium text-google-text dark:text-google-dark-text">เกียรติบัตร</span>
+                            </a>
+                            <a href="#documents" onclick="toggleGoogleAppsMenu()" class="flex flex-col items-center justify-center p-2.5 rounded-xl hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors text-center group">
+                                <div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950/60 text-google-blue flex items-center justify-center text-base mb-1 group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                </div>
+                                <span class="text-xs font-medium text-google-text dark:text-google-dark-text">เอกสาร</span>
+                            </a>
+                            <a href="#projects" onclick="toggleGoogleAppsMenu()" class="flex flex-col items-center justify-center p-2.5 rounded-xl hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors text-center group">
+                                <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-google-green flex items-center justify-center text-base mb-1 group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-laptop-code"></i>
+                                </div>
+                                <span class="text-xs font-medium text-google-text dark:text-google-dark-text">ผลงาน/โครงงาน</span>
+                            </a>
+                            <a href="#gallery" onclick="toggleGoogleAppsMenu()" class="flex flex-col items-center justify-center p-2.5 rounded-xl hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors text-center group">
+                                <div class="w-10 h-10 rounded-full bg-google-yellow-light dark:bg-amber-950/60 text-amber-500 flex items-center justify-center text-base mb-1 group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-images"></i>
+                                </div>
+                                <span class="text-xs font-medium text-google-text dark:text-google-dark-text">คลังภาพ Drive</span>
+                            </a>
+                            <a href="#contact" onclick="toggleGoogleAppsMenu()" class="flex flex-col items-center justify-center p-2.5 rounded-xl hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors text-center group">
+                                <div class="w-10 h-10 rounded-full bg-google-red-light dark:bg-rose-950/60 text-google-red flex items-center justify-center text-base mb-1 group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </div>
+                                <span class="text-xs font-medium text-google-text dark:text-google-dark-text">ติดต่อ</span>
+                            </a>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-google-border dark:border-google-dark-border grid grid-cols-2 gap-2">
+                            <a href="cctv.html" class="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-red-50 dark:bg-rose-950/40 text-red-600 dark:text-rose-400 text-xs font-bold hover:bg-red-100 transition-colors">
+                                <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
+                                <span>CCTV สด 6 จอ</span>
+                            </a>
+                            <a href="weather.html" class="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 text-xs font-bold hover:bg-sky-100 transition-colors">
+                                <i class="fa-solid fa-cloud-bolt text-sky-500"></i>
+                                <span>เรดาร์อากาศสด</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Google Theme Switcher (Light / Dark) -->
                 <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors shadow-sm" title="สลับโหมดสว่าง / โหมดมืด">
                     <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
                 </button>
 
                 <!-- Mobile Menu Hamburger Button -->
-                <button onclick="toggleMobileMenu()" class="md:hidden w-10 h-10 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors shadow-sm">
+                <button onclick="toggleMobileMenu()" class="xl:hidden w-10 h-10 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors shadow-sm">
                     <i class="fa-solid fa-bars text-sm"></i>
                 </button>
             </div>
         </div>
 
         <!-- Mobile Navigation Menu Drawer (Google Material Sheet) -->
-        <div id="mobile-menu" class="hidden md:hidden border-t border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-bg px-4 pt-3 pb-5 space-y-1 shadow-lg">
+        <div id="mobile-menu" class="hidden xl:hidden border-t border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-bg px-4 pt-3 pb-5 space-y-1 shadow-lg">
             <a href="#home" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
                 <i class="fa-solid fa-house w-6 text-google-blue"></i> หน้าแรก
+            </a>
+            <a href="#quick-hub" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
+                <i class="fa-solid fa-compass w-6 text-google-blue"></i> สารบัญด่วน (Quick Hub)
             </a>
             <a href="#about" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
                 <i class="fa-solid fa-id-card w-6 text-google-blue"></i> ประวัติส่วนตัว
@@ -381,6 +486,10 @@
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-medium text-google-text-body dark:text-google-dark-text-body shadow-xs">
                                 <i class="fa-solid fa-video text-google-red"></i>
                                 Video Editor & Media Creator
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-medium text-google-text-body dark:text-google-dark-text-body shadow-xs">
+                                <i class="fa-solid fa-cube text-amber-500"></i>
+                                3x3 Rubik's Cube Solver
                             </span>
                         </div>
 
@@ -511,6 +620,159 @@
         </section>
 
         <!-- ========================================== -->
+        <!-- GOOGLE WORKSPACE QUICK ACCESS HUB          -->
+        <!-- (สารบัญภาพรวมและเมนูลัดสไตล์ Google)        -->
+        <!-- ========================================== -->
+        <section id="quick-hub" class="pb-8 pt-2 scroll-mt-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="g-card p-6 sm:p-8 bg-gradient-to-br from-white via-white to-google-blue-light/20 dark:from-google-dark-surface dark:via-google-dark-surface dark:to-blue-950/20">
+                    
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-google-border dark:border-google-dark-border">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-google-blue-light dark:bg-blue-950/50 text-google-blue flex items-center justify-center text-xl shadow-xs">
+                                <i class="fa-solid fa-compass"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base sm:text-lg font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                                    สารบัญและเมนูลัดภาพรวม (Google Quick Access Hub)
+                                </h3>
+                                <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">
+                                    คลิกเข้าชมหมวดหมู่ที่ต้องการได้อย่างรวดเร็ว จัดหมวดหมู่ชัดเจน เข้าใจง่าย
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 self-start sm:self-auto">
+                            <span class="w-2.5 h-2.5 rounded-full bg-google-blue"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-google-red"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-google-yellow"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-google-green"></span>
+                        </div>
+                    </div>
+
+                    <!-- 8 Quick Hub Cards -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                        
+                        <!-- Card 1: ประวัติ -->
+                        <a href="#about" class="p-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg/60 border border-google-border dark:border-google-dark-border hover:border-google-blue dark:hover:border-sky-400 hover:shadow-google-md hover:-translate-y-0.5 transition-all group flex flex-col justify-between">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-google-blue-light dark:bg-blue-950/60 text-google-blue flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-id-card"></i>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-xs text-google-text-muted group-hover:text-google-blue group-hover:translate-x-1 transition-all"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-google-text dark:text-google-dark-text group-hover:text-google-blue transition-colors">ประวัติส่วนตัว</h4>
+                                <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5 line-clamp-1">ปวส.1 อาชีวศึกษานครศรีฯ</p>
+                            </div>
+                        </a>
+
+                        <!-- Card 2: ทักษะ & รูบิค 3x3 -->
+                        <a href="#skills" class="p-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg/60 border border-google-border dark:border-google-dark-border hover:border-google-green dark:hover:border-emerald-400 hover:shadow-google-md hover:-translate-y-0.5 transition-all group flex flex-col justify-between">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-google-green-light dark:bg-emerald-950/60 text-google-green flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-cube"></i>
+                                </div>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-google-green font-semibold">4 ด้าน</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-google-text dark:text-google-dark-text group-hover:text-google-green transition-colors">ทักษะ & รูบิค 3x3</h4>
+                                <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5 line-clamp-1">IoT, AI, Media & Logic</p>
+                            </div>
+                        </a>
+
+                        <!-- Card 3: ประสบการณ์ & ฝึกงาน -->
+                        <a href="#experience" class="p-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg/60 border border-google-border dark:border-google-dark-border hover:border-google-yellow dark:hover:border-amber-400 hover:shadow-google-md hover:-translate-y-0.5 transition-all group flex flex-col justify-between">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-google-yellow-light dark:bg-amber-950/60 text-google-yellow flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-briefcase"></i>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-xs text-google-text-muted group-hover:text-google-yellow group-hover:translate-x-1 transition-all"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-google-text dark:text-google-dark-text group-hover:text-google-yellow transition-colors">ประสบการณ์ฝึกงาน</h4>
+                                <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5 line-clamp-1">เชียร์ คอมมูนิเคชั่น (2567)</p>
+                            </div>
+                        </a>
+
+                        <!-- Card 4: เกียรติบัตร -->
+                        <a href="#certificates" class="p-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg/60 border border-google-border dark:border-google-dark-border hover:border-amber-500 dark:hover:border-amber-400 hover:shadow-google-md hover:-translate-y-0.5 transition-all group flex flex-col justify-between">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-award"></i>
+                                </div>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-semibold">3 ใบ (PDF)</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-google-text dark:text-google-dark-text group-hover:text-amber-600 transition-colors">เกียรติบัตรรางวัล</h4>
+                                <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5 line-clamp-1">คนเก่ง, วิทย์จังหวัด, วิทย์ภาค</p>
+                            </div>
+                        </a>
+
+                        <!-- Card 5: เอกสารทางการ -->
+                        <a href="#documents" class="p-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg/60 border border-google-border dark:border-google-dark-border hover:border-google-blue dark:hover:border-sky-400 hover:shadow-google-md hover:-translate-y-0.5 transition-all group flex flex-col justify-between">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-google-blue flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                </div>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-google-blue font-semibold">1 ฉบับ</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-google-text dark:text-google-dark-text group-hover:text-google-blue transition-colors">เอกสารทางการศึกษา</h4>
+                                <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5 line-clamp-1">เอกสารกิจกรรมนักศึกษา</p>
+                            </div>
+                        </a>
+
+                        <!-- Card 6: โครงงาน & นวัตกรรม -->
+                        <a href="#projects" class="p-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg/60 border border-google-border dark:border-google-dark-border hover:border-google-green dark:hover:border-emerald-400 hover:shadow-google-md hover:-translate-y-0.5 transition-all group flex flex-col justify-between">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-google-green flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-laptop-code"></i>
+                                </div>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-google-green font-semibold">14 ภาพ</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-google-text dark:text-google-dark-text group-hover:text-google-green transition-colors">ตู้กดผ้าอนามัย & โครงงาน</h4>
+                                <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5 line-clamp-1">ESP32, QR Code, เล่ม PDF</p>
+                            </div>
+                        </a>
+
+                        <!-- Card 7: กล้อง CCTV นครศรีฯ -->
+                        <a href="cctv.html" class="p-4 rounded-2xl bg-red-50/50 dark:bg-rose-950/30 border border-red-200 dark:border-red-900/60 hover:border-red-500 hover:shadow-google-md hover:-translate-y-0.5 transition-all group flex flex-col justify-between">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-red-100 dark:bg-rose-900/60 text-red-600 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-video"></i>
+                                </div>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-600 text-white font-bold animate-pulse">สด 6 จอ</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-red-600 dark:text-rose-400 group-hover:text-red-700 transition-colors">CCTV นครศรีฯ เรียลไทม์</h4>
+                                <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5 line-clamp-1">กล้องสด 220 จุด เทศบาลนครฯ</p>
+                            </div>
+                        </a>
+
+                        <!-- Card 8: เรดาร์สภาพอากาศ -->
+                        <a href="weather.html" class="p-4 rounded-2xl bg-sky-50/50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-900/60 hover:border-sky-500 hover:shadow-google-md hover:-translate-y-0.5 transition-all group flex flex-col justify-between">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-900/60 text-sky-600 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-cloud-bolt"></i>
+                                </div>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-600 text-white font-bold">WINDY</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-sky-600 dark:text-sky-400 group-hover:text-sky-700 transition-colors">เรดาร์สภาพอากาศสด</h4>
+                                <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5 line-clamp-1">กลุ่มฝน พายุ ทิศทางลม</p>
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
         <!-- ABOUT ME SECTION (Google Profile / Resume) -->
         <!-- ========================================== -->
         <section id="about" class="py-16 bg-white dark:bg-google-dark-surface border-y border-google-border dark:border-google-dark-border">
@@ -555,7 +817,7 @@
                                 กระผม <strong class="text-google-text dark:text-google-dark-text font-semibold">นายภคพล สมัยแก้ว</strong> (ชื่อเล่น: <strong>ฟีล / Feel</strong>) เกิดเมื่อวันที่ <strong>10 ธันวาคม พ.ศ. 2550</strong> ปัจจุบันกำลังศึกษาอยู่ในระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) ณ วิทยาลัยอาชีวศึกษานครศรีธรรมราช
                             </p>
                             <p>
-                                ตลอดระยะเวลาการศึกษา ได้ให้ความสนใจและมุ่งมั่นศึกษาด้านเทคโนโลยีคอมพิวเตอร์และระบบสมองกลฝังตัว โดยเฉพาะการประยุกต์ใช้ไมโครคอนโทรลเลอร์ ESP32 และ ESP8266 ในการเชื่อมต่อเซนเซอร์และระบบ IoT Dashboard รวมถึงการติดตามความก้าวหน้าของเทคโนโลยีปัญญาประดิษฐ์ (AI Engineering & Prompting) และทักษะการสร้างสรรค์สื่อดิจิทัล
+                                ตลอดระยะเวลาการศึกษา ได้ให้ความสนใจและมุ่งมั่นศึกษาด้านเทคโนโลยีคอมพิวเตอร์และระบบสมองกลฝังตัว โดยเฉพาะการประยุกต์ใช้ไมโครคอนโทรลเลอร์ ESP32 และ ESP8266 ในการเชื่อมต่อเซนเซอร์และระบบ IoT Dashboard รวมถึงการติดตามความก้าวหน้าของเทคโนโลยีปัญญาประดิษฐ์ (AI Engineering & Prompting) ทักษะการสร้างสรรค์สื่อดิจิทัล ตลอดจนมีความสามารถและงานอดิเรกในการเล่นรูบิค 3x3 (3x3 Rubik's Cube) ซึ่งช่วยเสริมสร้างกระบวนการคิดเชิงตรรกะ มิติสัมพันธ์ (Spatial Thinking) และการแก้ปัญหาอย่างเป็นลำดับขั้นตอน
                             </p>
                             <p>
                                 มีความพร้อมในการเรียนรู้สิ่งใหม่ มุ่งมั่นในการทำงานอย่างมีวินัย รอบคอบ มีมนุษยสัมพันธ์ดี และสามารถร่วมงานกับผู้อื่นในระดับองค์กรได้อย่างมีประสิทธิภาพ
@@ -653,6 +915,20 @@
                             </div>
                         </div>
 
+                        <div class="g-card p-5 flex items-start gap-4">
+                            <div class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-cube"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-base font-bold text-google-text dark:text-google-dark-text font-heading">
+                                    ความสามารถพิเศษ: รูบิค 3x3 & การคิดเชิงตรรกะ
+                                </h4>
+                                <p class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted mt-1 leading-relaxed">
+                                    มีความสามารถในการเล่นและแก้รูบิค 3x3 ฝึกฝนการคิดอย่างเป็นระบบ การมองภาพ 3 มิติ (Spatial Reasoning) การจดจำอัลกอริทึม สมาธิ และการแก้ไขปัญหาเฉพาะหน้าได้อย่างมีประสิทธิภาพ
+                                </p>
+                            </div>
+                        </div>
+
                     </div>
 
                 </div>
@@ -682,7 +958,7 @@
                     </p>
                 </div>
 
-                <div id="skills-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                <div id="skills-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     
                     <!-- Card 1: Hardware & IoT -->
                     <div class="g-card p-6 flex flex-col justify-between">
@@ -746,6 +1022,27 @@
                             <span class="chip text-xs">Video Editing</span>
                             <span class="chip text-xs">Canva Design</span>
                             <span class="chip text-xs">Digital Storytelling</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Rubik's Cube & Logic -->
+                    <div class="g-card p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 flex items-center justify-center text-2xl mb-5">
+                                <i class="fa-solid fa-cube"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-google-text dark:text-google-dark-text font-heading mb-2">
+                                Logic & Pattern Solving (รูบิค 3x3)
+                            </h3>
+                            <p class="text-google-text-muted dark:text-google-dark-text-muted text-xs sm:text-sm leading-relaxed mb-6">
+                                ทักษะการเล่นรูบิค 3x3 ฝึกฝนการคิดอย่างเป็นระบบ การมองภาพเชิงพื้นที่ 3 มิติ และการประยุกต์ใช้อัลกอริทึมแก้ปัญหาได้อย่างรวดเร็วและแม่นยำ
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 pt-4 border-t border-google-border dark:border-google-dark-border">
+                            <span class="chip text-xs">รูบิค 3x3</span>
+                            <span class="chip text-xs">Rubik's Cube Solver</span>
+                            <span class="chip text-xs">Algorithmic Thinking</span>
+                            <span class="chip text-xs">Spatial Reasoning</span>
                         </div>
                     </div>
 
@@ -868,6 +1165,22 @@
                 <div class="flex items-center justify-between px-3 pt-2 text-xs text-google-text-muted dark:text-google-dark-text-muted">
                     <span id="results-count">กำลังแสดงข้อมูลทั้งหมด</span>
                     <span class="text-[11px]"><i class="fa-solid fa-bolt text-amber-500 mr-1"></i>ค้นหาแบบเรียลไทม์</span>
+                </div>
+
+                <!-- Google Drive Style Category Switcher Tabs -->
+                <div class="flex items-center justify-center gap-2 flex-wrap pt-4">
+                    <button onclick="clearSearch(); document.getElementById('certificates').scrollIntoView({behavior: 'smooth'})" class="chip active py-1.5 px-3.5 text-xs font-semibold">
+                        <i class="fa-solid fa-layer-group mr-1.5 text-google-blue"></i> แสดงทั้งหมด
+                    </button>
+                    <a href="#certificates" class="chip hover:border-amber-500 hover:text-amber-600 py-1.5 px-3.5 text-xs font-semibold">
+                        <i class="fa-solid fa-award mr-1.5 text-amber-500"></i> เกียรติบัตร (3)
+                    </a>
+                    <a href="#documents" class="chip hover:border-blue-500 hover:text-google-blue py-1.5 px-3.5 text-xs font-semibold">
+                        <i class="fa-solid fa-file-invoice mr-1.5 text-google-blue"></i> เอกสาร (1)
+                    </a>
+                    <a href="#projects" class="chip hover:border-emerald-500 hover:text-google-green py-1.5 px-3.5 text-xs font-semibold">
+                        <i class="fa-solid fa-laptop-code mr-1.5 text-google-green"></i> ผลงาน & โครงงาน (2)
+                    </a>
                 </div>
             </div>
         </div>
@@ -1085,6 +1398,93 @@
         </section>
 
         <!-- ========================================== -->
+        <!-- GOOGLE LIVE SERVICES & UTILITIES           -->
+        <!-- (ระบบบริการสดออนไลน์: CCTV & เรดาร์อากาศ)     -->
+        <!-- ========================================== -->
+        <section id="live-services" class="py-16 bg-gradient-to-b from-google-subtle/30 to-white dark:from-google-dark-subtle/20 dark:to-google-dark-surface border-t border-google-border dark:border-google-dark-border scroll-mt-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="max-w-3xl mb-10">
+                    <div class="inline-flex items-center gap-2 text-google-red dark:text-rose-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                        <i class="fa-solid fa-tower-broadcast"></i>
+                        <span>Google Live Services & Utilities</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
+                        ระบบบริการสดและเครื่องมือออนไลน์
+                    </h2>
+                    <p class="text-google-text-muted dark:text-google-dark-text-muted text-sm sm:text-base mt-1">
+                        ระบบตรวจการณ์เรียลไทม์ที่พัฒนาและเชื่อมต่อเพื่อความปลอดภัยและการติดตามสถานการณ์สด
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                    
+                    <!-- Service 1: NST CCTV Monitor -->
+                    <div class="g-card p-6 sm:p-7 flex flex-col justify-between border-l-4 border-l-red-500 hover:border-red-400">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 rounded-2xl bg-red-50 dark:bg-rose-950/60 text-red-600 flex items-center justify-center text-2xl">
+                                    <i class="fa-solid fa-video"></i>
+                                </div>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold shadow-xs">
+                                    <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                                    <span>ถ่ายทอดสด • 6 จอพร้อมกัน</span>
+                                </span>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-bold text-google-text dark:text-google-dark-text font-heading mb-2">
+                                ระบบตรวจการณ์กล้องวงจรปิด NST CCTV
+                            </h3>
+                            <p class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted leading-relaxed mb-6">
+                                ติดตามความเคลื่อนไหว จุดตรวจ จราจร และสถานที่สำคัญในเขตเทศบาลนครนครศรีธรรมราชกว่า 220 จุด รองรับการเปิดดูกล้องพร้อมกันสูงสุด 6 จอ (2, 4, 6 จอ) ค้นหาจุดติดตั้ง และดูสดแบบเรียลไทม์
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-google-border dark:border-google-dark-border flex items-center justify-between">
+                            <span class="text-xs text-google-text-muted dark:text-google-dark-text-muted">
+                                <i class="fa-solid fa-location-dot text-red-500 mr-1"></i> นครศรีธรรมราช
+                            </span>
+                            <a href="cctv.html" class="px-5 py-2.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-semibold shadow-xs hover:shadow-google-md transition-all flex items-center gap-2">
+                                <span>เปิดเข้าระบบกล้อง CCTV</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Service 2: Live Weather Radar -->
+                    <div class="g-card p-6 sm:p-7 flex flex-col justify-between border-l-4 border-l-sky-500 hover:border-sky-400">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 flex items-center justify-center text-2xl">
+                                    <i class="fa-solid fa-cloud-bolt"></i>
+                                </div>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-600 text-white text-xs font-bold shadow-xs">
+                                    <i class="fa-solid fa-satellite-dish"></i>
+                                    <span>WINDY RADAR EMBED</span>
+                                </span>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-bold text-google-text dark:text-google-dark-text font-heading mb-2">
+                                เรดาร์สภาพอากาศ & กลุ่มฝนเรียลไทม์
+                            </h3>
+                            <p class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted leading-relaxed mb-6">
+                                ติดตามทิศทางกลุ่มเมฆฝน พายุฝนฟ้าคะนอง ทิศทางลม และคลื่นลมทะเลรอบจังหวัดนครศรีธรรมราชและภาคใต้ ด้วยแผนที่ดาวเทียมอินเตอร์แอคทีฟจาก Windy แม่นยำ ทันเหตุการณ์
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-google-border dark:border-google-dark-border flex items-center justify-between">
+                            <span class="text-xs text-google-text-muted dark:text-google-dark-text-muted">
+                                <i class="fa-solid fa-water text-sky-500 mr-1"></i> เรดาร์สภาพอากาศสด
+                            </span>
+                            <a href="weather.html" class="px-5 py-2.5 rounded-full bg-sky-600 hover:bg-sky-700 text-white text-xs sm:text-sm font-semibold shadow-xs hover:shadow-google-md transition-all flex items-center gap-2">
+                                <span>เปิดดูเรดาร์สภาพอากาศ</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
         <!-- CONTACT SECTION (Google Workspace Style)   -->
         <!-- ========================================== -->
         <section id="contact" class="py-16 bg-white dark:bg-google-dark-surface border-t border-google-border dark:border-google-dark-border">
@@ -1225,6 +1625,11 @@
 
         </div>
     </footer>
+
+    <!-- Google Material Floating Action Button (FAB: Back to top) -->
+    <button id="fab-scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-blue dark:text-sky-400 shadow-google-md hover:shadow-google-lg hover:scale-105 active:scale-95 transition-all flex items-center justify-center opacity-0 pointer-events-none" title="กลับขึ้นด้านบน">
+        <i class="fa-solid fa-arrow-up text-base"></i>
+    </button>
 
     <!-- ========================================== -->
     <!-- GOOGLE DRIVE STYLE PDF CERTIFICATE MODAL   -->
@@ -1421,7 +1826,8 @@
                 focusTags: [
                     { text: "IoT & Embedded Developer", icon: "fa-solid fa-microchip", color: "text-google-blue" },
                     { text: "AI & Smart Workflow", icon: "fa-solid fa-brain", color: "text-google-green" },
-                    { text: "Video Editor & Media Creator", icon: "fa-solid fa-video", color: "text-google-red" }
+                    { text: "Video Editor & Media Creator", icon: "fa-solid fa-video", color: "text-google-red" },
+                    { text: "3x3 Rubik's Cube Solver", icon: "fa-solid fa-cube", color: "text-amber-500" }
                 ],
                 bio: "นักศึกษาระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) วิทยาลัยอาชีวศึกษานครศรีธรรมราช มีความสนใจและความเชี่ยวชาญในการพัฒนาระบบสมองกลฝังตัว (ESP32, ESP8266), ระบบเครือข่ายอินเทอร์เน็ตของสรรพสิ่ง (IoT), ชื่นชอบการประยุกต์ใช้ปัญญาประดิษฐ์ (AI Tools) ในการทำงานจริงเพื่อเพิ่มประสิทธิภาพ ตลอดจนการสร้างสรรค์สื่อวิดีโอคุณภาพสูง",
                 slides: [
@@ -1437,7 +1843,7 @@
                 subtitle: "นายภคพล สมัยแก้ว (ฟีล)",
                 paragraphs: [
                     "กระผม นายภคพล สมัยแก้ว (ชื่อเล่น: ฟีล / Feel) เกิดเมื่อวันที่ 10 ธันวาคม พ.ศ. 2550 ปัจจุบันกำลังศึกษาอยู่ในระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) ณ วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
-                    "ตลอดระยะเวลาการศึกษา ได้ให้ความสนใจและมุ่งมั่นศึกษาด้านเทคโนโลยีคอมพิวเตอร์และระบบสมองกลฝังตัว โดยเฉพาะการประยุกต์ใช้ไมโครคอนโทรลเลอร์ ESP32 และ ESP8266 ในการเชื่อมต่อเซนเซอร์และระบบ IoT Dashboard รวมถึงมีความชื่นชอบและถนัดการประยุกต์ใช้ปัญญาประดิษฐ์ (AI Tools & Prompt Engineering) เพื่อเพิ่มประสิทธิภาพในกระบวนการทำงานจริง และมีทักษะการสร้างสรรค์สื่อดิจิทัล",
+                    "ตลอดระยะเวลาการศึกษา ได้ให้ความสนใจและมุ่งมั่นศึกษาด้านเทคโนโลยีคอมพิวเตอร์และระบบสมองกลฝังตัว โดยเฉพาะการประยุกต์ใช้ไมโครคอนโทรลเลอร์ ESP32 และ ESP8266 ในการเชื่อมต่อเซนเซอร์และระบบ IoT Dashboard รวมถึงมีความชื่นชอบและถนัดการประยุกต์ใช้ปัญญาประดิษฐ์ (AI Tools & Prompt Engineering) เพื่อเพิ่มประสิทธิภาพในกระบวนการทำงานจริง มีทักษะการสร้างสรรค์สื่อดิจิทัล ตลอดจนมีความสามารถและงานอดิเรกในการเล่นรูบิค 3x3 (3x3 Rubik's Cube) ซึ่งช่วยเสริมสร้างกระบวนการคิดเชิงตรรกะ มิติสัมพันธ์ (Spatial Thinking) และการแก้ปัญหาอย่างเป็นลำดับขั้นตอน",
                     "มีความพร้อมในการเรียนรู้สิ่งใหม่ มุ่งมั่นในการทำงานอย่างมีวินัย รอบคอบ มีมนุษยสัมพันธ์ดี และสามารถร่วมงานกับผู้อื่นในระดับองค์กรได้อย่างมีประสิทธิภาพ"
                 ],
                 birthdate: "10 ธันวาคม 2550",
@@ -1447,13 +1853,15 @@
                 highlights: [
                     { icon: "fa-solid fa-microchip", color: "text-google-blue", bg: "bg-google-blue-light dark:bg-blue-950/50", title: "ความเชี่ยวชาญด้าน IoT & Hardware", desc: "การต่อวงจรอิเล็กทรอนิกส์, การเขียนโปรแกรมควบคุมไมโครคอนโทรลเลอร์ ESP32/ESP8266, เซนเซอร์ตรวจวัด และการส่งข้อมูลเข้าสู่ระบบคลาวด์" },
                     { icon: "fa-solid fa-brain", color: "text-google-green", bg: "bg-google-green-light dark:bg-emerald-950/50", title: "ชื่นชอบการประยุกต์ใช้ AI ในการทำงาน", desc: "ชอบศึกษาและนำเครื่องมือ AI สมัยใหม่มาประยุกต์ใช้กับกระบวนการทำงานจริง เพิ่มประสิทธิภาพการเขียนโค้ด การวิเคราะห์ข้อมูล และแก้ปัญหาได้อย่างรวดเร็วและเป็นระบบ" },
-                    { icon: "fa-solid fa-photo-film", color: "text-google-red", bg: "bg-google-red-light dark:bg-rose-950/50", title: "การตัดต่อสื่อและวิดีโอสร้างสรรค์", desc: "การตัดต่อวิดีโอนำเสนอผลงาน ลำดับเรื่องราวอย่างกระชับ น่าสนใจ และสร้างสรรค์สื่อดิจิทัลให้ตรงตามวัตถุประสงค์ของการสื่อสาร" }
+                    { icon: "fa-solid fa-photo-film", color: "text-google-red", bg: "bg-google-red-light dark:bg-rose-950/50", title: "การตัดต่อสื่อและวิดีโอสร้างสรรค์", desc: "การตัดต่อวิดีโอนำเสนอผลงาน ลำดับเรื่องราวอย่างกระชับ น่าสนใจ และสร้างสรรค์สื่อดิจิทัลให้ตรงตามวัตถุประสงค์ของการสื่อสาร" },
+                    { icon: "fa-solid fa-cube", color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-950/50", title: "ความสามารถพิเศษ: รูบิค 3x3 & การคิดเชิงตรรกะ", desc: "มีความสามารถในการเล่นและแก้รูบิค 3x3 ฝึกฝนการคิดอย่างเป็นระบบ การมองภาพ 3 มิติ (Spatial Reasoning) การจดจำอัลกอริทึม สมาธิ และการแก้ไขปัญหาเฉพาะหน้าได้อย่างมีประสิทธิภาพ" }
                 ]
             },
             skills: [
                 { icon: "fa-solid fa-wifi", iconColor: "text-google-blue", bg: "bg-google-blue-light dark:bg-google-dark-subtle", title: "Hardware & IoT Systems", desc: "มีความเข้าใจในหลักการต่อวงจรอิเล็กทรอนิกส์ ไมโครคอนโทรลเลอร์ การตรวจวัดค่าผ่านเซนเซอร์ และระบบสื่อสารไร้สาย", tags: ["ESP32", "ESP8266", "Arduino IDE", "Sensors & Relays", "Blynk IoT"] },
                 { icon: "fa-solid fa-brain", iconColor: "text-google-green", bg: "bg-google-green-light dark:bg-google-dark-subtle", title: "AI Integration & Smart Workflow", desc: "ชื่นชอบและมีทักษะในการประยุกต์ใช้ AI (เช่น Generative AI, LLMs) เข้ามาเป็นเครื่องมือช่วยในการทำงานจริง ทั้งการช่วยเขียนและตรวจสอบโปรแกรม การวิเคราะห์ข้อมูล และเพิ่ม Productivity ในการทำงาน", tags: ["AI for Productivity", "AI-Assisted Coding", "Prompt Engineering", "Python", "Web Development"] },
-                { icon: "fa-solid fa-photo-film", iconColor: "text-google-yellow", bg: "bg-google-yellow-light dark:bg-google-dark-subtle", title: "Media & Content Creation", desc: "การตัดต่อสื่อวิดีโอนำเสนอผลงาน การสร้างกราฟิก และการจัดเตรียมเนื้อหาให้น่าสนใจ เข้าใจง่าย", tags: ["CapCut", "Video Editing", "Canva Design", "Digital Storytelling"] }
+                { icon: "fa-solid fa-photo-film", iconColor: "text-google-yellow", bg: "bg-google-yellow-light dark:bg-google-dark-subtle", title: "Media & Content Creation", desc: "การตัดต่อสื่อวิดีโอนำเสนอผลงาน การสร้างกราฟิก และการจัดเตรียมเนื้อหาให้น่าสนใจ เข้าใจง่าย", tags: ["CapCut", "Video Editing", "Canva Design", "Digital Storytelling"] },
+                { icon: "fa-solid fa-cube", iconColor: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-950/50", title: "Logic & Pattern Solving (รูบิค 3x3)", desc: "ทักษะการเล่นรูบิค 3x3 ฝึกฝนการคิดอย่างเป็นระบบ การมองภาพเชิงพื้นที่ 3 มิติ และการประยุกต์ใช้อัลกอริทึมแก้ปัญหาได้อย่างรวดเร็วและแม่นยำ", tags: ["รูบิค 3x3", "Rubik's Cube Solver", "Algorithmic Thinking", "Spatial Reasoning", "Pattern Recognition"] }
             ],
             experience: {
                 work: [
@@ -2758,6 +3166,36 @@
             await loadSiteData();
             initGallery();
             _initNetworkMonitor();
+        });
+        // Google 9-Dots Apps Menu Handler
+        function toggleGoogleAppsMenu() {
+            const dropdown = document.getElementById('google-apps-dropdown');
+            if (dropdown) dropdown.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('google-apps-btn');
+            const dropdown = document.getElementById('google-apps-dropdown');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                if (btn && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            }
+        });
+
+        // Floating Action Button (FAB) Scroll Listener
+        window.addEventListener('scroll', () => {
+            const fab = document.getElementById('fab-scroll-top');
+            if (fab) {
+                if (window.scrollY > 400) {
+                    fab.classList.remove('opacity-0', 'pointer-events-none');
+                    fab.classList.add('opacity-100');
+                } else {
+                    fab.classList.add('opacity-0', 'pointer-events-none');
+                    fab.classList.remove('opacity-100');
+                }
+            }
         });
     </script>
 </body>

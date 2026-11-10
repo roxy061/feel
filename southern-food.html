@@ -254,10 +254,16 @@
             </div>
 
             <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-stone-100 dark:border-stone-800 text-xs text-stone-600 dark:text-stone-400">
-                <label class="inline-flex items-center gap-2 cursor-pointer select-none">
-                    <input type="checkbox" id="noRepeatCheck" class="rounded text-turmeric-600 focus:ring-turmeric-500 w-4 h-4">
-                    <span>ไม่สุ่มซ้ำร้านที่ออกไปแล้ว (เหลือในรอบนี้: <strong id="remainingCount">0</strong>)</span>
-                </label>
+                <div class="flex flex-wrap items-center gap-3">
+                    <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox" id="noRepeatCheck" class="rounded text-turmeric-600 focus:ring-turmeric-500 w-4 h-4">
+                        <span>ไม่สุ่มซ้ำร้านที่ออกไปแล้ว (เหลือ: <strong id="remainingCount">0</strong>)</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer select-none px-2.5 py-1 rounded-full bg-amber-100/80 dark:bg-amber-900/30 text-amber-900 dark:text-amber-200 font-medium">
+                        <input type="checkbox" id="boostOddsCheck" checked onchange="applyFilters()" class="rounded text-chili-600 focus:ring-chili-500 w-4 h-4">
+                        <span>🔥 เพิ่มโอกาส KFC & ก๋วยเตี๋ยว (x10)</span>
+                    </label>
+                </div>
                 <div class="flex items-center gap-3">
                     <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
                         <input type="checkbox" id="favOnlyCheck" onchange="applyFilters()" class="rounded text-rose-500 focus:ring-rose-500 w-4 h-4">
@@ -720,6 +726,7 @@
             {
                 id: 'long-tiao',
                 name: 'หลงเตี๋ยว',
+                weight: 10,
                 category: 'ก๋วยเตี๋ยว/ข้าวต้ม',
                 zone: 'ถ.กะโรม / ตลาดแขก / ราเมศวร์',
                 locationDetail: 'ใกล้สะพานราเมศวร์ อ.เมือง นครศรีธรรมราช',
@@ -733,6 +740,7 @@
             {
                 id: 'jae-rom-noodle',
                 name: 'ก๋วยเตี๋ยวเจ๊รมณ์',
+                weight: 10,
                 category: 'ก๋วยเตี๋ยว/ข้าวต้ม',
                 zone: 'ถ.พัฒนาการคูขวาง / สะพานยาว',
                 locationDetail: 'ถนนพัฒนาการคูขวาง อ.เมือง นครศรีธรรมราช',
@@ -1087,6 +1095,7 @@
             {
                 id: 'mall-kfc',
                 name: 'KFC (สาขาโรบินสัน โอเชี่ยน)',
+                weight: 10,
                 isMall: true,
                 category: 'ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด',
                 zone: 'ห้าง: โรบินสัน โอเชี่ยน',
@@ -1254,6 +1263,23 @@
         function getMapsUrl(place) {
             const q = place.mapQuery || `${place.name} อำเภอเมือง นครศรีธรรมราช`;
             return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+        }
+
+        function getPlaceWeight(place) {
+            const boostEl = document.getElementById('boostOddsCheck');
+            const boostOn = boostEl ? boostEl.checked : true;
+            return boostOn ? (place.weight || 1) : 1;
+        }
+
+        function pickWeightedPlace(pool) {
+            if (!pool || pool.length === 0) return null;
+            const totalWeight = pool.reduce((sum, p) => sum + getPlaceWeight(p), 0);
+            let r = Math.random() * totalWeight;
+            for (const p of pool) {
+                r -= getPlaceWeight(p);
+                if (r <= 0) return p;
+            }
+            return pool[pool.length - 1];
         }
 
         // ==================== INIT ====================
@@ -1481,7 +1507,7 @@
                 if (step < totalSteps) {
                     setTimeout(runSlot, 55 + step * 10);
                 } else {
-                    const winner = pool[Math.floor(Math.random() * pool.length)];
+                    const winner = pickWeightedPlace(pool);
                     finishPlaceSpin(winner);
                 }
             };
@@ -1527,6 +1553,7 @@
                         </div>
                         <div class="flex-1 text-center sm:text-left">
                             <div class="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 mb-1.5">
+                                ${getPlaceWeight(place) > 1 ? '<span class="px-2.5 py-0.5 rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs font-semibold">🔥 โอกาสออกสูง x10</span>' : ''}
                                 ${place.isMall ? '<span class="px-2.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-800 dark:text-sky-300 text-xs font-semibold">🏬 ในห้าง</span>' : ''}
                                 <span class="px-2.5 py-0.5 rounded-full bg-turmeric-100 dark:bg-turmeric-900/40 text-turmeric-800 dark:text-turmeric-300 text-xs font-semibold">${escapeHtml(place.category)}</span>
                                 ${renderMealBadges(place.meals)}
@@ -1646,12 +1673,14 @@
 
         // ==================== TAB 2: SPINNING WHEEL ====================
         function rebuildWheelItems() {
-            const shuffled = [...filteredPlaces].sort(() => Math.random() - 0.5);
-            wheelItems = shuffled.slice(0, 12);
+            const boosted = filteredPlaces.filter(p => getPlaceWeight(p) > 1);
+            const normal = filteredPlaces.filter(p => getPlaceWeight(p) <= 1).sort(() => Math.random() - 0.5);
+            const combined = [...boosted, ...normal].slice(0, 12);
+            wheelItems = combined.sort(() => Math.random() - 0.5);
             document.getElementById('wheelSliceCount').textContent = wheelItems.length;
             document.getElementById('wheelChips').innerHTML = wheelItems.map((p, i) => `
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium text-white" style="background:${WHEEL_COLORS[i % WHEEL_COLORS.length]}">
-                    ${escapeHtml(p.emoji)} ${escapeHtml(p.name)}
+                    ${getPlaceWeight(p) > 1 ? '🔥 ' : ''}${escapeHtml(p.emoji)} ${escapeHtml(p.name)}
                 </span>
             `).join('');
             drawWheel();
@@ -1713,9 +1742,17 @@
             isWheelSpinning = true;
             document.getElementById('wheelSpinBtn').disabled = true;
 
-            const extraSpins = (5 + Math.random() * 4) * Math.PI * 2;
+            const chosenPlace = pickWeightedPlace(wheelItems);
+            const winIdx = Math.max(0, wheelItems.indexOf(chosenPlace));
+            const sliceAngle = (Math.PI * 2) / wheelItems.length;
+            const offsetInSlice = 0.18 + Math.random() * 0.64;
+            const TWO_PI = Math.PI * 2;
+            const desiredMod = ((Math.PI * 1.5 - (winIdx + offsetInSlice) * sliceAngle) % TWO_PI + TWO_PI) % TWO_PI;
             const startAngle = wheelAngle;
-            const targetAngle = startAngle + extraSpins;
+            const currentMod = ((startAngle % TWO_PI) + TWO_PI) % TWO_PI;
+            const deltaMod = (desiredMod - currentMod + TWO_PI) % TWO_PI;
+            const extraSpins = (5 + Math.floor(Math.random() * 4)) * TWO_PI;
+            const targetAngle = startAngle + deltaMod + extraSpins;
             const duration = 4200;
             const startTime = performance.now();
             let lastSliceIdx = -1;
@@ -1727,8 +1764,7 @@
                 wheelAngle = startAngle + (targetAngle - startAngle) * ease;
                 drawWheel();
 
-                const sliceAngle = (Math.PI * 2) / wheelItems.length;
-                const pointerAngle = (Math.PI * 1.5 - wheelAngle % (Math.PI * 2) + Math.PI * 4) % (Math.PI * 2);
+                const pointerAngle = (Math.PI * 1.5 - wheelAngle % TWO_PI + Math.PI * 4) % TWO_PI;
                 const currentIdx = Math.floor(pointerAngle / sliceAngle) % wheelItems.length;
                 if (currentIdx !== lastSliceIdx) {
                     playTick(680, 0.025, 0.04);
@@ -1740,7 +1776,7 @@
                 } else {
                     isWheelSpinning = false;
                     document.getElementById('wheelSpinBtn').disabled = false;
-                    showWheelWinner(wheelItems[currentIdx]);
+                    showWheelWinner(wheelItems[winIdx]);
                 }
             }
             requestAnimationFrame(animate);
@@ -1778,7 +1814,7 @@
         function generateDayPlan() {
             const pick = (meal, excludeIds = new Set()) => {
                 const pool = allPlaces.filter(p => (p.meals || []).includes(meal) && !excludeIds.has(p.id));
-                const chosen = pool[Math.floor(Math.random() * pool.length)] || allPlaces[0];
+                const chosen = pickWeightedPlace(pool) || allPlaces[0];
                 excludeIds.add(chosen.id);
                 return chosen;
             };

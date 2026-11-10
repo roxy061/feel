@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ดาวน์โหลดส่วนเสริม ESP32 DHT11 MQTT สำหรับ VS Code</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --green: #22c55e;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 40px 20px; line-height: 1.6; }
+    .container { max-width: 850px; margin: 0 auto; }
+    .hero {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      margin-bottom: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    h1 { font-size: 1.9rem; margin-bottom: 10px; }
+    p.sub { color: var(--muted); margin-bottom: 24px; }
+    .btn-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 26px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary { background: var(--green); color: #052e16; }
+    .btn-primary:hover { background: #16a34a; color: #fff; transform: translateY(-2px); }
+    .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--accent); }
+    .btn-secondary:hover { background: rgba(56, 189, 248, 0.15); transform: translateY(-2px); }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .step-card {
+      background: var(--card);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .step-card h3 { color: var(--accent); margin-bottom: 8px; font-size: 1.1rem; }
+    .code-box {
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+    }
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #1e293b;
+    }
+    pre { overflow-x: auto; font-family: Consolas, monospace; font-size: 0.9rem; color: #e2e8f0; }
+    code { font-family: Consolas, monospace; background: #334155; padding: 2px 6px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <span class="badge">VS Code Extension v1.0.0 • IT Department</span>
+      <h1>ESP32 DHT11 MQTT Snippets & Helper</h1>
+      <p class="sub">ติดตั้งครั้งเดียว โหลดปุ๊บเด้งโค้ด ESP32 + WiFi + MQTT + DHT11 พร้อมใช้งานใน VS Code ทันที</p>
+      <div class="btn-group">
+        <a href="ESP32-DHT-VSCode-Installer.zip" download class="btn btn-primary">
+          📦 ดาวน์โหลดตัวติดตั้งอัตโนมัติ (.ZIP)
+        </a>
+        <a href="esp32-dht-snippets-1.0.0.vsix" download class="btn btn-secondary">
+          🧩 ดาวน์โหลดเฉพาะไฟล์ .VSIX
+        </a>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step-card">
+        <h3>1. ติดตั้งในคลิกเดียว</h3>
+        <p>ดาวน์โหลดไฟล์ <code>.ZIP</code> แตกไฟล์ออก แล้วดับเบิลคลิกที่ไฟล์ <code>Install-ESP32-VSCode.bat</code> โปรแกรมจะติดตั้งเข้า VS Code และเด้งโค้ดขึ้นมาให้ทันที</p>
+      </div>
+      <div class="step-card">
+        <h3>2. ปุ่มลัดมุมซ้ายล่าง</h3>
+        <p>ใน VS Code จะมีปุ่ม <code>เด้งโค้ด ESP32 DHT</code> และ <code>เช็ค MQTT/Server</code> ที่แถบมุมซ้ายล่าง กดเรียกโค้ดได้ตลอดเวลา</p>
+      </div>
+      <div class="step-card">
+        <h3>3. พิมพ์คำย่อ esp32dht</h3>
+        <p>พิมพ์ <code>esp32</code> หรือ <code>esp32dht</code> ในไฟล์โค้ดใดก็ได้แล้วกด <code>Tab</code> โค้ดทั้งชุดจะเด้งขึ้นมาอัตโนมัติ</p>
+      </div>
+    </div>
+
+    <div class="code-box">
+      <div class="code-header">
+        <span><strong>ตัวอย่างโค้ดที่จะเด้งขึ้นมาอัตโนมัติ (ESP32 + DHT11 + MQTT)</strong></span>
+        <button class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;" onclick="copyCode()" id="copyBtn">📋 คัดลอกโค้ด</button>
+      </div>
+      <pre id="espCode">#include &lt;WiFi.h&gt;
+#include &lt;PubSubClient.h&gt;
+#include &lt;DHT.h&gt;
+
+const char* ssid = "IT Department";
+const char* password = "media2022";
+const char* mqtt_server = "192.168.11.180"; 
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+#define DHTPIN 4     
+#define DHTTYPE DHT11   
+DHT dht(DHTPIN, DHTTYPE);
+
+unsigned long lastMsg = 0;
+const long interval = 2000;
+
+void setup_wifi() {
+  delay(10);
+  Serial.begin(115200);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nWiFi connected");
+}
+
+void reconnect() {
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    String clientId = "ESP32Client-DHT-";
+    clientId += String(random(0xffff), HEX);
+    
+    if (client.connect(clientId.c_str())) {
+      Serial.println("connected");
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5s");
+      delay(5000);
+    }
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+  setup_wifi();
+  client.setServer(mqtt_server, 1883);
+  dht.begin();
+}
+
+void loop() {
+  if (WiFi.status() != WL_CONNECTED) {
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+    }
+  }
+
+  if (!client.connected()) {
+    reconnect();
+  }
+  
+  client.loop();
+
+  unsigned long now = millis();
+  if (now - lastMsg &gt; interval &amp;&amp; client.connected()) {
+    lastMsg = now;
+
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
+
+    if (isnan(h) || isnan(t)) {
+      Serial.println("DHT read failed!");
+      return;
+    }
+
+    char hStr[10], tStr[10];
+    snprintf(hStr, sizeof(hStr), "%.1f", h);
+    snprintf(tStr, sizeof(tStr), "%.1f", t);
+
+    client.publish("sensor/humidity", hStr);
+    client.publish("sensor/temperature", tStr);
+
+    Serial.print("H: "); Serial.print(hStr);
+    Serial.print("% | T: "); Serial.print(tStr);
+    Serial.println("C");
+  }
+}</pre>
+    </div>
+  </div>
+  <script>
+    function copyCode() {
+      const text = document.getElementById('espCode').innerText;
+      navigator.clipboard.writeText(text);
+      const btn = document.getElementById('copyBtn');
+      btn.innerText = '✅ คัดลอกแล้ว!';
+      setTimeout(() => btn.innerText = '📋 คัดลอกโค้ด', 2000);
+    }
+  </script>
+  <!-- Swarm Rebuild Universal Script -->
+  <script src="../js/swarm-rebuild.js"></script>
+</body>
+</html>

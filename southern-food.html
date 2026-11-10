@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หรอยเมืองคอน! สุ่มร้านอาหาร อ.เมือง นครศรีธรรมราช</title>
+    <meta name="description" content="เว็บสุ่มร้านอาหารในอำเภอเมือง จังหวัดนครศรีธรรมราช ครบทั้งร้านดังในเมืองและร้านในห้าง (48 ร้าน) พร้อมวงล้อหมุนและพิกัดแผนที่">
+    <meta property="og:title" content="หรอยเมืองคอน! สุ่มร้านอาหาร อ.เมือง นครศรีธรรมราช">
+    <meta property="og:description" content="คิดไม่ออกว่ามื้อนี้กินร้านไหนดี? สุ่มเลย 48 ร้านเด็ดในเมืองนครฯ ทั้งร้านดังริมถนนและร้านในห้าง พร้อมเปิด Google Maps">
+    <meta property="og:type" content="website">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        turmeric: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                        },
+                        pandan: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        chili: {
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'sans-serif'],
+                        heading: ['Kanit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #fffdf7;
+            color: #1c1917;
+        }
+        .dark body {
+            background-color: #141210;
+            color: #f5f5f4;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Kanit', sans-serif;
+        }
+        .batik-pattern {
+            background-image: radial-gradient(circle at 20% 20%, rgba(245, 158, 11, 0.14) 0%, transparent 45%),
+                              radial-gradient(circle at 80% 30%, rgba(21, 128, 61, 0.12) 0%, transparent 45%),
+                              radial-gradient(circle at 50% 90%, rgba(220, 38, 38, 0.08) 0%, transparent 45%);
+        }
+        @keyframes slotPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.025); }
+        }
+        .spinning-card {
+            animation: slotPulse 0.18s ease-in-out infinite;
+        }
+        @keyframes popReveal {
+            0% { opacity: 0; transform: scale(0.88) translateY(12px); }
+            65% { transform: scale(1.03) translateY(-2px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .pop-reveal {
+            animation: popReveal 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        ::-webkit-scrollbar { width: 7px; height: 7px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #44403c; }
+        #confettiCanvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col transition-colors duration-200 batik-pattern">
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- Top Accent Strip -->
+    <div class="h-1.5 w-full bg-gradient-to-r from-pandan-700 via-turmeric-500 to-chili-600"></div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-30 backdrop-blur-md bg-[#fffdf7]/85 dark:bg-[#141210]/85 border-b border-amber-200/70 dark:border-stone-800">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-turmeric-500 to-chili-600 text-white flex items-center justify-center shadow-md shadow-amber-500/20 text-lg">
+                    <i class="fa-solid fa-store"></i>
+                </div>
+                <div>
+                    <h1 class="font-heading font-bold text-lg sm:text-xl leading-tight text-stone-900 dark:text-stone-100">
+                        หรอยเมืองคอน! <span class="text-turmeric-600 dark:text-turmeric-400">สุ่มร้านอาหารในเมืองนครฯ</span>
+                    </h1>
+                    <p class="text-xs text-stone-500 dark:text-stone-400 hidden sm:block">
+                        รวมร้านเด็ดเฉพาะในเขตอำเภอเมือง นครศรีธรรมราช พร้อมพิกัดย่านและเมนูแนะนำ
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="shareWebsite()" title="ส่งลิงก์เว็บนี้ให้เพื่อน"
+                    class="px-3 py-2 rounded-xl border border-amber-300/70 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-sm font-medium transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-share-from-square"></i>
+                    <span class="hidden sm:inline">ส่งให้เพื่อน</span>
+                </button>
+                <button id="soundToggleBtn" onclick="toggleSound()" title="เปิด/ปิดเสียงเอฟเฟกต์"
+                    class="px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 hover:bg-amber-50 dark:hover:bg-stone-800 text-sm transition">
+                    <i id="soundIcon" class="fa-solid fa-volume-high text-turmeric-600"></i>
+                </button>
+                <button onclick="openAddModal()"
+                    class="px-3 py-2 rounded-xl border border-pandan-600/30 bg-pandan-50 dark:bg-pandan-900/30 text-pandan-800 dark:text-green-300 hover:bg-pandan-100 dark:hover:bg-pandan-900/50 text-sm font-medium transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-plus"></i>
+                    <span class="hidden md:inline">เพิ่มร้าน</span>
+                </button>
+                <button id="darkModeBtn" onclick="toggleDarkMode()" title="สลับโหมดมืด/สว่าง"
+                    class="px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 hover:bg-amber-50 dark:hover:bg-stone-800 text-sm transition">
+                    <i id="darkIcon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+
+        <!-- Mode Navigation Tabs -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="inline-flex flex-wrap p-1 rounded-2xl bg-stone-200/70 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700">
+                <button onclick="switchTab('card')" id="tab-card" class="tab-btn px-4 py-2 rounded-xl text-sm font-heading font-medium transition flex items-center gap-2 bg-white dark:bg-stone-900 text-turmeric-700 dark:text-turmeric-400 shadow-sm">
+                    <i class="fa-solid fa-dice"></i> สุ่มร้านทันใจ
+                </button>
+                <button onclick="switchTab('wheel')" id="tab-wheel" class="tab-btn px-4 py-2 rounded-xl text-sm font-heading font-medium transition flex items-center gap-2 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200">
+                    <i class="fa-solid fa-dharmachakra"></i> วงล้อร้านเด็ด
+                </button>
+                <button onclick="switchTab('plan')" id="tab-plan" class="tab-btn px-4 py-2 rounded-xl text-sm font-heading font-medium transition flex items-center gap-2 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200">
+                    <i class="fa-solid fa-route"></i> แพลนกิน 1 วัน
+                </button>
+                <button onclick="switchTab('directory')" id="tab-directory" class="tab-btn px-4 py-2 rounded-xl text-sm font-heading font-medium transition flex items-center gap-2 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200">
+                    <i class="fa-solid fa-map-location-dot"></i> ร้านทั้งหมด (<span id="totalPlaceCount">0</span>)
+                </button>
+            </div>
+
+            <div class="text-xs sm:text-sm text-stone-500 dark:text-stone-400 flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/70 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 font-medium">
+                    <i class="fa-solid fa-location-dot text-chili-600"></i>
+                    อ.เมือง นครฯ พร้อมสุ่ม: <strong id="filteredCount">0</strong> ร้าน
+                </span>
+            </div>
+        </div>
+
+        <!-- Filters Panel -->
+        <section id="filterSection" class="bg-white/90 dark:bg-stone-900/90 backdrop-blur rounded-2xl border border-amber-200/80 dark:border-stone-800 p-4 sm:p-5 shadow-sm space-y-4">
+            <!-- Quick Mall vs Street Toggle -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-stone-100 dark:border-stone-800">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs font-heading font-semibold text-stone-500 dark:text-stone-400 mr-1">
+                        <i class="fa-solid fa-building-store text-turmeric-600 mr-1"></i> ทำเลร้าน:
+                    </span>
+                    <button type="button" onclick="setLocationType('all')" id="loc-all"
+                        class="loc-btn px-3 py-1.5 rounded-xl text-xs font-heading font-semibold bg-turmeric-600 text-white shadow-sm transition">
+                        ทั้งหมด (ในเมือง + ในห้าง)
+                    </button>
+                    <button type="button" onclick="setLocationType('street')" id="loc-street"
+                        class="loc-btn px-3 py-1.5 rounded-xl text-xs font-heading font-semibold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition">
+                        🏡 เฉพาะร้านนอกห้าง / ริมถนน
+                    </button>
+                    <button type="button" onclick="setLocationType('mall')" id="loc-mall"
+                        class="loc-btn px-3 py-1.5 rounded-xl text-xs font-heading font-semibold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition">
+                        🏬 เฉพาะร้านในห้าง (อย่างละสาขา)
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Category Filter -->
+                <div>
+                    <label class="block text-xs font-heading font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider mb-1.5">
+                        <i class="fa-solid fa-utensils text-turmeric-600 mr-1"></i> แนวอาหาร / ประเภทร้าน
+                    </label>
+                    <select id="filterCategory" onchange="applyFilters()"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-sm focus:outline-none focus:ring-2 focus:ring-turmeric-500">
+                        <option value="all">ทุกประเภทร้าน</option>
+                        <option value="อาหารใต้พื้นบ้าน">อาหารใต้พื้นบ้าน</option>
+                        <option value="ขนมจีนเมืองคอน">ขนมจีนเมืองคอน</option>
+                        <option value="ติ่มซำ/อาหารเช้า">ติ่มซำ / อาหารเช้า</option>
+                        <option value="ซีฟู้ด/ทะเลสด">ซีฟู้ด / อาหารทะเล</option>
+                        <option value="ก๋วยเตี๋ยว/ข้าวต้ม">ก๋วยเตี๋ยว / ข้าวต้มดึก</option>
+                        <option value="ปิ้งย่าง/ชาบู/สุกี้">ปิ้งย่าง / ชาบู / สุกี้</option>
+                        <option value="ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด">ญี่ปุ่น / เกาหลี / สเต๊ก / พิซซ่า</option>
+                        <option value="โรตี/ชาชัก/คาเฟ่">โรตี / ชาชัก / คาเฟ่ / ของหวาน</option>
+                    </select>
+                </div>
+
+                <!-- Meal Time Filter -->
+                <div>
+                    <label class="block text-xs font-heading font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider mb-1.5">
+                        <i class="fa-solid fa-clock text-chili-600 mr-1"></i> ช่วงเวลาที่ไปกิน
+                    </label>
+                    <select id="filterMealTime" onchange="applyFilters()"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-sm focus:outline-none focus:ring-2 focus:ring-turmeric-500">
+                        <option value="all">ทุกช่วงเวลา</option>
+                        <option value="เช้า">มื้อเช้า (06:00 - 11:00)</option>
+                        <option value="กลางวัน">มื้อกลางวัน (11:00 - 15:00)</option>
+                        <option value="เย็น">มื้อเย็น (16:00 - 21:00)</option>
+                        <option value="ดึก">มื้อดึก / โต้รุ่ง (20:00+)</option>
+                    </select>
+                </div>
+
+                <!-- Zone Filter -->
+                <div>
+                    <label class="block text-xs font-heading font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider mb-1.5">
+                        <i class="fa-solid fa-map-pin text-pandan-600 mr-1"></i> ย่าน / ถนนใน อ.เมือง
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <select id="filterZone" onchange="applyFilters()"
+                            class="flex-1 px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-sm focus:outline-none focus:ring-2 focus:ring-turmeric-500">
+                            <option value="all">ทุกย่านในตัวเมืองนครฯ</option>
+                        </select>
+                        <button onclick="resetFilters()" title="ล้างตัวกรอง"
+                            class="px-3 py-2.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-300 text-sm transition">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-stone-100 dark:border-stone-800 text-xs text-stone-600 dark:text-stone-400">
+                <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                    <input type="checkbox" id="noRepeatCheck" class="rounded text-turmeric-600 focus:ring-turmeric-500 w-4 h-4">
+                    <span>ไม่สุ่มซ้ำร้านที่ออกไปแล้ว (เหลือในรอบนี้: <strong id="remainingCount">0</strong>)</span>
+                </label>
+                <div class="flex items-center gap-3">
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                        <input type="checkbox" id="favOnlyCheck" onchange="applyFilters()" class="rounded text-rose-500 focus:ring-rose-500 w-4 h-4">
+                        <span>สุ่มเฉพาะร้านโปรด ❤️ (<span id="favCountBadge">0</span>)</span>
+                    </label>
+                    <button onclick="resetRound()" class="text-turmeric-700 dark:text-turmeric-400 hover:underline font-medium">
+                        รีเซ็ตรอบสุ่ม
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 1: RANDOMIZER CARD ==================== -->
+        <section id="view-card" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div class="lg:col-span-8 space-y-5">
+                <div id="resultCardContainer" class="relative overflow-hidden rounded-3xl bg-white dark:bg-stone-900 border-2 border-amber-200 dark:border-stone-800 shadow-xl shadow-amber-900/5 p-6 sm:p-8 min-h-[380px] flex flex-col justify-between transition-all">
+                    <div class="absolute -right-12 -top-12 w-44 h-44 rounded-full bg-gradient-to-br from-turmeric-400/20 to-chili-500/15 blur-xl pointer-events-none"></div>
+
+                    <div id="placeDisplay" class="relative z-10 flex-1 flex flex-col justify-center items-center text-center py-6">
+                        <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-turmeric-100 to-amber-200 dark:from-amber-900/40 dark:to-stone-800 flex items-center justify-center text-5xl mb-4 shadow-inner">
+                            🏙️
+                        </div>
+                        <h2 class="font-heading text-2xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100 mb-2">
+                            มื้อนี้ไปกินร้านไหนดีในเมืองคอน?
+                        </h2>
+                        <p class="text-stone-500 dark:text-stone-400 max-w-md text-sm sm:text-base">
+                            กดปุ่ม <strong>"สุ่มร้านเลย!"</strong> เพื่อเลือกร้านอร่อยใน อ.เมือง นครศรีธรรมราช พร้อมเมนูแนะนำ ย่านพิกัด และลิงก์เปิดแผนที่นำทาง
+                        </p>
+                    </div>
+
+                    <div class="relative z-10 pt-5 mt-4 border-t border-stone-100 dark:border-stone-800 flex flex-wrap items-center justify-center sm:justify-between gap-3">
+                        <button id="spinCardBtn" onclick="spinRandomPlace()"
+                            class="w-full sm:w-auto flex-1 sm:flex-initial px-8 py-3.5 rounded-2xl bg-gradient-to-r from-turmeric-600 via-amber-500 to-chili-600 hover:from-turmeric-700 hover:to-chili-700 text-white font-heading font-bold text-lg shadow-lg shadow-amber-500/25 active:scale-[0.98] transition flex items-center justify-center gap-2.5">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>สุ่มร้านเลย! (หรอยชัวร์)</span>
+                        </button>
+
+                        <div class="flex items-center gap-2" id="placeQuickActions" style="display:none;">
+                            <a id="mapsQuickBtn" href="#" target="_blank" rel="noopener noreferrer"
+                                class="px-4 py-3 rounded-2xl bg-pandan-700 hover:bg-pandan-800 text-white transition flex items-center gap-1.5 text-sm font-medium shadow-sm">
+                                <i class="fa-solid fa-map-location-dot"></i> <span>เปิดแผนที่</span>
+                            </a>
+                            <button onclick="toggleCurrentFav()" id="favCardBtn"
+                                class="px-4 py-3 rounded-2xl border border-stone-200 dark:border-stone-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-stone-600 dark:text-stone-300 transition flex items-center gap-1.5 text-sm font-medium">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
+                            <button onclick="copyPlaceText()"
+                                class="px-4 py-3 rounded-2xl border border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300 transition flex items-center gap-1.5 text-sm font-medium" title="คัดลอกไปชวนเพื่อน">
+                                <i class="fa-solid fa-share-nodes"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nakhon Local Tip Box -->
+                <div class="rounded-2xl bg-gradient-to-r from-pandan-900 to-emerald-800 text-white p-4 sm:p-5 flex items-center gap-4 shadow-md">
+                    <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-2xl shrink-0">
+                        🏯
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs uppercase tracking-wider text-emerald-200 font-heading font-semibold">ลายแทงกินเที่ยวเมืองคอน</div>
+                        <p id="nakhonTip" class="text-sm sm:text-base text-emerald-50 mt-0.5 leading-relaxed">
+                            สายบุญไหว้พระธาตุฯ ตอนเช้า แวะติ่มซำร้านโกปี๊ หรือหลังพระธาตุฯ มีร้านขนมจีนแม่แอ๊ดและร้านโรตี-น้ำชาให้เติมพลัง!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar: History & Favorites -->
+            <aside class="lg:col-span-4 space-y-5">
+                <div class="rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-4 sm:p-5 shadow-sm">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-heading font-semibold text-base flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-turmeric-600"></i> ร้านที่สุ่มได้ล่าสุด
+                        </h3>
+                        <button onclick="clearHistory()" class="text-xs text-stone-400 hover:text-chili-600 transition">ล้างประวัติ</button>
+                    </div>
+                    <div id="historyList" class="space-y-2 max-h-64 overflow-y-auto pr-1">
+                        <p class="text-sm text-stone-400 text-center py-6">ยังไม่มีประวัติการสุ่ม</p>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-4 sm:p-5 shadow-sm">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-heading font-semibold text-base flex items-center gap-2">
+                            <i class="fa-solid fa-heart text-rose-500"></i> ร้านโปรดของฉัน
+                        </h3>
+                        <span id="favSidebarCount" class="text-xs px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-300 font-semibold">0</span>
+                    </div>
+                    <div id="favList" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        <p class="text-sm text-stone-400 text-center py-6">กดหัวใจที่ร้านที่ชอบเพื่อเก็บไว้ที่นี่</p>
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+        <!-- ==================== TAB 2: SPINNING WHEEL ==================== -->
+        <section id="view-wheel" class="hidden grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            <div class="lg:col-span-7 flex flex-col items-center justify-center bg-white dark:bg-stone-900 rounded-3xl border border-amber-200 dark:border-stone-800 p-5 sm:p-8 shadow-lg">
+                <div class="relative w-full max-w-[430px] aspect-square flex items-center justify-center">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 z-20 drop-shadow-md">
+                        <div class="w-0 h-0 border-l-[16px] border-l-transparent border-r-[16px] border-r-transparent border-t-[30px] border-t-chili-600"></div>
+                    </div>
+                    <canvas id="wheelCanvas" width="500" height="500" class="w-full h-full rounded-full shadow-xl border-4 border-turmeric-500/40 cursor-pointer" onclick="spinWheel()"></canvas>
+                    <button onclick="spinWheel()" id="wheelCenterBtn"
+                        class="absolute w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white dark:bg-stone-900 border-4 border-turmeric-500 shadow-lg flex flex-col items-center justify-center font-heading font-bold text-turmeric-700 dark:text-turmeric-400 hover:scale-105 active:scale-95 transition z-10 text-xs sm:text-sm">
+                        <i class="fa-solid fa-play text-base mb-0.5"></i>
+                        <span>หมุน!</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-3 mt-6">
+                    <button onclick="spinWheel()" id="wheelSpinBtn"
+                        class="px-7 py-3 rounded-2xl bg-gradient-to-r from-turmeric-600 to-chili-600 text-white font-heading font-bold shadow-md hover:opacity-95 active:scale-95 transition flex items-center gap-2">
+                        <i class="fa-solid fa-rotate"></i> หมุนวงล้อร้านเด็ด!
+                    </button>
+                    <button onclick="rebuildWheelItems()"
+                        class="px-4 py-3 rounded-2xl border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-sm font-medium transition flex items-center gap-2">
+                        <i class="fa-solid fa-shuffle"></i> สลับร้านบนวงล้อ
+                    </button>
+                </div>
+                <p class="text-xs text-stone-400 mt-3 text-center">แสดงสูงสุด 12 ร้านต่อรอบบนวงล้อ (อิงตามตัวกรองด้านบน)</p>
+            </div>
+
+            <div class="lg:col-span-5 space-y-4">
+                <div id="wheelResultBox" class="rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 shadow-sm min-h-[280px] flex flex-col justify-center">
+                    <div class="text-center text-stone-400 space-y-2 py-8">
+                        <div class="text-5xl">🎡</div>
+                        <h3 class="font-heading text-lg font-semibold text-stone-700 dark:text-stone-200">กดหมุนวงล้อเลือกร้านในเมืองนครฯ</h3>
+                        <p class="text-sm">เข็มหยุดที่ร้านไหน ออกไปกินร้านนั้นได้เลย!</p>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-4">
+                    <h4 class="font-heading font-semibold text-sm text-stone-600 dark:text-stone-300 mb-2">ร้านบนวงล้อรอบนี้ (<span id="wheelSliceCount">0</span>)</h4>
+                    <div id="wheelChips" class="flex flex-wrap gap-1.5"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 3: 1-DAY FOOD TOUR PLAN ==================== -->
+        <section id="view-plan" class="hidden space-y-6">
+            <div class="rounded-3xl bg-gradient-to-br from-amber-50 via-white to-emerald-50 dark:from-stone-900 dark:via-stone-900 dark:to-emerald-950/30 border border-amber-200 dark:border-stone-800 p-6 sm:p-8 shadow-md">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full bg-turmeric-100 dark:bg-turmeric-900/40 text-turmeric-800 dark:text-turmeric-300 text-xs font-heading font-semibold mb-2">
+                            ตารางตะลุยกิน อ.เมือง นครศรีธรรมราช
+                        </span>
+                        <h2 class="font-heading text-2xl sm:text-3xl font-bold">จัดแพลนกิน 1 วัน 4 มื้อ (เช้า - เที่ยง - เย็น - ดึก)</h2>
+                        <p class="text-sm text-stone-500 dark:text-stone-400 mt-1">
+                            สุ่มจับคู่ร้านเด็ดในตัวเมืองครบทุกช่วงเวลา ตั้งแต่อาหารเช้า ติ่มซำ ขนมจีน มื้อเย็นอาหารใต้ ยันข้าวต้ม/โรตีรอบดึก
+                        </p>
+                    </div>
+                    <button onclick="generateDayPlan()"
+                        class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-pandan-700 to-emerald-600 hover:from-pandan-800 hover:to-emerald-700 text-white font-heading font-bold shadow-lg shadow-emerald-600/20 active:scale-95 transition flex items-center justify-center gap-2 shrink-0">
+                        <i class="fa-solid fa-route"></i> สุ่มแพลนใหม่
+                    </button>
+                </div>
+
+                <div id="dayPlanGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 4: ALL RESTAURANTS DIRECTORY ==================== -->
+        <section id="view-directory" class="hidden space-y-5">
+            <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 p-4 flex flex-col sm:flex-row gap-3 items-center justify-between">
+                <div class="relative w-full sm:max-w-md">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400"></i>
+                    <input type="text" id="dirSearchInput" oninput="renderDirectory()" placeholder="ค้นหาชื่อร้าน, ถนน, ย่าน, เมนูเด็ด (เช่น โกปี๊, พัฒนาการคูขวาง, ปู)..."
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-sm focus:outline-none focus:ring-2 focus:ring-turmeric-500">
+                </div>
+                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                    <select id="dirLocFilter" onchange="renderDirectory()"
+                        class="px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-sm">
+                        <option value="all">ทุกทำเล (ในเมือง + ในห้าง)</option>
+                        <option value="street">เฉพาะร้านนอกห้าง</option>
+                        <option value="mall">เฉพาะร้านในห้าง</option>
+                    </select>
+                    <select id="dirCategoryFilter" onchange="renderDirectory()"
+                        class="px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-sm">
+                        <option value="all">ทุกประเภทร้าน</option>
+                        <option value="อาหารใต้พื้นบ้าน">อาหารใต้พื้นบ้าน</option>
+                        <option value="ขนมจีนเมืองคอน">ขนมจีนเมืองคอน</option>
+                        <option value="ติ่มซำ/อาหารเช้า">ติ่มซำ / อาหารเช้า</option>
+                        <option value="ซีฟู้ด/ทะเลสด">ซีฟู้ด / อาหารทะเล</option>
+                        <option value="ก๋วยเตี๋ยว/ข้าวต้ม">ก๋วยเตี๋ยว / ข้าวต้มดึก</option>
+                        <option value="ปิ้งย่าง/ชาบู/สุกี้">ปิ้งย่าง / ชาบู / สุกี้</option>
+                        <option value="ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด">ญี่ปุ่น / เกาหลี / สเต๊ก / พิซซ่า</option>
+                        <option value="โรตี/ชาชัก/คาเฟ่">โรตี / ชาชัก / คาเฟ่ / ของหวาน</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="directoryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-amber-200/60 dark:border-stone-800 py-5 mt-8 text-center text-xs sm:text-sm text-stone-500 dark:text-stone-400">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span>🏯 <strong>หรอยเมืองคอน!</strong> — สุ่มร้านอร่อยเฉพาะ อ.เมือง จ.นครศรีธรรมราช</span>
+            <span>กดเปิดแผนที่ Google Maps จากการ์ดร้านเพื่อนำทางได้ทันที</span>
+        </div>
+    </footer>
+
+    <!-- Add Custom Restaurant Modal -->
+    <div id="addPlaceModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-stone-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 dark:border-stone-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-heading text-xl font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-pandan-600"></i> เพิ่มร้านในเมืองนครฯ ของคุณเอง
+                </h3>
+                <button onclick="closeAddModal()" class="w-8 h-8 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 flex items-center justify-center text-stone-500">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="addPlaceForm" onsubmit="handleAddPlace(event)" class="space-y-3.5 text-sm">
+                <div>
+                    <label class="block font-medium mb-1">ชื่อร้านอาหาร *</label>
+                    <input type="text" id="newPlaceName" required placeholder="เช่น ข้าวมันไก่เจ้าประจำหน้าวัด..."
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 focus:ring-2 focus:ring-turmeric-500 outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium mb-1">ประเภทร้าน</label>
+                        <select id="newPlaceCategory" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700">
+                            <option value="อาหารใต้พื้นบ้าน">อาหารใต้พื้นบ้าน</option>
+                            <option value="ขนมจีนเมืองคอน">ขนมจีนเมืองคอน</option>
+                            <option value="ติ่มซำ/อาหารเช้า">ติ่มซำ/อาหารเช้า</option>
+                            <option value="ซีฟู้ด/ทะเลสด">ซีฟู้ด/ทะเลสด</option>
+                            <option value="ก๋วยเตี๋ยว/ข้าวต้ม">ก๋วยเตี๋ยว/ข้าวต้ม</option>
+                            <option value="ปิ้งย่าง/ชาบู/สุกี้">ปิ้งย่าง/ชาบู/สุกี้</option>
+                            <option value="ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด">ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด</option>
+                            <option value="โรตี/ชาชัก/คาเฟ่">โรตี/ชาชัก/คาเฟ่</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1">ช่วงเวลาแนะนำ</label>
+                        <select id="newPlaceMeal" class="w-full px-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700">
+                            <option value="เช้า">มื้อเช้า</option>
+                            <option value="กลางวัน" selected>มื้อกลางวัน</option>
+                            <option value="เย็น">มื้อเย็น</option>
+                            <option value="ดึก">มื้อดึก</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium mb-1">ย่าน / ถนนใน อ.เมือง</label>
+                        <input type="text" id="newPlaceZone" value="ถ.พัฒนาการคูขวาง"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700">
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1">อิโมจิ</label>
+                        <input type="text" id="newPlaceEmoji" value="🍽️" maxlength="4"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-medium mb-1">จุดเด่นของร้าน</label>
+                    <textarea id="newPlaceDesc" rows="2" placeholder="บรรยากาศดี อาหารอร่อย ราคาไม่แพง..."
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-medium mb-1">เมนูเด็ดที่ต้องสั่ง (คั่นด้วยลูกน้ำ ,)</label>
+                    <input type="text" id="newPlaceDishes" placeholder="เช่น แกงส้ม, หมูคั่วเกลือ, ไข่เจียวปู"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800">ยกเลิก</button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-pandan-700 hover:bg-pandan-800 text-white font-heading font-semibold">บันทึกร้าน</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4" onclick="if(event.target===this) closeDetailModal()">
+        <div class="bg-white dark:bg-stone-900 rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-amber-200 dark:border-stone-700 relative">
+            <button onclick="closeDetailModal()" class="absolute right-4 top-4 w-9 h-9 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 flex items-center justify-center text-stone-500">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="detailModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-sm font-medium shadow-xl opacity-0 pointer-events-none transition-all duration-300 translate-y-4">
+    </div>
+
+    <script>
+        // ==================== DATA: RESTAURANTS IN MUEANG NAKHON SI THAMMARAT ====================
+        const DEFAULT_PLACES = [
+            {
+                id: 'kopi-nakhon',
+                name: 'ร้านโกปี๊ (Kopi)',
+                category: 'ติ่มซำ/อาหารเช้า',
+                zone: 'ถ.ราชดำเนิน / ศาลากลาง',
+                locationDetail: 'ข้างศาลากลางจังหวัด ถ.ราชดำเนิน (มีสาขาหน้าพระธาตุ และคิวคูตอนด้วย)',
+                meals: ['เช้า', 'กลางวัน', 'เย็น'],
+                price: '80 - 200 บาท',
+                emoji: '🫖',
+                desc: 'ร้านน้ำชา-กาแฟโบราณและติ่มซำระดับตำนานคู่เมืองคอน บรรยากาศคลาสสิก เปิดให้บริการตั้งแต่เช้ายันเย็น ครบทั้งติ่มซำและอาหารจานเดียว',
+                mustTry: ['บะกุ๊ดเต๋', 'ปาท่องโก๋สังขยา', 'ติ่มซำนึ่งสด', 'โกปี๊โบราณ'],
+                mapQuery: 'ร้านโกปี๊ ข้างศาลากลาง นครศรีธรรมราช'
+            },
+            {
+                id: 'wat-dimsum',
+                name: 'วัฒน์ ติ่มซำ',
+                category: 'ติ่มซำ/อาหารเช้า',
+                zone: 'ถ.พัฒนาการคูขวาง / สะพานยาว',
+                locationDetail: 'ย่านสะพานยาว - ถนนพัฒนาการคูขวาง อ.เมือง',
+                meals: ['เช้า'],
+                price: '60 - 150 บาท',
+                emoji: '🥟',
+                desc: 'ร้านติ่มซำขวัญใจคนพื้นที่เมืองนครฯ ราคาย่อมเยา มีหน้าให้เลือกหลากหลายเข่ง นึ่งสดร้อนๆ คู่น้ำจิ้มสูตรเฉพาะ',
+                mustTry: ['ขนมจีบหมู-กุ้ง', 'ฮะเก๋า', 'ซาลาเปา', 'ชาร้อน-กาแฟ'],
+                mapQuery: 'วัฒน์ ติ่มซำ นครศรีธรรมราช'
+            },
+            {
+                id: 'khanomjeen-muangkon',
+                name: 'ขนมจีนเมืองคอน (ถนนพานยม)',
+                category: 'ขนมจีนเมืองคอน',
+                zone: 'ย่านท่าวัง / ใจกลางเมือง',
+                locationDetail: 'ถนนพานยม ต.ในเมือง อ.เมือง นครศรีธรรมราช',
+                meals: ['เช้า', 'กลางวัน'],
+                price: '50 - 120 บาท',
+                emoji: '🍜',
+                desc: 'ร้านขนมจีนเส้นสดชื่อดังใจกลางเมือง ทำเส้นวันต่อวัน น้ำแกงครบเครื่องทั้งน้ำยากะทิ น้ำพริก แกงไตปลา พร้อมผักเหนาะพื้นบ้านไม่อั้น',
+                mustTry: ['ขนมจีนน้ำยาปักษ์ใต้', 'แกงไตปลา', 'มังคุดคัด', 'ไก่ทอด'],
+                mapQuery: 'ขนมจีนเมืองคอน ถนนพานยม นครศรีธรรมราช'
+            },
+            {
+                id: 'khanomjeen-mae-aed',
+                name: 'ขนมจีนแม่แอ๊ด (หลังวัดพระธาตุฯ)',
+                category: 'ขนมจีนเมืองคอน',
+                zone: 'ถ.ราชดำเนิน / หน้าพระธาตุ',
+                locationDetail: 'ซอยหลังวัดพระมหาธาตุวรมหาวิหาร อ.เมือง',
+                meals: ['เช้า', 'กลางวัน'],
+                price: '50 - 100 บาท',
+                emoji: '🍜',
+                desc: 'ร้านขนมจีนยอดนิยมของสายบุญหลังไหว้พระธาตุฯ เส้นเหนียวนุ่ม น้ำแกงเข้มข้นกลมกล่อมกำลังดี ไม่เผ็ดโดดจนเกินไป',
+                mustTry: ['ขนมจีนน้ำยากะทิ', 'ขนมจีนน้ำพริก', 'ไก่ทอดแกล้ม', 'ไข่ต้ม'],
+                mapQuery: 'ขนมจีนแม่แอ๊ด หลังวัดพระมหาธาตุ นครศรีธรรมราช'
+            },
+            {
+                id: 'khanomjeen-pee-nee',
+                name: 'ขนมจีนพี่นี (สะพานยาว)',
+                category: 'ขนมจีนเมืองคอน',
+                zone: 'ถ.พัฒนาการคูขวาง / สะพานยาว',
+                locationDetail: 'ย่านสะพานยาว ต.โพธิ์เสด็จ อ.เมือง',
+                meals: ['เช้า', 'กลางวัน'],
+                price: '50 - 100 บาท',
+                emoji: '🍜',
+                desc: 'ร้านขนมจีนเก่าแก่รสชาติดั้งเดิมของคนเมืองคอน น้ำยาเข้มข้นถึงเครื่องแกงใต้แท้ๆ ผักเคียงสดแน่นถาด',
+                mustTry: ['ขนมจีนแกงไตปลา', 'น้ำยากะทิ', 'หมูย่าง-ไก่ทอด'],
+                mapQuery: 'ขนมจีนพี่นี สะพานยาว นครศรีธรรมราช'
+            },
+            {
+                id: 'khanomjeen-maeyai',
+                name: 'ขนมจีนแม่ยาย เส้นสด น้ำแกงปูม้า',
+                category: 'ขนมจีนเมืองคอน',
+                zone: 'ย่านท่าวัง / ใจกลางเมือง',
+                locationDetail: 'ถนนบ่ออ่าง ย่านท่าวัง อ.เมือง นครศรีธรรมราช',
+                meals: ['เช้า', 'กลางวัน'],
+                price: '60 - 150 บาท',
+                emoji: '🦀',
+                desc: 'ขนมจีนเส้นสดทำใหม่ทุกวัน โดดเด่นด้วยน้ำแกงปูม้าที่ใส่เนื้อปูมาแน่นๆ และของกินเล่นคู่กันอย่างหมูย่างนมสดและทอดมันกุ้ง',
+                mustTry: ['ขนมจีนน้ำแกงปูม้า', 'ไก่ทอด', 'หมูย่างนมสด', 'ทอดมันกุ้ง'],
+                mapQuery: 'ขนมจีนแม่ยาย ท่าวัง นครศรีธรรมราช'
+            },
+            {
+                id: 'chao-ruea',
+                name: 'ร้านอาหารชาวเรือ',
+                category: 'อาหารใต้พื้นบ้าน',
+                zone: 'ถ.ราชดำเนิน / ศาลากลาง',
+                locationDetail: 'ถนนหลังศาลากลาง / ถนนศรีธรรมราช อ.เมือง',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '150 - 350 บาท',
+                emoji: '⛵',
+                desc: 'ร้านอาหารพื้นบ้านปักษ์ใต้ในตำนานกว่า 40 ปี บรรยากาศบ้านไม้ร่มรื่น รสชาติต้นตำรับคนคอนแท้ๆ เหมาะทั้งครอบครัวและรับรองแขก',
+                mustTry: ['แกงส้มปลากุเลามังคุดคัด', 'หลนไข่ปู', 'สะตอผัดกะปิกุ้ง', 'ใบเหลียงผัดไข่'],
+                mapQuery: 'ร้านอาหารชาวเรือ นครศรีธรรมราช'
+            },
+            {
+                id: 'krua-nai-nang',
+                name: 'ครัวนายหนัง',
+                category: 'อาหารใต้พื้นบ้าน',
+                zone: 'ถ.พัฒนาการคูขวาง / สะพานยาว',
+                locationDetail: 'ถนนพัฒนาการคูขวาง อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '150 - 350 บาท',
+                emoji: '🎭',
+                desc: 'ร้านอาหารใต้พื้นบ้านรสชาติจัดจ้านถึงเครื่อง บรรยากาศกว้างขวางร่มรื่น ตกแต่งกลิ่นอายปักษ์ใต้และหนังตะลุง',
+                mustTry: ['แกงส้มปลากดหน่อไม้ดอง', 'แกงกะทิกรรเชียงปูใบชะพลู', 'ปลาทรายทอดขมิ้น', 'น้ำพริกแมงดาสะตอเผา'],
+                mapQuery: 'ครัวนายหนัง นครศรีธรรมราช'
+            },
+            {
+                id: 'krua-nakhon',
+                name: 'ครัวนคร',
+                category: 'อาหารใต้พื้นบ้าน',
+                zone: 'ถ.พัฒนาการคูขวาง / สะพานยาว',
+                locationDetail: 'ถนนพัฒนาการคูขวาง อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '120 - 300 บาท',
+                emoji: '🌶️',
+                desc: 'ร้านอาหารใต้ขวัญใจคนเมืองคอน เครื่องแกงโฮมเมดเข้มข้นถึงพริกถึงขิง ปรุงจานต่อจาน วัตถุดิบสดใหม่',
+                mustTry: ['แกงกะทิกรรเชียงปู', 'ไข่เจียวห่อหมก', 'ใบเหลียงผัดไข่', 'ยำรสจัดจ้าน'],
+                mapQuery: 'ครัวนคร พัฒนาการคูขวาง นครศรีธรรมราช'
+            },
+            {
+                id: 'baan-thong-ek',
+                name: 'ร้านบ้านทองเอก',
+                category: 'อาหารใต้พื้นบ้าน',
+                zone: 'ย่านท่าวัง / ใจกลางเมือง',
+                locationDetail: 'ในเขต อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '120 - 280 บาท',
+                emoji: '🏡',
+                desc: 'อาหารใต้สไตล์โฮมคุกกิ้ง บรรยากาศอบอุ่น คัดสรรวัตถุดิบคุณภาพดี และจุดเด่นคือไม่ใส่ผงชูรส รสกลมกล่อม',
+                mustTry: ['น้ำพริกกะปิผักสด', 'ปลาทอดเครื่องแกง', 'แกงคั่วพื้นบ้าน'],
+                mapQuery: 'ร้านบ้านทองเอก นครศรีธรรมราช'
+            },
+            {
+                id: 'kuang-hua',
+                name: 'ร้านกวงฮั้ว',
+                category: 'ก๋วยเตี๋ยว/ข้าวต้ม',
+                zone: 'ย่านท่าวัง / ใจกลางเมือง',
+                locationDetail: 'ถนนจำเริญวิถี ตรงข้ามห้างสหไทยเก่า อ.เมือง',
+                meals: ['เย็น', 'ดึก'],
+                price: '80 - 200 บาท',
+                emoji: '🍚',
+                desc: 'ร้านข้าวต้มกุ๊ยระดับตำนานที่คนท้องถิ่นแนะนำ ไฮไลท์คือ "หมูกรอบ" ทอดใหม่เป็นรอบๆ กรอบนอกนุ่มในกินกับข้าวต้มร้อนๆ',
+                mustTry: ['หมูกรอบกวงฮั้ว', 'ต้มจับฉ่าย', 'เป็ดพะโล้', 'ผัดผักบุ้งไฟแดง'],
+                mapQuery: 'ร้านกวงฮั้ว ข้าวต้ม นครศรีธรรมราช'
+            },
+            {
+                id: 'sapha-khaotom',
+                name: 'สภาข้าวต้ม',
+                category: 'ก๋วยเตี๋ยว/ข้าวต้ม',
+                zone: 'ถ.พัฒนาการคูขวาง / สะพานยาว',
+                locationDetail: 'ถนนพัฒนาการคูขวาง อ.เมือง นครศรีธรรมราช',
+                meals: ['เย็น', 'ดึก'],
+                price: '80 - 220 บาท',
+                emoji: '🌙',
+                desc: 'ร้านข้าวต้มโต้รุ่งบรรยากาศสบายๆ อาหารออกไว เมนูกับข้าวต้มหลากหลายและราคาเป็นมิตรสำหรับมื้อเย็นถึงรอบดึก',
+                mustTry: ['ผัดเครื่องแกงปลากะพงชะอมไข่', 'ไส้หมูพะโล้', 'ยำไข่เค็ม'],
+                mapQuery: 'สภาข้าวต้ม นครศรีธรรมราช'
+            },
+            {
+                id: 'long-tiao',
+                name: 'หลงเตี๋ยว',
+                category: 'ก๋วยเตี๋ยว/ข้าวต้ม',
+                zone: 'ถ.กะโรม / ตลาดแขก / ราเมศวร์',
+                locationDetail: 'ใกล้สะพานราเมศวร์ อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '55 - 100 บาท',
+                emoji: '🥢',
+                desc: 'ร้านก๋วยเตี๋ยวหมูต้มยำสไตล์จีนวินเทจยอดฮิต น้ำซุปต้มยำเข้มข้นถึงเครื่อง หมูเปื่อยนุ่มและลูกชิ้นหมูทำเอง',
+                mustTry: ['ก๋วยเตี๋ยวหมูต้มยำ', 'หมูเปื่อย', 'ลูกชิ้นทำเอง'],
+                mapQuery: 'หลงเตี๋ยว นครศรีธรรมราช'
+            },
+            {
+                id: 'jae-rom-noodle',
+                name: 'ก๋วยเตี๋ยวเจ๊รมณ์',
+                category: 'ก๋วยเตี๋ยว/ข้าวต้ม',
+                zone: 'ถ.พัฒนาการคูขวาง / สะพานยาว',
+                locationDetail: 'ถนนพัฒนาการคูขวาง อ.เมือง นครศรีธรรมราช',
+                meals: ['เช้า', 'กลางวัน'],
+                price: '50 - 90 บาท',
+                emoji: '🍲',
+                desc: 'ร้านก๋วยเตี๋ยวรสเด็ดขวัญใจคนเมือง เส้นเหนียวนุ่ม น้ำซุปกลมกล่อม เครื่องแน่นเต็มชาม มีทั้งหมูและเนื้อ',
+                mustTry: ['ก๋วยเตี๋ยวเนื้อ', 'ก๋วยเตี๋ยวหมูน้ำใส/ต้มยำ'],
+                mapQuery: 'ก๋วยเตี๋ยวเจ๊รมณ์ นครศรีธรรมราช'
+            },
+            {
+                id: 'panadda-seafood',
+                name: 'ปนัดดา คาเฟ่ & ซีฟู้ด',
+                category: 'ซีฟู้ด/ทะเลสด',
+                zone: 'ย่านท่าวัง / ใจกลางเมือง',
+                locationDetail: 'ถนนเอกนคร ใจกลางเมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '200 - 500 บาท',
+                emoji: '🦞',
+                desc: 'ร้านเด็ดใจกลางเมืองที่มีตู้ซีฟู้ดสดเป็นๆ ให้เลือกตักหน้าร้านวันต่อวัน ทำอาหารทะเลและอาหารใต้รสจัดจ้านถึงใจ',
+                mustTry: ['กุ้ง-ปู-กั้งเป็นๆ', 'ซีฟู้ดผัดเครื่องแกงใต้', 'อาหารใต้รสจัด'],
+                mapQuery: 'ปนัดดา คาเฟ่ แอนด์ ซีฟู้ด นครศรีธรรมราช'
+            },
+            {
+                id: 'captain-seafood',
+                name: 'กัปตันซีฟู้ด',
+                category: 'ซีฟู้ด/ทะเลสด',
+                zone: 'โซนปากนคร',
+                locationDetail: 'ถนนปากนคร - แยกคูขวาง อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '200 - 450 บาท',
+                emoji: '🦀',
+                desc: 'ร้านซีฟู้ดขวัญใจคนท้องถิ่น วัตถุดิบสดสะอาด อาหารทะเลตัวโตๆ ปรุงรสแบบปักษ์ใต้แท้',
+                mustTry: ['กรรเชียงปูนึ่ง', 'กุ้งซอสมะขาม', 'ยำไข่ปู / ส้มตำปูม้า'],
+                mapQuery: 'กัปตันซีฟู้ด ปากนคร นครศรีธรรมราช'
+            },
+            {
+                id: 'chaylay-seafood',
+                name: 'ชายเลซีฟู้ด ปากนคร',
+                category: 'ซีฟู้ด/ทะเลสด',
+                zone: 'โซนปากนคร',
+                locationDetail: 'โซนปากนคร อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '200 - 500 บาท',
+                emoji: '🦐',
+                desc: 'ร้านอาหารทะเลสดๆ ส่งตรงจากอ่าวไทยโซนปากนคร บรรยากาศสบายรับลมทะเล รสชาติจัดจ้านสไตล์คนคอน',
+                mustTry: ['ปูนึ่ง', 'ปลาทอดราดพริก', 'แกงส้มยอดมะพร้าว'],
+                mapQuery: 'ชายเลซีฟู้ด ปากนคร นครศรีธรรมราช'
+            },
+            {
+                id: 'tuat-seafood',
+                name: 'ตัวทีซีฟู้ด (Tua T Seafood)',
+                category: 'ซีฟู้ด/ทะเลสด',
+                zone: 'โซนปากนคร',
+                locationDetail: 'โซนปากนคร อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '200 - 500 บาท',
+                emoji: '🐟',
+                desc: 'อีกหนึ่งร้านซีฟู้ดยอดฮิตโซนปากนคร ครบเครื่องทั้งกุ้ง หอย ปู ปลา สดใหม่ เหมาะกับมื้อใหญ่กับครอบครัวหรือกลุ่มเพื่อน',
+                mustTry: ['ปลากะพงทอดน้ำปลา', 'ปูม้านึ่ง', 'ต้มยำทะเลน้ำข้น'],
+                mapQuery: 'ตัวทีซีฟู้ด ปากนคร นครศรีธรรมราช'
+            },
+            {
+                id: 'thai-ocha',
+                name: 'ไทยโอชา ข้าวหมกไก่',
+                category: 'ติ่มซำ/อาหารเช้า',
+                zone: 'ถ.กะโรม / ตลาดแขก / ราเมศวร์',
+                locationDetail: 'ถนนกะโรม ใกล้แยกตลาดแขก อ.เมือง นครศรีธรรมราช',
+                meals: ['เช้า', 'กลางวัน'],
+                price: '50 - 100 บาท',
+                emoji: '🍗',
+                desc: 'ร้านข้าวหมกไก่ในตำนานคู่เมืองนครฯ เปิดขายหลายสิบปี ข้าวหอมเครื่องเทศเม็ดร่วนสวย ไก่นุ่มละมุนคู่หอมเจียวและซุปเนื้อรสแซ่บ',
+                mustTry: ['ข้าวหมกไก่', 'ซุปเนื้อรสเด็ด', 'น้ำจิ้มข้าวหมก'],
+                mapQuery: 'ไทยโอชา ข้าวหมกไก่ นครศรีธรรมราช'
+            },
+            {
+                id: 'roti-pa-nom',
+                name: 'โรตีป้าหนอม (สาขาถนนราชดำเนิน)',
+                category: 'โรตี/ชาชัก/คาเฟ่',
+                zone: 'ถ.ราชดำเนิน / หน้าพระธาตุ',
+                locationDetail: 'ถนนราชดำเนิน อ.เมือง นครศรีธรรมราช',
+                meals: ['เย็น', 'ดึก'],
+                price: '40 - 120 บาท',
+                emoji: '🥞',
+                desc: 'ร้านโรตีชื่อดังของเมืองคอน เมนูซิกเนเจอร์คือ "โรตีทิชชู" แผ่นบางกรอบราดนมข้นฉ่ำๆ พร้อมโรตีคาว-หวานและชาชัก',
+                mustTry: ['โรตีทิชชู', 'โรตีแกง / ข้าวมันแกง', 'ชาชักปักษ์ใต้'],
+                mapQuery: 'โรตีป้าหนอม ราชดำเนิน นครศรีธรรมราช'
+            },
+            {
+                id: 'roti-gobang',
+                name: 'โรตีโกบัง',
+                category: 'โรตี/ชาชัก/คาเฟ่',
+                zone: 'ถ.พัฒนาการคูขวาง / สะพานยาว',
+                locationDetail: 'ซอย 27 ถนนพัฒนาการคูขวาง อ.เมือง',
+                meals: ['เย็น', 'ดึก'],
+                price: '40 - 120 บาท',
+                emoji: '🧋',
+                desc: 'ร้านโรตีมื้อค่ำยอดฮิตของคนพื้นที่ แป้งกรอบนอกนุ่มใน มีหน้าให้เลือกหลากหลาย กินคู่ชาชักเข้มข้น',
+                mustTry: ['โรตีกรอบ-โรตีนุ่ม', 'โรตีมะตะบะ', 'ชาชักเย็น'],
+                mapQuery: 'โรตีโกบัง พัฒนาการคูขวาง นครศรีธรรมราช'
+            },
+            {
+                id: 'bang-bao',
+                name: 'ร้านบังบ่าว',
+                category: 'โรตี/ชาชัก/คาเฟ่',
+                zone: 'ถ.ราชดำเนิน / หน้าพระธาตุ',
+                locationDetail: 'ในเขต อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น', 'ดึก'],
+                price: '50 - 150 บาท',
+                emoji: '☕',
+                desc: 'ร้านดังเก่าแก่คู่เมืองนครฯ ครบทั้งเมนูโรตีคาว-หวาน ชาชัก ข้าวหมกไก่ และอาหารจานเดียว นั่งชิลได้ยาวๆ',
+                mustTry: ['โรตีหลากหลายหน้า', 'ชาชักบังบ่าว', 'ข้าวหมกไก่'],
+                mapQuery: 'ร้านบังบ่าว นครศรีธรรมราช'
+            },
+            {
+                id: 't-time-story',
+                name: 'T Time Story',
+                category: 'โรตี/ชาชัก/คาเฟ่',
+                zone: 'ถ.ราชดำเนิน / ศาลากลาง',
+                locationDetail: 'ถนนราชดำเนิน ใกล้เทศบาลเมืองนครศรีธรรมราช',
+                meals: ['เช้า', 'กลางวัน', 'เย็น'],
+                price: '80 - 200 บาท',
+                emoji: '🍰',
+                desc: 'คาเฟ่บรรยากาศอบอุ่นสไตล์ย้อนยุค มีมุมถ่ายรูปสวยๆ เสิร์ฟครบทั้งอาหารจานเดียว กาแฟ และเบเกอรี่โฮมเมด',
+                mustTry: ['บลูเบอร์รี่ชีสพาย', 'กาแฟสด', 'อาหารจานเดียว'],
+                mapQuery: 'T Time Story นครศรีธรรมราช'
+            },
+            {
+                id: 'yongkang-cafe',
+                name: 'ยงคัง คาเฟ่ (YongKang Cafe)',
+                category: 'โรตี/ชาชัก/คาเฟ่',
+                zone: 'ย่านท่าวัง / ใจกลางเมือง',
+                locationDetail: 'ย่านท่าโพธิ์ - ท่าวัง อ.เมือง นครศรีธรรมราช',
+                meals: ['เช้า', 'กลางวัน', 'เย็น'],
+                price: '70 - 160 บาท',
+                emoji: '🏮',
+                desc: 'คาเฟ่สไตล์จีนร่วมสมัยในอาคารเก่าแก่เกือบ 100 ปี ย่านท่าวัง บรรยากาศชิคๆ เหมาะนั่งจิบชา กาแฟ และขนม',
+                mustTry: ['ชาจีน-กาแฟ', 'ขนมทานเล่นสไตล์จีน', 'มุมถ่ายรูปตึกเก่า'],
+                mapQuery: 'YongKang Cafe นครศรีธรรมราช'
+            },
+            // ==================== ร้านในห้างสรรพสินค้า อ.เมือง นครศรีธรรมราช (อย่างละสาขา) ====================
+            {
+                id: 'mall-aka',
+                name: 'AKA Yakiniku (อากะ)',
+                isMall: true,
+                category: 'ปิ้งย่าง/ชาบู/สุกี้',
+                zone: 'ห้าง: เซ็นทรัล นครศรีฯ',
+                locationDetail: 'ศูนย์การค้าเซ็นทรัล นครศรีธรรมราช (อ.เมือง)',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '350 - 650 บาท',
+                emoji: '🥩',
+                desc: 'บุฟเฟต์ปิ้งย่างสไตล์ญี่ปุ่นยอดฮิตในเซ็นทรัล นครศรีฯ มีทั้งเนื้อวัว หมู ซีฟู้ด และน้ำจิ้มสูตรเด็ดแบบไม่อั้น',
+                mustTry: ['เนื้อติดมันซอสอากะ', 'หมูสามชั้น', 'กุ้งแม่น้ำย่าง', 'ไอศกรีม'],
+                mapQuery: 'AKA Central Nakhon Si Thammarat'
+            },
+            {
+                id: 'mall-bbq-plaza',
+                name: 'Bar-B-Q Plaza (บาร์บีคิวพลาซ่า)',
+                isMall: true,
+                category: 'ปิ้งย่าง/ชาบู/สุกี้',
+                zone: 'ห้าง: เซ็นทรัล นครศรีฯ',
+                locationDetail: 'ศูนย์การค้าเซ็นทรัล นครศรีธรรมราช (อ.เมือง)',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '300 - 600 บาท',
+                emoji: '🥓',
+                desc: 'ปิ้งย่างกระทะทองเหลืองกับน้ำจิ้มบาร์บีคิวพลาซ่าในตำนาน เติมกะหล่ำปลีฝอยไม่อั้น เหมาะกับมื้อครอบครัวและเพื่อน',
+                mustTry: ['ชุดประหยัดหมู/เนื้อ', 'ข้าวผัดกระเทียม', 'กะหล่ำปลีฝอย'],
+                mapQuery: 'Bar B Q Plaza Central Nakhon Si Thammarat'
+            },
+            {
+                id: 'mall-sizzler',
+                name: 'Sizzler (ซิซเล่อร์)',
+                isMall: true,
+                category: 'ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด',
+                zone: 'ห้าง: เซ็นทรัล นครศรีฯ',
+                locationDetail: 'ศูนย์การค้าเซ็นทรัล นครศรีธรรมราช (อ.เมือง)',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '250 - 500 บาท',
+                emoji: '🥗',
+                desc: 'ร้านสเต๊กและสลัดบาร์ตักได้ไม่อั้นทั้งผักสด ซุป พาสต้า และขนมปังชีสโทสต์หอมๆ',
+                mustTry: ['สลัดบาร์ไม่อั้น', 'ชีสโทสต์', 'สเต๊กไก่ย่างสไปซี่'],
+                mapQuery: 'Sizzler Central Nakhon Si Thammarat'
+            },
+            {
+                id: 'mall-fuji',
+                name: 'Fuji Japanese Restaurant (ฟูจิ)',
+                isMall: true,
+                category: 'ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด',
+                zone: 'ห้าง: เซ็นทรัล นครศรีฯ',
+                locationDetail: 'ศูนย์การค้าเซ็นทรัล นครศรีธรรมราช (อ.เมือง)',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '200 - 450 บาท',
+                emoji: '🍣',
+                desc: 'ร้านอาหารญี่ปุ่นมาตรฐานครบครัน ทั้งซูชิ ซาชิมิ ข้าวหน้าและเบนโตะเซ็ต',
+                mustTry: ['ชุดปลาดิบรวม', 'แซลมอนย่างซีอิ๊ว', 'สลัดปูอัด'],
+                mapQuery: 'Fuji Restaurant Central Nakhon Si Thammarat'
+            },
+            {
+                id: 'mall-hachiban',
+                name: 'Hachiban Ramen (ฮะจิบัง ราเมน)',
+                isMall: true,
+                category: 'ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด',
+                zone: 'ห้าง: เซ็นทรัล นครศรีฯ',
+                locationDetail: 'ศูนย์การค้าเซ็นทรัล นครศรีธรรมราช (อ.เมือง)',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '100 - 200 บาท',
+                emoji: '🍜',
+                desc: 'ราเมนเลข 8 ราคาย่อมเยา เส้นเหนียวนุ่ม น้ำซุปกลมกล่อม ทานง่ายได้ทุกวัน',
+                mustTry: ['ต้มยำชาชูเมน', 'ทงคตสึราเมน', 'เกี๊ยวซ่า'],
+                mapQuery: 'Hachiban Ramen Central Nakhon Si Thammarat'
+            },
+            {
+                id: 'mall-santafe',
+                name: 'Santa Fé Steak (ซานตา เฟ่)',
+                isMall: true,
+                category: 'ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด',
+                zone: 'ห้าง: เซ็นทรัล นครศรีฯ',
+                locationDetail: 'ศูนย์การค้าเซ็นทรัล นครศรีธรรมราช (อ.เมือง)',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '130 - 280 บาท',
+                emoji: '🥩',
+                desc: 'สเต๊กจานร้อนราคาเข้าถึงง่าย มีโปรโมชั่นเซ็ตจับคู่และสปาเก็ตตี้ให้เลือกหลากหลาย',
+                mustTry: ['สเต๊กไก่พริกไทยดำ', 'สเต๊กหมูคูโรบูตะ', 'ผักโขมอบชีส'],
+                mapQuery: 'Santa Fe Steak Central Nakhon Si Thammarat'
+            },
+            {
+                id: 'mall-hankook',
+                name: 'Han Kook (ฮันกุก อาหารเกาหลี)',
+                isMall: true,
+                category: 'ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด',
+                zone: 'ห้าง: เซ็นทรัล นครศรีฯ',
+                locationDetail: 'ศูนย์การค้าเซ็นทรัล นครศรีธรรมราช (อ.เมือง)',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '200 - 450 บาท',
+                emoji: '🍲',
+                desc: 'ร้านอาหารเกาหลีรสต้นตำรับในเซ็นทรัล นครศรีฯ ครบทั้งซุปกิมจิ ดักกัลบิ และพิซซ่าเกาหลี',
+                mustTry: ['ไก่ผัดซอสดักกัลบิ', 'แพนเค้กเกาหลี (แฮมูลพาเจิน)', 'ซุปกิมจิ'],
+                mapQuery: 'Han Kook Central Nakhon Si Thammarat'
+            },
+            {
+                id: 'mall-starbucks',
+                name: 'Starbucks (สตาร์บัคส์)',
+                isMall: true,
+                category: 'โรตี/ชาชัก/คาเฟ่',
+                zone: 'ห้าง: เซ็นทรัล นครศรีฯ',
+                locationDetail: 'ศูนย์การค้าเซ็นทรัล นครศรีธรรมราช (อ.เมือง)',
+                meals: ['เช้า', 'กลางวัน', 'เย็น'],
+                price: '120 - 250 บาท',
+                emoji: '☕',
+                desc: 'คาเฟ่กาแฟและขนมอบบรรยากาศนั่งสบาย เหมาะนั่งพักผ่อนหรือทำงานในห้าง',
+                mustTry: ['คาราเมลมัคคิอาโต้', 'ชาเขียวปั่น', 'ครัวซองต์'],
+                mapQuery: 'Starbucks Central Nakhon Si Thammarat'
+            },
+            {
+                id: 'mall-bearhouse',
+                name: 'BEARHOUSE (แบร์เฮาส์)',
+                isMall: true,
+                category: 'โรตี/ชาชัก/คาเฟ่',
+                zone: 'ห้าง: เซ็นทรัล นครศรีฯ',
+                locationDetail: 'ศูนย์การค้าเซ็นทรัล นครศรีธรรมราช (อ.เมือง)',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '80 - 150 บาท',
+                emoji: '🧋',
+                desc: 'ร้านชานมและชาผลไม้ไข่มุกโมจิแป้งสด หวานน้อยกำลังดี สดชื่นระหว่างเดินห้าง',
+                mustTry: ['ชานมไข่มุกโมจิ', 'ชามะลิองุ่นครีมชีส'],
+                mapQuery: 'BEARHOUSE Central Nakhon Si Thammarat'
+            },
+            {
+                id: 'mall-mk',
+                name: 'MK Restaurants (สาขาสหไทย พลาซ่า)',
+                isMall: true,
+                category: 'ปิ้งย่าง/ชาบู/สุกี้',
+                zone: 'ห้าง: สหไทย พลาซ่า',
+                locationDetail: 'ห้างสหไทย พลาซ่า (ท่าวัง) อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '250 - 500 บาท',
+                emoji: '🍲',
+                desc: 'สุกี้เอ็มเคและเป็ดย่างในตำนาน เหมาะกับมื้อครอบครัวใจกลางเมืองย่านท่าวัง',
+                mustTry: ['เป็ดย่าง MK', 'บะหมี่หยก', 'ชุดสุกี้ผักรวมและหมูนุ่ม'],
+                mapQuery: 'MK Restaurants สหไทย พลาซ่า นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-pizza-company',
+                name: 'The Pizza Company (สาขาสหไทย พลาซ่า)',
+                isMall: true,
+                category: 'ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด',
+                zone: 'ห้าง: สหไทย พลาซ่า',
+                locationDetail: 'ห้างสหไทย พลาซ่า (ท่าวัง) อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '200 - 450 บาท',
+                emoji: '🍕',
+                desc: 'พิซซ่าอบร้อนชีสยืด สปาเก็ตตี้ และปีกไก่บาร์บีคิว ทานได้ทั้งครอบครัว',
+                mustTry: ['พิซซ่าฮาวายเอี้ยน / ซีฟู้ดค็อกเทล', 'สปาเก็ตตี้ขี้เมา', 'ปีกไก่บาร์บีคิว'],
+                mapQuery: 'The Pizza Company สหไทย พลาซ่า นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-jeffer',
+                name: 'Jeffer Steak (เจฟเฟอร์ สเต๊ก)',
+                isMall: true,
+                category: 'ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด',
+                zone: 'ห้าง: สหไทย พลาซ่า',
+                locationDetail: 'ห้างสหไทย พลาซ่า (ท่าวัง) อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '120 - 250 บาท',
+                emoji: '🍽️',
+                desc: 'สเต๊กราคาสบายกระเป๋า เสิร์ฟพร้อมเฟรนช์ฟรายส์ ขนมปัง และเครื่องเคียงคุ้มๆ',
+                mustTry: ['สเต๊กหมูพริกไทยดำ', 'ไก่สไปซี่', 'สปาเก็ตตี้เบคอน'],
+                mapQuery: 'Jeffer Steak สหไทย พลาซ่า นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-seoul-station',
+                name: 'SEOUL STATION (โซลสเตชั่น)',
+                isMall: true,
+                category: 'ปิ้งย่าง/ชาบู/สุกี้',
+                zone: 'ห้าง: สหไทย พลาซ่า',
+                locationDetail: 'ห้างสหไทย พลาซ่า (ท่าวัง) อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '250 - 400 บาท',
+                emoji: '🇰🇷',
+                desc: 'บุฟเฟต์ปิ้งย่างและชาบูเกาหลีในสหไทย พลาซ่า จัดเต็มหมูหมักซอสเกาหลี ต็อกบกกี และเครื่องเคียง',
+                mustTry: ['หมูสามชั้นหมักซอสเกาหลี', 'ต็อกบกกี', 'ชาบูน้ำดำ'],
+                mapQuery: 'SEOUL STATION สหไทย พลาซ่า นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-sushi-toro',
+                name: 'Sushi TORO (ซูชิ โทโร่)',
+                isMall: true,
+                category: 'ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด',
+                zone: 'ห้าง: สหไทย พลาซ่า',
+                locationDetail: 'ห้างสหไทย พลาซ่า (ท่าวัง) อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '200 - 500 บาท',
+                emoji: '🍣',
+                desc: 'ร้านอาหารญี่ปุ่นมีทั้งแบบบุฟเฟต์และอะลาคาร์ท ซูชิหน้าแน่น แซลมอนสด',
+                mustTry: ['แซลมอนซาชิมิ', 'ซูชิโรล', 'หัวปลาแซลมอนต้มซีอิ๊ว'],
+                mapQuery: 'Sushi TORO สหไทย พลาซ่า นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-tum-lai',
+                name: 'ร้านตำหลาย (Tum Lai)',
+                isMall: true,
+                category: 'อาหารใต้พื้นบ้าน',
+                zone: 'ห้าง: สหไทย พลาซ่า',
+                locationDetail: 'ห้างสหไทย พลาซ่า (ท่าวัง) อ.เมือง นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '100 - 250 บาท',
+                emoji: '🌶️',
+                desc: 'ร้านส้มตำ ยำ และอาหารอีสาน-ไทยรสแซ่บในห้องแอร์เย็นฉ่ำ',
+                mustTry: ['ตำถาด / ตำปูปลาร้า', 'คอหมูย่าง', 'ต้มแซ่บกระดูกอ่อน'],
+                mapQuery: 'ตำหลาย สหไทย พลาซ่า นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-kfc',
+                name: 'KFC (สาขาโรบินสัน โอเชี่ยน)',
+                isMall: true,
+                category: 'ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด',
+                zone: 'ห้าง: โรบินสัน โอเชี่ยน',
+                locationDetail: 'ห้างโรบินสัน โอเชี่ยน นครศรีธรรมราช (ถ.พัฒนาการคูขวาง)',
+                meals: ['เช้า', 'กลางวัน', 'เย็น', 'ดึก'],
+                price: '80 - 200 บาท',
+                emoji: '🍗',
+                desc: 'ไก่ทอดกรอบรสฮอตแอนด์สไปซี่ ข้าวไก่แซ่บ และทาร์ตไข่ กินง่ายสะดวกรวดเร็วใจกลางเมือง',
+                mustTry: ['ไก่ทอดฮอตแอนด์สไปซี่', 'ข้าวไก่แซ่บโบว์ล', 'ทาร์ตไข่'],
+                mapQuery: 'KFC โรบินสัน โอเชี่ยน นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-breroe',
+                name: 'ร้านเบร้อเร่อ ขนมจีนทะเลใต้',
+                isMall: true,
+                category: 'ขนมจีนเมืองคอน',
+                zone: 'ห้าง: โรบินสัน โอเชี่ยน',
+                locationDetail: 'ห้างโรบินสัน โอเชี่ยน นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '80 - 180 บาท',
+                emoji: '🦀',
+                desc: 'ขนมจีนทะเลใต้ในห้างโรบินสัน โอเชี่ยน น้ำยาเข้มข้นจัดเต็มซีฟู้ดในบรรยากาศห้องแอร์',
+                mustTry: ['ขนมจีนน้ำยาปู/ทะเล', 'ไก่ทอด', 'ผักเหนาะ'],
+                mapQuery: 'เบร้อเร่อ ขนมจีนทะเลใต้ โรบินสัน โอเชี่ยน นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-dairy-queen',
+                name: 'Dairy Queen (สาขาโรบินสัน โอเชี่ยน)',
+                isMall: true,
+                category: 'โรตี/ชาชัก/คาเฟ่',
+                zone: 'ห้าง: โรบินสัน โอเชี่ยน',
+                locationDetail: 'ห้างโรบินสัน โอเชี่ยน นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '40 - 100 บาท',
+                emoji: '🍦',
+                desc: 'ไอศกรีมซอฟต์เสิร์ฟบลิซซาร์ดปั่นคว่ำไม่หก เติมความหวานเย็นหลังมื้อคาว',
+                mustTry: ['บลิซซาร์ดโอรีโอ้', 'บลิซซาร์ดชาเขียว', 'โคนดิปช็อกโกแลต'],
+                mapQuery: 'Dairy Queen โรบินสัน โอเชี่ยน นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-gu-roti',
+                name: 'กู โรตีชาชัก (สาขาโลตัส นครศรีฯ)',
+                isMall: true,
+                category: 'โรตี/ชาชัก/คาเฟ่',
+                zone: 'ห้าง: โลตัส นครศรีฯ',
+                locationDetail: 'โลตัส นครศรีธรรมราช (ถ.พัฒนาการคูขวาง)',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '60 - 160 บาท',
+                emoji: '🥞',
+                desc: 'โรตีทิชชูและโรตีหน้าต่างๆ พร้อมชาชักรสเข้มข้นในห้างโลตัส นครศรีฯ',
+                mustTry: ['โรตีทิชชูวิปครีมฝอยทอง', 'โรตีตูมตามชีส', 'ชาชัก'],
+                mapQuery: 'กู โรตีชาชัก โลตัส นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-hipork',
+                name: 'Hi Pork (สาขาโลตัส นครศรีฯ)',
+                isMall: true,
+                category: 'ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด',
+                zone: 'ห้าง: โลตัส นครศรีฯ',
+                locationDetail: 'โลตัส นครศรีธรรมราช (ถ.พัฒนาการคูขวาง)',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '70 - 150 บาท',
+                emoji: '🍖',
+                desc: 'ข้าวหมูทอดน้ำจิ้มแจ่วและเมนูหมูทอดสไตล์ไทยๆ กรอบนอกนุ่มใน อิ่มคุ้มในห้าง',
+                mustTry: ['ข้าวหมูทอดสามชั้น', 'ข้าวหมูทอดน้ำจิ้มแจ่ว'],
+                mapQuery: 'Hi Pork โลตัส นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-southern-coffee',
+                name: 'Southern Coffee (สาขาโลตัส นครศรีฯ)',
+                isMall: true,
+                category: 'โรตี/ชาชัก/คาเฟ่',
+                zone: 'ห้าง: โลตัส นครศรีฯ',
+                locationDetail: 'โลตัส นครศรีธรรมราช (ถ.พัฒนาการคูขวาง)',
+                meals: ['เช้า', 'กลางวัน', 'เย็น'],
+                price: '55 - 120 บาท',
+                emoji: '☕',
+                desc: 'ร้านกาแฟแบรนด์ภาคใต้แท้ๆ กลิ่นกาแฟคั่วเข้มหอมมัน พร้อมเบเกอรี่ทานคู่กัน',
+                mustTry: ['เอสเปรสโซ่เย็นเข้มข้น', 'ชาใต้เย็น', 'เค้กและเบเกอรี่'],
+                mapQuery: 'Southern Coffee โลตัส นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-teenoi',
+                name: 'สุกี้ตี๋น้อยพลัส (สาขาบิ๊กซี นครศรีฯ)',
+                isMall: true,
+                category: 'ปิ้งย่าง/ชาบู/สุกี้',
+                zone: 'ห้าง: บิ๊กซี นครศรีฯ',
+                locationDetail: 'บิ๊กซี ซูเปอร์เซ็นเตอร์ นครศรีธรรมราช (สาขาอ้อมค่าย)',
+                meals: ['กลางวัน', 'เย็น', 'ดึก'],
+                price: '250 - 350 บาท',
+                emoji: '🥘',
+                desc: 'บุฟเฟต์ชาบูสุกี้ขวัญใจสายกินคุ้ม เติมเนื้อ หมู กุ้ง และของทานเล่นไม่อั้น เปิดถึงดึก',
+                mustTry: ['ซุปน้ำดำ + หมูสไลซ์', 'กุ้งสด', 'ชีสยืด', 'เกี๊ยวซ่าทอด'],
+                mapQuery: 'สุกี้ตี๋น้อย บิ๊กซี นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-oishi-ramen',
+                name: 'Oishi Ramen (สาขาบิ๊กซี นครศรีฯ)',
+                isMall: true,
+                category: 'ญี่ปุ่น/เกาหลี/สเต๊ก/ฟาสต์ฟู้ด',
+                zone: 'ห้าง: บิ๊กซี นครศรีฯ',
+                locationDetail: 'บิ๊กซี ซูเปอร์เซ็นเตอร์ นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '120 - 250 บาท',
+                emoji: '🍜',
+                desc: 'ราเมนและอาหารญี่ปุ่นจานด่วน รสจัดจ้านสไตล์ไทย-ญี่ปุ่นในบิ๊กซี นครศรีฯ',
+                mustTry: ['ราเมนต้มยำกุ้ง', 'ราเมนหอยลายผัดพริกเผา', 'เกี๊ยวซ่า'],
+                mapQuery: 'Oishi Ramen บิ๊กซี นครศรีธรรมราช'
+            },
+            {
+                id: 'mall-dada-mala',
+                name: 'ดาด้าหม่าล่าชาบู (สาขาบิ๊กซี นครศรีฯ)',
+                isMall: true,
+                category: 'ปิ้งย่าง/ชาบู/สุกี้',
+                zone: 'ห้าง: บิ๊กซี นครศรีฯ',
+                locationDetail: 'บิ๊กซี ซูเปอร์เซ็นเตอร์ นครศรีธรรมราช',
+                meals: ['กลางวัน', 'เย็น'],
+                price: '150 - 300 บาท',
+                emoji: '🌶️',
+                desc: 'ชาบูหม่าล่าสายพาน/ตักชั่งในบิ๊กซี นครศรีฯ ซุปหม่าล่าเผ็ดชาลิ้น มีตัวเลือกอาหารฮาลาล',
+                mustTry: ['น้ำซุปหม่าล่าเผ็ดชา', 'ซุปกระดูก/ซุปน้ำดำ', 'ฟองเต้าหู้ม้วน'],
+                mapQuery: 'ดาด้าหม่าล่าชาบู บิ๊กซี นครศรีธรรมราช'
+            }
+        ];
+
+        const NAKHON_TIPS = [
+            'สายบุญไหว้พระมหาธาตุฯ ช่วงเช้า แวะติ่มซำร้านโกปี๊ข้างศาลากลาง หรือเดินไปกินขนมจีนแม่แอ๊ดหลังวัดพระธาตุฯ ได้เลยสะดวกมาก!',
+            'ถนนพัฒนาการคูขวางคือแหล่งรวมของกินตัวจริงในเมืองคอน ทั้งครัวนายหนัง ครัวนคร วัฒน์ติ่มซำ สภาข้าวต้ม และโรตีโกบัง',
+            'อยากกินซีฟู้ดสดๆ แบบชาวประมงอ่าวไทย ให้วิ่งเส้นปากนคร (โซนปากนคร) มีทั้งชายเลซีฟู้ด กัปตันซีฟู้ด และตัวทีซีฟู้ด',
+            'ของดีเมืองคอนที่ห้ามพลาดเมื่อสั่งขนมจีนคือ "มังคุดคัด" เนื้อมังคุดดิบกรอบหวานอมเปรี้ยว กินตัดเผ็ดกับน้ำยาใต้เข้ากันสุดๆ',
+            'ดึกๆ หิวในตัวเมืองนครฯ ร้านข้าวต้มกวงฮั้ว (หมูกรอบ) กับสภาข้าวต้ม และร้านโรตีป้าหนอม-โกบัง คือตัวเลือกยอดฮิต!'
+        ];
+
+        // ==================== STATE ====================
+        let allPlaces = [];
+        let filteredPlaces = [];
+        let usedInRound = new Set();
+        let history = [];
+        let favorites = new Set();
+        let currentPlace = null;
+        let isSpinning = false;
+        let soundEnabled = true;
+        let currentLocType = 'all';
+
+        // Wheel State
+        let wheelItems = [];
+        let wheelAngle = 0;
+        let isWheelSpinning = false;
+        const WHEEL_COLORS = [
+            '#d97706', '#15803d', '#dc2626', '#f59e0b',
+            '#0d9488', '#b45309', '#16a34a', '#e11d48',
+            '#ca8a04', '#047857', '#ea580c', '#059669'
+        ];
+
+        // ==================== HELPERS ====================
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function getMapsUrl(place) {
+            const q = place.mapQuery || `${place.name} อำเภอเมือง นครศรีธรรมราช`;
+            return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+        }
+
+        // ==================== INIT ====================
+        function init() {
+            loadFromStorage();
+            populateZones();
+            applyFilters();
+            updateCounts();
+            renderHistory();
+            renderFavorites();
+            generateDayPlan();
+            renderDirectory();
+
+            if (localStorage.getItem('nst_dark') === 'true') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('darkIcon').className = 'fa-solid fa-sun text-amber-400';
+            }
+
+            document.getElementById('nakhonTip').textContent =
+                NAKHON_TIPS[Math.floor(Math.random() * NAKHON_TIPS.length)];
+        }
+
+        function loadFromStorage() {
+            try {
+                const custom = JSON.parse(localStorage.getItem('nst_custom_places') || '[]');
+                allPlaces = [...DEFAULT_PLACES, ...custom];
+                history = JSON.parse(localStorage.getItem('nst_history') || '[]');
+                favorites = new Set(JSON.parse(localStorage.getItem('nst_favorites') || '[]'));
+            } catch {
+                allPlaces = [...DEFAULT_PLACES];
+            }
+        }
+
+        function saveFavorites() {
+            localStorage.setItem('nst_favorites', JSON.stringify([...favorites]));
+            updateCounts();
+            renderFavorites();
+        }
+
+        function saveHistory() {
+            localStorage.setItem('nst_history', JSON.stringify(history.slice(0, 15)));
+            renderHistory();
+        }
+
+        function populateZones() {
+            const select = document.getElementById('filterZone');
+            const zones = [...new Set(allPlaces.map(p => p.zone))].sort();
+            select.innerHTML = '<option value="all">ทุกย่านในตัวเมืองนครฯ</option>';
+            zones.forEach(z => {
+                const opt = document.createElement('option');
+                opt.value = z;
+                opt.textContent = z;
+                select.appendChild(opt);
+            });
+        }
+
+        function updateCounts() {
+            document.getElementById('totalPlaceCount').textContent = allPlaces.length;
+            document.getElementById('favCountBadge').textContent = favorites.size;
+            document.getElementById('favSidebarCount').textContent = favorites.size;
+        }
+
+        // ==================== AUDIO ====================
+        let audioCtx = null;
+        function playTick(freq = 520, duration = 0.04, vol = 0.06) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch {}
+        }
+
+        function playWinChime() {
+            if (!soundEnabled) return;
+            [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+                setTimeout(() => playTick(freq, 0.18, 0.08), idx * 75);
+            });
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            icon.className = soundEnabled ? 'fa-solid fa-volume-high text-turmeric-600' : 'fa-solid fa-volume-xmark text-stone-400';
+            showToast(soundEnabled ? 'เปิดเสียงเอฟเฟกต์แล้ว' : 'ปิดเสียงเอฟเฟกต์แล้ว');
+        }
+
+        // ==================== FILTERS ====================
+        function setLocationType(type) {
+            currentLocType = type;
+            ['all', 'street', 'mall'].forEach(t => {
+                const btn = document.getElementById(`loc-${t}`);
+                if (!btn) return;
+                btn.className = t === type
+                    ? 'loc-btn px-3 py-1.5 rounded-xl text-xs font-heading font-semibold bg-turmeric-600 text-white shadow-sm transition'
+                    : 'loc-btn px-3 py-1.5 rounded-xl text-xs font-heading font-semibold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition';
+            });
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const cat = document.getElementById('filterCategory').value;
+            const meal = document.getElementById('filterMealTime').value;
+            const zone = document.getElementById('filterZone').value;
+            const favOnly = document.getElementById('favOnlyCheck').checked;
+
+            filteredPlaces = allPlaces.filter(p => {
+                if (currentLocType === 'mall' && !p.isMall) return false;
+                if (currentLocType === 'street' && p.isMall) return false;
+                if (cat !== 'all' && p.category !== cat) return false;
+                if (zone !== 'all' && p.zone !== zone) return false;
+                if (meal !== 'all' && !(p.meals || []).includes(meal)) return false;
+                if (favOnly && !favorites.has(p.id)) return false;
+                return true;
+            });
+
+            document.getElementById('filteredCount').textContent = filteredPlaces.length;
+            updateRemainingCount();
+            rebuildWheelItems();
+        }
+
+        function updateRemainingCount() {
+            const available = filteredPlaces.filter(p => !usedInRound.has(p.id));
+            document.getElementById('remainingCount').textContent = available.length;
+        }
+
+        function resetFilters() {
+            document.getElementById('filterCategory').value = 'all';
+            document.getElementById('filterMealTime').value = 'all';
+            document.getElementById('filterZone').value = 'all';
+            document.getElementById('favOnlyCheck').checked = false;
+            setLocationType('all');
+            showToast('ล้างตัวกรองเรียบร้อย');
+        }
+
+        function resetRound() {
+            usedInRound.clear();
+            updateRemainingCount();
+            showToast('รีเซ็ตรอบสุ่มใหม่แล้ว');
+        }
+
+        // ==================== TABS ====================
+        function switchTab(tabName) {
+            ['card', 'wheel', 'plan', 'directory'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                if (t === 'card' || t === 'wheel') {
+                    document.getElementById(`view-${t}`).classList.remove('grid');
+                }
+                document.getElementById(`tab-${t}`).className =
+                    'tab-btn px-4 py-2 rounded-xl text-sm font-heading font-medium transition flex items-center gap-2 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200';
+            });
+
+            const activeView = document.getElementById(`view-${tabName}`);
+            activeView.classList.remove('hidden');
+            if (tabName === 'card' || tabName === 'wheel') {
+                activeView.classList.add('grid');
+            }
+
+            document.getElementById(`tab-${tabName}`).className =
+                'tab-btn px-4 py-2 rounded-xl text-sm font-heading font-medium transition flex items-center gap-2 bg-white dark:bg-stone-900 text-turmeric-700 dark:text-turmeric-400 shadow-sm';
+
+            document.getElementById('filterSection').style.display = (tabName === 'card' || tabName === 'wheel') ? 'block' : 'none';
+
+            if (tabName === 'wheel') drawWheel();
+            if (tabName === 'directory') renderDirectory();
+        }
+
+        function renderMealBadges(meals = []) {
+            const colors = {
+                'เช้า': 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300',
+                'กลางวัน': 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300',
+                'เย็น': 'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300',
+                'ดึก': 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-300'
+            };
+            return meals.map(m => `<span class="px-2 py-0.5 rounded-full text-xs font-medium ${colors[m] || 'bg-stone-100 text-stone-600'}">${escapeHtml(m)}</span>`).join('');
+        }
+
+        // ==================== TAB 1: RANDOMIZER ====================
+        function spinRandomPlace() {
+            if (isSpinning) return;
+            if (filteredPlaces.length === 0) {
+                showToast('ไม่พบร้านตามตัวกรอง ลองเปลี่ยนเงื่อนไขดูนะ!');
+                return;
+            }
+
+            const noRepeat = document.getElementById('noRepeatCheck').checked;
+            let pool = noRepeat ? filteredPlaces.filter(p => !usedInRound.has(p.id)) : filteredPlaces;
+
+            if (pool.length === 0) {
+                usedInRound.clear();
+                pool = filteredPlaces;
+                showToast('สุ่มครบทุกร้านในรอบแล้ว! เริ่มรอบใหม่ให้เลย');
+            }
+
+            isSpinning = true;
+            const btn = document.getElementById('spinCardBtn');
+            btn.disabled = true;
+            btn.classList.add('opacity-75');
+
+            const display = document.getElementById('placeDisplay');
+            const card = document.getElementById('resultCardContainer');
+            card.classList.add('spinning-card');
+
+            let step = 0;
+            const totalSteps = 14;
+            const runSlot = () => {
+                const temp = filteredPlaces[Math.floor(Math.random() * filteredPlaces.length)];
+                display.innerHTML = `
+                    <div class="py-8 flex flex-col items-center justify-center opacity-85">
+                        <div class="text-6xl mb-3">${escapeHtml(temp.emoji)}</div>
+                        <div class="font-heading text-2xl sm:text-3xl font-bold text-turmeric-700 dark:text-turmeric-400">${escapeHtml(temp.name)}</div>
+                        <div class="text-xs text-stone-400 mt-1">${escapeHtml(temp.zone)} • กำลังเลือกร้านเด็ด...</div>
+                    </div>
+                `;
+                playTick(400 + step * 25, 0.03, 0.04);
+                step++;
+                if (step < totalSteps) {
+                    setTimeout(runSlot, 55 + step * 10);
+                } else {
+                    const winner = pool[Math.floor(Math.random() * pool.length)];
+                    finishPlaceSpin(winner);
+                }
+            };
+            runSlot();
+        }
+
+        function finishPlaceSpin(place) {
+            isSpinning = false;
+            currentPlace = place;
+            usedInRound.add(place.id);
+            updateRemainingCount();
+
+            const btn = document.getElementById('spinCardBtn');
+            btn.disabled = false;
+            btn.classList.remove('opacity-75');
+            document.getElementById('resultCardContainer').classList.remove('spinning-card');
+
+            renderPlaceCard(place);
+            addToHistory(place);
+            playWinChime();
+            launchConfetti();
+
+            document.getElementById('nakhonTip').textContent =
+                NAKHON_TIPS[Math.floor(Math.random() * NAKHON_TIPS.length)];
+        }
+
+        function renderPlaceCard(place) {
+            const display = document.getElementById('placeDisplay');
+            const actions = document.getElementById('placeQuickActions');
+            actions.style.display = 'flex';
+            document.getElementById('mapsQuickBtn').href = getMapsUrl(place);
+
+            const isFav = favorites.has(place.id);
+            document.getElementById('favCardBtn').innerHTML = isFav
+                ? '<i class="fa-solid fa-heart text-rose-500"></i>'
+                : '<i class="fa-regular fa-heart"></i>';
+
+            display.innerHTML = `
+                <div class="w-full text-left pop-reveal space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/40 dark:to-stone-800 border border-amber-200 dark:border-stone-700 flex items-center justify-center text-5xl shrink-0 shadow-sm mx-auto sm:mx-0">
+                            ${escapeHtml(place.emoji)}
+                        </div>
+                        <div class="flex-1 text-center sm:text-left">
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 mb-1.5">
+                                ${place.isMall ? '<span class="px-2.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-800 dark:text-sky-300 text-xs font-semibold">🏬 ในห้าง</span>' : ''}
+                                <span class="px-2.5 py-0.5 rounded-full bg-turmeric-100 dark:bg-turmeric-900/40 text-turmeric-800 dark:text-turmeric-300 text-xs font-semibold">${escapeHtml(place.category)}</span>
+                                ${renderMealBadges(place.meals)}
+                            </div>
+                            <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-white leading-snug">
+                                ${escapeHtml(place.name)}
+                            </h2>
+                            <div class="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1 flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-1">
+                                <span><i class="fa-solid fa-location-dot text-chili-600 mr-1"></i>${escapeHtml(place.locationDetail)}</span>
+                                <span><i class="fa-solid fa-wallet text-amber-500 mr-1"></i>งบประมาณ ${escapeHtml(place.price || '60 - 200 บาท')}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-stone-700 dark:text-stone-300 text-sm sm:text-base leading-relaxed bg-amber-50/60 dark:bg-stone-800/60 rounded-2xl p-4 border border-amber-100 dark:border-stone-700/60">
+                        ${escapeHtml(place.desc)}
+                    </p>
+
+                    <div class="rounded-2xl bg-pandan-50/70 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-900/50 p-4">
+                        <div class="text-xs font-heading font-semibold text-pandan-800 dark:text-emerald-400 mb-2">
+                            <i class="fa-solid fa-star text-amber-500 mr-1"></i> เมนูเด็ดห้ามพลาดของร้านนี้
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            ${(place.mustTry || []).map(m => `<span class="px-3 py-1 rounded-xl bg-white dark:bg-stone-800 border border-emerald-200/70 dark:border-stone-700 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200">🍽️ ${escapeHtml(m)}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleCurrentFav() {
+            if (!currentPlace) return;
+            toggleFavById(currentPlace.id);
+            renderPlaceCard(currentPlace);
+        }
+
+        function toggleFavById(id) {
+            if (favorites.has(id)) {
+                favorites.delete(id);
+                showToast('นำออกจากร้านโปรดแล้ว');
+            } else {
+                favorites.add(id);
+                showToast('เพิ่มในร้านโปรดแล้ว ❤️');
+            }
+            saveFavorites();
+            if (document.getElementById('favOnlyCheck').checked) {
+                applyFilters();
+            }
+        }
+
+        function copyPlaceText() {
+            if (!currentPlace) return;
+            const text = `มื้อนี้สุ่มได้ร้าน "${currentPlace.name}" ${currentPlace.emoji}\nพิกัด: ${currentPlace.locationDetail}\nเมนูแนะนำ: ${(currentPlace.mustTry || []).join(', ')}\nแผนที่: ${getMapsUrl(currentPlace)}`;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('คัดลอกพิกัดร้านพร้อมชวนเพื่อนแล้ว!');
+            }).catch(() => showToast('คัดลอกไม่สำเร็จ'));
+        }
+
+        // ==================== HISTORY & FAVORITES ====================
+        function addToHistory(place) {
+            history = history.filter(h => h.id !== place.id);
+            history.unshift({
+                id: place.id,
+                name: place.name,
+                emoji: place.emoji,
+                zone: place.zone,
+                time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+            });
+            saveHistory();
+        }
+
+        function clearHistory() {
+            history = [];
+            saveHistory();
+            showToast('ล้างประวัติแล้ว');
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            if (history.length === 0) {
+                container.innerHTML = '<p class="text-sm text-stone-400 text-center py-6">ยังไม่มีประวัติการสุ่ม</p>';
+                return;
+            }
+            container.innerHTML = history.map(h => `
+                <button onclick="openDetailById('${escapeHtml(h.id)}')" class="w-full flex items-center justify-between gap-2 p-2.5 rounded-xl hover:bg-amber-50 dark:hover:bg-stone-800 border border-transparent hover:border-amber-200 dark:hover:border-stone-700 transition text-left">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="text-xl">${escapeHtml(h.emoji)}</span>
+                        <div class="min-w-0">
+                            <div class="text-sm font-medium truncate">${escapeHtml(h.name)}</div>
+                            <div class="text-[11px] text-stone-400 truncate">${escapeHtml(h.zone)}</div>
+                        </div>
+                    </div>
+                    <span class="text-xs text-stone-400 shrink-0">${escapeHtml(h.time)}</span>
+                </button>
+            `).join('');
+        }
+
+        function renderFavorites() {
+            const container = document.getElementById('favList');
+            const favPlaces = allPlaces.filter(p => favorites.has(p.id));
+            if (favPlaces.length === 0) {
+                container.innerHTML = '<p class="text-sm text-stone-400 text-center py-6">กดหัวใจที่ร้านที่ชอบเพื่อเก็บไว้ที่นี่</p>';
+                return;
+            }
+            container.innerHTML = favPlaces.map(p => `
+                <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/40">
+                    <button onclick="openDetailById('${escapeHtml(p.id)}')" class="flex items-center gap-2 min-w-0 flex-1 text-left">
+                        <span class="text-lg">${escapeHtml(p.emoji)}</span>
+                        <span class="text-sm font-medium truncate">${escapeHtml(p.name)}</span>
+                    </button>
+                    <button onclick="toggleFavById('${escapeHtml(p.id)}')" class="text-rose-500 hover:text-rose-700 px-1.5 text-xs" title="ลบออกจากโปรด">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // ==================== TAB 2: SPINNING WHEEL ====================
+        function rebuildWheelItems() {
+            const shuffled = [...filteredPlaces].sort(() => Math.random() - 0.5);
+            wheelItems = shuffled.slice(0, 12);
+            document.getElementById('wheelSliceCount').textContent = wheelItems.length;
+            document.getElementById('wheelChips').innerHTML = wheelItems.map((p, i) => `
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium text-white" style="background:${WHEEL_COLORS[i % WHEEL_COLORS.length]}">
+                    ${escapeHtml(p.emoji)} ${escapeHtml(p.name)}
+                </span>
+            `).join('');
+            drawWheel();
+        }
+
+        function drawWheel() {
+            const canvas = document.getElementById('wheelCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const radius = cx - 8;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (wheelItems.length === 0) {
+                ctx.fillStyle = '#e7e5e4';
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#57534e';
+                ctx.font = '600 20px Kanit, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('ไม่พบร้านในตัวกรอง', cx, cy);
+                return;
+            }
+
+            const sliceAngle = (Math.PI * 2) / wheelItems.length;
+            wheelItems.forEach((place, i) => {
+                const start = wheelAngle + i * sliceAngle;
+                const end = start + sliceAngle;
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, start, end);
+                ctx.closePath();
+                ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length];
+                ctx.fill();
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = '#ffffff';
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(start + sliceAngle / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '600 14px Kanit, sans-serif';
+                ctx.shadowColor = 'rgba(0,0,0,0.35)';
+                ctx.shadowBlur = 3;
+                const label = place.name.length > 15 ? place.name.slice(0, 14) + '…' : place.name;
+                ctx.fillText(`${place.emoji} ${label}`, radius - 18, 5);
+                ctx.restore();
+            });
+        }
+
+        function spinWheel() {
+            if (isWheelSpinning || wheelItems.length === 0) return;
+            isWheelSpinning = true;
+            document.getElementById('wheelSpinBtn').disabled = true;
+
+            const extraSpins = (5 + Math.random() * 4) * Math.PI * 2;
+            const startAngle = wheelAngle;
+            const targetAngle = startAngle + extraSpins;
+            const duration = 4200;
+            const startTime = performance.now();
+            let lastSliceIdx = -1;
+
+            function animate(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const ease = 1 - Math.pow(1 - progress, 4);
+                wheelAngle = startAngle + (targetAngle - startAngle) * ease;
+                drawWheel();
+
+                const sliceAngle = (Math.PI * 2) / wheelItems.length;
+                const pointerAngle = (Math.PI * 1.5 - wheelAngle % (Math.PI * 2) + Math.PI * 4) % (Math.PI * 2);
+                const currentIdx = Math.floor(pointerAngle / sliceAngle) % wheelItems.length;
+                if (currentIdx !== lastSliceIdx) {
+                    playTick(680, 0.025, 0.04);
+                    lastSliceIdx = currentIdx;
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    isWheelSpinning = false;
+                    document.getElementById('wheelSpinBtn').disabled = false;
+                    showWheelWinner(wheelItems[currentIdx]);
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        function showWheelWinner(place) {
+            currentPlace = place;
+            addToHistory(place);
+            playWinChime();
+            launchConfetti();
+
+            document.getElementById('wheelResultBox').innerHTML = `
+                <div class="pop-reveal space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-4xl shrink-0">${escapeHtml(place.emoji)}</div>
+                        <div>
+                            <div class="text-xs font-heading font-semibold text-turmeric-600 dark:text-turmeric-400">🎯 วงล้อเลือกร้านนี้ให้แล้ว!</div>
+                            <h3 class="font-heading text-2xl font-bold text-stone-900 dark:text-white">${escapeHtml(place.name)}</h3>
+                            <div class="text-xs text-stone-500 mt-0.5"><i class="fa-solid fa-location-dot text-chili-600 mr-1"></i>${escapeHtml(place.locationDetail)}</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-stone-600 dark:text-stone-300 leading-relaxed">${escapeHtml(place.desc)}</p>
+                    <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-xs sm:text-sm text-emerald-900 dark:text-emerald-200">
+                        <strong>เมนูแนะนำ:</strong> ${(place.mustTry || []).map(escapeHtml).join(', ')}
+                    </div>
+                    <a href="${getMapsUrl(place)}" target="_blank" rel="noopener noreferrer"
+                        class="w-full py-2.5 rounded-xl bg-pandan-700 hover:bg-pandan-800 text-white font-heading font-semibold text-sm flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-map-location-dot"></i> เปิดนำทางใน Google Maps
+                    </a>
+                </div>
+            `;
+        }
+
+        // ==================== TAB 3: 1-DAY FOOD TOUR PLAN ====================
+        function generateDayPlan() {
+            const pick = (meal, excludeIds = new Set()) => {
+                const pool = allPlaces.filter(p => (p.meals || []).includes(meal) && !excludeIds.has(p.id));
+                const chosen = pool[Math.floor(Math.random() * pool.length)] || allPlaces[0];
+                excludeIds.add(chosen.id);
+                return chosen;
+            };
+
+            const used = new Set();
+            const slots = [
+                { label: '☀️ มื้อเช้า (07:00 - 10:00)', place: pick('เช้า', used), color: 'border-amber-400/50 bg-amber-50/40 dark:bg-amber-950/10' },
+                { label: '🌤️ มื้อกลางวัน (11:30 - 14:00)', place: pick('กลางวัน', used), color: 'border-emerald-500/40 bg-emerald-50/40 dark:bg-emerald-950/10' },
+                { label: '🌅 มื้อเย็น (17:00 - 20:00)', place: pick('เย็น', used), color: 'border-orange-500/40 bg-orange-50/40 dark:bg-orange-950/10' },
+                { label: '🌙 มื้อดึก / ของหวาน (20:30+)', place: pick('ดึก', used), color: 'border-indigo-500/40 bg-indigo-50/40 dark:bg-indigo-950/10' }
+            ];
+
+            document.getElementById('dayPlanGrid').innerHTML = slots.map(s => `
+                <div class="rounded-2xl border ${s.color} bg-white dark:bg-stone-900 p-4 shadow-sm flex flex-col justify-between pop-reveal">
+                    <div>
+                        <div class="text-xs font-heading font-semibold text-stone-500 dark:text-stone-400 mb-3">${s.label}</div>
+                        <div class="flex items-center gap-3 mb-2.5 cursor-pointer" onclick="openDetailById('${escapeHtml(s.place.id)}')">
+                            <div class="w-12 h-12 rounded-2xl bg-white dark:bg-stone-800 shadow-sm flex items-center justify-center text-2xl shrink-0">${escapeHtml(s.place.emoji)}</div>
+                            <div class="min-w-0">
+                                <h3 class="font-heading font-bold text-base text-stone-900 dark:text-white leading-tight truncate">${escapeHtml(s.place.name)}</h3>
+                                <span class="text-xs text-stone-500 truncate block">${escapeHtml(s.place.zone)}</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-stone-600 dark:text-stone-300 line-clamp-2 mb-3">${escapeHtml(s.place.desc)}</p>
+                        <div class="text-xs text-pandan-800 dark:text-emerald-300 bg-white/70 dark:bg-stone-800/60 rounded-xl p-2 border border-stone-100 dark:border-stone-700">
+                            <strong>แนะนำ:</strong> ${escapeHtml((s.place.mustTry || [])[0] || '')}
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2.5 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between text-xs">
+                        <button onclick="openDetailById('${escapeHtml(s.place.id)}')" class="text-turmeric-700 dark:text-turmeric-400 font-semibold hover:underline">รายละเอียด</button>
+                        <a href="${getMapsUrl(s.place)}" target="_blank" rel="noopener noreferrer" class="text-pandan-700 dark:text-emerald-400 font-semibold hover:underline flex items-center gap-1">
+                            <i class="fa-solid fa-location-arrow"></i> แผนที่
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== TAB 4: DIRECTORY ====================
+        function renderDirectory() {
+            const q = document.getElementById('dirSearchInput').value.trim().toLowerCase();
+            const cat = document.getElementById('dirCategoryFilter').value;
+            const loc = document.getElementById('dirLocFilter').value;
+
+            const list = allPlaces.filter(p => {
+                if (loc === 'mall' && !p.isMall) return false;
+                if (loc === 'street' && p.isMall) return false;
+                if (cat !== 'all' && p.category !== cat) return false;
+                if (!q) return true;
+                return p.name.toLowerCase().includes(q) ||
+                       p.zone.toLowerCase().includes(q) ||
+                       p.locationDetail.toLowerCase().includes(q) ||
+                       p.desc.toLowerCase().includes(q) ||
+                       (p.mustTry || []).some(m => m.toLowerCase().includes(q));
+            });
+
+            const grid = document.getElementById('directoryGrid');
+            if (list.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-12 text-stone-400">ไม่พบร้านอาหารที่ค้นหาในเมืองนครฯ</div>';
+                return;
+            }
+
+            grid.innerHTML = list.map(p => {
+                const isFav = favorites.has(p.id);
+                return `
+                    <div class="rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-4 hover:border-turmeric-400 transition shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-start justify-between gap-2 mb-2">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <span class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-stone-800 flex items-center justify-center text-2xl shrink-0">${escapeHtml(p.emoji)}</span>
+                                    <div class="min-w-0">
+                                        <h3 class="font-heading font-bold text-base text-stone-900 dark:text-white leading-snug cursor-pointer hover:text-turmeric-600 truncate" onclick="openDetailById('${escapeHtml(p.id)}')">${escapeHtml(p.name)}</h3>
+                                        <span class="text-xs text-stone-400 block truncate">${p.isMall ? '🏬 ' : ''}${escapeHtml(p.category)} • ${escapeHtml(p.zone)}</span>
+                                    </div>
+                                </div>
+                                <button onclick="toggleFavById('${escapeHtml(p.id)}'); renderDirectory();" class="text-lg shrink-0 ${isFav ? 'text-rose-500' : 'text-stone-300 hover:text-rose-400'}">
+                                    <i class="fa-${isFav ? 'solid' : 'regular'} fa-heart"></i>
+                                </button>
+                            </div>
+                            <p class="text-xs sm:text-sm text-stone-600 dark:text-stone-300 line-clamp-2 mb-3">${escapeHtml(p.desc)}</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-2 border-t border-stone-100 dark:border-stone-800 gap-2">
+                            <div class="flex flex-wrap gap-1">${renderMealBadges(p.meals)}</div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <a href="${getMapsUrl(p)}" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-pandan-700 dark:text-emerald-400 hover:underline">แผนที่</a>
+                                <button onclick="openDetailById('${escapeHtml(p.id)}')" class="text-xs font-heading font-semibold text-turmeric-700 dark:text-turmeric-400 hover:underline">
+                                    ดูเพิ่ม →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== MODALS ====================
+        function openDetailById(id) {
+            const place = allPlaces.find(p => p.id === id);
+            if (!place) return;
+            const isFav = favorites.has(place.id);
+            document.getElementById('detailModalContent').innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-4xl shrink-0">${escapeHtml(place.emoji)}</div>
+                        <div>
+                            <div class="flex flex-wrap gap-1.5 mb-1">
+                                ${place.isMall ? '<span class="px-2.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-800 dark:text-sky-300 text-xs font-semibold">🏬 ในห้าง</span>' : ''}
+                                <span class="px-2.5 py-0.5 rounded-full bg-turmeric-100 dark:bg-turmeric-900/40 text-turmeric-800 dark:text-turmeric-300 text-xs font-semibold">${escapeHtml(place.category)}</span>
+                                ${renderMealBadges(place.meals)}
+                            </div>
+                            <h3 class="font-heading text-2xl font-bold">${escapeHtml(place.name)}</h3>
+                            <p class="text-xs text-stone-500 mt-0.5"><i class="fa-solid fa-location-dot text-chili-600 mr-1"></i>${escapeHtml(place.locationDetail)} • งบ ${escapeHtml(place.price || '60-200 บาท')}</p>
+                        </div>
+                    </div>
+                    <p class="text-sm sm:text-base text-stone-700 dark:text-stone-300 leading-relaxed">${escapeHtml(place.desc)}</p>
+                    <div class="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-900/50 text-sm">
+                        <div class="font-heading font-semibold text-pandan-800 dark:text-emerald-400 mb-1.5">เมนูเด็ดที่ต้องสั่ง:</div>
+                        <div class="flex flex-wrap gap-1.5">
+                            ${(place.mustTry || []).map(m => `<span class="px-2.5 py-0.5 rounded-lg bg-white dark:bg-stone-800 text-xs border border-emerald-200 dark:border-stone-700">${escapeHtml(m)}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+                        <a href="${getMapsUrl(place)}" target="_blank" rel="noopener noreferrer"
+                            class="px-5 py-2.5 rounded-xl bg-pandan-700 hover:bg-pandan-800 text-white text-sm font-heading font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-map-location-dot"></i> เปิด Google Maps
+                        </a>
+                        <button onclick="toggleFavById('${escapeHtml(place.id)}'); openDetailById('${escapeHtml(place.id)}');" class="px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-700 text-sm font-medium flex items-center gap-1.5">
+                            <i class="fa-${isFav ? 'solid' : 'regular'} fa-heart ${isFav ? 'text-rose-500' : ''}"></i> ${isFav ? 'โปรดแล้ว' : 'เพิ่มร้านโปรด'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            const modal = document.getElementById('detailModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detailModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openAddModal() {
+            const modal = document.getElementById('addPlaceModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAddModal() {
+            const modal = document.getElementById('addPlaceModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function handleAddPlace(e) {
+            e.preventDefault();
+            const name = document.getElementById('newPlaceName').value.trim();
+            const zone = document.getElementById('newPlaceZone').value.trim() || 'ใจกลางเมืองนครฯ';
+            const dishesRaw = document.getElementById('newPlaceDishes').value.trim();
+            const mustTry = dishesRaw ? dishesRaw.split(',').map(s => s.trim()).filter(Boolean) : ['เมนูแนะนำประจำร้าน'];
+
+            const newPlace = {
+                id: 'custom-' + Date.now(),
+                name,
+                category: document.getElementById('newPlaceCategory').value,
+                zone,
+                locationDetail: `${zone} อ.เมือง นครศรีธรรมราช`,
+                meals: [document.getElementById('newPlaceMeal').value],
+                price: '60 - 200 บาท',
+                emoji: document.getElementById('newPlaceEmoji').value.trim() || '🍽️',
+                desc: document.getElementById('newPlaceDesc').value.trim() || 'ร้านเด็ดในตัวเมืองนครศรีธรรมราชที่เพิ่มโดยผู้ใช้',
+                mustTry,
+                mapQuery: `${name} อำเภอเมือง นครศรีธรรมราช`
+            };
+
+            const custom = JSON.parse(localStorage.getItem('nst_custom_places') || '[]');
+            custom.push(newPlace);
+            localStorage.setItem('nst_custom_places', JSON.stringify(custom));
+
+            allPlaces.push(newPlace);
+            populateZones();
+            applyFilters();
+            updateCounts();
+            renderDirectory();
+
+            e.target.reset();
+            closeAddModal();
+            showToast(`เพิ่มร้าน "${newPlace.name}" เข้าสู่วงสุ่มแล้ว!`);
+        }
+
+        // ==================== DARK MODE, TOAST, CONFETTI ====================
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('nst_dark', isDark);
+            document.getElementById('darkIcon').className = isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon';
+        }
+
+        let toastTimer = null;
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.remove('opacity-0', 'translate-y-4');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                t.classList.add('opacity-0', 'translate-y-4');
+            }, 2400);
+        }
+
+        function launchConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const colors = ['#f59e0b', '#dc2626', '#16a34a', '#fbbf24', '#ffffff'];
+            const particles = Array.from({ length: 55 }, () => ({
+                x: canvas.width / 2 + (Math.random() - 0.5) * 180,
+                y: canvas.height * 0.45,
+                vx: (Math.random() - 0.5) * 14,
+                vy: -Math.random() * 13 - 4,
+                size: Math.random() * 7 + 4,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                rot: Math.random() * 360,
+                vRot: (Math.random() - 0.5) * 12,
+                life: 1
+            }));
+
+            function frame() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let alive = false;
+                particles.forEach(p => {
+                    if (p.life <= 0) return;
+                    alive = true;
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.42;
+                    p.rot += p.vRot;
+                    p.life -= 0.018;
+
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, p.life);
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rot * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                    ctx.restore();
+                });
+                if (alive) requestAnimationFrame(frame);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            requestAnimationFrame(frame);
+        }
+
+        function shareWebsite() {
+            const url = window.location.href;
+            const shareData = {
+                title: 'หรอยเมืองคอน! สุ่มร้านอาหาร อ.เมือง นครศรีธรรมราช',
+                text: 'คิดไม่ออกว่าจะกินร้านไหนในเมืองนครฯ ลองมาสุ่มกันดู! (มีทั้งร้านดังในเมืองและในห้าง 48 ร้าน)',
+                url
+            };
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {});
+            } else if (navigator.clipboard) {
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('คัดลอกลิงก์เว็บแล้ว ส่งให้เพื่อนได้เลย!');
+                }).catch(() => showToast('คัดลอกลิงก์ไม่สำเร็จ'));
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

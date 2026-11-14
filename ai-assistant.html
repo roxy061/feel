@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผู้ช่วย AI อัจฉริยะ (Feel AI Assistant: ถาม-ตอบ สรุปข้อมูล & แนะนำ) | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="ผู้ช่วย AI ประจำเว็บไซต์แฟ้มสะสมผลงาน นายภคพล สมัยแก้ว (ฟีล) รองรับการถาม-ตอบทุกข้อมูล สรุปบทความอัตโนมัติ และแนะนำผลงาน ร้านอาหาร โค้ด ESP32 อย่างเข้าใจง่าย">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.25rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.12), 0 1px 3px 1px rgba(60,64,67,0.08);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        @keyframes msgPop {
+            0% { opacity: 0; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .msg-bubble {
+            animation: msgPop 0.22s ease-out forwards;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-google-blue selection:text-white">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- TOP NAVIGATION BAR                         -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-4 sm:px-6 flex items-center justify-between gap-3">
+        <!-- Left: Back Button & Branding -->
+        <div class="flex items-center gap-2.5 min-w-0">
+            <a href="index.html" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก Portfolio</span>
+            </a>
+
+            <div class="h-5 w-[1px] bg-google-border dark:bg-google-dark-border mx-0.5 hidden sm:block"></div>
+
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 via-google-blue to-sky-500 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-xs sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            ผู้ช่วย AI อัจฉริยะ (Feel AI Assistant)
+                        </h1>
+                        <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold">
+                            ถาม-ตอบ • สรุปข้อมูล • แนะนำ
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        การประยุกต์ใช้ AI เพื่อการสืบค้นและสรุปข้อมูล • นายภคพล สมัยแก้ว (ฟีล)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Unified 6-App Switcher & Theme Toggle -->
+        <div class="flex items-center gap-2 shrink-0">
+            <nav class="hidden xl:flex items-center gap-1 bg-google-subtle dark:bg-google-dark-subtle p-1 rounded-full border border-google-border dark:border-google-dark-border text-xs">
+                <a href="wheel.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">1. วงล้อ 3D</a>
+                <a href="southern-food.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">2. สุ่มร้านอาหาร</a>
+                <a href="cctv.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">3. กล้อง CCTV</a>
+                <a href="weather.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">4. เรดาร์อากาศ</a>
+                <a href="rubik.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">5. รูบิค 3x3</a>
+                <a href="ai-assistant.html" class="px-2.5 py-1 rounded-full font-bold bg-indigo-600 text-white shadow-xs">6. ผู้ช่วย AI</a>
+            </nav>
+
+            <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle transition-all shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN CONTENT                               -->
+    <!-- ========================================== -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6">
+
+        <!-- 1. Clear Purpose & Article Banner (เข้าใจบทความที่จะสื่อใน 3 วินาที) -->
+        <section class="g-card p-4 sm:p-5 bg-gradient-to-r from-indigo-500/10 via-sky-500/5 to-emerald-500/5 border-indigo-200/80 dark:border-indigo-900/50 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="space-y-1.5 max-w-4xl">
+                <div class="inline-flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-600 text-white">เว็บแอปที่ 6 • การประยุกต์ใช้ AI ในการทำงาน (Applied AI Assistant)</span>
+                    <span class="text-xs text-google-text-muted dark:text-google-dark-text-muted font-medium">พร้อมใช้งานทันที ไม่ต้องตั้งค่า</span>
+                </div>
+                <h2 class="text-base sm:text-xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
+                    ผู้ช่วย AI ประจำเว็บไซต์: สรุปข้อมูล แนะนำผลงาน และถาม-ตอบได้ทุกเรื่องในคลิกเดียว
+                </h2>
+                <p class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed">
+                    <strong>บทความที่จะสื่อ:</strong> สาธิตการนำปัญญาประดิษฐ์ (AI) มาช่วยจัดการข้อมูลในเว็บไซต์แฟ้มสะสมผลงานของ <strong>นายภคพล สมัยแก้ว (ฟีล)</strong> ให้ผู้เข้าชมสามารถ <strong>1) ถาม-ตอบข้อมูลประวัติ ผลงาน โค้ด ESP32 ร้านอาหารในนครฯ</strong>, <strong>2) สรุปบทความหรือรายงานยาวๆ ให้สั้นกระชับ</strong> และ <strong>3) รับคำแนะนำตามเป้าหมายของผู้เข้าชม</strong> ได้อย่างสะดวกรวดเร็ว
+                </p>
+            </div>
+
+            <!-- 3 Mode Switcher Buttons -->
+            <div class="inline-flex flex-wrap p-1 rounded-2xl bg-slate-200/80 dark:bg-zinc-800 border border-google-border dark:border-google-dark-border shrink-0">
+                <button type="button" onclick="switchAiMode('chat')" id="mode-btn-chat" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-bold bg-white dark:bg-google-dark-surface text-indigo-600 dark:text-indigo-400 shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-comments"></i> 1. ถาม-ตอบทุกเรื่อง
+                </button>
+                <button type="button" onclick="switchAiMode('summarize')" id="mode-btn-summarize" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-medium text-google-text-muted hover:text-google-text transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-file-lines"></i> 2. สรุปข้อมูล/บทความ
+                </button>
+                <button type="button" onclick="switchAiMode('recommend')" id="mode-btn-recommend" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-medium text-google-text-muted hover:text-google-text transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-compass"></i> 3. แนะนำอัจฉริยะ
+                </button>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- MODE 1: SMART Q&A CHAT & INSTANT RECOMMENDATIONS             -->
+        <!-- ============================================================ -->
+        <section id="view-chat" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- Left Sidebar: One-Click Quick Questions & Topics (4 cols) -->
+            <div class="lg:col-span-4 space-y-4">
+                <div class="g-card p-4 sm:p-5 space-y-3.5">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm sm:text-base font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-bolt text-amber-500"></i>
+                            กดถามด่วนในคลิกเดียว (ไม่ต้องพิมพ์)
+                        </h3>
+                        <span class="text-[11px] text-indigo-600 dark:text-indigo-400 font-semibold">8 หัวข้อยอดฮิต</span>
+                    </div>
+                    <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">
+                        เลือกหัวข้อที่อยากรู้ด้านล่าง ระบบ AI จะสรุปคำตอบที่อ่านเข้าใจง่ายพร้อมลิงก์ที่เกี่ยวข้องให้ทันที:
+                    </p>
+
+                    <div class="space-y-2">
+                        <button type="button" onclick="askPresetQuestion('summary_profile')" class="w-full p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-google-border dark:border-google-dark-border hover:border-indigo-400 text-left text-xs sm:text-sm font-medium transition flex items-center gap-2.5 cursor-pointer">
+                            <span class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-user-graduate"></i></span>
+                            <span>สรุปประวัติและการศึกษาของ นายภคพล</span>
+                        </button>
+
+                        <button type="button" onclick="askPresetQuestion('projects_certs')" class="w-full p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-google-border dark:border-google-dark-border hover:border-emerald-400 text-left text-xs sm:text-sm font-medium transition flex items-center gap-2.5 cursor-pointer">
+                            <span class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-award"></i></span>
+                            <span>มีผลงานสิ่งประดิษฐ์และเกียรติบัตรอะไรบ้าง?</span>
+                        </button>
+
+                        <button type="button" onclick="askPresetQuestion('internship_exp')" class="w-full p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg hover:bg-sky-50 dark:hover:bg-sky-950/40 border border-google-border dark:border-google-dark-border hover:border-sky-400 text-left text-xs sm:text-sm font-medium transition flex items-center gap-2.5 cursor-pointer">
+                            <span class="w-7 h-7 rounded-lg bg-sky-100 dark:bg-sky-950 text-sky-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-briefcase"></i></span>
+                            <span>เล่าประสบการณ์ฝึกงาน บจก. เชียร์ คอมมูนิเคชั่น</span>
+                        </button>
+
+                        <button type="button" onclick="askPresetQuestion('esp32_code')" class="w-full p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-google-border dark:border-google-dark-border hover:border-amber-400 text-left text-xs sm:text-sm font-medium transition flex items-center gap-2.5 cursor-pointer">
+                            <span class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950 text-amber-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-microchip"></i></span>
+                            <span>ขอตัวอย่างโค้ด ESP32 สั่งงานเซนเซอร์/รีเลย์</span>
+                        </button>
+
+                        <button type="button" onclick="askPresetQuestion('food_recommend')" class="w-full p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg hover:bg-orange-50 dark:hover:bg-orange-950/40 border border-google-border dark:border-google-dark-border hover:border-orange-400 text-left text-xs sm:text-sm font-medium transition flex items-center gap-2.5 cursor-pointer">
+                            <span class="w-7 h-7 rounded-lg bg-orange-100 dark:bg-orange-950 text-orange-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-utensils"></i></span>
+                            <span>แนะนำร้านอาหารเด็ดใน อ.เมือง นครศรีฯ หน่อย</span>
+                        </button>
+
+                        <button type="button" onclick="askPresetQuestion('rubik_tips')" class="w-full p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg hover:bg-teal-50 dark:hover:bg-teal-950/40 border border-google-border dark:border-google-dark-border hover:border-teal-400 text-left text-xs sm:text-sm font-medium transition flex items-center gap-2.5 cursor-pointer">
+                            <span class="w-7 h-7 rounded-lg bg-teal-100 dark:bg-teal-950 text-teal-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-cube"></i></span>
+                            <span>ขอสูตรและเทคนิคแก้รูบิค 3x3 แบบเข้าใจง่าย</span>
+                        </button>
+
+                        <button type="button" onclick="askPresetQuestion('all_webapps')" class="w-full p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-google-border dark:border-google-dark-border hover:border-purple-400 text-left text-xs sm:text-sm font-medium transition flex items-center gap-2.5 cursor-pointer">
+                            <span class="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-layer-group"></i></span>
+                            <span>ในเว็บไซต์นี้มีเว็บแอปเสริมอะไรให้ลองเล่นบ้าง?</span>
+                        </button>
+
+                        <button type="button" onclick="askPresetQuestion('contact_info')" class="w-full p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-google-border dark:border-google-dark-border hover:border-rose-400 text-left text-xs sm:text-sm font-medium transition flex items-center gap-2.5 cursor-pointer">
+                            <span class="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-950 text-rose-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-envelope"></i></span>
+                            <span>ขอช่องทางติดต่อคุณฟีล (อีเมล / LINE)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Chat Conversation Box (8 cols) -->
+            <div class="lg:col-span-8 g-card flex flex-col h-[600px] overflow-hidden">
+                <!-- Chat Header -->
+                <div class="px-5 py-3.5 border-b border-google-border dark:border-google-dark-border bg-google-bg/60 dark:bg-google-dark-bg/60 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-600 to-google-blue text-white flex items-center justify-center text-sm shadow-xs">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-heading font-bold text-sm sm:text-base text-google-text dark:text-white">Feel AI Assistant</span>
+                                <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> พร้อมตอบทันที
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
+                                ถามได้ทั้งข้อมูลแฟ้มสะสมผลงาน โค้ดไมโครคอนโทรลเลอร์ รูบิค ร้านอาหารนครฯ หรือให้ช่วยสรุปข้อความ
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="speakLastAiReply()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text-body dark:text-google-dark-text-body hover:text-indigo-600 transition cursor-pointer" title="อ่านออกเสียงคำตอบล่าสุด">
+                            <i class="fa-solid fa-volume-high mr-1 text-indigo-500"></i> ฟังเสียงสรุป
+                        </button>
+                        <button type="button" onclick="clearChatHistory()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text-muted hover:text-rose-600 transition cursor-pointer" title="ล้างแชท">
+                            <i class="fa-solid fa-rotate-left"></i> เริ่มใหม่
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat Messages Area -->
+                <div id="chat-messages" class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 bg-slate-50/60 dark:bg-zinc-900/40">
+                    <!-- Populated by JS -->
+                </div>
+
+                <!-- Chat Input Form -->
+                <form onsubmit="handleChatSubmit(event)" class="p-3 sm:p-4 border-t border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface flex items-center gap-2">
+                    <input 
+                        type="text" 
+                        id="chat-input" 
+                        placeholder="พิมพ์คำถามที่อยากรู้ เช่น 'สรุปจุดเด่นของภคพล', 'มีร้านข้าวแกงไหนอร่อยบ้าง', 'วางข้อความเพื่อให้สรุป'..." 
+                        class="flex-1 px-4 py-2.5 rounded-full bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border focus:border-indigo-500 focus:outline-none text-sm text-google-text dark:text-white"
+                    >
+                    <button type="submit" class="px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-heading font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-1.5 shrink-0 cursor-pointer">
+                        <span>ส่งคำถาม</span>
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </form>
+            </div>
+
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- MODE 2: SMART TEXT & PORTFOLIO SUMMARIZER (สรุปข้อมูลเข้าใจง่าย) -->
+        <!-- ============================================================ -->
+        <section id="view-summarize" class="hidden grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- Left: Input Text or Choose Portfolio Article to Summarize (6 cols) -->
+            <div class="lg:col-span-6 g-card p-5 sm:p-6 space-y-4">
+                <div class="flex items-center justify-between gap-2">
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-file-pen text-indigo-600"></i>
+                            วางบทความหรือเลือกข้อมูลที่ต้องการให้ AI สรุป
+                        </h3>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">
+                            สามารถกดปุ่มตัวอย่างด้านล่าง หรือวางข้อความยาวๆ จากรายงาน/บทความเพื่อให้สรุปเป็นข้อๆ ได้ทันที
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sample Portfolio Data Presets -->
+                <div class="space-y-1.5">
+                    <span class="text-xs font-heading font-semibold text-google-text-muted dark:text-google-dark-text-muted">เลือกข้อมูลในโปรเจกต์มาลองสรุปทันที:</span>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button type="button" onclick="loadSampleText('bio')" class="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-heading font-semibold hover:bg-indigo-100 transition cursor-pointer">
+                            1. ประวัติและการศึกษาเต็ม
+                        </button>
+                        <button type="button" onclick="loadSampleText('vending')" class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-heading font-semibold hover:bg-emerald-100 transition cursor-pointer">
+                            2. รายละเอียดโครงงานตู้กดผ้าอนามัย
+                        </button>
+                        <button type="button" onclick="loadSampleText('internship')" class="px-3 py-1.5 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 text-xs font-heading font-semibold hover:bg-sky-100 transition cursor-pointer">
+                            3. รายงานการฝึกงาน บจก.เชียร์ฯ
+                        </button>
+                    </div>
+                </div>
+
+                <textarea 
+                    id="summarize-input" 
+                    rows="8" 
+                    placeholder="วางบทความ เนื้อหารายงาน หรือข้อมูลที่ต้องการให้ AI สรุปใจความสำคัญที่นี่..."
+                    class="w-full p-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border focus:border-indigo-500 focus:outline-none text-sm leading-relaxed text-google-text dark:text-white"
+                ></textarea>
+
+                <!-- Summary Style Selector & Action Button -->
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="font-heading font-semibold text-google-text-muted">รูปแบบการสรุป:</span>
+                        <select id="summary-style" class="px-3 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-heading font-medium text-google-text dark:text-white">
+                            <option value="bullets">📌 สรุปเป็นหัวข้อย่อย อ่านง่ายใน 5 วินาที</option>
+                            <option value="exec">🎯 สรุปย่อ 1 ย่อหน้า + ประเด็นสำคัญ</option>
+                            <option value="pitch">🎤 สรุปเป็นบทพูดแนะนำตัว / นำเสนอผลงาน</option>
+                        </select>
+                    </div>
+                    <button type="button" onclick="runTextSummarizer()" class="px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-heading font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> สรุปข้อมูลทันที
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Summarized Output Card (6 cols) -->
+            <div class="lg:col-span-6 g-card p-5 sm:p-6 space-y-4">
+                <div class="flex items-center justify-between border-b border-google-border dark:border-google-dark-border pb-3">
+                    <h3 class="text-base sm:text-lg font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-sparkles text-amber-500"></i>
+                        ผลลัพธ์การสรุปจาก AI (อ่านเข้าใจง่าย)
+                    </h3>
+                    <button type="button" onclick="copySummaryResult()" class="px-3 py-1 rounded-full bg-google-subtle dark:bg-google-dark-subtle hover:bg-indigo-600 hover:text-white text-xs font-heading font-semibold transition cursor-pointer">
+                        <i class="fa-regular fa-copy mr-1"></i> คัดลอกบทสรุป
+                    </button>
+                </div>
+
+                <div id="summary-output" class="p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200/80 dark:border-zinc-800 min-h-[280px] text-sm leading-relaxed space-y-3">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- MODE 3: SMART RECOMMENDATION WIZARD (แนะนำตามผู้เข้าชม)       -->
+        <!-- ============================================================ -->
+        <section id="view-recommend" class="hidden space-y-6">
+            <div class="g-card p-5 sm:p-6 space-y-5">
+                <div class="max-w-3xl">
+                    <h3 class="text-lg sm:text-xl font-extrabold font-heading text-google-text dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-compass text-indigo-600"></i>
+                        ระบบแนะนำเนื้อหาและเว็บแอปตามความต้องการของคุณ (Smart Guide)
+                    </h3>
+                    <p class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted mt-1">
+                        เลือกบทบาทหรือสิ่งที่คุณกำลังมองหาด้านล่าง ระบบ AI จะคัดสรรข้อมูลและลิงก์ที่ตรงใจที่สุดให้ทันทีโดยไม่ต้องไล่หาเอง:
+                    </p>
+                </div>
+
+                <!-- 4 Visitor Persona Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    <button type="button" onclick="selectPersona('teacher')" id="persona-teacher" class="persona-btn p-4 rounded-2xl border-2 border-indigo-500 bg-indigo-50/70 dark:bg-indigo-950/40 text-left transition cursor-pointer space-y-1.5">
+                        <div class="text-2xl">👨‍🏫</div>
+                        <div class="font-heading font-bold text-sm text-google-text dark:text-white">อาจารย์ / กรรมการประเมิน</div>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">ต้องการตรวจดูประวัติ โครงงานสิ่งประดิษฐ์ และไฟล์เกียรติบัตร PDF ฉบับจริง</p>
+                    </button>
+
+                    <button type="button" onclick="selectPersona('company')" id="persona-company" class="persona-btn p-4 rounded-2xl border border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface hover:border-indigo-400 text-left transition cursor-pointer space-y-1.5">
+                        <div class="text-2xl">🏢</div>
+                        <div class="font-heading font-bold text-sm text-google-text dark:text-white">สถานประกอบการ / รับฝึกงาน</div>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">ต้องการดูทักษะปฏิบัติงานจริง (ESP32, เครือข่าย, AI, วิดีโอ) และช่องทางติดต่อ</p>
+                    </button>
+
+                    <button type="button" onclick="selectPersona('student')" id="persona-student" class="persona-btn p-4 rounded-2xl border border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface hover:border-indigo-400 text-left transition cursor-pointer space-y-1.5">
+                        <div class="text-2xl">🧑‍💻</div>
+                        <div class="font-heading font-bold text-sm text-google-text dark:text-white">เพื่อนนักศึกษา / สายเทคโนโลยี</div>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">อยากลองเล่นวงล้อ 3D, ฝึกจับเวลารูบิค 3x3 และดูแนวคิดการทำโครงงาน IoT</p>
+                    </button>
+
+                    <button type="button" onclick="selectPersona('local')" id="persona-local" class="persona-btn p-4 rounded-2xl border border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface hover:border-indigo-400 text-left transition cursor-pointer space-y-1.5">
+                        <div class="text-2xl">🍛</div>
+                        <div class="font-heading font-bold text-sm text-google-text dark:text-white">คนเมืองคอน / ผู้ใช้งานทั่วไป</div>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">อยากสุ่มร้านอาหารเด็ดในเมืองนครฯ ดูกล้อง CCTV จราจรสด และเช็กเรดาร์ฝน</p>
+                    </button>
+                </div>
+
+                <!-- Dynamic Recommendation Result Box -->
+                <div id="persona-recommendation-box" class="p-5 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-8 border-t border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface py-5 px-4 sm:px-6 text-xs text-google-text-muted dark:text-google-dark-text-muted">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="index.html" class="hover:text-google-blue font-semibold">หน้าหลัก Portfolio</a>
+                <span>•</span>
+                <a href="wheel.html" class="hover:text-google-blue">1. วงล้อผลงาน 3D</a>
+                <span>•</span>
+                <a href="southern-food.html" class="hover:text-google-blue">2. สุ่มร้านอาหารนครฯ</a>
+                <span>•</span>
+                <a href="cctv.html" class="hover:text-google-blue">3. กล้อง CCTV สด</a>
+                <span>•</span>
+                <a href="weather.html" class="hover:text-google-blue">4. เรดาร์อากาศสด</a>
+                <span>•</span>
+                <a href="rubik.html" class="hover:text-google-blue">5. รูบิค 3x3</a>
+            </div>
+            <div>
+                พัฒนาโดย <strong class="text-google-text dark:text-white">นายภคพล สมัยแก้ว (ฟีล)</strong> • วิทยาลัยอาชีวศึกษานครศรีธรรมราช
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== KNOWLEDGE BASE OF PAKAPOL'S PORTFOLIO ====================
+        const AI_ANSWERS = {
+            summary_profile: {
+                q: "สรุปประวัติและการศึกษาของ นายภคพล สมัยแก้ว ให้ฟังหน่อย",
+                a: `<strong>📌 สรุปข้อมูลประวัติและการศึกษา (อ่านเข้าใจใน 10 วินาที):</strong>
+<ul class="list-disc pl-5 mt-2 space-y-1">
+    <li><strong>ชื่อ-นามสกุล:</strong> นายภคพล สมัยแก้ว (ชื่อเล่น: ฟีล / Feel)</li>
+    <li><strong>วันเกิด & ภูมิลำเนา:</strong> เกิดวันที่ 10 ธันวาคม พ.ศ. 2550 • ภูมิลำเนา จ.นครศรีธรรมราช</li>
+    <li><strong>การศึกษาปัจจุบัน:</strong> ระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) ณ <strong>วิทยาลัยอาชีวศึกษานครศรีธรรมราช</strong></li>
+    <li><strong>ความถนัดหลัก 4 ด้าน:</strong> 1) ไมโครคอนโทรลเลอร์ & IoT (ESP32) 2) การประยุกต์ใช้ AI ช่วยทำงานและเขียนโค้ด 3) การตัดต่อวิดีโอและสื่อดิจิทัล 4) นักแก้รูบิค 3x3 ฝึกการคิดเชิงตรรกะ</li>
+</ul>
+<div class="mt-3 flex flex-wrap gap-2">
+    <a href="index.html#about" class="px-3 py-1 rounded-full bg-indigo-600 text-white text-xs font-semibold">เปิดอ่านหน้าประวัติเต็ม →</a>
+</div>`,
+                plainText: "นายภคพล สมัยแก้ว ชื่อเล่น ฟีล เกิดวันที่ 10 ธันวาคม 2550 ปัจจุบันศึกษาอยู่ระดับ ปวส.1 วิทยาลัยอาชีวศึกษานครศรีธรรมราช มีความถนัดด้านไมโครคอนโทรลเลอร์ ESP32, การประยุกต์ใช้ AI, การตัดต่อวิดีโอ และการแก้รูบิค 3 คูณ 3 ครับ"
+            },
+            projects_certs: {
+                q: "มีผลงานสิ่งประดิษฐ์และเกียรติบัตรอะไรบ้าง?",
+                a: `<strong>🏆 สรุปผลงานโครงงานและเกียรติบัตรสำคัญ:</strong>
+<ol class="list-decimal pl-5 mt-2 space-y-1.5">
+    <li><strong>โครงงานสิ่งประดิษฐ์:</strong> <em>ตู้กดผ้าอนามัยอัตโนมัติ</em> — ประยุกต์ใช้ไมโครคอนโทรลเลอร์และเซนเซอร์ควบคุมการจ่ายสิ่งของอัตโนมัติเพื่ออำนวยความสะดวกในสถานศึกษา</li>
+    <li><strong>เกียรติบัตรรางวัลคนเก่ง (Excellence Award):</strong> เชิดชูเกียรติความมุ่งมั่นตั้งใจและรักษามาตรฐานการเรียนดีเด่น</li>
+    <li><strong>เกียรติบัตรการแข่งขันทักษะวิทยาศาสตร์ (ระดับจังหวัด):</strong> ตัวแทนสถานศึกษาเข้าร่วมแข่งขันทักษะการคิดวิเคราะห์ทางวิทยาศาสตร์</li>
+    <li><strong>เกียรติบัตรการแข่งขันทักษะวิทยาศาสตร์ (ระดับภาคใต้):</strong> เข้าร่วมแข่งขันทักษะวิชาการในระดับภูมิภาคภาคใต้</li>
+</ol>
+<div class="mt-3 flex flex-wrap gap-2">
+    <a href="index.html#projects" class="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-semibold">ดูรูปโครงงาน & เปิดไฟล์ PDF →</a>
+    <a href="wheel.html" class="px-3 py-1 rounded-full bg-amber-500 text-white text-xs font-semibold">หมุนชมในวงล้อ 3 มิติ →</a>
+</div>`,
+                plainText: "ผลงานหลักประกอบด้วย โครงงานตู้กดผ้าอนามัยอัตโนมัติ และเกียรติบัตร 3 รายการ ได้แก่ เกียรติบัตรรางวัลคนเก่ง และเกียรติบัตรการแข่งขันทักษะวิทยาศาสตร์ทั้งระดับจังหวัดและระดับภาคใต้ครับ"
+            },
+            internship_exp: {
+                q: "เล่าประสบการณ์ฝึกงาน บริษัท เชียร์ คอมมูนิเคชั่น ให้ฟังหน่อย",
+                a: `<strong>💼 สรุปประสบการณ์ฝึกงานวิชาชีพ (พ.ศ. 2567):</strong>
+<ul class="list-disc pl-5 mt-2 space-y-1">
+    <li><strong>สถานที่ฝึกงาน:</strong> บริษัท เชียร์ คอมมูนิเคชั่น จำกัด (สายงานเทคนิคและสื่อสารโทรคมนาคม)</li>
+    <li><strong>สิ่งที่ได้ลงมือทำจริง:</strong> ร่วมปฏิบัติงานภาคสนามกับทีมช่างเทคนิคในการดูแล ตรวจสอบ ติดตั้ง และบำรุงรักษาระบบสื่อสารโทรคมนาคมและอุปกรณ์โครงข่าย</li>
+    <li><strong>ทักษะที่ได้รับ:</strong> ความเข้าใจในระบบเครือข่ายจริง การแก้ปัญหาเฉพาะหน้า ความรับผิดชอบต่อเวลา และการทำงานร่วมกับผู้อื่นอย่างปลอดภัย</li>
+</ul>
+<div class="mt-3 flex flex-wrap gap-2">
+    <a href="index.html#about" class="px-3 py-1 rounded-full bg-sky-600 text-white text-xs font-semibold">ดูไทม์ไลน์การฝึกงาน →</a>
+    <a href="index.html#gallery" class="px-3 py-1 rounded-full bg-slate-700 text-white text-xs font-semibold">ดูภาพถ่ายขณะฝึกงาน →</a>
+</div>`,
+                plainText: "ในปี พ.ศ. 2567 นายภคพลได้ฝึกงานที่ บริษัท เชียร์ คอมมูนิเคชั่น จำกัด โดยได้ร่วมปฏิบัติงานจริงกับทีมช่างเทคนิคในการตรวจสอบและบำรุงรักษาระบบสื่อสารและอุปกรณ์เครือข่ายครับ"
+            },
+            esp32_code: {
+                q: "ขอตัวอย่างโค้ด ESP32 สั่งงานเซนเซอร์และรีเลย์เบื้องต้น",
+                a: `<strong>🔌 ตัวอย่างโค้ด C++ (Arduino IDE) สำหรับ ESP32 ตรวจจับเซนเซอร์และสั่งเปิดรีเลย์/มอเตอร์:</strong>
+<pre class="mt-2 p-3 rounded-xl bg-slate-900 text-emerald-300 font-mono text-xs overflow-x-auto leading-relaxed">const int SENSOR_PIN = 14; // ขารับสัญญาณเซนเซอร์/เหรียญ
+const int RELAY_PIN  = 26; // ขาสั่งงานมอเตอร์/รีเลย์จ่ายของ
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(SENSOR_PIN, INPUT_PULLUP);
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW);
+}
+
+void loop() {
+  if (digitalRead(SENSOR_PIN) == LOW) {
+    Serial.println("ตรวจพบคำสั่ง! กำลังจ่ายสินค้า...");
+    digitalWrite(RELAY_PIN, HIGH); // เปิดมอเตอร์
+    delay(1500);                   // หมุนจ่ายของ 1.5 วินาที
+    digitalWrite(RELAY_PIN, LOW);  // หยุดมอเตอร์
+    delay(500);
+  }
+}</pre>
+<p class="text-xs text-slate-500 mt-1.5">💡 แนวคิดนี้เป็นพื้นฐานเดียวกับระบบควบคุมการจ่ายสิ่งของในโครงงานตู้กดผ้าอนามัยอัตโนมัติครับ</p>`,
+                plainText: "นี่คือตัวอย่างโค้ดภาษาซีพลัสพลัสสำหรับบอร์ด ESP32 ในการรับค่าจากเซนเซอร์ที่ขา 14 และสั่งเปิดรีเลย์หรือมอเตอร์จ่ายสิ่งของที่ขา 26 เป็นเวลา 1.5 วินาทีครับ"
+            },
+            food_recommend: {
+                q: "แนะนำร้านอาหารเด็ดใน อ.เมือง นครศรีธรรมราช หน่อย",
+                a: `<strong>🍛 แนะนำร้านเด็ดห้ามพลาดใน อ.เมือง นครศรีธรรมราช (คัดจาก 48 ร้านในระบบ):</strong>
+<ul class="list-disc pl-5 mt-2 space-y-1">
+    <li><strong>มื้อเช้า (ติ่มซำ & กาแฟโบราณ):</strong> <em>ตังเกี๋ย แต่เตี้ยม</em>, <em>โกปี๊ ข้างศาลากลาง</em> (บักกุ๊ดเต๋, ชากาแฟโบราณ)</li>
+    <li><strong>มื้อกลางวัน (ขนมจีน & ข้าวแกงปักษ์ใต้):</strong> <em>ขนมจีนเมืองคอน ถนนพานยม</em>, <em>ข้าวแกงครัวเมืองคอน</em>, <em>ร้านชาวเรือ</em></li>
+    <li><strong>ร้านดังในห้าง (เซ็นทรัล / โรบินสัน โอเชี่ยน):</strong> <em>แหลมเจริญซีฟู้ด</em>, <em>บอนชอน</em>, <em>Sizzler</em></li>
+    <li><strong>มื้อเย็น & มื้อดึก (โรตีป้าหนอม):</strong> <em>ป้าหนอม โรตีชาชัก</em> (โรตีทิชชู่, โรตีแกงเนื้อ)</li>
+</ul>
+<div class="mt-3 flex flex-wrap gap-2">
+    <a href="southern-food.html" class="px-3 py-1 rounded-full bg-orange-600 text-white text-xs font-semibold">🎲 เปิดเว็บสุ่มร้านอาหารเมืองคอน (48 ร้าน) →</a>
+</div>`,
+                plainText: "ร้านอาหารแนะนำในอำเภอเมืองนครศรีธรรมราช เช่น มื้อเช้าร้านตังเกี๋ยแต่เตี้ยมและโกปี๊ มื้อกลางวันขนมจีนเมืองคอนและร้านชาวเรือ ส่วนมื้อดึกแนะนำโรตีป้าหนอม สามารถกดเปิดเว็บแอปสุ่มร้านอาหารทั้ง 48 ร้านได้เลยครับ"
+            },
+            rubik_tips: {
+                q: "ขอสูตรและเทคนิคแก้รูบิค 3x3 แบบเข้าใจง่าย",
+                a: `<strong>🧊 สรุป 4 ขั้นตอนแก้รูบิค 3x3 (CFOP) & สูตรพื้นฐานที่ต้องรู้:</strong>
+<ol class="list-decimal pl-5 mt-2 space-y-1">
+    <li><strong>Cross (ฐานบวกสีขาว):</strong> เรียงชิ้นขอบสีขาว 4 ชิ้นให้ตรงกับสีแกนกลางทั้ง 4 ด้าน</li>
+    <li><strong>F2L (เก็บ 2 ชั้นแรก):</strong> จับคู่ชิ้นมุมขาวกับชิ้นขอบชั้นที่ 2 แล้วลงช่องพร้อมกัน</li>
+    <li><strong>OLL (พลิกหน้าเหลือง):</strong> ใช้สูตรปลาตะเพียน <code>R U R' U R U2 R'</code> เพื่อพลิกสีเหลืองให้เต็มด้านบน</li>
+    <li><strong>PLL (สลับชิ้นส่วนชั้นบน):</strong> ใช้สูตรพื้นฐานและ <code>Sexy Move (R U R' U')</code> เพื่อเรียงสีรอบด้านให้ครบ 100%</li>
+</ol>
+<div class="mt-3 flex flex-wrap gap-2">
+    <a href="rubik.html" class="px-3 py-1 rounded-full bg-teal-600 text-white text-xs font-semibold">⏱️ เปิดห้องจับเวลา & ลองหมุนรูบิค 3x3 บนเว็บ →</a>
+</div>`,
+                plainText: "การแก้รูบิค 3 คูณ 3 แบ่งเป็น 4 ขั้นตอนคือ 1 สร้างฐานบวกสีขาว Cross 2 เก็บสองชั้นแรก F2L 3 พลิกหน้าสีเหลือง OLL ด้วยสูตร R U R' U R U2 R' และ 4 สลับตำแหน่งชั้นบน PLL สามารถเข้าไปฝึกจับเวลาและลองหมุนรูบิคจำลองได้ที่หน้าเว็บแอปรูบิค 3 คูณ 3 ครับ"
+            },
+            all_webapps: {
+                q: "ในเว็บไซต์นี้มีเว็บแอปเสริมอะไรให้ลองเล่นบ้าง?",
+                a: `<strong>🚀 เว็บไซต์นี้มีเว็บแอปเสริม 6 ระบบ 6 ด้านที่ไม่ซ้ำกันเลยครับ:</strong>
+<ul class="list-disc pl-5 mt-2 space-y-1">
+    <li><a href="wheel.html" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">1. วงล้อผลงาน 3 มิติ (wheel.html)</a> — หมุนชมผลงานและอ่านสรุปแนวคิดแบบ 3D</li>
+    <li><a href="southern-food.html" class="text-orange-600 dark:text-orange-400 font-bold hover:underline">2. สุ่มร้านอาหารเมืองคอน (southern-food.html)</a> — แนะนำ 48 ร้านเด็ดในเมืองนครฯ พร้อมโหมดสุ่มแผ่นดินไหว 20 วินาที</li>
+    <li><a href="cctv.html" class="text-red-600 dark:text-rose-400 font-bold hover:underline">3. กล้องวงจรปิดสด NST CCTV (cctv.html)</a> — ดูภาพสดจราจรและระดับน้ำในเมืองนครฯ 1–6 จอ</li>
+    <li><a href="weather.html" class="text-sky-600 dark:text-sky-400 font-bold hover:underline">4. เรดาร์สภาพอากาศสด (weather.html)</a> — ติดตามกลุ่มเมฆฝน พายุ และลมมรสุมภาคใต้</li>
+    <li><a href="rubik.html" class="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">5. จับเวลาและฝึกแก้รูบิค 3x3 (rubik.html)</a> — นาฬิกาจับเวลา WCA + จำลองหน้ารูบิค 6 ด้าน</li>
+    <li><a href="ai-assistant.html" class="text-purple-600 dark:text-purple-400 font-bold hover:underline">6. ผู้ช่วย AI อัจฉริยะ (ai-assistant.html)</a> — ถาม-ตอบ สรุปบทความ และแนะนำข้อมูล</li>
+</ul>`,
+                plainText: "เว็บไซต์นี้มีเว็บแอปเสริม 6 ระบบที่ไม่ซ้ำกัน ได้แก่ 1 วงล้อผลงาน 3 มิติ 2 ระบบสุ่มร้านอาหารเมืองคอน 48 ร้าน 3 กล้องวงจรปิดสดเทศบาลนครนครศรีธรรมราช 4 เรดาร์สภาพอากาศสด 5 ห้องจับเวลาและฝึกแก้รูบิค 3 คูณ 3 และ 6 ผู้ช่วย AI อัจฉริยะครับ"
+            },
+            contact_info: {
+                q: "ขอช่องทางติดต่อคุณฟีล (อีเมล / LINE)",
+                a: `<strong>📞 ช่องทางการติดต่อ นายภคพล สมัยแก้ว (ฟีล):</strong>
+<ul class="list-disc pl-5 mt-2 space-y-1">
+    <li><strong>อีเมล (Email):</strong> <a href="mailto:feel0627546143@gmail.com" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">feel0627546143@gmail.com</a></li>
+    <li><strong>LINE Official / ID:</strong> <a href="https://line.me/ti/p/CdqbkYbcUv" target="_blank" class="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">CdqbkYbcUv (คลิกเพื่อเพิ่มเพื่อน)</a></li>
+    <li><strong>สถานศึกษา:</strong> วิทยาลัยอาชีวศึกษานครศรีธรรมราช อ.เมือง จ.นครศรีธรรมราช</li>
+</ul>`,
+                plainText: "สามารถติดต่อนายภคพล สมัยแก้ว ได้ทางอีเมล feel0627546143@gmail.com หรือทาง LINE ID CdqbkYbcUv ครับ"
+            }
+        };
+
+        let lastSpokenPlainText = "สวัสดีครับ ผมคือผู้ช่วย AI ประจำเว็บไซต์แฟ้มสะสมผลงานของ นายภคพล สมัยแก้ว กดปุ่มหัวข้อด้านซ้ายหรือพิมพ์ถามได้เลยครับ";
+
+        // ==================== MODE SWITCHER ====================
+        function switchAiMode(mode) {
+            ['chat', 'summarize', 'recommend'].forEach(m => {
+                const view = document.getElementById(`view-${m}`);
+                const btn = document.getElementById(`mode-btn-${m}`);
+                if (m === mode) {
+                    view.classList.remove('hidden');
+                    if (m === 'chat' || m === 'summarize') view.classList.add('grid');
+                    btn.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-bold bg-white dark:bg-google-dark-surface text-indigo-600 dark:text-indigo-400 shadow-xs transition flex items-center gap-1.5 cursor-pointer';
+                } else {
+                    view.classList.add('hidden');
+                    view.classList.remove('grid');
+                    btn.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-medium text-google-text-muted hover:text-google-text transition flex items-center gap-1.5 cursor-pointer';
+                }
+            });
+        }
+
+        // ==================== CHAT ENGINE ====================
+        function appendChatMessage(role, htmlContent) {
+            const container = document.getElementById('chat-messages');
+            const wrapper = document.createElement('div');
+            wrapper.className = `msg-bubble flex items-start gap-2.5 ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+
+            if (role === 'ai') {
+                wrapper.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-google-blue text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-xs">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="max-w-[88%] sm:max-w-[82%] p-3.5 sm:p-4 rounded-2xl rounded-tl-sm bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed shadow-xs">
+                        ${htmlContent}
+                    </div>
+                `;
+            } else {
+                wrapper.innerHTML = `
+                    <div class="max-w-[82%] px-4 py-2.5 rounded-2xl rounded-tr-sm bg-indigo-600 text-white text-xs sm:text-sm font-medium shadow-xs">
+                        ${htmlContent}
+                    </div>
+                `;
+            }
+
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearChatHistory() {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = '';
+            appendChatMessage('ai', `
+                <div class="space-y-2">
+                    <div class="font-heading font-bold text-indigo-600 dark:text-indigo-400">
+                        👋 สวัสดีครับ! ผมคือผู้ช่วย AI ประจำเว็บไซต์ของ นายภคพล สมัยแก้ว (ฟีล)
+                    </div>
+                    <p>
+                        คุณสามารถกดปุ่ม <strong>"ถามด่วนในคลิกเดียว"</strong> ทางฝั่งซ้าย หรือพิมพ์ถามเรื่องที่สนใจได้เลยครับ เช่น:
+                    </p>
+                    <div class="flex flex-wrap gap-1.5 pt-1">
+                        <button type="button" onclick="askPresetQuestion('summary_profile')" class="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-xs font-semibold hover:bg-indigo-100 cursor-pointer">🎓 สรุปประวัติภคพล</button>
+                        <button type="button" onclick="askPresetQuestion('projects_certs')" class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-xs font-semibold hover:bg-emerald-100 cursor-pointer">🏆 สรุปผลงาน & รางวัล</button>
+                        <button type="button" onclick="askPresetQuestion('food_recommend')" class="px-2.5 py-1 rounded-full bg-orange-50 dark:bg-orange-950/70 text-orange-700 dark:text-orange-300 text-xs font-semibold hover:bg-orange-100 cursor-pointer">🍛 แนะนำร้านอาหารนครฯ</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        function askPresetQuestion(key) {
+            switchAiMode('chat');
+            const item = AI_ANSWERS[key];
+            if (!item) return;
+            appendChatMessage('user', item.q);
+            lastSpokenPlainText = item.plainText;
+            setTimeout(() => {
+                appendChatMessage('ai', item.a);
+            }, 180);
+        }
+
+        function matchSmartAnswer(qText) {
+            const q = qText.toLowerCase().trim();
+
+            // If user pasted a long text (> 140 chars) or asked to summarize text
+            if (qText.length > 140 || q.includes('สรุปข้อความ') || q.includes('สรุปบทความ')) {
+                const bulletSummary = generateBulletSummary(qText);
+                return {
+                    html: `<strong>📝 สรุปใจความสำคัญจากข้อความของคุณ:</strong><div class="mt-2">${bulletSummary}</div>`,
+                    plain: "สรุปใจความสำคัญจากข้อความของคุณเรียบร้อยแล้วครับ"
+                };
+            }
+            if (q.includes('ประวัติ') || q.includes('ใคร') || q.includes('เกิด') || q.includes('เรียนที่ไหน') || q.includes('การศึกษา') || q.includes('ภคพล') || q.includes('ฟีล')) {
+                return { html: AI_ANSWERS.summary_profile.a, plain: AI_ANSWERS.summary_profile.plainText };
+            }
+            if (q.includes('ผลงาน') || q.includes('โครงงาน') || q.includes('ตู้กด') || q.includes('ผ้าอนามัย') || q.includes('เกียรติบัตร') || q.includes('รางวัล')) {
+                return { html: AI_ANSWERS.projects_certs.a, plain: AI_ANSWERS.projects_certs.plainText };
+            }
+            if (q.includes('ฝึกงาน') || q.includes('เชียร์') || q.includes('ทำงาน') || q.includes('ประสบการณ์')) {
+                return { html: AI_ANSWERS.internship_exp.a, plain: AI_ANSWERS.internship_exp.plainText };
+            }
+            if (q.includes('esp32') || q.includes('โค้ด') || q.includes('arduino') || q.includes('เซนเซอร์') || q.includes('iot') || q.includes('ไมโคร')) {
+                return { html: AI_ANSWERS.esp32_code.a, plain: AI_ANSWERS.esp32_code.plainText };
+            }
+            if (q.includes('กิน') || q.includes('อาหาร') || q.includes('ร้าน') || q.includes('หิว') || q.includes('ขนมจีน') || q.includes('แต่เตี้ยม') || q.includes('โรตี')) {
+                return { html: AI_ANSWERS.food_recommend.a, plain: AI_ANSWERS.food_recommend.plainText };
+            }
+            if (q.includes('รูบิค') || q.includes('rubik') || q.includes('cfop') || q.includes('สูตร')) {
+                return { html: AI_ANSWERS.rubik_tips.a, plain: AI_ANSWERS.rubik_tips.plainText };
+            }
+            if (q.includes('ติดต่อ') || q.includes('เบอร์') || q.includes('ไลน์') || q.includes('line') || q.includes('อีเมล') || q.includes('email')) {
+                return { html: AI_ANSWERS.contact_info.a, plain: AI_ANSWERS.contact_info.plainText };
+            }
+            if (q.includes('อากาศ') || q.includes('ฝน') || q.includes('พายุ') || q.includes('กล้อง') || q.includes('cctv') || q.includes('น้ำท่วม')) {
+                return {
+                    html: `<strong>🌧️ ระบบตรวจสอบสภาพอากาศและกล้องวงจรปิดเมืองนครศรีธรรมราช:</strong>
+<ul class="list-disc pl-5 mt-2 space-y-1">
+    <li>หากต้องการดูภาพสดสภาพถนนและระดับน้ำตามสี่แยก สามารถเปิด <a href="cctv.html" class="text-red-600 font-bold underline">ระบบกล้องวงจรปิด NST CCTV สด (ดูพร้อมกันได้ 6 จอ)</a></li>
+    <li>หากต้องการดูกลุ่มเมฆฝนและพายุฟ้าคะนองภาคใต้ สามารถเปิด <a href="weather.html" class="text-sky-600 font-bold underline">เรดาร์สภาพอากาศสด Windy</a></li>
+</ul>`,
+                    plain: "สามารถตรวจสอบสภาพจราจรและระดับน้ำได้ที่หน้ากล้องวงจรปิดสด NST CCTV หรือดูกลุ่มเมฆฝนได้ที่หน้าเรดาร์สภาพอากาศสดครับ"
+                };
+            }
+
+            // Default helpful comprehensive answer
+            return {
+                html: `<strong>🤖 สรุปคำตอบสำหรับ "${qText.replace(/</g, '&lt;')}":</strong>
+<p class="mt-1.5">ในเว็บไซต์แฟ้มสะสมผลงานของ <strong>นายภคพล สมัยแก้ว (ฟีล)</strong> มีข้อมูลครบทั้ง 4 หมวดหลักที่เกี่ยวข้องกับคำถามของคุณครับ:</p>
+<ul class="list-disc pl-5 mt-2 space-y-1">
+    <li><strong>ประวัติ & การศึกษา:</strong> นักศึกษา ปวส.1 วิทยาลัยอาชีวศึกษานครศรีธรรมราช (ผ่านการฝึกงานที่ บจก. เชียร์ คอมมูนิเคชั่น)</li>
+    <li><strong>ผลงาน & เกียรติบัตร:</strong> โครงงานตู้กดผ้าอนามัยอัตโนมัติ และเกียรติบัตรทักษะวิทยาศาสตร์ระดับจังหวัด/ภาคใต้</li>
+    <li><strong>ทักษะเด่น:</strong> ระบบสมองกลฝังตัว ESP32, การประยุกต์ใช้ AI, การตัดต่อวิดีโอ และการแก้รูบิค 3x3</li>
+    <li><strong>เว็บแอปเสริม 6 ระบบ:</strong> วงล้อผลงาน 3D, สุ่มร้านอาหารนครฯ 48 ร้าน, กล้อง CCTV สด, เรดาร์อากาศ, จับเวลารูบิค 3x3 และผู้ช่วย AI</li>
+</ul>`,
+                plain: "ในเว็บไซต์ของนายภคพล สมัยแก้ว มีข้อมูลครบทั้งประวัติการศึกษา ปวส.1 โครงงานตู้กดผ้าอนามัยอัตโนมัติ เกียรติบัตรทักษะวิทยาศาสตร์ และเว็บแอปเสริมทั้ง 6 ระบบครับ"
+            };
+        }
+
+        function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+
+            appendChatMessage('user', text.replace(/</g, '&lt;'));
+            const reply = matchSmartAnswer(text);
+            lastSpokenPlainText = reply.plain;
+            setTimeout(() => {
+                appendChatMessage('ai', reply.html);
+            }, 200);
+        }
+
+        function speakLastAiReply() {
+            if (!('speechSynthesis' in window)) {
+                showToast('เบราว์เซอร์ของคุณไม่รองรับการอ่านออกเสียง');
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(lastSpokenPlainText);
+            utter.lang = 'th-TH';
+            utter.rate = 1.05;
+            window.speechSynthesis.speak(utter);
+            showToast('กำลังอ่านออกเสียงสรุปภาษาไทย...');
+        }
+
+        // ==================== MODE 2: SUMMARIZER ENGINE ====================
+        const SAMPLE_TEXTS = {
+            bio: `กระผม นายภคพล สมัยแก้ว (ชื่อเล่น ฟีล) เกิดเมื่อวันที่ 10 ธันวาคม พ.ศ. 2550 ภูมิลำเนาจังหวัดนครศรีธรรมราช ปัจจุบันกำลังศึกษาอยู่ในระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) ณ วิทยาลัยอาชีวศึกษานครศรีธรรมราช มีความสนใจและลงมือพัฒนาโครงงานด้านไมโครคอนโทรลเลอร์ (ESP32 / ESP8266) ร่วมกับเซนเซอร์และระบบควบคุมอัตโนมัติ รวมถึงศึกษาการใช้เครื่องมือ AI สมัยใหม่มาช่วยในการเขียนโค้ด วิเคราะห์ข้อมูล และผลิตสื่อวิดีโอนำเสนอผลงาน นอกจากนี้ยังชื่นชอบการเล่นรูบิค 3x3 ซึ่งช่วยฝึกสมาธิและการคิดแก้ปัญหาอย่างเป็นลำดับขั้นตอน มีความมุ่งมั่น ตั้งใจเรียนรู้เทคโนโลยีใหม่ ๆ อยู่เสมอ มีวินัยและความรับผิดชอบในการทำงาน สามารถปรับตัวและทำงานร่วมกับผู้อื่นได้อย่างดี`,
+            vending: `โครงงานสิ่งประดิษฐ์ตู้กดผ้าอนามัยอัตโนมัติ พัฒนาขึ้นเพื่อแก้ไขปัญหาความฉุกเฉินและอำนวยความสะดวกให้แก่นักเรียนนักศึกษาในสถานศึกษา โดยประยุกต์ใช้บอร์ดไมโครคอนโทรลเลอร์ควบคุมการทำงานของเซนเซอร์ตรวจจับและกลไกมอเตอร์จ่ายสิ่งของอัตโนมัติ มีการออกแบบโครงสร้างตู้ให้แข็งแรง ใช้งานง่าย และปลอดภัย ช่วยลดภาระของเจ้าหน้าที่ห้องพยาบาลและส่งเสริมการนำความรู้ด้านอิเล็กทรอนิกส์และระบบสมองกลฝังตัวมาแก้ปัญหาจริงในชีวิตประจำวัน`,
+            internship: `ประสบการณ์ฝึกงานวิชาชีพ ณ บริษัท เชียร์ คอมมูนิเคชั่น จำกัด ในปี พ.ศ. 2567 ได้รับมอบหมายให้ปฏิบัติงานร่วมกับทีมช่างเทคนิคในการดูแล ตรวจสอบ ติดตั้ง และบำรุงรักษาระบบสื่อสารโทรคมนาคมและอุปกรณ์โครงข่ายในพื้นที่จริง ทำให้ได้เรียนรู้ขั้นตอนการทำงานมาตรฐานทางเทคนิค การตรวจสอบสัญญาณ การแก้ไขปัญหาเฉพาะหน้าเมื่ออุปกรณ์ขัดข้อง ตลอดจนการมีวินัยและการทำงานร่วมกับทีมงานมืออาชีพ`
+        };
+
+        function loadSampleText(type) {
+            document.getElementById('summarize-input').value = SAMPLE_TEXTS[type] || SAMPLE_TEXTS.bio;
+            runTextSummarizer();
+        }
+
+        function generateBulletSummary(text) {
+            const rawSentences = text
+                .replace(/\n+/g, ' ')
+                .split(/(?:ครับ|ค่ะ|\.|•|โดย|รวมถึง|นอกจากนี้|ทำให้|เพื่อ)/)
+                .map(s => s.trim())
+                .filter(s => s.length >= 18);
+
+            const picked = rawSentences.slice(0, 5);
+            if (picked.length === 0) {
+                return `<p>${text}</p>`;
+            }
+            return `<ul class="list-disc pl-5 space-y-1.5">${picked.map(s => `<li>${s.replace(/</g, '&lt;')}</li>`).join('')}</ul>`;
+        }
+
+        function runTextSummarizer() {
+            const input = document.getElementById('summarize-input').value.trim();
+            const style = document.getElementById('summary-style').value;
+            const out = document.getElementById('summary-output');
+
+            if (!input) {
+                showToast('กรุณาวางข้อความหรือกดปุ่มเลือกข้อมูลตัวอย่างก่อนครับ');
+                return;
+            }
+
+            const charCount = input.length;
+            const bulletsHtml = generateBulletSummary(input);
+
+            if (style === 'bullets') {
+                out.innerHTML = `
+                    <div class="flex items-center justify-between text-xs text-indigo-600 dark:text-indigo-400 font-heading font-bold">
+                        <span>📌 สรุปประเด็นสำคัญแบบหัวข้อย่อย (อ่านเข้าใจทันที)</span>
+                        <span>ย่อจากข้อความ ${charCount} ตัวอักษร</span>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text-body">
+                        ${bulletsHtml}
+                    </div>
+                `;
+            } else if (style === 'exec') {
+                const shortPara = input.length > 180 ? input.slice(0, 180) + '...' : input;
+                out.innerHTML = `
+                    <div class="text-xs text-emerald-600 dark:text-emerald-400 font-heading font-bold">
+                        🎯 บทสรุปผู้บริหาร (Executive Summary 1 ย่อหน้า)
+                    </div>
+                    <p class="p-3.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text-body">
+                        <strong>ใจความหลัก:</strong> ${shortPara.replace(/</g, '&lt;')}
+                    </p>
+                    <div class="text-xs font-heading font-bold text-google-text-muted">ประเด็นย่อยที่สำคัญ:</div>
+                    ${bulletsHtml}
+                `;
+            } else {
+                out.innerHTML = `
+                    <div class="text-xs text-amber-600 dark:text-amber-400 font-heading font-bold">
+                        🎤 บทพูดสำหรับแนะนำตัว / นำเสนอหน้าชั้นเรียนและสัมภาษณ์งาน
+                    </div>
+                    <div class="p-4 rounded-xl bg-white dark:bg-google-dark-surface border border-amber-300/70 dark:border-amber-800 text-google-text dark:text-white leading-relaxed">
+                        "สวัสดีครับ จากข้อมูลข้างต้น สรุปสาระสำคัญได้ว่า: ${input.slice(0, 220).replace(/</g, '&lt;')}... ซึ่งสะท้อนถึงการลงมือปฏิบัติจริงและความมุ่งมั่นในการพัฒนาทักษะอย่างต่อเนื่องครับ ขอบคุณครับ"
+                    </div>
+                `;
+            }
+        }
+
+        function copySummaryResult() {
+            const out = document.getElementById('summary-output');
+            navigator.clipboard.writeText(out.innerText).then(() => {
+                showToast('คัดลอกบทสรุปเรียบร้อยแล้ว!');
+            });
+        }
+
+        // ==================== MODE 3: PERSONA RECOMMENDATION WIZARD ====================
+        const PERSONA_DATA = {
+            teacher: {
+                title: "👨‍🏫 คำแนะนำสำหรับอาจารย์และกรรมการประเมินแฟ้มสะสมผลงาน",
+                desc: "สรุปลำดับการตรวจชมผลงานและเอกสารสำคัญของ นายภคพล สมัยแก้ว ให้ครบถ้วนภายใน 2 นาที:",
+                items: [
+                    { badge: "ลำดับที่ 1", name: "ตรวจดูโครงงานสิ่งประดิษฐ์ & เกียรติบัตร PDF 3 รายการ", detail: "ดูภาพถ่ายโครงงานตู้กดผ้าอนามัยอัตโนมัติ และเปิดดูไฟล์ PDF เกียรติบัตรรางวัลคนเก่ง & ทักษะวิทยาศาสตร์", href: "index.html#projects", btn: "เปิดส่วนผลงาน & เกียรติบัตร" },
+                    { badge: "ลำดับที่ 2", name: "ชมนิทรรศการหมุนชมผลงาน 3 มิติ พร้อมบทความสรุป", detail: "อ่านบทความสรุปที่มา วัตถุประสงค์ และสิ่งที่ได้รับจากผลงานทั้ง 6 ชิ้นในหน้าเดียว", href: "wheel.html", btn: "เปิดวงล้อผลงาน 3D" },
+                    { badge: "ลำดับที่ 3", name: "ประวัติการศึกษา ปวส.1 & ประสบการณ์ฝึกงาน", detail: "ข้อมูลการศึกษา ณ วิทยาลัยอาชีวศึกษานครศรีธรรมราช และการฝึกงาน บจก. เชียร์ คอมมูนิเคชั่น", href: "index.html#about", btn: "อ่านประวัติ & การศึกษา" }
+                ]
+            },
+            company: {
+                title: "🏢 คำแนะนำสำหรับสถานประกอบการและพี่เลี้ยงฝึกงาน",
+                desc: "จุดเด่นด้านทักษะปฏิบัติงานจริง (Hands-on Technical Skills) ของ นายภคพล สมัยแก้ว:",
+                items: [
+                    { badge: "ทักษะที่ 1", name: "ประสบการณ์ปฏิบัติงานภาคสนาม (บจก. เชียร์ คอมมูนิเคชั่น)", detail: "ผ่านการฝึกปฏิบัติงานดูแล ตรวจสอบ และบำรุงรักษาระบบสื่อสารโทรคมนาคมและอุปกรณ์เครือข่ายร่วมกับทีมช่างเทคนิค", href: "index.html#about", btn: "ดูประวัติการฝึกงาน" },
+                    { badge: "ทักษะที่ 2", name: "ไมโครคอนโทรลเลอร์ ESP32, การใช้ AI และสื่อวิดีโอ", detail: "สามารถเชื่อมต่อวงจรเซนเซอร์ ประยุกต์ใช้ AI ช่วยทำงาน และตัดต่อวิดีโอสรุปงานได้อย่างคล่องแคล่ว", href: "index.html#skills", btn: "ดูทักษะทั้ง 4 ด้าน" },
+                    { badge: "ติดต่อด่วน", name: "ช่องทางติดต่อประสานงานโดยตรง", detail: "อีเมล feel0627546143@gmail.com หรือเพิ่มเพื่อนทาง LINE ID: CdqbkYbcUv", href: "index.html#contact", btn: "เปิดช่องทางติดต่อ" }
+                ]
+            },
+            student: {
+                title: "🧑‍💻 คำแนะนำสำหรับเพื่อนนักศึกษาและผู้สนใจเทคโนโลยี",
+                desc: "รวมเว็บแอป Interactive ในโปรเจกต์ที่พัฒนาขึ้นเพื่อฝึกทักษะการเขียนโค้ดและอัลกอริทึม:",
+                items: [
+                    { badge: "แนะนำอันดับ 1", name: "ห้องปฏิบัติการจับเวลา & ฝึกแก้รูบิค 3x3 (Rubik's Lab)", detail: "สุ่ม Scramble มาตรฐาน WCA จับเวลาด้วยปุ่ม Spacebar พร้อมดูภาพจำลองรูบิค 6 ด้านและสูตร CFOP", href: "rubik.html", btn: "เปิดเว็บจับเวลารูบิค 3x3" },
+                    { badge: "แนะนำอันดับ 2", name: "วงล้อผลงาน 3 มิติ (CSS 3D Perspective)", detail: "ศึกษาการจัดวางการ์ดบนทรงกระบอก 3 มิติด้วย JavaScript และการสรุปบทความโครงงาน", href: "wheel.html", btn: "เปิดวงล้อผลงาน 3D" },
+                    { badge: "แนะนำอันดับ 3", name: "คลังภาพการทำโครงงานและกิจกรรม", detail: "ดูภาพบรรยากาศการประกอบตู้กดอัตโนมัติและการฝึกงานจริง", href: "index.html#gallery", btn: "เปิดคลังภาพกิจกรรม" }
+                ]
+            },
+            local: {
+                title: "🍛 คำแนะนำสำหรับคนเมืองคอนและผู้ใช้งานทั่วไป",
+                desc: "รวมเครื่องมือออนไลน์สำหรับใช้ในชีวิตประจำวันในเขตอำเภอเมือง จังหวัดนครศรีธรรมราช:",
+                items: [
+                    { badge: "ยอดฮิต", name: "หรอยเมืองคอน! สุ่มร้านอาหารในเมืองนครฯ (48 ร้าน)", detail: "คิดไม่ออกว่ามื้อนี้กินอะไรดี กดสุ่มร้านเด็ดพร้อมเอฟเฟกต์แผ่นดินไหว 20 วินาที และพิกัด Google Maps", href: "southern-food.html", btn: "เปิดสุ่มร้านอาหารนครฯ" },
+                    { badge: "เช็กจราจร/น้ำ", name: "ระบบกล้องวงจรปิดสด NST CCTV (ดูพร้อมกัน 6 จอ)", detail: "ดูภาพสดสภาพถนน สี่แยกสำคัญ และหน้าโรงเรียนในเขตเทศบาลนครนครศรีธรรมราชแบบเรียลไทม์", href: "cctv.html", btn: "เปิดดูกล้อง CCTV สด" },
+                    { badge: "เช็กฝน/พายุ", name: "เรดาร์สภาพอากาศและพายุฝนภาคใต้ (Windy Radar)", detail: "ตรวจสอบกลุ่มเมฆฝน พายุฟ้าคะนอง และทิศทางลมในพื้นที่นครศรีธรรมราชก่อนออกเดินทาง", href: "weather.html", btn: "เปิดเรดาร์สภาพอากาศ" }
+                ]
+            }
+        };
+
+        function selectPersona(key) {
+            ['teacher', 'company', 'student', 'local'].forEach(k => {
+                const btn = document.getElementById(`persona-${k}`);
+                if (!btn) return;
+                if (k === key) {
+                    btn.className = 'persona-btn p-4 rounded-2xl border-2 border-indigo-500 bg-indigo-50/70 dark:bg-indigo-950/40 text-left transition cursor-pointer space-y-1.5 shadow-sm';
+                } else {
+                    btn.className = 'persona-btn p-4 rounded-2xl border border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface hover:border-indigo-400 text-left transition cursor-pointer space-y-1.5';
+                }
+            });
+
+            const data = PERSONA_DATA[key] || PERSONA_DATA.teacher;
+            const box = document.getElementById('persona-recommendation-box');
+            box.innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-base sm:text-lg font-extrabold font-heading text-indigo-700 dark:text-indigo-300">${data.title}</h4>
+                        <p class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted mt-0.5">${data.desc}</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        ${data.items.map(it => `
+                            <div class="p-4 rounded-2xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border flex flex-col justify-between space-y-3">
+                                <div class="space-y-1.5">
+                                    <span class="px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-[11px] font-bold font-heading">${it.badge}</span>
+                                    <h5 class="font-heading font-bold text-sm sm:text-base text-google-text dark:text-white">${it.name}</h5>
+                                    <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">${it.detail}</p>
+                                </div>
+                                <a href="${it.href}" class="w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-heading font-bold text-center transition flex items-center justify-center gap-1.5">
+                                    <span>${it.btn}</span>
+                                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </a>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==================== THEME & TOAST ====================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('feel_theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(savedTheme);
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 transition-all duration-300';
+            toast.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-indigo-400"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 2600);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            clearChatHistory();
+            loadSampleText('bio');
+            selectPersona('teacher');
+        });
+    </script>
+</body>
+</html>

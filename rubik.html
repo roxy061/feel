@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จับเวลาและฝึกแก้รูบิค 3x3 (Rubik's Cube Timer & CFOP Guide) | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="เว็บแอปจับเวลาแก้รูบิค 3x3 มาตรฐาน WCA พร้อมตัวจำลองสถานะรูบิค 6 ด้าน สถิติค่าเฉลี่ย Ao5/Ao12 และบทความสรุปขั้นตอนการแก้รูบิคเชิงอัลกอริทึม โดย นายภคพล สมัยแก้ว (ฟีล)">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.25rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.12), 0 1px 3px 1px rgba(60,64,67,0.08);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        .cube-sticker {
+            border-radius: 4px;
+            border: 1px solid rgba(0,0,0,0.22);
+            transition: background-color 0.18s ease, transform 0.15s ease;
+        }
+        .timer-pad {
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-google-blue selection:text-white">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- TOP NAVIGATION BAR                         -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-4 sm:px-6 flex items-center justify-between gap-3">
+        <!-- Left: Back Button & Branding -->
+        <div class="flex items-center gap-2.5 min-w-0">
+            <a href="index.html" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก Portfolio</span>
+            </a>
+
+            <div class="h-5 w-[1px] bg-google-border dark:bg-google-dark-border mx-0.5 hidden sm:block"></div>
+
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-cube"></i>
+                </div>
+                <div class="min-w-0">
+                    <h1 class="text-xs sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                        จับเวลา & ฝึกแก้รูบิค 3x3 (Rubik's Cube Lab)
+                    </h1>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        ทักษะการคิดเชิงตรรกะและอัลกอริทึม • นายภคพล สมัยแก้ว (ฟีล)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Unified 5-App Switcher & Theme Toggle -->
+        <div class="flex items-center gap-2 shrink-0">
+            <nav class="hidden xl:flex items-center gap-1 bg-google-subtle dark:bg-google-dark-subtle p-1 rounded-full border border-google-border dark:border-google-dark-border text-xs">
+                <a href="wheel.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">1. วงล้อ 3D</a>
+                <a href="southern-food.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">2. สุ่มร้านอาหาร</a>
+                <a href="cctv.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">3. กล้อง CCTV</a>
+                <a href="weather.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">4. เรดาร์อากาศ</a>
+                <a href="rubik.html" class="px-2.5 py-1 rounded-full font-bold bg-emerald-600 text-white shadow-xs">5. รูบิค 3x3</a>
+            </nav>
+
+            <button onclick="toggleSound()" id="sound-btn" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle transition-all shadow-xs cursor-pointer" title="เปิด/ปิดเสียงจับเวลา">
+                <i id="sound-icon" class="fa-solid fa-volume-high text-xs text-emerald-600"></i>
+            </button>
+
+            <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle transition-all shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN CONTENT                               -->
+    <!-- ========================================== -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6">
+
+        <!-- 1. Clear Purpose & Story Banner (เข้าใจบทความที่จะสื่อใน 3 วินาที) -->
+        <section class="g-card p-4 sm:p-5 bg-gradient-to-r from-emerald-500/10 via-sky-500/5 to-amber-500/5 border-emerald-200/80 dark:border-emerald-900/50 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="space-y-1.5 max-w-4xl">
+                <div class="inline-flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-600 text-white">เว็บแอปที่ 5 • ทักษะการคิดเชิงอัลกอริทึม (Algorithmic Thinking)</span>
+                    <span class="text-xs text-google-text-muted dark:text-google-dark-text-muted font-medium">มาตรฐาน WCA 3x3x3</span>
+                </div>
+                <h2 class="text-base sm:text-xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
+                    ทำไม "การแก้รูบิค 3x3" ถึงช่วยพัฒนาทักษะการเขียนโปรแกรมและงานวิศวกรรม?
+                </h2>
+                <p class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed">
+                    <strong>บทความที่จะสื่อ:</strong> การแก้รูบิค 3x3 ไม่ใช่การเดาสุ่ม แต่คือการแบ่งปัญหาใหญ่ออกเป็นขั้นตอนย่อย (Decomposition) การจำรูปแบบเงื่อนไข (If-Else Pattern Recognition) และการเรียงลำดับชุดคำสั่ง (Algorithms) ซึ่งเป็นพื้นฐานเดียวกับการเขียนโปรแกรมควบคุมไมโครคอนโทรลเลอร์ <strong>ESP32</strong> และการแก้โจทย์โครงงานของนายภคพล สมัยแก้ว
+                </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <a href="#cfop-guide" class="px-4 py-2 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-emerald-500 text-xs font-bold font-heading text-emerald-700 dark:text-emerald-400 shadow-xs transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-book-open"></i> อ่านบทความ 4 ขั้นตอนแก้รูบิค
+                </a>
+            </div>
+        </section>
+
+        <!-- 2. Main Interactive Workspace: Left = WCA Timer & Scramble (7 cols), Right = 2D Cube Net Simulator & Stats (5 cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- Left Column: Scramble Bar + Speedcubing Timer + Solve History (7 cols) -->
+            <div class="lg:col-span-7 space-y-5">
+
+                <!-- WCA Scramble Card -->
+                <div class="g-card p-4 sm:p-5 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950/70 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs font-bold">
+                                <i class="fa-solid fa-shuffle"></i>
+                            </span>
+                            <span class="text-xs sm:text-sm font-bold font-heading text-google-text dark:text-google-dark-text">
+                                โจทย์สลับรูบิคมาตรฐาน (WCA 20-Move Scramble)
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="generateNewScramble()" class="px-3 py-1.5 rounded-full bg-google-blue hover:bg-blue-700 text-white text-xs font-heading font-semibold shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-rotate"></i> สุ่มโจทย์ใหม่
+                            </button>
+                            <button type="button" onclick="copyScramble()" class="px-2.5 py-1.5 rounded-full bg-google-subtle dark:bg-google-dark-subtle hover:bg-slate-200 text-xs font-medium text-google-text-body dark:text-google-dark-text-body transition cursor-pointer" title="คัดลอก Scramble">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Scramble String Display -->
+                    <div id="scramble-text" class="p-3.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-mono text-base sm:text-xl font-bold text-center tracking-wider text-google-blue dark:text-sky-300 select-all">
+                        R U R' U' F2 D' L2 B2 U2 R' F' U D2 L2 R2 B2 U'
+                    </div>
+
+                    <p class="text-[11px] sm:text-xs text-google-text-muted dark:text-google-dark-text-muted text-center">
+                        💡 <strong>วิธีอ่านสัญลักษณ์:</strong> ตัวอักษรเดี่ยว = หมุนตามเข็มนาฬิกา 90° • มีขีด <code class="px-1 rounded bg-slate-200 dark:bg-zinc-700">'</code> = หมุนทวนเข็มนาฬิกา 90° • มีเลข <code class="px-1 rounded bg-slate-200 dark:bg-zinc-700">2</code> = หมุน 2 ครั้ง (180°)
+                    </p>
+                </div>
+
+                <!-- Interactive Timer Pad Card -->
+                <div 
+                    id="timer-pad" 
+                    onclick="handleTimerPadClick()"
+                    class="g-card timer-pad p-6 sm:p-10 text-center cursor-pointer border-2 border-transparent hover:border-emerald-500/50 select-none relative overflow-hidden"
+                >
+                    <div class="flex items-center justify-between text-xs text-google-text-muted dark:text-google-dark-text-muted mb-3">
+                        <span id="timer-state-badge" class="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 font-heading font-bold">
+                            🟢 พร้อมจับเวลา (Ready)
+                        </span>
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="inspection-check" class="rounded text-emerald-600 focus:ring-0">
+                            <span>โหมดดูรูบิคก่อนเริ่ม 15 วิ (WCA Inspection)</span>
+                        </label>
+                    </div>
+
+                    <!-- Giant Digital Timer Readout -->
+                    <div id="timer-display" class="font-mono text-6xl sm:text-7xl md:text-8xl font-extrabold tracking-tight my-4 text-google-text dark:text-white transition-colors">
+                        0.00
+                    </div>
+
+                    <p id="timer-instruction" class="text-xs sm:text-sm font-heading font-medium text-google-text-muted dark:text-google-dark-text-muted">
+                        💻 บนคอม: กดปุ่ม <kbd class="px-2 py-0.5 rounded bg-slate-200 dark:bg-zinc-700 font-mono text-xs">Spacebar</kbd> ค้างไว้แล้วปล่อยเพื่อเริ่ม • 📱 บนมือถือ: แตะที่กรอบนี้เพื่อเริ่ม/หยุดเวลา
+                    </p>
+
+                    <!-- Quick Penalty / Action Bar after solve -->
+                    <div id="post-solve-actions" class="hidden mt-4 pt-3 border-t border-google-border dark:border-google-dark-border items-center justify-center gap-2" onclick="event.stopPropagation()">
+                        <span class="text-xs text-google-text-muted">จัดการเวลารอบล่าสุด:</span>
+                        <button type="button" onclick="applyPenalty('+2')" class="px-3 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-xs font-bold hover:bg-amber-200 cursor-pointer">+2 วินาที</button>
+                        <button type="button" onclick="applyPenalty('DNF')" class="px-3 py-1 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-bold hover:bg-rose-200 cursor-pointer">DNF (ไม่สำเร็จ)</button>
+                        <button type="button" onclick="deleteLastSolve()" class="px-3 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-slate-300 text-xs font-medium hover:bg-rose-600 hover:text-white cursor-pointer"><i class="fa-solid fa-trash-can mr-1"></i>ลบรอบนี้</button>
+                    </div>
+                </div>
+
+                <!-- Statistics Summary Grid (4 Metrics) -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="g-card p-3.5 text-center">
+                        <span class="text-[11px] font-heading font-semibold text-google-text-muted dark:text-google-dark-text-muted block">สถิติเร็วที่สุด (Best PB)</span>
+                        <span id="stat-best" class="font-mono text-xl sm:text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5 block">-</span>
+                    </div>
+                    <div class="g-card p-3.5 text-center">
+                        <span class="text-[11px] font-heading font-semibold text-google-text-muted dark:text-google-dark-text-muted block">เฉลี่ย 5 ครั้ง (Ao5)</span>
+                        <span id="stat-ao5" class="font-mono text-xl sm:text-2xl font-extrabold text-google-blue dark:text-sky-400 mt-0.5 block">-</span>
+                    </div>
+                    <div class="g-card p-3.5 text-center">
+                        <span class="text-[11px] font-heading font-semibold text-google-text-muted dark:text-google-dark-text-muted block">เฉลี่ย 12 ครั้ง (Ao12)</span>
+                        <span id="stat-ao12" class="font-mono text-xl sm:text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-0.5 block">-</span>
+                    </div>
+                    <div class="g-card p-3.5 text-center">
+                        <span class="text-[11px] font-heading font-semibold text-google-text-muted dark:text-google-dark-text-muted block">จำนวนครั้งที่แก้สำเร็จ</span>
+                        <span id="stat-count" class="font-mono text-xl sm:text-2xl font-extrabold text-google-text dark:text-white mt-0.5 block">0</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Interactive Cube Simulator & Solve History (5 cols) -->
+            <div class="lg:col-span-5 space-y-5">
+
+                <!-- Interactive 6-Face Rubik's Cube State Simulator -->
+                <div class="g-card p-4 sm:p-5 space-y-4">
+                    <div class="flex items-center justify-between gap-2">
+                        <div>
+                            <h3 class="text-sm sm:text-base font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
+                                <i class="fa-solid fa-cubes text-emerald-600"></i>
+                                ภาพจำลองสถานะรูบิคทั้ง 6 ด้าน (Cube Visualizer)
+                            </h3>
+                            <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
+                                หันหน้าสีเขียวเข้าหาตัว (F) และสีขาวไว้ด้านบน (U) ตอนสลับรูบิค
+                            </p>
+                        </div>
+                        <button type="button" onclick="resetCubeToSolved()" class="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 text-xs font-heading font-bold transition cursor-pointer">
+                            ✨ รีเซ็ตเป็นแก้สำเร็จ
+                        </button>
+                    </div>
+
+                    <!-- 2D Unfolded Cube Net (U, L, F, R, B, D) -->
+                    <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col items-center justify-center">
+                        <div class="grid grid-cols-4 gap-2 w-full max-w-[320px]">
+                            <!-- Row 1: empty, U, empty, empty -->
+                            <div></div>
+                            <div id="face-U" class="grid grid-cols-3 gap-1 aspect-square p-1 rounded-lg bg-slate-800/90 border border-slate-700" title="ด้านบน (Up - สีขาว)"></div>
+                            <div></div>
+                            <div></div>
+
+                            <!-- Row 2: L, F, R, B -->
+                            <div id="face-L" class="grid grid-cols-3 gap-1 aspect-square p-1 rounded-lg bg-slate-800/90 border border-slate-700" title="ด้านซ้าย (Left - สีส้ม)"></div>
+                            <div id="face-F" class="grid grid-cols-3 gap-1 aspect-square p-1 rounded-lg bg-slate-800/90 border border-emerald-500/60" title="ด้านหน้า (Front - สีเขียว)"></div>
+                            <div id="face-R" class="grid grid-cols-3 gap-1 aspect-square p-1 rounded-lg bg-slate-800/90 border border-slate-700" title="ด้านขวา (Right - สีแดง)"></div>
+                            <div id="face-B" class="grid grid-cols-3 gap-1 aspect-square p-1 rounded-lg bg-slate-800/90 border border-slate-700" title="ด้านหลัง (Back - สีน้ำเงิน)"></div>
+
+                            <!-- Row 3: empty, D, empty, empty -->
+                            <div></div>
+                            <div id="face-D" class="grid grid-cols-3 gap-1 aspect-square p-1 rounded-lg bg-slate-800/90 border border-slate-700" title="ด้านล่าง (Down - สีเหลือง)"></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+
+                        <div class="mt-3 flex flex-wrap items-center justify-center gap-2 text-[11px] text-slate-400">
+                            <span>⬜ U (บน)</span>
+                            <span>🟧 L (ซ้าย)</span>
+                            <span>🟩 F (หน้า)</span>
+                            <span>🟥 R (ขวา)</span>
+                            <span>🟦 B (หลัง)</span>
+                            <span>🟨 D (ล่าง)</span>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Manual Move Buttons (ลองกดหมุนรูบิคด้วยตัวเอง) -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-heading font-semibold text-google-text-muted dark:text-google-dark-text-muted">ลองกดหมุนรูบิคทีละจังหวะ:</span>
+                            <button type="button" onclick="runSexyMoveDemo()" class="text-xs font-heading font-bold text-google-blue dark:text-sky-400 hover:underline cursor-pointer">
+                                ▶ ลองรันสูตร Sexy Move (R U R' U')
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-6 gap-1.5">
+                            <button type="button" onclick="manualMove('R')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">R</button>
+                            <button type="button" onclick="manualMove('R\'')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">R'</button>
+                            <button type="button" onclick="manualMove('U')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">U</button>
+                            <button type="button" onclick="manualMove('U\'')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">U'</button>
+                            <button type="button" onclick="manualMove('F')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">F</button>
+                            <button type="button" onclick="manualMove('F\'')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">F'</button>
+                            <button type="button" onclick="manualMove('L')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">L</button>
+                            <button type="button" onclick="manualMove('L\'')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">L'</button>
+                            <button type="button" onclick="manualMove('D')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">D</button>
+                            <button type="button" onclick="manualMove('D\'')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">D'</button>
+                            <button type="button" onclick="manualMove('B')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">B</button>
+                            <button type="button" onclick="manualMove('B\'')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">B'</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Solve History Table Card -->
+                <div class="g-card p-4 sm:p-5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm sm:text-base font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-google-blue"></i>
+                            ประวัติการจับเวลาล่าสุด
+                        </h3>
+                        <button type="button" onclick="clearAllSolves()" class="text-xs text-rose-600 dark:text-rose-400 hover:underline font-medium cursor-pointer">
+                            ล้างประวัติทั้งหมด
+                        </button>
+                    </div>
+                    <div id="solves-list" class="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 3. READABLE ARTICLE: 4 ขั้นตอนการแก้รูบิค CFOP & สูตรพื้นฐาน -->
+        <!-- ========================================== -->
+        <section id="cfop-guide" class="g-card p-5 sm:p-7 space-y-6 scroll-mt-20">
+            <div class="border-b border-google-border dark:border-google-dark-border pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
+                        <i class="fa-solid fa-graduation-cap mr-1"></i> บทความความรู้: หลักการแก้รูบิค 3x3 แบบเป็นระบบ (CFOP Method)
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-extrabold font-heading text-google-text dark:text-white">
+                        สรุป 4 ขั้นตอนการแก้รูบิค 3x3 (เข้าใจง่ายแม้ไม่เคยเล่นมาก่อน)
+                    </h3>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-heading font-semibold self-start sm:self-center">
+                    คิดเป็นลำดับขั้น = พื้นฐานการเขียนโค้ด
+                </span>
+            </div>
+
+            <!-- 4 Steps Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <!-- Step 1: Cross -->
+                <div class="p-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 rounded-full bg-google-blue text-white text-xs font-bold font-heading">ขั้นที่ 1 • Cross</span>
+                        <span class="text-xs font-mono text-google-text-muted">ฐานบวกสีขาว</span>
+                    </div>
+                    <h4 class="font-heading font-bold text-base text-google-text dark:text-white">
+                        1. สร้างเครื่องหมายบวก (White Cross)
+                    </h4>
+                    <p class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed">
+                        เริ่มจากจัดเรียงชิ้นขอบ (Edge) สีขาวทั้ง 4 ชิ้นให้เป็นรูปเครื่องหมายบวก (+) โดยให้สีด้านข้างตรงกับแกนกลาง (Center) ของทั้ง 4 ด้าน เปรียบเสมือนการวางโครงสร้างฐานข้อมูลเริ่มต้นให้ถูกต้อง
+                    </p>
+                </div>
+
+                <!-- Step 2: F2L -->
+                <div class="p-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-xs font-bold font-heading">ขั้นที่ 2 • F2L</span>
+                        <span class="text-xs font-mono text-google-text-muted">เก็บ 2 ชั้นแรก</span>
+                    </div>
+                    <h4 class="font-heading font-bold text-base text-google-text dark:text-white">
+                        2. จับคู่ชิ้นมุมและชิ้นขอบ (First 2 Layers)
+                    </h4>
+                    <p class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed">
+                        แทนที่จะทำทีละชั้น ให้จับคู่ชิ้นมุมสีขาวกับชิ้นขอบชั้นที่ 2 แล้วนำลงช่องพร้อมกันทั้ง 4 มุม ขั้นตอนนี้ช่วยฝึกการมองภาพรวมล่วงหน้า (Look-ahead) และการลดขั้นตอนที่ซ้ำซ้อน
+                    </p>
+                </div>
+
+                <!-- Step 3: OLL -->
+                <div class="p-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 rounded-full bg-amber-500 text-white text-xs font-bold font-heading">ขั้นที่ 3 • OLL</span>
+                        <span class="text-xs font-mono text-google-text-muted">พลิกหน้าเหลือง</span>
+                    </div>
+                    <h4 class="font-heading font-bold text-base text-google-text dark:text-white">
+                        3. พลิกด้านบนให้เป็นสีเหลืองทั้งหมด (Orientation)
+                    </h4>
+                    <p class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed">
+                        สังเกตรูปแบบสีเหลืองบนชั้นสุดท้าย แล้วเลือกใช้สูตรหมุน (เช่น สูตรปลาตะเพียน <strong>Sune: R U R' U R U2 R'</strong>) เพื่อพลิกให้ด้านบนเป็นสีเหลืองเต็มหน้าโดยที่ 2 ชั้นแรกไม่เสียรูป
+                    </p>
+                </div>
+
+                <!-- Step 4: PLL -->
+                <div class="p-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 rounded-full bg-rose-600 text-white text-xs font-bold font-heading">ขั้นที่ 4 • PLL</span>
+                        <span class="text-xs font-mono text-google-text-muted">สลับตำแหน่งจบ</span>
+                    </div>
+                    <h4 class="font-heading font-bold text-base text-google-text dark:text-white">
+                        4. สลับชิ้นส่วนชั้นบนให้ครบรอบด้าน (Permutation)
+                    </h4>
+                    <p class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed">
+                        ขั้นตอนสุดท้ายคือการสลับชิ้นมุมและชิ้นขอบของชั้นบนสุดให้ตรงกับสีของแต่ละด้าน (เช่น สูตร <strong>T-Perm</strong> หรือ <strong>U-Perm</strong>) จนรูบิคทั้ง 6 ด้านเรียงสีสมบูรณ์ 100%
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Interactive Formula Tryout Bar -->
+            <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-900/50 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body">
+                    <strong class="text-emerald-800 dark:text-emerald-300 font-heading"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>ทดลองรันสูตรอัลกอริทึมบนรูบิคจำลองด้านบน:</strong> กดปุ่มเพื่อดูการเปลี่ยนแปลงของหน้ารูบิคตามสูตรยอดนิยมได้ทันที
+                </div>
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                    <button type="button" onclick="applyAlgorithmDemo('R U R\' U\'', 'Sexy Move (ทำซ้ำ 6 ครั้งจะกลับมาที่เดิม)')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-emerald-600 hover:text-white border border-emerald-300 dark:border-emerald-800 text-xs font-heading font-bold transition cursor-pointer">
+                        ลองสูตร Sexy Move (R U R' U')
+                    </button>
+                    <button type="button" onclick="applyAlgorithmDemo('R U R\' U R U2 R\'', 'สูตรปลาตะเพียน Sune (พลิกหน้าเหลือง OLL)')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-amber-500 hover:text-white border border-amber-300 dark:border-amber-800 text-xs font-heading font-bold transition cursor-pointer">
+                        ลองสูตร Sune (R U R' U R U2 R')
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-8 border-t border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface py-5 px-4 sm:px-6 text-xs text-google-text-muted dark:text-google-dark-text-muted">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="index.html" class="hover:text-google-blue font-semibold">หน้าหลัก Portfolio</a>
+                <span>•</span>
+                <a href="wheel.html" class="hover:text-google-blue">1. วงล้อผลงาน 3D</a>
+                <span>•</span>
+                <a href="southern-food.html" class="hover:text-google-blue">2. สุ่มร้านอาหารนครฯ</a>
+                <span>•</span>
+                <a href="cctv.html" class="hover:text-google-blue">3. กล้อง CCTV สด</a>
+                <span>•</span>
+                <a href="weather.html" class="hover:text-google-blue">4. เรดาร์อากาศสด</a>
+            </div>
+            <div>
+                พัฒนาโดย <strong class="text-google-text dark:text-white">นายภคพล สมัยแก้ว (ฟีล)</strong> • วิทยาลัยอาชีวศึกษานครศรีธรรมราช
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== AUDIO HELPER ====================
+        let soundOn = true;
+        let audioCtx = null;
+
+        function playBeep(freq = 660, duration = 0.08, vol = 0.08) {
+            if (!soundOn) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch {}
+        }
+
+        function toggleSound() {
+            soundOn = !soundOn;
+            const icon = document.getElementById('sound-icon');
+            icon.className = soundOn ? 'fa-solid fa-volume-high text-xs text-emerald-600' : 'fa-solid fa-volume-xmark text-xs text-slate-400';
+            showToast(soundOn ? 'เปิดเสียงจับเวลาแล้ว' : 'ปิดเสียงจับเวลาแล้ว');
+        }
+
+        // ==================== 3x3 RUBIK'S CUBE STATE ENGINE ====================
+        const FACE_COLORS = {
+            U: '#ffffff', // White
+            L: '#f97316', // Orange
+            F: '#10b981', // Green
+            R: '#ef4444', // Red
+            B: '#3b82f6', // Blue
+            D: '#facc15'  // Yellow
+        };
+
+        let cubeState = {};
+        let currentScramble = '';
+
+        function initSolvedCube() {
+            cubeState = {
+                U: Array(9).fill('U'),
+                L: Array(9).fill('L'),
+                F: Array(9).fill('F'),
+                R: Array(9).fill('R'),
+                B: Array(9).fill('B'),
+                D: Array(9).fill('D')
+            };
+        }
+
+        function rotateFaceCW(faceArr) {
+            return [
+                faceArr[6], faceArr[3], faceArr[0],
+                faceArr[7], faceArr[4], faceArr[1],
+                faceArr[8], faceArr[5], faceArr[2]
+            ];
+        }
+
+        function applyBaseMoveCW(move) {
+            const s = cubeState;
+            let temp;
+            switch (move) {
+                case 'U':
+                    s.U = rotateFaceCW(s.U);
+                    temp = [s.F[0], s.F[1], s.F[2]];
+                    [s.F[0], s.F[1], s.F[2]] = [s.R[0], s.R[1], s.R[2]];
+                    [s.R[0], s.R[1], s.R[2]] = [s.B[0], s.B[1], s.B[2]];
+                    [s.B[0], s.B[1], s.B[2]] = [s.L[0], s.L[1], s.L[2]];
+                    [s.L[0], s.L[1], s.L[2]] = temp;
+                    break;
+                case 'D':
+                    s.D = rotateFaceCW(s.D);
+                    temp = [s.F[6], s.F[7], s.F[8]];
+                    [s.F[6], s.F[7], s.F[8]] = [s.L[6], s.L[7], s.L[8]];
+                    [s.L[6], s.L[7], s.L[8]] = [s.B[6], s.B[7], s.B[8]];
+                    [s.B[6], s.B[7], s.B[8]] = [s.R[6], s.R[7], s.R[8]];
+                    [s.R[6], s.R[7], s.R[8]] = temp;
+                    break;
+                case 'R':
+                    s.R = rotateFaceCW(s.R);
+                    temp = [s.U[2], s.U[5], s.U[8]];
+                    [s.U[2], s.U[5], s.U[8]] = [s.F[2], s.F[5], s.F[8]];
+                    [s.F[2], s.F[5], s.F[8]] = [s.D[2], s.D[5], s.D[8]];
+                    [s.D[2], s.D[5], s.D[8]] = [s.B[6], s.B[3], s.B[0]];
+                    [s.B[6], s.B[3], s.B[0]] = temp;
+                    break;
+                case 'L':
+                    s.L = rotateFaceCW(s.L);
+                    temp = [s.U[0], s.U[3], s.U[6]];
+                    [s.U[0], s.U[3], s.U[6]] = [s.B[8], s.B[5], s.B[2]];
+                    [s.B[8], s.B[5], s.B[2]] = [s.D[0], s.D[3], s.D[6]];
+                    [s.D[0], s.D[3], s.D[6]] = [s.F[0], s.F[3], s.F[6]];
+                    [s.F[0], s.F[3], s.F[6]] = temp;
+                    break;
+                case 'F':
+                    s.F = rotateFaceCW(s.F);
+                    temp = [s.U[6], s.U[7], s.U[8]];
+                    [s.U[6], s.U[7], s.U[8]] = [s.L[8], s.L[5], s.L[2]];
+                    [s.L[8], s.L[5], s.L[2]] = [s.D[2], s.D[1], s.D[0]];
+                    [s.D[2], s.D[1], s.D[0]] = [s.R[0], s.R[3], s.R[6]];
+                    [s.R[0], s.R[3], s.R[6]] = temp;
+                    break;
+                case 'B':
+                    s.B = rotateFaceCW(s.B);
+                    temp = [s.U[0], s.U[1], s.U[2]];
+                    [s.U[0], s.U[1], s.U[2]] = [s.R[2], s.R[5], s.R[8]];
+                    [s.R[2], s.R[5], s.R[8]] = [s.D[8], s.D[7], s.D[6]];
+                    [s.D[8], s.D[7], s.D[6]] = [s.L[6], s.L[3], s.L[0]];
+                    [s.L[6], s.L[3], s.L[0]] = temp;
+                    break;
+            }
+        }
+
+        function executeMoveToken(token) {
+            if (!token) return;
+            const base = token[0];
+            const mod = token.slice(1);
+            const times = mod === '2' ? 2 : mod === "'" ? 3 : 1;
+            for (let i = 0; i < times; i++) {
+                applyBaseMoveCW(base);
+            }
+        }
+
+        function applyMoveSequence(seqStr) {
+            const tokens = seqStr.trim().split(/\s+/);
+            tokens.forEach(executeMoveToken);
+            renderCubeVisualizer();
+        }
+
+        function renderCubeVisualizer() {
+            ['U', 'L', 'F', 'R', 'B', 'D'].forEach(face => {
+                const container = document.getElementById(`face-${face}`);
+                if (!container) return;
+                container.innerHTML = cubeState[face].map(colorKey => `
+                    <div class="cube-sticker w-full h-full" style="background-color: ${FACE_COLORS[colorKey]}"></div>
+                `).join('');
+            });
+        }
+
+        function generateNewScramble() {
+            const faces = ['U', 'D', 'L', 'R', 'F', 'B'];
+            const axis = { U: 0, D: 0, L: 1, R: 1, F: 2, B: 2 };
+            const modifiers = ['', "'", '2'];
+            const moves = [];
+            let lastFace = '';
+            let secondLastFace = '';
+
+            while (moves.length < 20) {
+                const f = faces[Math.floor(Math.random() * faces.length)];
+                if (f === lastFace) continue;
+                if (secondLastFace && axis[f] === axis[lastFace] && f === secondLastFace) continue;
+                const mod = modifiers[Math.floor(Math.random() * modifiers.length)];
+                moves.push(f + mod);
+                secondLastFace = lastFace;
+                lastFace = f;
+            }
+
+            currentScramble = moves.join(' ');
+            document.getElementById('scramble-text').textContent = currentScramble;
+            initSolvedCube();
+            applyMoveSequence(currentScramble);
+            playBeep(580, 0.05, 0.05);
+        }
+
+        function resetCubeToSolved() {
+            initSolvedCube();
+            renderCubeVisualizer();
+            playBeep(880, 0.08, 0.06);
+            showToast('รีเซ็ตรูบิคเป็นสถานะเรียงสีสมบูรณ์ทั้ง 6 ด้านแล้ว!');
+        }
+
+        function manualMove(token) {
+            executeMoveToken(token);
+            renderCubeVisualizer();
+            playBeep(520, 0.04, 0.05);
+        }
+
+        function runSexyMoveDemo() {
+            applyAlgorithmDemo("R U R' U'", "Sexy Move (R U R' U')");
+        }
+
+        function applyAlgorithmDemo(alg, label) {
+            const tokens = alg.split(/\s+/);
+            tokens.forEach((t, idx) => {
+                setTimeout(() => {
+                    executeMoveToken(t);
+                    renderCubeVisualizer();
+                    playBeep(480 + idx * 55, 0.04, 0.05);
+                }, idx * 140);
+            });
+            showToast(`รันสูตร: ${label}`);
+        }
+
+        function copyScramble() {
+            navigator.clipboard.writeText(currentScramble).then(() => {
+                showToast('คัดลอกโจทย์ Scramble เรียบร้อยแล้ว!');
+            });
+        }
+
+        // ==================== SPEEDCUBING TIMER ENGINE ====================
+        // States: 'idle' | 'inspecting' | 'holding' | 'running'
+        let timerState = 'idle';
+        let timerStartMs = 0;
+        let timerRafId = null;
+        let inspectionInterval = null;
+        let inspectionRemaining = 15;
+        let lastElapsedMs = 0;
+        let solves = [];
+
+        function loadSolves() {
+            try {
+                solves = JSON.parse(localStorage.getItem('feel_rubik_solves') || '[]');
+            } catch {
+                solves = [];
+            }
+            renderSolvesAndStats();
+        }
+
+        function saveSolves() {
+            localStorage.setItem('feel_rubik_solves', JSON.stringify(solves.slice(0, 50)));
+            renderSolvesAndStats();
+        }
+
+        function formatTimeMs(ms) {
+            if (ms === null || ms === undefined || Number.isNaN(ms)) return '-';
+            const totalSec = ms / 1000;
+            if (totalSec >= 60) {
+                const mins = Math.floor(totalSec / 60);
+                const secs = (totalSec % 60).toFixed(2).padStart(5, '0');
+                return `${mins}:${secs}`;
+            }
+            return totalSec.toFixed(2);
+        }
+
+        function setTimerUiState(state, customBadgeText = null) {
+            const display = document.getElementById('timer-display');
+            const badge = document.getElementById('timer-state-badge');
+            const pad = document.getElementById('timer-pad');
+
+            if (state === 'holding') {
+                display.className = 'font-mono text-6xl sm:text-7xl md:text-8xl font-extrabold tracking-tight my-4 text-emerald-500 scale-105 transition-all';
+                badge.className = 'px-3 py-1 rounded-full bg-emerald-500 text-white font-heading font-bold';
+                badge.textContent = customBadgeText || '🚀 ปล่อยปุ่มเพื่อเริ่มจับเวลาทันที!';
+                pad.classList.add('border-emerald-500');
+            } else if (state === 'inspecting') {
+                display.className = 'font-mono text-6xl sm:text-7xl md:text-8xl font-extrabold tracking-tight my-4 text-amber-500 transition-all';
+                badge.className = 'px-3 py-1 rounded-full bg-amber-500 text-white font-heading font-bold animate-pulse';
+                badge.textContent = '👀 กำลังดูรูบิคก่อนเริ่ม (Inspection 15s)';
+            } else if (state === 'running') {
+                display.className = 'font-mono text-6xl sm:text-7xl md:text-8xl font-extrabold tracking-tight my-4 text-google-blue dark:text-sky-400 transition-all';
+                badge.className = 'px-3 py-1 rounded-full bg-google-blue text-white font-heading font-bold animate-pulse';
+                badge.textContent = '⏱️ กำลังจับเวลา... (กดปุ่มใดก็ได้หรือแตะหน้าจอเพื่อหยุด)';
+            } else {
+                display.className = 'font-mono text-6xl sm:text-7xl md:text-8xl font-extrabold tracking-tight my-4 text-google-text dark:text-white transition-all';
+                badge.className = 'px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 font-heading font-bold';
+                badge.textContent = '🟢 พร้อมจับเวลา (Ready)';
+                pad.classList.remove('border-emerald-500');
+            }
+        }
+
+        function startInspectionCountdown() {
+            clearInterval(inspectionInterval);
+            timerState = 'inspecting';
+            inspectionRemaining = 15;
+            setTimerUiState('inspecting');
+            document.getElementById('timer-display').textContent = `${inspectionRemaining}s`;
+            playBeep(600, 0.06, 0.06);
+
+            inspectionInterval = setInterval(() => {
+                inspectionRemaining--;
+                if (inspectionRemaining > 0) {
+                    document.getElementById('timer-display').textContent = `${inspectionRemaining}s`;
+                    if (inspectionRemaining <= 3) playBeep(750, 0.05, 0.07);
+                } else {
+                    clearInterval(inspectionInterval);
+                    startActualSolveTimer();
+                }
+            }, 1000);
+        }
+
+        function startActualSolveTimer() {
+            clearInterval(inspectionInterval);
+            timerState = 'running';
+            timerStartMs = performance.now();
+            setTimerUiState('running');
+            document.getElementById('post-solve-actions').classList.add('hidden');
+            document.getElementById('post-solve-actions').classList.remove('flex');
+            playBeep(880, 0.1, 0.09);
+
+            function tick(now) {
+                if (timerState !== 'running') return;
+                const elapsed = now - timerStartMs;
+                document.getElementById('timer-display').textContent = formatTimeMs(elapsed);
+                timerRafId = requestAnimationFrame(tick);
+            }
+            timerRafId = requestAnimationFrame(tick);
+        }
+
+        function stopActualSolveTimer() {
+            if (timerRafId) cancelAnimationFrame(timerRafId);
+            lastElapsedMs = Math.round(performance.now() - timerStartMs);
+            timerState = 'idle';
+            setTimerUiState('idle');
+            document.getElementById('timer-display').textContent = formatTimeMs(lastElapsedMs);
+            playBeep(1046.5, 0.14, 0.1);
+
+            solves.unshift({
+                id: Date.now(),
+                ms: lastElapsedMs,
+                penalty: null,
+                scramble: currentScramble,
+                date: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+            });
+            saveSolves();
+
+            const actions = document.getElementById('post-solve-actions');
+            actions.classList.remove('hidden');
+            actions.classList.add('flex');
+
+            generateNewScramble();
+        }
+
+        function handleTimerPadClick() {
+            const useInspection = document.getElementById('inspection-check').checked;
+            if (timerState === 'running') {
+                stopActualSolveTimer();
+            } else if (timerState === 'inspecting') {
+                startActualSolveTimer();
+            } else if (timerState === 'idle') {
+                if (useInspection) {
+                    startInspectionCountdown();
+                } else {
+                    startActualSolveTimer();
+                }
+            }
+        }
+
+        // Keyboard Spacebar Support
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT') {
+                e.preventDefault();
+                if (e.repeat) return;
+                if (timerState === 'running') {
+                    stopActualSolveTimer();
+                } else if (timerState === 'idle' || timerState === 'inspecting') {
+                    timerState = 'holding';
+                    setTimerUiState('holding');
+                }
+            } else if (timerState === 'running') {
+                stopActualSolveTimer();
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'Space' && timerState === 'holding') {
+                e.preventDefault();
+                const useInspection = document.getElementById('inspection-check').checked;
+                if (useInspection && inspectionRemaining === 15 && !inspectionInterval) {
+                    startInspectionCountdown();
+                } else {
+                    inspectionInterval = null;
+                    inspectionRemaining = 15;
+                    startActualSolveTimer();
+                }
+            }
+        });
+
+        function getEffectiveMs(solve) {
+            if (!solve || solve.penalty === 'DNF') return Infinity;
+            return solve.penalty === '+2' ? solve.ms + 2000 : solve.ms;
+        }
+
+        function computeWcaAverage(list, n) {
+            if (list.length < n) return null;
+            const slice = list.slice(0, n).map(getEffectiveMs);
+            const dnfCount = slice.filter(v => v === Infinity).length;
+            if (dnfCount >= 2) return 'DNF';
+            const sorted = [...slice].sort((a, b) => a - b);
+            const trimmed = sorted.slice(1, n - 1);
+            const sum = trimmed.reduce((acc, v) => acc + v, 0);
+            return formatTimeMs(sum / trimmed.length);
+        }
+
+        function applyPenalty(type) {
+            if (solves.length === 0) return;
+            solves[0].penalty = solves[0].penalty === type ? null : type;
+            const eff = getEffectiveMs(solves[0]);
+            document.getElementById('timer-display').textContent = eff === Infinity ? 'DNF' : formatTimeMs(eff) + (solves[0].penalty === '+2' ? '+' : '');
+            saveSolves();
+        }
+
+        function deleteLastSolve() {
+            if (solves.length === 0) return;
+            solves.shift();
+            document.getElementById('post-solve-actions').classList.add('hidden');
+            document.getElementById('post-solve-actions').classList.remove('flex');
+            document.getElementById('timer-display').textContent = '0.00';
+            saveSolves();
+            showToast('ลบเวลารอบล่าสุดแล้ว');
+        }
+
+        function deleteSolveById(id) {
+            solves = solves.filter(s => s.id !== id);
+            saveSolves();
+        }
+
+        function clearAllSolves() {
+            solves = [];
+            saveSolves();
+            document.getElementById('timer-display').textContent = '0.00';
+            document.getElementById('post-solve-actions').classList.add('hidden');
+            showToast('ล้างประวัติการจับเวลาทั้งหมดแล้ว');
+        }
+
+        function renderSolvesAndStats() {
+            const validMs = solves.map(getEffectiveMs).filter(v => v !== Infinity);
+            document.getElementById('stat-count').textContent = validMs.length;
+            document.getElementById('stat-best').textContent = validMs.length > 0 ? formatTimeMs(Math.min(...validMs)) : '-';
+
+            const ao5 = computeWcaAverage(solves, 5);
+            const ao12 = computeWcaAverage(solves, 12);
+            document.getElementById('stat-ao5').textContent = ao5 || '-';
+            document.getElementById('stat-ao12').textContent = ao12 || '-';
+
+            const container = document.getElementById('solves-list');
+            if (solves.length === 0) {
+                container.innerHTML = '<p class="text-xs text-google-text-muted text-center py-6">ยังไม่มีสถิติ — กดปุ่ม Spacebar หรือแตะที่ตัวเลขเพื่อเริ่มจับเวลาครั้งแรกได้เลย!</p>';
+                return;
+            }
+
+            container.innerHTML = solves.map((s, idx) => {
+                const eff = getEffectiveMs(s);
+                const timeLabel = eff === Infinity ? 'DNF' : formatTimeMs(eff) + (s.penalty === '+2' ? '+' : '');
+                return `
+                    <div class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="font-mono font-bold text-google-text-muted">#${solves.length - idx}</span>
+                            <span class="font-mono text-sm font-extrabold text-emerald-600 dark:text-emerald-400">${timeLabel}</span>
+                            <span class="text-[11px] text-google-text-muted truncate hidden sm:inline" title="${s.scramble}">${s.scramble}</span>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-[10px] text-google-text-muted">${s.date}</span>
+                            <button type="button" onclick="deleteSolveById(${s.id})" class="text-slate-400 hover:text-rose-500 cursor-pointer" title="ลบรายการนี้">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== THEME & TOAST ====================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('feel_theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(savedTheme);
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 transition-all duration-300';
+            toast.innerHTML = `<i class="fa-solid fa-cube text-emerald-400"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 2600);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadSolves();
+            generateNewScramble();
+        });
+    </script>
+</body>
+</html>

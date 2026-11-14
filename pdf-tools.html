@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client-Side PDF Merge &amp; Split — รวมไฟล์ แยกหน้า หมุน &amp; ลบหน้า PDF ในเบราว์เซอร์ 100% | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="เครื่องมือรวมไฟล์ PDF หลายไฟล์เป็นเล่มเดียว แยกเฉพาะหน้าที่ต้องการ หมุนหน้ากระดาษ สลับลำดับ และลบหน้าออก ประมวลผลในเบราว์เซอร์ 100% ไม่ส่งเอกสารสำคัญขึ้นเซิร์ฟเวอร์">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Client-Side PDF Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.15rem;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.10), 0 1px 3px 1px rgba(60, 64, 67, 0.06);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+        .pdf-dropzone-active {
+            border-color: #dc2626 !important;
+            background-color: rgba(220, 38, 38, 0.07) !important;
+        }
+        .dark .pdf-dropzone-active {
+            background-color: rgba(220, 38, 38, 0.14) !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-red-600 selection:text-white">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Centered Bottom Toast Notification -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 w-[92vw] max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- UNIFIED SINGLE-ROW NAVIGATION HEADER       -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก</span>
+            </a>
+
+            <div class="flex items-center gap-2.5 sm:border-l border-google-border dark:border-google-dark-border sm:pl-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-red-600 via-rose-500 to-orange-500 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            PDF Merge &amp; Split
+                        </h1>
+                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-950/70 text-red-700 dark:text-red-300 text-[10px] font-bold whitespace-nowrap shrink-0">
+                            100% Client-Side
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        รวมไฟล์ แยกเฉพาะหน้า หมุนกระดาษ และลบหน้า PDF ในเบราว์เซอร์ 100%
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <a href="photo-studio.html" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-50 dark:bg-violet-950/60 border border-violet-200 dark:border-violet-800 text-xs font-semibold text-violet-700 dark:text-violet-300 hover:bg-violet-100 transition whitespace-nowrap">
+                <i class="fa-solid fa-scissors"></i>
+                <span>รูปติดบัตร</span>
+            </a>
+
+            <!-- App Switcher Dropdown (15 Apps) -->
+            <div class="relative shrink-0">
+                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (15 ระบบ)">
+                    <i class="fa-solid fa-layer-group text-red-600 dark:text-red-400"></i>
+                    <span class="hidden sm:inline">สลับเว็บแอป</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 text-[10px] font-bold leading-none">15</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                </button>
+                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
+                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
+                        </div>
+                    </a>
+                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
+                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (15 ระบบ)</div>
+                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
+                        </div>
+                    </a>
+                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
+                        </div>
+                    </a>
+                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
+                        </div>
+                    </a>
+                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ &amp; พายุ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
+                        </div>
+                    </a>
+                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble &amp; สูตร CFOP</div>
+                        </div>
+                    </a>
+                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง &amp; ถาม-ตอบ</div>
+                        </div>
+                    </a>
+                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ &amp; แชร์ PIN 6 หลัก</div>
+                        </div>
+                    </a>
+                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง &amp; รูปติดบัตร</div>
+                        </div>
+                    </a>
+                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI &amp; โฮสต์ฟรี</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI &amp; รันไฟล์</div>
+                        </div>
+                    </a>
+                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON • JWT • Base64 • Timestamp</div>
+                        </div>
+                    </a>
+                    <a href="subnet.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-blue-600 bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-network-wired"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">11. IP &amp; Subnet Calculator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CIDR • Host Range • VLAN • Netplan</div>
+                        </div>
+                    </a>
+                    <a href="regex.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-fuchsia-600 bg-fuchsia-50 dark:bg-fuchsia-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">12. Regex Tester &amp; Cheatsheet</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Live Match • Presets • Replace</div>
+                        </div>
+                    </a>
+                    <a href="diff.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code-compare"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">13. Diff Checker &amp; Code Compare</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Side-by-Side • Patch • Word Diff</div>
+                        </div>
+                    </a>
+                    <a href="keygen.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-rose-600 bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">14. Password &amp; Key Generator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CSPRNG • API Key • UUID • Hash</div>
+                        </div>
+                    </a>
+                    <a href="pdf-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-300 dark:border-red-700 transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-100 dark:bg-red-950 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">15. PDF Merge &amp; Split</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวมไฟล์ • แยกหน้า • หมุน &amp; ลบหน้า</div>
+                        </div>
+                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-red-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Theme Switcher -->
+            <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN WORKSPACE                             -->
+    <!-- ========================================== -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
+
+        <!-- Privacy Banner + Stats Bar -->
+        <section class="g-card p-3.5 sm:p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-l-4 border-l-red-600">
+            <div class="flex items-start sm:items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-950/60 text-red-600 flex items-center justify-center text-base shrink-0">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h2 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading">
+                            จัดการเอกสาร PDF ส่วนตัวแบบ Zero-Upload
+                        </h2>
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
+                            ไม่ส่งไฟล์ออกเซิร์ฟเวอร์ 100%
+                        </span>
+                    </div>
+                    <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted mt-0.5 leading-relaxed">
+                        เหมาะสำหรับรวมรายงานโครงงาน ใบสมัครเรียนต่อ หรือเอกสารราชการ — รวมเล่ม แยกเฉพาะหน้า หมุนกระดาษ สลับหน้า ลบหน้า และตั้งชื่อเอกสารใหม่ในเครื่องของคุณเอง
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs">
+                    <span class="text-google-text-muted dark:text-google-dark-text-muted">ไฟล์:</span>
+                    <strong id="stat-files" class="font-mono text-google-text dark:text-white">0</strong>
+                    <span class="text-google-border dark:text-google-dark-border">|</span>
+                    <span class="text-google-text-muted dark:text-google-dark-text-muted">หน้า:</span>
+                    <strong id="stat-pages" class="font-mono text-red-600 dark:text-red-400">0</strong>
+                    <span class="text-google-border dark:text-google-dark-border">|</span>
+                    <span class="text-google-text-muted dark:text-google-dark-text-muted">เลือก:</span>
+                    <strong id="stat-selected" class="font-mono text-google-blue dark:text-sky-400">0</strong>
+                </div>
+                <button type="button" id="btn-load-sample" onclick="loadSamplePdfs()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition cursor-pointer whitespace-nowrap">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>สร้าง PDF ตัวอย่างทดสอบ</span>
+                </button>
+                <button type="button" id="btn-clear-all" onclick="clearWorkspace()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-slate-100 dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs font-semibold text-google-text-body dark:text-google-dark-text-body transition cursor-pointer whitespace-nowrap">
+                    <i class="fa-solid fa-trash-can text-google-text-muted"></i>
+                    <span>ล้างทั้งหมด</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Responsive 2-Column Workspace -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+            <!-- LEFT SIDEBAR: File Upload Queue + Export Tools -->
+            <div class="lg:col-span-4 space-y-4">
+
+                <!-- 1. Upload Dropzone & File Queue -->
+                <div class="g-card p-4 space-y-3.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="text-sm font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                            <i class="fa-solid fa-folder-plus text-red-600"></i>
+                            <span>1. เพิ่มและจัดลำดับไฟล์ PDF</span>
+                        </h3>
+                        <span id="file-size-total" class="text-[11px] font-mono text-google-text-muted dark:text-google-dark-text-muted">0 KB</span>
+                    </div>
+
+                    <div id="pdf-dropzone" tabindex="0" class="rounded-2xl border-2 border-dashed border-google-border dark:border-google-dark-border bg-google-bg/80 dark:bg-google-dark-bg/70 hover:border-red-400 dark:hover:border-red-500 p-4 text-center transition cursor-pointer" onclick="document.getElementById('pdf-file-input').click()">
+                        <input id="pdf-file-input" type="file" accept=".pdf,application/pdf" multiple class="hidden">
+                        <div class="w-11 h-11 mx-auto rounded-2xl bg-red-100 dark:bg-red-950/70 text-red-600 flex items-center justify-center text-lg mb-2">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <p class="text-xs sm:text-sm font-bold text-google-text dark:text-google-dark-text">
+                            ลากไฟล์ PDF มาวางที่นี่ หรือคลิกเลือกไฟล์
+                        </p>
+                        <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-1">
+                            รองรับการเลือกทีเดียวหลายไฟล์ (.pdf) • ประมวลผลบน RAM เครื่องผู้ใช้
+                        </p>
+                    </div>
+
+                    <!-- Loaded Files Queue -->
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">
+                            <span>คิวไฟล์ต้นฉบับที่โหลดไว้</span>
+                            <button type="button" onclick="rebuildPagesFromFileOrder()" class="text-red-600 dark:text-red-400 hover:underline cursor-pointer" title="เรียงหน้ากระดาษทั้งหมดใหม่ตามลำดับคิวไฟล์ด้านล่าง">
+                                รีเฟรชเรียงตามคิวไฟล์
+                            </button>
+                        </div>
+                        <div id="file-list" class="space-y-2 max-h-60 overflow-y-auto pr-0.5">
+                            <div class="text-xs text-center text-google-text-muted dark:text-google-dark-text-muted py-4 border border-dashed border-google-border/70 dark:border-google-dark-border rounded-xl">
+                                ยังไม่มีไฟล์ PDF — เพิ่มไฟล์หรือกด "สร้าง PDF ตัวอย่างทดสอบ"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Export & Split Modes Card -->
+                <div class="g-card p-4 space-y-3.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="text-sm font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-red-600"></i>
+                            <span>2. โหมดรวมไฟล์ / แยกหน้า / บันทึก</span>
+                        </h3>
+                    </div>
+
+                    <!-- Action Mode Tabs -->
+                    <div class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-google-subtle dark:bg-google-dark-bg border border-google-border/80 dark:border-google-dark-border">
+                        <button type="button" id="mode-btn-merge" onclick="setActionMode('merge')" class="px-2 py-2 rounded-lg text-[11px] sm:text-xs font-bold bg-white dark:bg-google-dark-surface text-red-600 dark:text-red-400 shadow-xs transition cursor-pointer">
+                            <i class="fa-solid fa-object-group mr-1"></i>รวมเล่ม
+                        </button>
+                        <button type="button" id="mode-btn-extract" onclick="setActionMode('extract')" class="px-2 py-2 rounded-lg text-[11px] sm:text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer">
+                            <i class="fa-solid fa-scissors mr-1"></i>แยกช่วง
+                        </button>
+                        <button type="button" id="mode-btn-splitall" onclick="setActionMode('splitall')" class="px-2 py-2 rounded-lg text-[11px] sm:text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer">
+                            <i class="fa-solid fa-copy mr-1"></i>แยกทีละหน้า
+                        </button>
+                    </div>
+
+                    <!-- PANEL A: MERGE / SAVE EDITED PDF -->
+                    <div id="mode-panel-merge" class="space-y-3">
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">
+                            รวมทุกไฟล์และทุกหน้าตามลำดับด้านขวา (รวมการหมุนกระดาษและการลบหน้าแล้ว) เป็นไฟล์ PDF ใหม่แบบคมชัดดั้งเดิม (Lossless Vector)
+                        </p>
+
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/80 dark:border-google-dark-border cursor-pointer text-xs">
+                            <input type="checkbox" id="chk-merge-selected-only" class="w-4 h-4 accent-red-600 rounded">
+                            <span class="font-semibold text-google-text dark:text-google-dark-text">ส่งออกเฉพาะหน้าที่ติ๊กเลือกเท่านั้น</span>
+                        </label>
+
+                        <div class="grid grid-cols-1 gap-2">
+                            <div>
+                                <label for="meta-filename" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">ชื่อไฟล์ผลลัพธ์ (.pdf)</label>
+                                <input type="text" id="meta-filename" value="merged-document.pdf" class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono text-google-text dark:text-white focus:outline-none focus:border-red-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label for="meta-title" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">Title เอกสาร (ไม่บังคับ)</label>
+                                    <input type="text" id="meta-title" placeholder="เช่น รายงานโครงงาน" class="w-full px-2.5 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-white focus:outline-none focus:border-red-500">
+                                </div>
+                                <div>
+                                    <label for="meta-author" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">ผู้จัดทำ Author</label>
+                                    <input type="text" id="meta-author" placeholder="เช่น นายภคพล" class="w-full px-2.5 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-white focus:outline-none focus:border-red-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" id="btn-export-merged" onclick="exportMergedOrEditedPdf()" class="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-file-arrow-down"></i>
+                            <span>รวมและบันทึกเป็น PDF เดียว</span>
+                        </button>
+                    </div>
+
+                    <!-- PANEL B: EXTRACT RANGE -->
+                    <div id="mode-panel-extract" class="hidden space-y-3">
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">
+                            ระบุเลขหน้าหรือช่วงที่ต้องการดึงออกเป็นไฟล์ใหม่ เช่น <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-zinc-800 font-mono">1-3, 5</code> (นับตามลำดับหน้าที่แสดงอยู่ในตารางด้านขวา)
+                        </p>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label for="range-input" class="text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">ช่วงหน้าที่ต้องการแยก</label>
+                                <button type="button" onclick="fillRangeFromSelected()" class="text-[11px] font-semibold text-google-blue dark:text-sky-400 hover:underline cursor-pointer">ดึงจากหน้าที่ติ๊กเลือก</button>
+                            </div>
+                            <input type="text" id="range-input" value="1-2" oninput="updateRangePreview()" placeholder="เช่น 1-3, 5, 7-8" class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-mono text-google-text dark:text-white focus:outline-none focus:border-red-500">
+                        </div>
+
+                        <div class="flex flex-wrap gap-1.5">
+                            <button type="button" onclick="applyRangePreset('firstHalf')" class="px-2.5 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-[11px] font-semibold cursor-pointer">ครึ่งแรก</button>
+                            <button type="button" onclick="applyRangePreset('secondHalf')" class="px-2.5 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-[11px] font-semibold cursor-pointer">ครึ่งหลัง</button>
+                            <button type="button" onclick="applyRangePreset('odd')" class="px-2.5 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-[11px] font-semibold cursor-pointer">เฉพาะหน้าคี่</button>
+                            <button type="button" onclick="applyRangePreset('even')" class="px-2.5 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-[11px] font-semibold cursor-pointer">เฉพาะหน้าคู่</button>
+                        </div>
+
+                        <div id="range-preview" class="p-2.5 rounded-xl bg-slate-50 dark:bg-google-dark-bg border border-google-border/80 dark:border-google-dark-border text-xs font-mono text-google-text-body dark:text-google-dark-text-body">
+                            รอโหลดไฟล์ PDF...
+                        </div>
+
+                        <div>
+                            <label for="extract-filename" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">ชื่อไฟล์ที่แยกออก (.pdf)</label>
+                            <input type="text" id="extract-filename" value="extracted-pages.pdf" class="w-full px-3 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono text-google-text dark:text-white focus:outline-none focus:border-red-500">
+                        </div>
+
+                        <button type="button" id="btn-export-range" onclick="exportSplitRangePdf()" class="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-scissors"></i>
+                            <span>แยกเฉพาะช่วงหน้านี้เป็น PDF</span>
+                        </button>
+                    </div>
+
+                    <!-- PANEL C: SPLIT EVERY PAGE -->
+                    <div id="mode-panel-splitall" class="hidden space-y-3">
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">
+                            แตกทุกหน้าในพื้นที่ทำงานออกเป็นไฟล์ PDF แยกอิสระ <strong>ไฟล์ละ 1 หน้า</strong> เพื่อให้เลือกดาวน์โหลดเฉพาะไฟล์ที่ต้องการหรือกดโหลดทั้งหมดได้ทันที
+                        </p>
+
+                        <button type="button" id="btn-split-every" onclick="splitEveryPageToList()" class="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>แตกเป็นไฟล์เดี่ยวทีละหน้าทั้งหมด</span>
+                        </button>
+
+                        <div id="split-results-wrap" class="hidden space-y-2 pt-1">
+                            <div class="flex items-center justify-between gap-2">
+                                <span id="split-results-count" class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400"></span>
+                                <button type="button" onclick="downloadAllSplitItems()" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer">
+                                    <i class="fa-solid fa-download mr-1"></i>ดาวน์โหลดทั้งหมด
+                                </button>
+                            </div>
+                            <div id="split-results" class="space-y-1.5 max-h-56 overflow-y-auto pr-0.5"></div>
+                        </div>
+                    </div>
+
+                    <!-- Last Generated Result Card -->
+                    <div id="export-summary-card" class="hidden p-3 rounded-xl bg-emerald-50/90 dark:bg-emerald-950/35 border border-emerald-200 dark:border-emerald-800 space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <span>สร้างไฟล์ PDF สำเร็จ</span>
+                            </span>
+                            <span id="export-summary-time" class="text-[10px] font-mono text-emerald-700 dark:text-emerald-400"></span>
+                        </div>
+                        <div id="export-summary-meta" class="text-xs text-emerald-900 dark:text-emerald-200 font-mono break-all"></div>
+                        <a id="export-download-link" href="#" download="output.pdf" class="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-download"></i>
+                            <span>คลิกเพื่อดาวน์โหลดไฟล์อีกครั้ง</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT WORKSPACE: Visual Page Grid -->
+            <div class="lg:col-span-8">
+                <div id="page-workspace-card" class="g-card p-4 space-y-4">
+
+                    <!-- Workspace Toolbar -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-google-border dark:border-google-dark-border">
+                        <div>
+                            <h3 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                                <i class="fa-solid fa-grip text-red-600"></i>
+                                <span>พื้นที่จัดเรียงหน้ากระดาษ (Page Organizer)</span>
+                            </h3>
+                            <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
+                                ติ๊กเลือกหน้าเพื่อหมุน/ลบพร้อมกัน หรือใช้ปุ่มบนการ์ดแต่ละหน้าเพื่อเลื่อนตำแหน่ง หมุน 90° ดึงแยกเดี่ยว และลบทิ้ง
+                            </p>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-1.5 shrink-0">
+                            <button type="button" onclick="selectAllPages(true)" class="px-2.5 py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-xs font-semibold cursor-pointer">
+                                เลือกทั้งหมด
+                            </button>
+                            <button type="button" onclick="selectAllPages(false)" class="px-2.5 py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-xs font-semibold cursor-pointer">
+                                ยกเลิกเลือก
+                            </button>
+                            <button type="button" onclick="rotateSelectedPages(-90)" class="px-2.5 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800 text-xs font-bold cursor-pointer" title="หมุนหน้าที่เลือกทวนเข็ม -90°">
+                                <i class="fa-solid fa-rotate-left mr-1"></i>-90°
+                            </button>
+                            <button type="button" onclick="rotateSelectedPages(90)" class="px-2.5 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800 text-xs font-bold cursor-pointer" title="หมุนหน้าที่เลือกตามเข็ม +90°">
+                                <i class="fa-solid fa-rotate-right mr-1"></i>+90°
+                            </button>
+                            <button type="button" onclick="reverseAllPages()" class="px-2.5 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800 text-xs font-bold cursor-pointer" title="กลับลำดับหน้าจากหลังไปหน้า">
+                                <i class="fa-solid fa-arrow-down-up-across-line mr-1"></i>กลับด้านหน้า
+                            </button>
+                            <button type="button" id="btn-delete-selected" onclick="deleteSelectedPages()" class="px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 text-rose-700 dark:text-rose-300 border border-rose-200/80 dark:border-rose-800 text-xs font-bold cursor-pointer">
+                                <i class="fa-solid fa-trash mr-1"></i>ลบที่เลือก
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Select by Range Bar -->
+                    <div class="flex flex-wrap items-center gap-2 p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border">
+                        <span class="text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted whitespace-nowrap">
+                            <i class="fa-solid fa-check-double mr-1 text-red-600"></i>ติ๊กเลือกตามช่วง:
+                        </span>
+                        <input type="text" id="quick-select-range" placeholder="เช่น 1-3, 5" class="flex-1 min-w-[140px] max-w-[220px] px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-mono text-google-text dark:text-white focus:outline-none focus:border-red-500">
+                        <button type="button" onclick="applyQuickSelectRange()" class="px-3 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer whitespace-nowrap">
+                            ติ๊กช่วงนี้
+                        </button>
+                        <button type="button" onclick="resetPagesOriginalOrder()" class="ml-auto px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-slate-100 dark:hover:bg-google-dark-subtle text-xs font-semibold cursor-pointer whitespace-nowrap">
+                            <i class="fa-solid fa-arrow-rotate-left mr-1"></i>รีเซ็ตหน้าทั้งหมด
+                        </button>
+                    </div>
+
+                    <!-- Page Grid Container -->
+                    <div id="page-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 min-h-[280px]">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Compact Footer -->
+    <footer class="mt-auto py-4 px-4 text-center text-xs text-google-text-muted dark:text-google-dark-text-muted border-t border-google-border/70 dark:border-google-dark-border">
+        <span>Client-Side PDF Merge &amp; Split (100% Browser RAM • pdf-lib Vector Lossless) — </span>
+        <a href="index.html" class="font-semibold text-google-blue dark:text-sky-400 hover:underline">กลับหน้า Portfolio</a>
+    </footer>
+
+    <script>
+        // Configure PDF.js worker if library loaded
+        if (window.pdfjsLib && pdfjsLib.GlobalWorkerOptions) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+
+        // ==================== STATE MANAGEMENT ====================
+        const FILE_BADGE_THEMES = [
+            { badge: 'bg-red-100 text-red-700 dark:bg-red-950/70 dark:text-red-300 border-red-200 dark:border-red-800', bar: 'bg-red-500' },
+            { badge: 'bg-blue-100 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 border-blue-200 dark:border-blue-800', bar: 'bg-blue-500' },
+            { badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800', bar: 'bg-emerald-500' },
+            { badge: 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border-amber-200 dark:border-amber-800', bar: 'bg-amber-500' },
+            { badge: 'bg-violet-100 text-violet-700 dark:bg-violet-950/70 dark:text-violet-300 border-violet-200 dark:border-violet-800', bar: 'bg-violet-500' },
+            { badge: 'bg-teal-100 text-teal-700 dark:bg-teal-950/70 dark:text-teal-300 border-teal-200 dark:border-teal-800', bar: 'bg-teal-500' }
+        ];
+
+        const pdfState = {
+            files: [],      // [{ id, labelIndex, name, size, bytes, pdfDoc, pageCount, thumbnails: {}, dimensions: [], theme }]
+            pages: [],      // [{ uid, fileId, sourcePageIndex, baseRotation, userRotation, selected, width, height }]
+            splitItems: [], // [{ filename, bytes, url, pageOrder }]
+            nextFileSeq: 1,
+            nextPageUid: 1,
+            actionMode: 'merge',
+            lastExportUrl: null
+        };
+
+        // ==================== SAFE ESCAPE & TOAST ====================
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes || bytes < 1024) return (bytes || 0) + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const el = document.createElement('div');
+            const bg = type === 'error'
+                ? 'bg-rose-600 text-white'
+                : 'bg-slate-900 dark:bg-zinc-800 text-white border border-slate-700';
+            const icon = type === 'error'
+                ? 'fa-circle-exclamation'
+                : 'fa-circle-check text-emerald-400';
+            el.className = `pointer-events-auto px-4 py-2 rounded-full shadow-lg text-xs font-semibold flex items-center gap-2 ${bg}`;
+            el.innerHTML = `<i class="fa-solid ${icon}"></i><span></span>`;
+            el.querySelector('span').textContent = message;
+            container.appendChild(el);
+            clearTimeout(showToast._timer);
+            showToast._timer = setTimeout(() => {
+                if (el.parentNode) el.remove();
+            }, 3200);
+        }
+
+        // ==================== LOADING PDF FILES ====================
+        async function addPdfBuffers(entries) {
+            if (!window.PDFLib) {
+                showToast('กำลังโหลดไลบรารี pdf-lib โปรดลองอีกครั้งในสักครู่', 'error');
+                return;
+            }
+            let addedFiles = 0;
+            let addedPages = 0;
+
+            for (const entry of entries) {
+                try {
+                    const rawBytes = entry.bytes instanceof Uint8Array
+                        ? entry.bytes
+                        : new Uint8Array(entry.bytes);
+                    const pdfDoc = await PDFLib.PDFDocument.load(rawBytes, { ignoreEncryption: false });
+                    const pageCount = pdfDoc.getPageCount();
+                    if (pageCount === 0) {
+                        showToast(`ไฟล์ "${entry.name}" ไม่มีหน้ากระดาษ`, 'error');
+                        continue;
+                    }
+
+                    const fileId = 'f_' + (pdfState.nextFileSeq++);
+                    const labelIndex = pdfState.files.length + 1;
+                    const theme = FILE_BADGE_THEMES[(labelIndex - 1) % FILE_BADGE_THEMES.length];
+
+                    const dimensions = [];
+                    const baseRotations = [];
+                    for (let i = 0; i < pageCount; i++) {
+                        const pg = pdfDoc.getPage(i);
+                        const sz = pg.getSize();
+                        dimensions.push({ width: Math.round(sz.width), height: Math.round(sz.height) });
+                        const rot = pg.getRotation ? (pg.getRotation().angle || 0) : 0;
+                        baseRotations.push(((rot % 360) + 360) % 360);
+                    }
+
+                    const fileRecord = {
+                        id: fileId,
+                        labelIndex,
+                        name: entry.name || `document-${labelIndex}.pdf`,
+                        size: rawBytes.byteLength,
+                        bytes: rawBytes,
+                        pdfDoc,
+                        pageCount,
+                        dimensions,
+                        baseRotations,
+                        thumbnails: {},
+                        theme
+                    };
+
+                    pdfState.files.push(fileRecord);
+                    for (let i = 0; i < pageCount; i++) {
+                        pdfState.pages.push({
+                            uid: pdfState.nextPageUid++,
+                            fileId,
+                            sourcePageIndex: i,
+                            baseRotation: baseRotations[i],
+                            userRotation: 0,
+                            selected: false,
+                            width: dimensions[i].width,
+                            height: dimensions[i].height
+                        });
+                        addedPages++;
+                    }
+                    addedFiles++;
+                    renderFileThumbnailsAsync(fileRecord);
+                } catch (err) {
+                    const msg = String(err && err.message || '');
+                    if (/encrypted/i.test(msg)) {
+                        showToast(`ไฟล์ "${entry.name}" ติดรหัสผ่าน ไม่สามารถเปิดแก้ไขได้`, 'error');
+                    } else {
+                        showToast(`ไม่สามารถอ่านไฟล์ "${entry.name}" ได้ (ไม่ใช่ PDF ที่สมบูรณ์)`, 'error');
+                    }
+                }
+            }
+
+            if (addedFiles > 0) {
+                relabelFiles();
+                renderAll();
+                showToast(`เพิ่มแล้ว ${addedFiles} ไฟล์ (${addedPages} หน้า) ในเบราว์เซอร์ 100%`);
+            }
+        }
+
+        async function handleSelectedFiles(fileList) {
+            const list = Array.from(fileList || []).filter(f =>
+                f.type === 'application/pdf' || /\.pdf$/i.test(f.name || '')
+            );
+            if (list.length === 0) {
+                showToast('กรุณาเลือกไฟล์นามสกุล .pdf เท่านั้น', 'error');
+                return;
+            }
+            const entries = [];
+            for (const file of list) {
+                const buf = await file.arrayBuffer();
+                entries.push({ name: file.name, bytes: new Uint8Array(buf) });
+            }
+            await addPdfBuffers(entries);
+        }
+
+        async function renderFileThumbnailsAsync(fileRecord) {
+            if (!window.pdfjsLib || typeof pdfjsLib.getDocument !== 'function') return;
+            try {
+                const loadingTask = pdfjsLib.getDocument({ data: fileRecord.bytes.slice() });
+                const pdfJsDoc = await loadingTask.promise;
+                for (let pageNum = 1; pageNum <= pdfJsDoc.numPages; pageNum++) {
+                    const idx = pageNum - 1;
+                    const page = await pdfJsDoc.getPage(pageNum);
+                    const viewport = page.getViewport({ scale: 0.45 });
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.max(120, Math.round(viewport.width));
+                    canvas.height = Math.max(160, Math.round(viewport.height));
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) continue;
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    const renderScale = Math.min(canvas.width / viewport.width, canvas.height / viewport.height);
+                    const scaledVp = page.getViewport({ scale: 0.45 * renderScale });
+                    await page.render({ canvasContext: ctx, viewport: scaledVp }).promise;
+                    fileRecord.thumbnails[idx] = canvas.toDataURL('image/png');
+                    updatePageThumbnailDom(fileRecord.id, idx, fileRecord.thumbnails[idx]);
+                }
+            } catch (_) {
+                // Graceful vector card fallback stays active
+            }
+        }
+
+        function updatePageThumbnailDom(fileId, sourcePageIndex, dataUrl) {
+            const imgs = document.querySelectorAll(`img[data-thumb-file="${fileId}"][data-thumb-page="${sourcePageIndex}"]`);
+            imgs.forEach(img => {
+                img.src = dataUrl;
+                img.classList.remove('hidden');
+                const placeholder = img.parentElement && img.parentElement.querySelector('[data-vector-fallback]');
+                if (placeholder) placeholder.classList.add('hidden');
+            });
+        }
+
+        // ==================== SAMPLE GENERATOR FOR DEMO & TESTING ====================
+        async function loadSamplePdfs() {
+            if (!window.PDFLib) {
+                showToast('pdf-lib ยังไม่พร้อมใช้งาน', 'error');
+                return;
+            }
+            const { PDFDocument, StandardFonts, rgb } = PDFLib;
+
+            // Sample Doc 1: Report Cover & Chapters (3 pages)
+            const doc1 = await PDFDocument.create();
+            const font1 = await doc1.embedFont(StandardFonts.HelveticaBold);
+            const colors1 = [rgb(0.85, 0.19, 0.15), rgb(0.10, 0.45, 0.91), rgb(0.12, 0.55, 0.24)];
+            for (let p = 1; p <= 3; p++) {
+                const page = doc1.addPage([595, 842]);
+                page.drawRectangle({ x: 36, y: 740, width: 523, height: 66, color: colors1[p - 1] });
+                page.drawText(`Project Report - Page ${p}`, { x: 54, y: 766, size: 22, font: font1, color: rgb(1, 1, 1) });
+                page.drawText(`Client-Side PDF Demo (File 1 / Page ${p} of 3)`, { x: 54, y: 690, size: 14, font: font1, color: rgb(0.2, 0.2, 0.2) });
+            }
+            const bytes1 = await doc1.save();
+
+            // Sample Doc 2: Appendix & Transcript (2 pages)
+            const doc2 = await PDFDocument.create();
+            const font2 = await doc2.embedFont(StandardFonts.HelveticaBold);
+            for (let p = 1; p <= 2; p++) {
+                const page = doc2.addPage([595, 842]);
+                page.drawRectangle({ x: 36, y: 740, width: 523, height: 66, color: rgb(0.42, 0.16, 0.85) });
+                page.drawText(`Appendix & Application - Page ${p}`, { x: 54, y: 766, size: 22, font: font2, color: rgb(1, 1, 1) });
+                page.drawText(`Client-Side PDF Demo (File 2 / Page ${p} of 2)`, { x: 54, y: 690, size: 14, font: font2, color: rgb(0.2, 0.2, 0.2) });
+            }
+            const bytes2 = await doc2.save();
+
+            await addPdfBuffers([
+                { name: 'project-report.pdf', bytes: bytes1 },
+                { name: 'appendix-forms.pdf', bytes: bytes2 }
+            ]);
+        }
+
+        // ==================== FILE QUEUE & PAGE MANIPULATION ====================
+        function getFileById(fileId) {
+            return pdfState.files.find(f => f.id === fileId);
+        }
+
+        function relabelFiles() {
+            pdfState.files.forEach((f, idx) => {
+                f.labelIndex = idx + 1;
+                f.theme = FILE_BADGE_THEMES[idx % FILE_BADGE_THEMES.length];
+            });
+        }
+
+        function moveFileInQueue(index, delta) {
+            const target = index + delta;
+            if (target < 0 || target >= pdfState.files.length) return;
+            const tmp = pdfState.files[index];
+            pdfState.files[index] = pdfState.files[target];
+            pdfState.files[target] = tmp;
+            relabelFiles();
+            rebuildPagesFromFileOrder(true);
+            showToast('สลับลำดับไฟล์เรียบร้อยแล้ว');
+        }
+
+        function removeFile(fileId) {
+            pdfState.files = pdfState.files.filter(f => f.id !== fileId);
+            pdfState.pages = pdfState.pages.filter(p => p.fileId !== fileId);
+            relabelFiles();
+            renderAll();
+            showToast('ลบไฟล์ออกจากคิวแล้ว');
+        }
+
+        function rebuildPagesFromFileOrder(silent = false) {
+            pdfState.pages = [];
+            for (const f of pdfState.files) {
+                for (let i = 0; i < f.pageCount; i++) {
+                    pdfState.pages.push({
+                        uid: pdfState.nextPageUid++,
+                        fileId: f.id,
+                        sourcePageIndex: i,
+                        baseRotation: f.baseRotations[i],
+                        userRotation: 0,
+                        selected: false,
+                        width: f.dimensions[i].width,
+                        height: f.dimensions[i].height
+                    });
+                }
+            }
+            renderAll();
+            if (!silent) showToast('รีเซ็ตลำดับหน้าตามคิวไฟล์เรียบร้อย');
+        }
+
+        function resetPagesOriginalOrder() {
+            if (pdfState.files.length === 0) {
+                showToast('ยังไม่มีไฟล์ให้รีเซ็ต', 'error');
+                return;
+            }
+            rebuildPagesFromFileOrder(false);
+        }
+
+        function clearWorkspace() {
+            revokeSplitDownloads();
+            if (pdfState.lastExportUrl) {
+                URL.revokeObjectURL(pdfState.lastExportUrl);
+                pdfState.lastExportUrl = null;
+            }
+            pdfState.files = [];
+            pdfState.pages = [];
+            document.getElementById('export-summary-card').classList.add('hidden');
+            document.getElementById('split-results-wrap').classList.add('hidden');
+            renderAll();
+            showToast('ล้างพื้นที่ทำงานทั้งหมดแล้ว');
+        }
+
+        function togglePageSelection(uid) {
+            const item = pdfState.pages.find(p => p.uid === uid);
+            if (!item) return;
+            item.selected = !item.selected;
+            renderStats();
+            renderPageGrid();
+        }
+
+        function selectAllPages(checked) {
+            pdfState.pages.forEach(p => { p.selected = !!checked; });
+            renderStats();
+            renderPageGrid();
+        }
+
+        function rotateSinglePage(uid, deltaDeg) {
+            const item = pdfState.pages.find(p => p.uid === uid);
+            if (!item) return;
+            item.userRotation = (((item.userRotation + deltaDeg) % 360) + 360) % 360;
+            renderPageGrid();
+        }
+
+        function rotateSelectedPages(deltaDeg) {
+            const selected = pdfState.pages.filter(p => p.selected);
+            if (selected.length === 0) {
+                showToast('กรุณาติ๊กเลือกหน้าก่อนหมุน หรือกดปุ่มหมุนบนการ์ดแต่ละหน้า', 'error');
+                return;
+            }
+            selected.forEach(p => {
+                p.userRotation = (((p.userRotation + deltaDeg) % 360) + 360) % 360;
+            });
+            renderPageGrid();
+            showToast(`หมุน ${selected.length} หน้าที่เลือก (${deltaDeg > 0 ? '+' : ''}${deltaDeg}°) แล้ว`);
+        }
+
+        function moveSinglePage(index, delta) {
+            const target = index + delta;
+            if (target < 0 || target >= pdfState.pages.length) return;
+            const tmp = pdfState.pages[index];
+            pdfState.pages[index] = pdfState.pages[target];
+            pdfState.pages[target] = tmp;
+            renderPageGrid();
+            updateRangePreview();
+        }
+
+        function deleteSinglePage(uid) {
+            pdfState.pages = pdfState.pages.filter(p => p.uid !== uid);
+            renderAll();
+            showToast('ลบหน้ากระดาษออกแล้ว');
+        }
+
+        function deleteSelectedPages() {
+            const selectedCount = pdfState.pages.filter(p => p.selected).length;
+            if (selectedCount === 0) {
+                showToast('ยังไม่ได้ติ๊กเลือกหน้าที่ต้องการลบ', 'error');
+                return;
+            }
+            pdfState.pages = pdfState.pages.filter(p => !p.selected);
+            renderAll();
+            showToast(`ลบออกแล้ว ${selectedCount} หน้า`);
+        }
+
+        function reverseAllPages() {
+            if (pdfState.pages.length < 2) {
+                showToast('ต้องมีอย่างน้อย 2 หน้าจึงจะกลับลำดับได้', 'error');
+                return;
+            }
+            pdfState.pages.reverse();
+            renderAll();
+            showToast('กลับลำดับหน้าจากหลังไปหน้าแล้ว');
+        }
+
+        // ==================== RANGE PARSING ====================
+        function parsePageRange(expr, maxPage) {
+            if (!maxPage || maxPage < 1) {
+                return { ok: false, error: 'กรุณาเพิ่มไฟล์ PDF อย่างน้อย 1 ไฟล์ก่อน' };
+            }
+            const clean = String(expr || '').trim();
+            if (!clean) {
+                return { ok: false, error: 'กรุณาระบุเลขหน้าหรือช่วง เช่น 1-3, 5' };
+            }
+            const parts = clean.split(',').map(s => s.trim());
+            if (parts.some(p => p === '')) {
+                return { ok: false, error: 'พบเครื่องหมายจุลภาค (,) เกินหรือไม่สมบูรณ์' };
+            }
+            const seen = new Set();
+            const pages = [];
+            for (const part of parts) {
+                const singleMatch = /^(\d+)$/.exec(part);
+                if (singleMatch) {
+                    const num = parseInt(singleMatch[1], 10);
+                    if (num < 1 || num > maxPage) {
+                        return { ok: false, error: `เลขหน้า ${num} อยู่นอกช่วง (มีทั้งหมด ${maxPage} หน้า)` };
+                    }
+                    if (!seen.has(num)) {
+                        seen.add(num);
+                        pages.push(num);
+                    }
+                    continue;
+                }
+                const rangeMatch = /^(\d+)\s*-\s*(\d+)$/.exec(part);
+                if (rangeMatch) {
+                    const a = parseInt(rangeMatch[1], 10);
+                    const b = parseInt(rangeMatch[2], 10);
+                    if (a < 1 || a > maxPage || b < 1 || b > maxPage) {
+                        return { ok: false, error: `ช่วง ${a}-${b} อยู่นอกช่วง (มีทั้งหมด ${maxPage} หน้า)` };
+                    }
+                    const step = a <= b ? 1 : -1;
+                    for (let k = a; step > 0 ? k <= b : k >= b; k += step) {
+                        if (!seen.has(k)) {
+                            seen.add(k);
+                            pages.push(k);
+                        }
+                    }
+                    continue;
+                }
+                return { ok: false, error: `รูปแบบ "${part}" ไม่ถูกต้อง (ตัวอย่าง: 1-3, 5)` };
+            }
+            return {
+                ok: true,
+                pages,
+                indices: pages.map(n => n - 1)
+            };
+        }
+
+        function applyQuickSelectRange() {
+            const expr = document.getElementById('quick-select-range').value;
+            const parsed = parsePageRange(expr, pdfState.pages.length);
+            if (!parsed.ok) {
+                showToast(parsed.error, 'error');
+                return;
+            }
+            const chosen = new Set(parsed.indices);
+            pdfState.pages.forEach((p, idx) => {
+                p.selected = chosen.has(idx);
+            });
+            renderStats();
+            renderPageGrid();
+            showToast(`ติ๊กเลือก ${parsed.pages.length} หน้าตามช่วง "${expr.trim()}" แล้ว`);
+        }
+
+        function fillRangeFromSelected() {
+            const indices = [];
+            pdfState.pages.forEach((p, i) => {
+                if (p.selected) indices.push(i + 1);
+            });
+            if (indices.length === 0) {
+                showToast('ยังไม่ได้ติ๊กเลือกหน้าในตารางด้านขวา', 'error');
+                return;
+            }
+            document.getElementById('range-input').value = indices.join(', ');
+            updateRangePreview();
+        }
+
+        function applyRangePreset(type) {
+            const total = pdfState.pages.length;
+            if (total === 0) {
+                showToast('กรุณาเพิ่มไฟล์ PDF ก่อน', 'error');
+                return;
+            }
+            let pages = [];
+            if (type === 'firstHalf') {
+                const mid = Math.ceil(total / 2);
+                pages = [`1-${mid}`];
+            } else if (type === 'secondHalf') {
+                const start = Math.min(total, Math.ceil(total / 2) + 1);
+                pages = [`${start}-${total}`];
+            } else if (type === 'odd') {
+                for (let i = 1; i <= total; i += 2) pages.push(i);
+            } else if (type === 'even') {
+                for (let i = 2; i <= total; i += 2) pages.push(i);
+            }
+            document.getElementById('range-input').value = pages.join(', ');
+            updateRangePreview();
+        }
+
+        function updateRangePreview() {
+            const previewEl = document.getElementById('range-preview');
+            if (!previewEl) return;
+            const total = pdfState.pages.length;
+            if (total === 0) {
+                previewEl.textContent = 'รอโหลดไฟล์ PDF...';
+                previewEl.className = 'p-2.5 rounded-xl bg-slate-50 dark:bg-google-dark-bg border border-google-border/80 dark:border-google-dark-border text-xs font-mono text-google-text-muted dark:text-google-dark-text-muted';
+                return;
+            }
+            const parsed = parsePageRange(document.getElementById('range-input').value, total);
+            if (!parsed.ok) {
+                previewEl.textContent = parsed.error;
+                previewEl.className = 'p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs font-semibold text-rose-700 dark:text-rose-300';
+            } else {
+                const head = parsed.pages.slice(0, 14).join(', ') + (parsed.pages.length > 14 ? ', ...' : '');
+                previewEl.textContent = `จะได้ ${parsed.pages.length} หน้า: [${head}]`;
+                previewEl.className = 'p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs font-mono text-emerald-800 dark:text-emerald-300';
+            }
+        }
+
+        // ==================== PDF GENERATION & EXPORT ====================
+        function normalizePdfFilename(rawName, fallback) {
+            let name = String(rawName || '').trim() || fallback;
+            name = name.replace(/[<>:"/\\|?*]+/g, '-');
+            if (!/\.pdf$/i.test(name)) name += '.pdf';
+            return name;
+        }
+
+        async function buildPdfFromPageItems(pageItems, options = {}) {
+            const outDoc = await PDFLib.PDFDocument.create();
+            for (const item of pageItems) {
+                const srcFile = getFileById(item.fileId);
+                if (!srcFile) continue;
+                const [copied] = await outDoc.copyPages(srcFile.pdfDoc, [item.sourcePageIndex]);
+                const finalAngle = (((item.baseRotation + item.userRotation) % 360) + 360) % 360;
+                copied.setRotation(PDFLib.degrees(finalAngle));
+                outDoc.addPage(copied);
+            }
+            if (options.title) outDoc.setTitle(options.title);
+            if (options.author) outDoc.setAuthor(options.author);
+            outDoc.setCreator('Feel Portfolio Client-Side PDF Tool');
+            outDoc.setProducer('pdf-lib (100% Browser RAM)');
+            return await outDoc.save();
+        }
+
+        function deliverExportedPdf(bytes, filename, pageCount, durationMs, title) {
+            if (pdfState.lastExportUrl) {
+                URL.revokeObjectURL(pdfState.lastExportUrl);
+            }
+            const blob = new Blob([bytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            pdfState.lastExportUrl = url;
+
+            window.__lastPdfExport = {
+                filename,
+                pageCount,
+                byteLength: bytes.byteLength,
+                title: title || '',
+                bytes
+            };
+
+            const card = document.getElementById('export-summary-card');
+            const meta = document.getElementById('export-summary-meta');
+            const timeEl = document.getElementById('export-summary-time');
+            const link = document.getElementById('export-download-link');
+            meta.textContent = `${filename} • ${pageCount} หน้า • ${formatBytes(bytes.byteLength)}`;
+            timeEl.textContent = `${durationMs} ms`;
+            link.href = url;
+            link.download = filename;
+            card.classList.remove('hidden');
+
+            // Trigger automatic browser download safely
+            const tmp = document.createElement('a');
+            tmp.href = url;
+            tmp.download = filename;
+            tmp.style.display = 'none';
+            document.body.appendChild(tmp);
+            tmp.click();
+            tmp.remove();
+        }
+
+        async function exportMergedOrEditedPdf() {
+            if (pdfState.pages.length === 0) {
+                showToast('กรุณาเพิ่มไฟล์ PDF อย่างน้อย 1 ไฟล์ก่อนบันทึก', 'error');
+                return;
+            }
+            const selectedOnly = document.getElementById('chk-merge-selected-only').checked;
+            const targetPages = selectedOnly
+                ? pdfState.pages.filter(p => p.selected)
+                : pdfState.pages;
+
+            if (targetPages.length === 0) {
+                showToast('ไม่มีหน้าที่ติ๊กเลือกไว้ สำหรับตัวเลือก "เฉพาะหน้าที่ติ๊กเลือก"', 'error');
+                return;
+            }
+
+            const filename = normalizePdfFilename(document.getElementById('meta-filename').value, 'merged-document.pdf');
+            const title = document.getElementById('meta-title').value.trim();
+            const author = document.getElementById('meta-author').value.trim();
+
+            const t0 = performance.now();
+            try {
+                const bytes = await buildPdfFromPageItems(targetPages, { title, author });
+                const dt = Math.max(1, Math.round(performance.now() - t0));
+                deliverExportedPdf(bytes, filename, targetPages.length, dt, title);
+                showToast(`สร้างไฟล์ "${filename}" (${targetPages.length} หน้า) สำเร็จในเครื่อง 100%`);
+            } catch (err) {
+                showToast('เกิดข้อผิดพลาดขณะรวมไฟล์ PDF: ' + (err.message || err), 'error');
+            }
+        }
+
+        async function exportSplitRangePdf() {
+            if (pdfState.pages.length === 0) {
+                showToast('กรุณาเพิ่มไฟล์ PDF อย่างน้อย 1 ไฟล์ก่อนแยกหน้า', 'error');
+                return;
+            }
+            const parsed = parsePageRange(document.getElementById('range-input').value, pdfState.pages.length);
+            if (!parsed.ok) {
+                showToast(parsed.error, 'error');
+                return;
+            }
+            const targetPages = parsed.indices.map(idx => pdfState.pages[idx]).filter(Boolean);
+            const filename = normalizePdfFilename(document.getElementById('extract-filename').value, 'extracted-pages.pdf');
+            const title = document.getElementById('meta-title').value.trim();
+            const author = document.getElementById('meta-author').value.trim();
+
+            const t0 = performance.now();
+            try {
+                const bytes = await buildPdfFromPageItems(targetPages, { title, author });
+                const dt = Math.max(1, Math.round(performance.now() - t0));
+                deliverExportedPdf(bytes, filename, targetPages.length, dt, title);
+                showToast(`แยก ${targetPages.length} หน้าเป็นไฟล์ "${filename}" เรียบร้อย`);
+            } catch (err) {
+                showToast('เกิดข้อผิดพลาดขณะแยกไฟล์: ' + (err.message || err), 'error');
+            }
+        }
+
+        async function exportSinglePageDirect(uid) {
+            const idx = pdfState.pages.findIndex(p => p.uid === uid);
+            if (idx === -1) return;
+            const item = pdfState.pages[idx];
+            const filename = `page-${idx + 1}.pdf`;
+            const t0 = performance.now();
+            try {
+                const bytes = await buildPdfFromPageItems([item]);
+                const dt = Math.max(1, Math.round(performance.now() - t0));
+                deliverExportedPdf(bytes, filename, 1, dt, '');
+                showToast(`แยกหน้า #${idx + 1} ดาวน์โหลดเรียบร้อย`);
+            } catch (err) {
+                showToast('ไม่สามารถแยกหน้านี้ได้: ' + (err.message || err), 'error');
+            }
+        }
+
+        function revokeSplitDownloads() {
+            for (const s of pdfState.splitItems) {
+                if (s.url) URL.revokeObjectURL(s.url);
+            }
+            pdfState.splitItems = [];
+        }
+
+        async function splitEveryPageToList() {
+            if (pdfState.pages.length === 0) {
+                showToast('กรุณาเพิ่มไฟล์ PDF ก่อนแยกทีละหน้า', 'error');
+                return;
+            }
+            revokeSplitDownloads();
+            const container = document.getElementById('split-results');
+            const wrap = document.getElementById('split-results-wrap');
+            const countEl = document.getElementById('split-results-count');
+            container.innerHTML = '';
+
+            for (let i = 0; i < pdfState.pages.length; i++) {
+                const item = pdfState.pages[i];
+                const bytes = await buildPdfFromPageItems([item]);
+                const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+                const filename = `split-page-${String(i + 1).padStart(2, '0')}.pdf`;
+                pdfState.splitItems.push({ filename, bytes, url, pageOrder: i + 1 });
+
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between gap-2 p-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/80 dark:border-google-dark-border text-xs';
+                row.innerHTML = `
+                    <div class="min-w-0 flex-1">
+                        <div class="font-mono font-bold text-google-text dark:text-white truncate">${escapeHtml(filename)}</div>
+                        <div class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">${formatBytes(bytes.byteLength)}</div>
+                    </div>
+                    <a href="${url}" download="${escapeHtml(filename)}" class="px-2.5 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold shrink-0">
+                        <i class="fa-solid fa-download mr-1"></i>โหลด
+                    </a>
+                `;
+                container.appendChild(row);
+            }
+
+            countEl.textContent = `แยกเสร็จแล้ว ${pdfState.splitItems.length} ไฟล์`;
+            wrap.classList.remove('hidden');
+            showToast(`แตกไฟล์ออกเป็น ${pdfState.splitItems.length} ไฟล์เดี่ยวสำเร็จ`);
+        }
+
+        function downloadAllSplitItems() {
+            if (pdfState.splitItems.length === 0) return;
+            pdfState.splitItems.forEach((s, idx) => {
+                setTimeout(() => {
+                    const a = document.createElement('a');
+                    a.href = s.url;
+                    a.download = s.filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                }, idx * 180);
+            });
+            showToast(`เริ่มดาวน์โหลดทั้ง ${pdfState.splitItems.length} ไฟล์แล้ว`);
+        }
+
+        // ==================== UI MODE & RENDERING ====================
+        function setActionMode(mode) {
+            pdfState.actionMode = mode;
+            const modes = ['merge', 'extract', 'splitall'];
+            for (const m of modes) {
+                const btn = document.getElementById(`mode-btn-${m}`);
+                const panel = document.getElementById(`mode-panel-${m}`);
+                const active = m === mode;
+                if (panel) panel.classList.toggle('hidden', !active);
+                if (btn) {
+                    btn.className = active
+                        ? 'px-2 py-2 rounded-lg text-[11px] sm:text-xs font-bold bg-white dark:bg-google-dark-surface text-red-600 dark:text-red-400 shadow-xs transition cursor-pointer'
+                        : 'px-2 py-2 rounded-lg text-[11px] sm:text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer';
+                }
+            }
+            if (mode === 'extract') updateRangePreview();
+        }
+
+        function renderStats() {
+            const totalSize = pdfState.files.reduce((sum, f) => sum + f.size, 0);
+            const selectedCount = pdfState.pages.filter(p => p.selected).length;
+            document.getElementById('stat-files').textContent = pdfState.files.length;
+            document.getElementById('stat-pages').textContent = pdfState.pages.length;
+            document.getElementById('stat-selected').textContent = selectedCount;
+            document.getElementById('file-size-total').textContent = formatBytes(totalSize);
+            const delBtn = document.getElementById('btn-delete-selected');
+            if (delBtn) {
+                delBtn.innerHTML = `<i class="fa-solid fa-trash mr-1"></i>ลบที่เลือก${selectedCount > 0 ? ' (' + selectedCount + ')' : ''}`;
+            }
+        }
+
+        function renderFileList() {
+            const el = document.getElementById('file-list');
+            if (pdfState.files.length === 0) {
+                el.innerHTML = `
+                    <div class="text-xs text-center text-google-text-muted dark:text-google-dark-text-muted py-4 border border-dashed border-google-border/70 dark:border-google-dark-border rounded-xl">
+                        ยังไม่มีไฟล์ PDF — เพิ่มไฟล์หรือกด "สร้าง PDF ตัวอย่างทดสอบ"
+                    </div>`;
+                return;
+            }
+            el.innerHTML = '';
+            pdfState.files.forEach((f, idx) => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2 p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border';
+                row.innerHTML = `
+                    <span class="px-2 py-0.5 rounded-lg border text-[10px] font-bold font-mono shrink-0 ${f.theme.badge}">#${idx + 1}</span>
+                    <div class="min-w-0 flex-1">
+                        <div class="text-xs font-bold text-google-text dark:text-white truncate">${escapeHtml(f.name)}</div>
+                        <div class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted font-mono">${f.pageCount} หน้า • ${formatBytes(f.size)}</div>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button type="button" onclick="moveFileInQueue(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="w-6 h-6 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-[10px] disabled:opacity-35 cursor-pointer" title="เลื่อนไฟล์ขึ้น">
+                            <i class="fa-solid fa-chevron-up"></i>
+                        </button>
+                        <button type="button" onclick="moveFileInQueue(${idx}, 1)" ${idx === pdfState.files.length - 1 ? 'disabled' : ''} class="w-6 h-6 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-[10px] disabled:opacity-35 cursor-pointer" title="เลื่อนไฟล์ลง">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <button type="button" onclick="removeFile('${f.id}')" class="w-6 h-6 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-[10px] cursor-pointer" title="ลบไฟล์นี้">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                `;
+                el.appendChild(row);
+            });
+        }
+
+        function renderPageGrid() {
+            const grid = document.getElementById('page-grid');
+            if (pdfState.pages.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center py-12 px-4 text-center rounded-2xl border-2 border-dashed border-google-border/80 dark:border-google-dark-border bg-google-bg/50 dark:bg-google-dark-bg/40">
+                        <div class="w-14 h-14 rounded-2xl bg-red-50 dark:bg-red-950/60 text-red-600 flex items-center justify-center text-2xl mb-3">
+                            <i class="fa-regular fa-file-pdf"></i>
+                        </div>
+                        <h4 class="text-sm sm:text-base font-bold text-google-text dark:text-white font-heading">ยังไม่มีหน้ากระดาษในพื้นที่ทำงาน</h4>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted mt-1 max-w-md">
+                            อัปโหลดไฟล์ PDF ด้านซ้ายมือเพื่อเริ่มรวมเล่ม แยกหน้า หมุน 90° หรือกดปุ่มสร้างไฟล์ตัวอย่างเพื่อทดลองใช้งานทันที
+                        </p>
+                        <button type="button" onclick="loadSamplePdfs()" class="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition cursor-pointer">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>ลองสร้าง PDF ตัวอย่าง 2 ไฟล์ (5 หน้า)</span>
+                        </button>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = '';
+            pdfState.pages.forEach((p, idx) => {
+                const f = getFileById(p.fileId);
+                if (!f) return;
+                const thumbUrl = f.thumbnails[p.sourcePageIndex] || '';
+                const hasThumb = Boolean(thumbUrl);
+                const effectiveTotalRot = (((p.baseRotation + p.userRotation) % 360) + 360) % 360;
+                const rotatedSideways = p.userRotation % 180 !== 0;
+                const rotScale = rotatedSideways ? 'scale(0.76)' : 'scale(1)';
+
+                const card = document.createElement('div');
+                card.setAttribute('data-page-uid', String(p.uid));
+                card.className = `rounded-2xl border p-2.5 flex flex-col justify-between transition ${
+                    p.selected
+                        ? 'bg-red-50/70 dark:bg-red-950/35 border-red-500 ring-2 ring-red-500/20'
+                        : 'bg-google-bg/70 dark:bg-google-dark-bg border-google-border dark:border-google-dark-border hover:border-red-300 dark:hover:border-red-700'
+                }`;
+
+                card.innerHTML = `
+                    <!-- Card Top Header -->
+                    <div class="flex items-center justify-between gap-1.5 mb-2">
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer select-none min-w-0">
+                            <input type="checkbox" ${p.selected ? 'checked' : ''} onchange="togglePageSelection(${p.uid})" class="w-4 h-4 accent-red-600 rounded shrink-0">
+                            <span class="text-xs font-bold font-mono text-google-text dark:text-white">#${idx + 1}</span>
+                        </label>
+                        <div class="flex items-center gap-1 min-w-0">
+                            ${p.userRotation !== 0 ? `<span class="px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-[10px] font-bold font-mono shrink-0">${p.userRotation}°</span>` : ''}
+                            <span class="px-1.5 py-0.5 rounded border text-[10px] font-bold font-mono truncate ${f.theme.badge}" title="${escapeHtml(f.name)} หน้า ${p.sourcePageIndex + 1}">
+                                F${f.labelIndex}·P${p.sourcePageIndex + 1}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Preview Stage -->
+                    <div onclick="togglePageSelection(${p.uid})" class="relative aspect-[3/4] rounded-xl bg-white dark:bg-zinc-900 border border-google-border/70 dark:border-google-dark-border overflow-hidden flex items-center justify-center p-1.5 cursor-pointer select-none">
+                        <img data-thumb-file="${f.id}" data-thumb-page="${p.sourcePageIndex}" src="${thumbUrl}" alt="Page ${idx + 1}" style="transform: rotate(${p.userRotation}deg) ${rotScale};" class="${hasThumb ? '' : 'hidden'} max-w-full max-h-full object-contain rounded shadow-xs transition-transform duration-200">
+                        <div data-vector-fallback class="${hasThumb ? 'hidden' : 'flex'} flex-col items-center justify-center text-center p-2 transition-transform duration-200" style="transform: rotate(${p.userRotation}deg) ${rotScale};">
+                            <div class="w-10 h-12 rounded-lg border-2 border-slate-300 dark:border-zinc-600 flex flex-col items-center justify-center bg-slate-50 dark:bg-zinc-800 mb-1.5">
+                                <span class="text-sm font-bold font-mono text-red-600 dark:text-red-400">P${p.sourcePageIndex + 1}</span>
+                            </div>
+                            <span class="text-[10px] font-bold text-slate-600 dark:text-slate-300 truncate max-w-[110px]">${escapeHtml(f.name)}</span>
+                            <span class="text-[10px] font-mono text-slate-400 dark:text-slate-500 mt-0.5">${p.width}×${p.height}pt</span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Compact Actions -->
+                    <div class="flex items-center justify-between gap-1 mt-2 pt-2 border-t border-google-border/70 dark:border-google-dark-border">
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="moveSinglePage(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="w-[26px] h-[26px] rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-[10px] text-google-text-body dark:text-google-dark-text-body disabled:opacity-35 hover:bg-slate-100 dark:hover:bg-zinc-700 cursor-pointer" title="ย้ายไปทางซ้าย">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            <button type="button" onclick="moveSinglePage(${idx}, 1)" ${idx === pdfState.pages.length - 1 ? 'disabled' : ''} class="w-[26px] h-[26px] rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-[10px] text-google-text-body dark:text-google-dark-text-body disabled:opacity-35 hover:bg-slate-100 dark:hover:bg-zinc-700 cursor-pointer" title="ย้ายไปทางขวา">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button type="button" data-action="rotate-cw" onclick="rotateSinglePage(${p.uid}, 90)" class="w-[26px] h-[26px] rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-[10px] text-blue-700 dark:text-blue-300 hover:bg-blue-100 cursor-pointer" title="หมุน +90° (มุมจริง ${effectiveTotalRot}°)">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </button>
+                            <button type="button" data-action="extract-single" onclick="exportSinglePageDirect(${p.uid})" class="w-[26px] h-[26px] rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-[10px] text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 cursor-pointer" title="ดาวน์โหลดเฉพาะหน้านี้เป็น PDF เดี่ยว">
+                                <i class="fa-solid fa-file-arrow-down"></i>
+                            </button>
+                            <button type="button" data-action="delete-page" onclick="deleteSinglePage(${p.uid})" class="w-[26px] h-[26px] rounded-lg bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-[10px] text-rose-600 dark:text-rose-300 hover:bg-rose-100 cursor-pointer" title="ลบหน้านี้ออก">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderAll() {
+            renderStats();
+            renderFileList();
+            renderPageGrid();
+            updateRangePreview();
+        }
+
+        // ==================== DRAG & DROP SETUP ====================
+        function initDropzone() {
+            const dz = document.getElementById('pdf-dropzone');
+            const input = document.getElementById('pdf-file-input');
+            if (input) {
+                input.addEventListener('change', async (e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                        await handleSelectedFiles(e.target.files);
+                        e.target.value = '';
+                    }
+                });
+            }
+            if (!dz) return;
+            dz.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dz.classList.add('pdf-dropzone-active');
+            });
+            dz.addEventListener('dragleave', () => {
+                dz.classList.remove('pdf-dropzone-active');
+            });
+            dz.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                dz.classList.remove('pdf-dropzone-active');
+                if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    await handleSelectedFiles(e.dataTransfer.files);
+                }
+            });
+            dz.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    input && input.click();
+                }
+            });
+        }
+
+        // ==================== THEME & APP SWITCHER ====================
+        function initTheme() {
+            const saved = localStorage.getItem('feel_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        function toggleSubAppSwitcher(forceState) {
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu) return;
+            const willOpen = typeof forceState === 'boolean' ? forceState : menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !willOpen);
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('app-switcher-btn');
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu || menu.classList.contains('hidden')) return;
+            if ((!btn || !btn.contains(e.target)) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleSubAppSwitcher(false);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initDropzone();
+            renderAll();
+        });
+    </script>
+</body>
+</html>

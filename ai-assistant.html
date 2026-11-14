@@ -115,51 +115,127 @@
     <!-- ========================================== -->
     <!-- TOP NAVIGATION BAR                         -->
     <!-- ========================================== -->
-    <header class="h-16 g-navbar sticky top-0 z-40 px-4 sm:px-6 flex items-center justify-between gap-3">
-        <!-- Left: Back Button & Branding -->
-        <div class="flex items-center gap-2.5 min-w-0">
-            <a href="index.html" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0" title="กลับสู่หน้าหลัก Portfolio">
+    <header class="h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
                 <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
-                <span class="hidden sm:inline">หน้าหลัก Portfolio</span>
+                <span class="hidden sm:inline">หน้าหลัก</span>
             </a>
 
-            <div class="h-5 w-[1px] bg-google-border dark:bg-google-dark-border mx-0.5 hidden sm:block"></div>
-
-            <div class="flex items-center gap-2.5 min-w-0">
+            <div class="flex items-center gap-2.5 sm:border-l border-google-border dark:border-google-dark-border sm:pl-3 min-w-0">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 via-google-blue to-sky-500 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                 </div>
                 <div class="min-w-0">
                     <div class="flex items-center gap-2">
-                        <h1 class="text-xs sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
                             ผู้ช่วย AI อัจฉริยะ (Feel AI Assistant)
                         </h1>
-                        <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold">
-                            ถาม-ตอบ • สรุปข้อมูล • แนะนำ
+                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold whitespace-nowrap shrink-0">
+                            ถาม-ตอบ • สรุป • แนะนำ
                         </span>
                     </div>
                     <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
-                        การประยุกต์ใช้ AI เพื่อการสืบค้นและสรุปข้อมูล • นายภคพล สมัยแก้ว (ฟีล)
+                        สืบค้นข้อมูลจากบริบทจริง • นายภคพล สมัยแก้ว (ฟีล)
                     </p>
                 </div>
             </div>
         </div>
 
-        <!-- Right: Unified 6-App Switcher & Theme Toggle -->
         <div class="flex items-center gap-2 shrink-0">
-            <nav class="hidden xl:flex items-center gap-1 bg-google-subtle dark:bg-google-dark-subtle p-1 rounded-full border border-google-border dark:border-google-dark-border text-xs">
-                <a href="wheel.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">1. วงล้อ 3D</a>
-                <a href="southern-food.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">2. สุ่มร้านอาหาร</a>
-                <a href="cctv.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">3. กล้อง CCTV</a>
-                <a href="weather.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">4. เรดาร์อากาศ</a>
-                <a href="rubik.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">5. รูบิค 3x3</a>
-                <a href="ai-assistant.html" class="px-2.5 py-1 rounded-full font-bold bg-indigo-600 text-white shadow-xs">6. ผู้ช่วย AI</a>
-                <a href="vault.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">7. ตู้เซฟฝากไฟล์</a>
-                <a href="photo-studio.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">8. ลบพื้นหลัง/แต่งรูป</a>
-                <a href="ai-tools.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">9. คลังเว็บ AI</a>
-            </nav>
-
-            <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle transition-all shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+            <!-- Unified Clean 9-Apps Switcher Dropdown -->
+            <div class="relative shrink-0">
+                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (9 ระบบ)">
+                    <i class="fa-solid fa-layer-group text-sky-600 dark:text-sky-400"></i>
+                    <span class="hidden sm:inline">สลับเว็บแอป</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 text-[10px] font-bold leading-none">9</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                </button>
+                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
+                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
+                        </div>
+                    </a>
+                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
+                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (9 ระบบ)</div>
+                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
+                        </div>
+                        
+                    </a>
+                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
+                        </div>
+                        
+                    </a>
+                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
+                        </div>
+                        
+                    </a>
+                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ & พายุ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
+                        </div>
+                        
+                    </a>
+                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble & สูตร CFOP</div>
+                        </div>
+                        
+                    </a>
+                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-sky-50 dark:bg-sky-950/60 border border-sky-300 dark:border-sky-700 transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง & ถาม-ตอบ</div>
+                        </div>
+                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-sky-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
+                    </a>
+                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ & แชร์ PIN 6 หลัก</div>
+                        </div>
+                        
+                    </a>
+                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง & รูปติดบัตร</div>
+                        </div>
+                        
+                    </a>
+                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI & โฮสต์ฟรี</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI & รันไฟล์</div>
+                        </div>
+                        
+                    </a>
+                </div>
+            </div>
+            <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle transition-all shadow-xs cursor-pointer shrink-0" title="สลับโหมดสว่าง / โหมดมืด">
                 <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
             </button>
         </div>
@@ -170,19 +246,17 @@
     <!-- ========================================== -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6">
 
-        <!-- 1. Clear Purpose & Article Banner (เข้าใจบทความที่จะสื่อใน 3 วินาที) -->
-        <section class="g-card p-4 sm:p-5 bg-gradient-to-r from-indigo-500/10 via-sky-500/5 to-emerald-500/5 border-indigo-200/80 dark:border-indigo-900/50 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div class="space-y-1.5 max-w-4xl">
-                <div class="inline-flex flex-wrap items-center gap-2">
-                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-600 text-white">เว็บแอปที่ 6 • Grounded Reading AI + Multi-Turn Chat</span>
-                    <span class="text-xs text-emerald-700 dark:text-emerald-300 font-semibold">อ่านบริบทจริง • ตอบตรงคำถาม • ไม่มั่วข้อมูล</span>
+        <!-- Compact Purpose Strip + 3 Mode Switcher -->
+        <section class="g-card px-4 py-3.5 bg-gradient-to-r from-indigo-500/10 via-sky-500/5 to-emerald-500/5 border-indigo-200/80 dark:border-indigo-900/50 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div class="space-y-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-600 text-white whitespace-nowrap">เว็บแอปที่ 6 • Grounded Reading AI</span>
+                    <span class="text-xs sm:text-sm font-bold text-google-text dark:text-google-dark-text font-heading">อ่านบริบทเว็บจริง + เอกสารที่วาง ตอบตรงประเด็น ไม่มั่วข้อมูล</span>
                 </div>
-                <h2 class="text-base sm:text-xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
-                    ผู้ช่วย AI อัจฉริยะ: อ่านเอกสาร/ข้อมูลเว็บจริง วิเคราะห์คำถาม และตอบอย่างตรงประเด็น
-                </h2>
-                <p class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed">
-                    <strong>ความสามารถจริง:</strong> ระบบ AI อ่านและจัดทำดัชนีเนื้อหาจากทุกหน้าเว็บในโปรเจกต์ <strong>+ เอกสารหรือข้อความที่คุณวาง/อัปโหลดเอง (.txt/.md/.csv/.json/.ino)</strong> ใช้การตัดคำภาษาไทย (Thai Segmentation) + BM25 Passage Retrieval แยกเจตนาคำถาม ถามต่อเนื่องได้หลายรอบ (Multi-turn) ปฏิเสธอย่างซื่อสัตย์เมื่อไม่มีข้อมูล และเชื่อมต่อ <strong>Gemini Live API</strong> เพิ่มได้ทันที
-                </p>
+                <details class="text-xs text-google-text-muted dark:text-google-dark-text-muted">
+                    <summary class="cursor-pointer font-semibold text-indigo-600 dark:text-indigo-400 select-none">ดูรายละเอียดการทำงานของระบบ AI</summary>
+                    <p class="mt-1.5 leading-relaxed max-w-3xl">จัดทำดัชนีข้อมูลทุกหน้าเว็บ + เอกสารที่อัปโหลดเอง (.txt/.md/.csv/.json/.ino) ด้วย Thai Segmentation + BM25 รองรับ Multi-turn, WebGPU LLM ในเบราว์เซอร์, Ollama และ Gemini API</p>
+                </details>
             </div>
 
             <!-- 3 Mode Switcher Buttons -->
@@ -2549,7 +2623,7 @@ void loop() {
                     <div class="flex flex-wrap gap-1.5 pt-0.5">
                         <button type="button" onclick="askPresetQuestion('summary_profile')" class="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-xs font-semibold hover:bg-indigo-100 cursor-pointer">🎓 สรุปประวัติภคพล</button>
                         <button type="button" onclick="askPresetQuestion('projects_certs')" class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-xs font-semibold hover:bg-emerald-100 cursor-pointer">🏆 ผลงาน &amp; เกียรติบัตร</button>
-                        <button type="button" onclick="askPresetQuestion('all_webapps')" class="px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 text-xs font-semibold hover:bg-purple-100 cursor-pointer">🧩 เว็บแอปทั้งหมด 8 ระบบ</button>
+                        <button type="button" onclick="askPresetQuestion('all_webapps')" class="px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 text-xs font-semibold hover:bg-purple-100 cursor-pointer">🧩 เว็บแอปทั้งหมด 9 ระบบ</button>
                     </div>
                 </div>
             `);
@@ -2955,6 +3029,26 @@ void loop() {
             if (location.protocol === 'http:' || location.protocol === 'https:') {
                 crawlSitePages(false);
             }
+        });
+    </script>
+
+    <script>
+        function toggleSubAppSwitcher(forceState) {
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu) return;
+            const willOpen = typeof forceState === 'boolean' ? forceState : menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !willOpen);
+        }
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('app-switcher-btn');
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu || menu.classList.contains('hidden')) return;
+            if ((!btn || !btn.contains(e.target)) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleSubAppSwitcher(false);
         });
     </script>
 </body>

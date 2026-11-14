@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-in-One Dev Utilities — ศูนย์รวมเครื่องมือนักพัฒนา | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="ศูนย์รวมเครื่องมือสารพัดประโยชน์สำหรับนักพัฒนาในหน้าเดียว ไร้โฆษณา ทำงานออฟไลน์ 100%: JSON Formatter & Error Checker, JWT Debugger & HS256 Verifier, Base64/Base64URL, URL & Query Parser, Unix Timestamp และ SHA-256 / UUID Generator">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.15rem;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.10), 0 1px 3px 1px rgba(60, 64, 67, 0.06);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        .dev-input {
+            font-family: 'JetBrains Mono', Consolas, monospace;
+            tab-size: 2;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+
+        /* Safe JSON Syntax Colors */
+        .tok-key { color: #0550ae; font-weight: 600; }
+        .tok-str { color: #0a7b3e; }
+        .tok-num { color: #b45309; }
+        .tok-bool { color: #7c3aed; font-weight: 600; }
+        .tok-null { color: #64748b; font-style: italic; }
+        .dark .tok-key { color: #79c0ff; }
+        .dark .tok-str { color: #7ee787; }
+        .dark .tok-num { color: #ffa657; }
+        .dark .tok-bool { color: #d2a8ff; }
+        .dark .tok-null { color: #9ca3af; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-google-blue selection:text-white">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Centered Bottom Toast Pill (Never blocks top controls) -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 w-[92vw] max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- UNIFIED SINGLE-ROW NAVIGATION HEADER       -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก</span>
+            </a>
+
+            <div class="flex items-center gap-2.5 sm:border-l border-google-border dark:border-google-dark-border sm:pl-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-terminal"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            All-in-One Dev Utilities
+                        </h1>
+                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold whitespace-nowrap shrink-0">
+                            <i class="fa-solid fa-shield-halved"></i> ออฟไลน์ 100% • ไร้โฆษณา
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        JSON Formatter • JWT Debugger • Base64 • URL Parser • Timestamp • Hash &amp; UUID
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <a href="ai-tools.html" class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800 text-xs font-semibold text-cyan-700 dark:text-cyan-300 hover:bg-cyan-100 transition whitespace-nowrap">
+                <i class="fa-solid fa-compass"></i>
+                <span>คลังเว็บ AI</span>
+            </a>
+
+            <!-- Unified Clean 10-Apps Switcher Dropdown -->
+            <div class="relative shrink-0">
+                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (10 ระบบ)">
+                    <i class="fa-solid fa-layer-group text-emerald-600 dark:text-emerald-400"></i>
+                    <span class="hidden sm:inline">สลับเว็บแอป</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold leading-none">10</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                </button>
+                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
+                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
+                        </div>
+                    </a>
+                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
+                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (10 ระบบ)</div>
+                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
+                        </div>
+                    </a>
+                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
+                        </div>
+                    </a>
+                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
+                        </div>
+                    </a>
+                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ &amp; พายุ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
+                        </div>
+                    </a>
+                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble &amp; สูตร CFOP</div>
+                        </div>
+                    </a>
+                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง &amp; ถาม-ตอบ</div>
+                        </div>
+                    </a>
+                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ &amp; แชร์ PIN 6 หลัก</div>
+                        </div>
+                    </a>
+                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง &amp; รูปติดบัตร</div>
+                        </div>
+                    </a>
+                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI &amp; โฮสต์ฟรี</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI &amp; รันไฟล์</div>
+                        </div>
+                    </a>
+                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON • JWT • Base64 • Timestamp</div>
+                        </div>
+                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Theme Switcher -->
+            <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN WORKSPACE                             -->
+    <!-- ========================================== -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
+
+        <!-- Compact Tool Switcher Strip (Immediately above fold) -->
+        <div class="g-card p-2 sm:p-2.5 flex flex-col md:flex-row md:items-center justify-between gap-2">
+            <div id="dev-tabs-bar" role="tablist" aria-label="เครื่องมือนักพัฒนา" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                <button type="button" role="tab" data-tab="json" onclick="switchDevTab('json')" class="dev-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-semibold flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-code text-emerald-500"></i>
+                    <span>{ } JSON Formatter</span>
+                </button>
+                <button type="button" role="tab" data-tab="jwt" onclick="switchDevTab('jwt')" class="dev-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-semibold flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-key text-amber-500"></i>
+                    <span>JWT Token</span>
+                </button>
+                <button type="button" role="tab" data-tab="base64" onclick="switchDevTab('base64')" class="dev-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-semibold flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-lock text-sky-500"></i>
+                    <span>Base64 / URL-Safe</span>
+                </button>
+                <button type="button" role="tab" data-tab="url" onclick="switchDevTab('url')" class="dev-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-semibold flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-link text-indigo-500"></i>
+                    <span>URL &amp; Query</span>
+                </button>
+                <button type="button" role="tab" data-tab="timestamp" onclick="switchDevTab('timestamp')" class="dev-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-semibold flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-regular fa-clock text-violet-500"></i>
+                    <span>Timestamp</span>
+                </button>
+                <button type="button" role="tab" data-tab="crypto" onclick="switchDevTab('crypto')" class="dev-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-semibold flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-fingerprint text-rose-500"></i>
+                    <span>Hash &amp; UUID</span>
+                </button>
+            </div>
+            <div class="hidden xl:flex items-center gap-1.5 px-3 text-[11px] text-google-text-muted dark:text-google-dark-text-muted shrink-0">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>ข้อมูลไม่ส่งออกนอกเครื่อง</span>
+            </div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- TAB 1: JSON FORMATTER, VALIDATOR & TREE PATH INSPECTOR  -->
+        <!-- ======================================================= -->
+        <section id="panel-json" class="dev-panel space-y-3">
+            <!-- Toolbar -->
+            <div class="g-card p-3 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <select id="json-indent" onchange="processJsonLive(true)" class="px-2.5 py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs font-semibold text-google-text dark:text-white outline-none cursor-pointer">
+                        <option value="2">Indent: 2 Spaces</option>
+                        <option value="4">Indent: 4 Spaces</option>
+                        <option value="tab">Indent: Tab</option>
+                    </select>
+                    <button type="button" onclick="formatJsonAction()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-heading font-semibold flex items-center gap-1.5 transition cursor-pointer">
+                        <i class="fa-solid fa-wand-sparkles"></i> จัดระเบียบ
+                    </button>
+                    <button type="button" onclick="minifyJsonAction()" class="px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs font-heading font-semibold transition cursor-pointer">
+                        <i class="fa-solid fa-compress"></i> ย่อ (Minify)
+                    </button>
+                    <button type="button" onclick="sortJsonKeysAction()" class="px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs font-heading font-semibold transition cursor-pointer" title="เรียงชื่อ Key ตามตัวอักษร A-Z ทุกระดับ">
+                        <i class="fa-solid fa-arrow-down-a-z"></i> เรียง Key
+                    </button>
+                    <button type="button" onclick="escapeJsonAction()" class="px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs font-heading font-semibold transition cursor-pointer" title="แปลงเป็น escaped JSON string หรือ unescape กลับ">
+                        <i class="fa-solid fa-quote-right"></i> Escape / Unescape
+                    </button>
+                </div>
+                <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <button type="button" onclick="loadJsonSample()" class="px-2.5 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 text-google-blue dark:text-sky-300 text-xs font-semibold transition cursor-pointer">
+                        ตัวอย่าง API
+                    </button>
+                    <label class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface hover:bg-google-subtle border border-google-border dark:border-google-dark-border text-xs font-semibold transition cursor-pointer flex items-center gap-1">
+                        <i class="fa-solid fa-upload text-[11px]"></i> ไฟล์ .json
+                        <input type="file" id="json-file-input" accept=".json,.txt,application/json" class="hidden" onchange="handleJsonFileUpload(this)">
+                    </label>
+                    <button type="button" onclick="clearJsonTool()" class="px-2.5 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-semibold transition cursor-pointer">
+                        ล้าง
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2-Column Split Editor -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <!-- Left Input -->
+                <div class="lg:col-span-6 g-card flex flex-col overflow-hidden">
+                    <div class="px-4 py-2.5 border-b border-google-border dark:border-google-dark-border flex items-center justify-between bg-google-bg dark:bg-google-dark-bg/60">
+                        <span class="text-xs font-heading font-bold flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-google-blue"></span>
+                            JSON ต้นฉบับ (วางเพื่อตรวจ Error อัตโนมัติ)
+                        </span>
+                        <span id="json-input-stats" class="text-[11px] font-mono text-google-text-muted dark:text-google-dark-text-muted">0 chars • 1 line</span>
+                    </div>
+                    <textarea id="json-input" rows="18" spellcheck="false" placeholder='วาง JSON ของคุณที่นี่ เช่น {"status": 200, "user": {"name": "Feel"}}' class="dev-input w-full flex-1 p-3.5 bg-transparent text-xs sm:text-[13px] leading-relaxed outline-none resize-y min-h-[340px] lg:min-h-[460px]"></textarea>
+                    <div class="px-3.5 py-2 border-t border-google-border dark:border-google-dark-border flex items-center justify-between text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
+                        <span>เคล็ดลับ: ระบบเช็ก Syntax Error พร้อมชี้บรรทัด/คอลัมน์ให้อัตโนมัติ</span>
+                        <span id="json-cursor-pos" class="font-mono">Ln 1, Col 1</span>
+                    </div>
+                </div>
+
+                <!-- Right Output / Error / Tree -->
+                <div class="lg:col-span-6 g-card flex flex-col overflow-hidden">
+                    <div class="px-3.5 py-2.5 border-b border-google-border dark:border-google-dark-border flex flex-wrap items-center justify-between gap-2 bg-google-bg dark:bg-google-dark-bg/60">
+                        <div class="flex items-center gap-2">
+                            <span id="json-status-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-zinc-700 text-slate-600 dark:text-slate-300">
+                                รอข้อมูล JSON
+                            </span>
+                            <span id="json-metrics" class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted font-mono hidden sm:inline"></span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="inline-flex rounded-lg bg-google-subtle dark:bg-google-dark-subtle p-0.5 text-[11px] font-semibold">
+                                <button type="button" id="json-view-code-btn" onclick="setJsonOutputView('code')" class="px-2.5 py-1 rounded-md bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer">Code</button>
+                                <button type="button" id="json-view-tree-btn" onclick="setJsonOutputView('tree')" class="px-2.5 py-1 rounded-md text-google-text-muted dark:text-google-dark-text-muted cursor-pointer">Tree Path</button>
+                            </div>
+                            <button type="button" onclick="copyJsonOutput()" class="px-2.5 py-1 rounded-lg bg-google-blue hover:opacity-90 text-white text-xs font-semibold flex items-center gap-1 transition cursor-pointer">
+                                <i class="fa-regular fa-copy"></i> คัดลอก
+                            </button>
+                            <button type="button" onclick="downloadJsonOutput()" class="px-2 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-google-subtle text-xs font-semibold transition cursor-pointer" title="ดาวน์โหลดไฟล์ .json">
+                                <i class="fa-solid fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Error Box (Shown on invalid JSON) -->
+                    <div id="json-error-box" class="hidden p-4 bg-rose-50/90 dark:bg-rose-950/40 border-b border-rose-200 dark:border-rose-800/70 space-y-2.5">
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <div>
+                                <div id="json-error-title" class="text-xs sm:text-sm font-bold text-rose-700 dark:text-rose-300 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-circle-exclamation"></i> พบข้อผิดพลาด Syntax Error
+                                </div>
+                                <p id="json-error-msg" class="text-xs text-rose-600 dark:text-rose-200/90 mt-0.5 font-mono break-all"></p>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button type="button" id="json-fix-btn" onclick="autoRepairJson()" class="hidden px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold transition cursor-pointer">
+                                    <i class="fa-solid fa-wrench"></i> ซ่อม Trailing Comma / Comment
+                                </button>
+                                <button type="button" onclick="jumpToJsonError()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold transition cursor-pointer">
+                                    ไปที่จุดผิด
+                                </button>
+                            </div>
+                        </div>
+                        <pre id="json-error-snippet" class="font-mono text-[11px] sm:text-xs bg-white/90 dark:bg-zinc-900/90 border border-rose-200 dark:border-rose-800/60 rounded-lg p-2.5 overflow-x-auto text-slate-800 dark:text-slate-100 leading-relaxed"></pre>
+                    </div>
+
+                    <!-- Pretty Code Output -->
+                    <div id="json-pretty-wrap" class="flex-1 overflow-auto max-h-[540px] min-h-[340px] lg:min-h-[460px] p-3.5">
+                        <pre id="json-output" class="font-mono text-xs sm:text-[13px] leading-relaxed whitespace-pre-wrap break-words text-google-text-body dark:text-google-dark-text-body"></pre>
+                    </div>
+
+                    <!-- Interactive Tree Path Inspector -->
+                    <div id="json-tree-wrap" class="hidden flex-1 overflow-auto max-h-[540px] min-h-[340px] lg:min-h-[460px] p-3.5 text-xs">
+                        <div class="mb-2 px-2.5 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-[11px] flex items-center gap-1.5">
+                            <i class="fa-solid fa-computer-mouse"></i> คลิกที่ชื่อ Key หรือ Value เพื่อคัดลอก JSON Path สำหรับเขียนโค้ด (เช่น <code class="font-mono font-bold">data.items[0].id</code>)
+                        </div>
+                        <div id="json-tree" class="font-mono text-xs space-y-0.5"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- TAB 2: JWT TOKEN DEBUGGER, CLAIMER & HS256 VERIFIER     -->
+        <!-- ======================================================= -->
+        <section id="panel-jwt" class="dev-panel hidden space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <!-- Left: Input & Signature Verify -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="g-card p-4 space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <h2 class="text-sm font-heading font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-key text-amber-500"></i> วาง JWT Token (Encoded)
+                            </h2>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="loadJwtSample()" class="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-xs font-semibold hover:bg-amber-100 transition cursor-pointer">
+                                    JWT ตัวอย่าง
+                                </button>
+                                <button type="button" onclick="clearJwtTool()" class="px-2.5 py-1 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-semibold transition cursor-pointer">
+                                    ล้าง
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="jwt-parts-bar" class="flex flex-wrap items-center gap-1.5 text-[11px]">
+                            <span class="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 font-semibold">Header</span>
+                            <span class="text-slate-400">.</span>
+                            <span class="px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-950/70 text-violet-700 dark:text-violet-300 font-semibold">Payload</span>
+                            <span class="text-slate-400">.</span>
+                            <span class="px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 font-semibold">Signature</span>
+                            <span id="jwt-valid-badge" class="ml-auto font-semibold text-google-text-muted dark:text-google-dark-text-muted">รอวาง Token</span>
+                        </div>
+
+                        <textarea id="jwt-input" rows="7" spellcheck="false" placeholder="วาง eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... (รองรับคำนำหน้า Bearer อัตโนมัติ)" class="dev-input w-full p-3 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border text-xs leading-relaxed outline-none focus:border-google-blue break-all"></textarea>
+
+                        <!-- HMAC Local Verifier -->
+                        <div class="pt-2 border-t border-google-border dark:border-google-dark-border space-y-2">
+                            <div class="flex items-center justify-between">
+                                <label for="jwt-secret" class="text-xs font-heading font-bold">ตรวจ Signature (HMAC HS256 / 384 / 512)</label>
+                                <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">ตรวจในเครื่อง 100%</span>
+                            </div>
+                            <div class="flex gap-1.5">
+                                <input id="jwt-secret" type="password" placeholder="ใส่ Secret Key (เช่น your-256-bit-secret)" class="flex-1 px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-mono text-xs outline-none focus:border-google-blue" oninput="verifyCurrentJwt()">
+                                <button type="button" onclick="toggleSecretVis('jwt-secret', this)" class="px-2.5 py-1.5 rounded-lg border border-google-border dark:border-google-dark-border text-xs text-google-text-muted hover:text-google-text cursor-pointer" title="แสดง/ซ่อน Secret">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                            <div id="jwt-sig-status" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-slate-300">
+                                <i class="fa-solid fa-circle-info mr-1"></i> ใส่ Secret Key เพื่อตรวจสอบความถูกต้องของลายเซ็น
+                            </div>
+                        </div>
+
+                        <!-- Collapsible Local JWT Test Signer -->
+                        <details class="pt-1 border-t border-google-border dark:border-google-dark-border text-xs">
+                            <summary class="cursor-pointer font-heading font-bold text-google-blue dark:text-sky-400 py-1 select-none">
+                                ✍️ สร้าง / Sign Test JWT ใหม่ (HS256) สำหรับทดสอบหลังบ้าน
+                            </summary>
+                            <div class="pt-2 space-y-2">
+                                <textarea id="jwt-sign-payload" rows="5" spellcheck="false" class="dev-input w-full p-2.5 rounded-lg bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border text-xs outline-none">{
+  "sub": "user_1042",
+  "name": "Pakapol Dev",
+  "role": "admin"
+}</textarea>
+                                <div class="flex items-center justify-between gap-2">
+                                    <select id="jwt-sign-ttl" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                                        <option value="3600">หมดอายุ +1 ชม.</option>
+                                        <option value="86400">หมดอายุ +24 ชม.</option>
+                                        <option value="604800">หมดอายุ +7 วัน</option>
+                                        <option value="0">ไม่ใส่ exp</option>
+                                    </select>
+                                    <button type="button" onclick="signTestJwt()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer">
+                                        <i class="fa-solid fa-signature mr-1"></i> Sign HS256 JWT
+                                    </button>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- Right: Decoded Header, Payload & Claim Timing -->
+                <div class="lg:col-span-7 space-y-4">
+                    <!-- Expiration Banner -->
+                    <div id="jwt-exp-banner" class="hidden g-card px-4 py-3 flex flex-wrap items-center justify-between gap-2 border-l-4"></div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Header -->
+                        <div class="g-card flex flex-col overflow-hidden">
+                            <div class="px-4 py-2.5 border-b border-google-border dark:border-google-dark-border flex items-center justify-between bg-rose-50/70 dark:bg-rose-950/20">
+                                <span class="text-xs font-heading font-bold text-rose-700 dark:text-rose-300">HEADER: Algorithm &amp; Type</span>
+                                <button type="button" onclick="copyTextFromEl('jwt-header-out', 'Header JSON')" class="text-xs font-semibold text-google-blue dark:text-sky-400 hover:underline cursor-pointer">คัดลอก</button>
+                            </div>
+                            <pre id="jwt-header-out" class="p-3.5 font-mono text-xs leading-relaxed overflow-auto max-h-56 text-slate-800 dark:text-slate-100">{}</pre>
+                        </div>
+
+                        <!-- Claims Summary -->
+                        <div class="g-card flex flex-col overflow-hidden">
+                            <div class="px-4 py-2.5 border-b border-google-border dark:border-google-dark-border bg-sky-50/70 dark:bg-sky-950/20">
+                                <span class="text-xs font-heading font-bold text-sky-700 dark:text-sky-300">สรุปเวลา &amp; Standard Claims</span>
+                            </div>
+                            <div id="jwt-claims-list" class="p-3.5 text-xs space-y-2 overflow-auto max-h-56 text-google-text-body dark:text-google-dark-text-body">
+                                <span class="text-google-text-muted dark:text-google-dark-text-muted">ยังไม่มีข้อมูล Claims</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payload JSON -->
+                    <div class="g-card flex flex-col overflow-hidden">
+                        <div class="px-4 py-2.5 border-b border-google-border dark:border-google-dark-border flex items-center justify-between bg-violet-50/70 dark:bg-violet-950/20">
+                            <span class="text-xs font-heading font-bold text-violet-700 dark:text-violet-300">PAYLOAD: Data &amp; Claims (UTF-8 Decoded)</span>
+                            <button type="button" onclick="copyTextFromEl('jwt-payload-out', 'Payload JSON')" class="px-2.5 py-1 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold cursor-pointer">
+                                <i class="fa-regular fa-copy mr-1"></i> คัดลอก Payload
+                            </button>
+                        </div>
+                        <pre id="jwt-payload-out" class="p-4 font-mono text-xs sm:text-[13px] leading-relaxed overflow-auto max-h-80 text-slate-800 dark:text-slate-100">{}</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- TAB 3: BASE64 & BASE64URL ENCODER / DECODER (UTF-8)     -->
+        <!-- ======================================================= -->
+        <section id="panel-base64" class="dev-panel hidden space-y-3">
+            <div class="g-card p-3 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="inline-flex rounded-xl bg-google-subtle dark:bg-google-dark-subtle p-1 text-xs font-semibold">
+                        <button type="button" id="b64-mode-std" onclick="setBase64Mode(false)" class="px-3 py-1 rounded-lg bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer">Standard (+ / =)</button>
+                        <button type="button" id="b64-mode-url" onclick="setBase64Mode(true)" class="px-3 py-1 rounded-lg text-google-text-muted dark:text-google-dark-text-muted cursor-pointer">Base64URL (- _)</button>
+                    </div>
+                    <button type="button" onclick="loadBase64Sample()" class="px-2.5 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 text-xs font-semibold cursor-pointer">
+                        ตัวอย่างภาษาไทย + JSON
+                    </button>
+                    <label class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface hover:bg-google-subtle border border-google-border dark:border-google-dark-border text-xs font-semibold cursor-pointer flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-arrow-up text-sky-500"></i> ไฟล์ / รูป → Base64 Data URI
+                        <input type="file" id="b64-file-input" class="hidden" onchange="handleBase64FileUpload(this)">
+                    </label>
+                </div>
+                <button type="button" onclick="clearBase64Tool()" class="px-2.5 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-semibold cursor-pointer">
+                    ล้างทั้งหมด
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- Plain Text UTF-8 -->
+                <div class="g-card flex flex-col overflow-hidden">
+                    <div class="px-4 py-2.5 border-b border-google-border dark:border-google-dark-border flex items-center justify-between bg-google-bg dark:bg-google-dark-bg/60">
+                        <span class="text-xs font-heading font-bold">ข้อความต้นฉบับ (Plain Text UTF-8)</span>
+                        <div class="flex items-center gap-2">
+                            <span id="b64-plain-bytes" class="text-[11px] font-mono text-google-text-muted">0 bytes</span>
+                            <button type="button" onclick="copyTextFromEl('b64-plain', 'ข้อความ Plain Text')" class="text-xs font-semibold text-google-blue hover:underline cursor-pointer">คัดลอก</button>
+                        </div>
+                    </div>
+                    <textarea id="b64-plain" rows="13" spellcheck="false" placeholder="พิมพ์ข้อความ ภาษาไทย Emoji หรือ JSON เพื่อเข้ารหัส Base64..." oninput="encodeBase64Live()" class="dev-input w-full p-3.5 bg-transparent text-xs sm:text-[13px] leading-relaxed outline-none resize-y min-h-[260px]"></textarea>
+                </div>
+
+                <!-- Encoded Base64 -->
+                <div class="g-card flex flex-col overflow-hidden">
+                    <div class="px-4 py-2.5 border-b border-google-border dark:border-google-dark-border flex items-center justify-between bg-google-bg dark:bg-google-dark-bg/60">
+                        <span id="b64-encoded-title" class="text-xs font-heading font-bold">รหัส Base64 (วางเพื่อถอดรหัสทันที)</span>
+                        <div class="flex items-center gap-2">
+                            <span id="b64-enc-len" class="text-[11px] font-mono text-google-text-muted">0 chars</span>
+                            <button type="button" onclick="copyTextFromEl('b64-encoded', 'รหัส Base64')" class="text-xs font-semibold text-google-blue hover:underline cursor-pointer">คัดลอก</button>
+                        </div>
+                    </div>
+                    <div id="b64-error" class="hidden px-3.5 py-2 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-300 text-xs font-semibold border-b border-rose-200 dark:border-rose-800"></div>
+                    <textarea id="b64-encoded" rows="13" spellcheck="false" placeholder="ผลลัพธ์ Base64 หรือวางสตริง Base64 / Data URI เพื่อถอดรหัสเป็นข้อความ..." oninput="decodeBase64Live()" class="dev-input w-full p-3.5 bg-transparent text-xs sm:text-[13px] leading-relaxed outline-none resize-y min-h-[260px] break-all"></textarea>
+                    <div id="b64-img-preview-box" class="hidden p-3 border-t border-google-border dark:border-google-dark-border bg-slate-50 dark:bg-zinc-900/50 flex items-center gap-3">
+                        <img id="b64-img-preview" src="" alt="Preview" class="h-16 w-16 object-contain rounded-lg border border-google-border bg-white">
+                        <div class="text-xs">
+                            <div class="font-bold text-emerald-600">ตรวจพบภาพ Data URI</div>
+                            <div id="b64-img-meta" class="text-google-text-muted"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- TAB 4: URL ENCODER / DECODER & QUERY PARAMETER PARSER   -->
+        <!-- ======================================================= -->
+        <section id="panel-url" class="dev-panel hidden space-y-4">
+            <!-- Section A: Encode / Decode -->
+            <div class="g-card p-4 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs sm:text-sm font-heading font-bold">เข้ารหัส / ถอดรหัส URL (UTF-8)</span>
+                        <select id="url-enc-mode" onchange="encodeUrlLive()" class="px-2.5 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs font-semibold cursor-pointer">
+                            <option value="component">encodeURIComponent (แนะนำสำหรับค่าพารามิเตอร์)</option>
+                            <option value="uri">encodeURI (คงโครงสร้าง https:// &amp; ? = ไว้)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="loadUrlSample()" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-semibold cursor-pointer">โหลดตัวอย่าง API URL</button>
+                        <button type="button" onclick="clearUrlTool()" class="px-2.5 py-1 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-semibold cursor-pointer">ล้าง</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span>ข้อความปกติ / Decoded</span>
+                            <button type="button" onclick="copyTextFromEl('url-raw', 'Decoded URL')" class="text-google-blue hover:underline cursor-pointer">คัดลอก</button>
+                        </div>
+                        <textarea id="url-raw" rows="4" spellcheck="false" oninput="encodeUrlLive()" placeholder="วางข้อความหรือ URL ภาษาไทย..." class="dev-input w-full p-3 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border text-xs outline-none focus:border-google-blue"></textarea>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span>Encoded (%XX)</span>
+                            <button type="button" onclick="copyTextFromEl('url-encoded', 'Encoded URL')" class="text-google-blue hover:underline cursor-pointer">คัดลอก</button>
+                        </div>
+                        <textarea id="url-encoded" rows="4" spellcheck="false" oninput="decodeUrlLive()" placeholder="ผลลัพธ์ %E0%B8%... หรือวางเพื่อถอดรหัส" class="dev-input w-full p-3 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border text-xs outline-none focus:border-google-blue break-all"></textarea>
+                    </div>
+                </div>
+                <div id="url-error" class="hidden text-xs font-semibold text-rose-600 dark:text-rose-400"></div>
+            </div>
+
+            <!-- Section B: Query Parameter Breakdown & Builder -->
+            <div class="g-card p-4 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h2 class="text-sm font-heading font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-table-list text-indigo-500"></i> แตกตาราง Query Parameters &amp; ประกอบ URL ใหม่
+                    </h2>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="addUrlParamRow('', '')" class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-semibold cursor-pointer">+ เพิ่ม Parameter</button>
+                        <button type="button" onclick="copyQueryParamsAsJson()" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer">คัดลอก Params เป็น JSON</button>
+                    </div>
+                </div>
+
+                <input id="url-parser-input" type="text" spellcheck="false" oninput="parseFullUrl()" placeholder="วางลิงก์ API เต็มรูปแบบ เช่น https://api.example.com/v1/orders?status=paid&q=นครศรี&page=1#top" class="dev-input w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs outline-none focus:border-google-blue">
+
+                <!-- URL Structure Parts -->
+                <div id="url-parts-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs"></div>
+
+                <!-- Params Table -->
+                <div class="overflow-x-auto border border-google-border dark:border-google-dark-border rounded-xl">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-google-subtle dark:bg-google-dark-subtle text-google-text-muted dark:text-google-dark-text-muted">
+                            <tr>
+                                <th class="px-3 py-2 w-1/3">Key</th>
+                                <th class="px-3 py-2">Decoded Value (แก้ไขเพื่อประกอบ URL ใหม่)</th>
+                                <th class="px-2 py-2 w-12 text-center">ลบ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="url-params-tbody" class="divide-y divide-google-border dark:divide-google-dark-border">
+                            <tr><td colspan="3" class="px-3 py-4 text-center text-google-text-muted">วาง URL ด้านบน หรือกด "+ เพิ่ม Parameter"</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-google-subtle/70 dark:bg-google-dark-subtle/70 border border-google-border dark:border-google-dark-border">
+                    <div class="min-w-0 flex-1">
+                        <span class="text-[10px] font-bold uppercase text-google-text-muted block">URL ที่ประกอบใหม่ (Rebuilt URL)</span>
+                        <code id="url-rebuilt-output" class="font-mono text-xs break-all text-google-text dark:text-white">-</code>
+                    </div>
+                    <button type="button" onclick="copyTextFromEl('url-rebuilt-output', 'URL ที่ประกอบใหม่')" class="shrink-0 px-3 py-1.5 rounded-lg bg-google-blue text-white text-xs font-semibold cursor-pointer">
+                        คัดลอก URL ใหม่
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- TAB 5: UNIX TIMESTAMP & DATE/TIME CONVERTER             -->
+        <!-- ======================================================= -->
+        <section id="panel-timestamp" class="dev-panel hidden space-y-4">
+            <!-- Live Unix Clock -->
+            <div class="g-card p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-l-4 border-l-violet-500">
+                <div>
+                    <div class="text-xs font-heading font-bold text-violet-600 dark:text-violet-400 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        เวลา Unix Timestamp ปัจจุบัน (คลิกตัวเลขเพื่อคัดลอก)
+                    </div>
+                    <div id="ts-now-human" class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body mt-0.5">-</div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="copyTextValue(document.getElementById('ts-now-sec').textContent, 'Unix Seconds')" class="px-3 py-1.5 rounded-xl bg-violet-50 dark:bg-violet-950/60 border border-violet-200 dark:border-violet-800 text-left cursor-pointer hover:bg-violet-100 transition">
+                        <span class="text-[10px] text-violet-600 dark:text-violet-300 font-bold block">Seconds (10 หลัก)</span>
+                        <span id="ts-now-sec" class="font-mono text-sm sm:text-base font-bold text-slate-900 dark:text-white">-</span>
+                    </button>
+                    <button type="button" onclick="copyTextValue(document.getElementById('ts-now-ms').textContent, 'Unix Milliseconds')" class="px-3 py-1.5 rounded-xl bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 text-left cursor-pointer hover:bg-sky-100 transition">
+                        <span class="text-[10px] text-sky-600 dark:text-sky-300 font-bold block">Milliseconds (13 หลัก)</span>
+                        <span id="ts-now-ms" class="font-mono text-sm sm:text-base font-bold text-slate-900 dark:text-white">-</span>
+                    </button>
+                    <button type="button" id="ts-pause-btn" onclick="toggleTsClock()" class="px-3 py-2 rounded-xl border border-google-border dark:border-google-dark-border text-xs font-semibold hover:bg-google-subtle cursor-pointer">
+                        ⏸ พักเวลา
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- Left: Timestamp -> Human Date -->
+                <div class="g-card p-4 space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <h2 class="text-sm font-heading font-bold">แปลง Timestamp / ISO → วันเวลา</h2>
+                        <button type="button" onclick="fillCurrentTimestamp()" class="px-2.5 py-1 rounded-lg bg-violet-50 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 text-xs font-semibold cursor-pointer">ใช้เวลาตอนนี้</button>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <input id="ts-input" type="text" spellcheck="false" oninput="convertTimestampInput()" placeholder="เช่น 1763152213, 1763152213000 หรือ 2026-11-15T03:30:00+07:00" class="dev-input flex-1 px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs sm:text-sm outline-none focus:border-google-blue">
+                        <select id="ts-unit" onchange="convertTimestampInput()" class="px-2.5 py-2 rounded-xl bg-google-subtle dark:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs font-semibold cursor-pointer">
+                            <option value="auto">Auto (เดาหน่วยอัตโนมัติ)</option>
+                            <option value="s">Seconds (s)</option>
+                            <option value="ms">Milliseconds (ms)</option>
+                            <option value="us">Microseconds (µs)</option>
+                            <option value="ns">Nanoseconds (ns)</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-wrap gap-1.5 text-[11px]">
+                        <button type="button" onclick="shiftTimestamp(-3600)" class="px-2 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-slate-200 dark:hover:bg-zinc-700 font-semibold cursor-pointer">-1 ชม.</button>
+                        <button type="button" onclick="shiftTimestamp(900)" class="px-2 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-slate-200 dark:hover:bg-zinc-700 font-semibold cursor-pointer">+15 นาที</button>
+                        <button type="button" onclick="shiftTimestamp(3600)" class="px-2 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-slate-200 dark:hover:bg-zinc-700 font-semibold cursor-pointer">+1 ชม.</button>
+                        <button type="button" onclick="shiftTimestamp(86400)" class="px-2 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-slate-200 dark:hover:bg-zinc-700 font-semibold cursor-pointer">+24 ชม.</button>
+                        <button type="button" onclick="shiftTimestamp(604800)" class="px-2 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-slate-200 dark:hover:bg-zinc-700 font-semibold cursor-pointer">+7 วัน</button>
+                    </div>
+
+                    <div id="ts-detected-note" class="text-[11px] font-semibold text-violet-600 dark:text-violet-400"></div>
+                    <div id="ts-results" class="space-y-2 text-xs"></div>
+                </div>
+
+                <!-- Right: Date Picker -> Timestamp + Snippets -->
+                <div class="g-card p-4 space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <h2 class="text-sm font-heading font-bold">แปลงวันเวลา → Unix Timestamp</h2>
+                        <button type="button" onclick="setPickerToNow()" class="px-2.5 py-1 rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 text-xs font-semibold cursor-pointer">ตั้งเป็นปัจจุบัน</button>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <input id="ts-picker" type="datetime-local" step="1" oninput="convertDatePickerToTs()" class="flex-1 px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-mono text-xs sm:text-sm outline-none focus:border-google-blue">
+                        <select id="ts-picker-tz" onchange="convertDatePickerToTs()" class="px-2.5 py-2 rounded-xl bg-google-subtle dark:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs font-semibold cursor-pointer">
+                            <option value="local">Local (+07:00)</option>
+                            <option value="utc">UTC (+00:00)</option>
+                        </select>
+                    </div>
+
+                    <div id="ts-picker-results" class="space-y-2 text-xs"></div>
+
+                    <div class="pt-2 border-t border-google-border dark:border-google-dark-border space-y-1.5">
+                        <div class="text-[11px] font-heading font-bold text-google-text-muted dark:text-google-dark-text-muted">คำสั่งดึง Unix Timestamp ในภาษาต่างๆ (คลิกเพื่อคัดลอก)</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px] font-mono">
+                            <button type="button" onclick="copyTextValue('Math.floor(Date.now() / 1000)', 'JS Timestamp')" class="p-2 rounded-lg bg-google-subtle/80 dark:bg-google-dark-subtle/80 hover:border-google-blue border border-transparent text-left truncate cursor-pointer"><span class="text-amber-600 font-bold">JS:</span> Math.floor(Date.now() / 1000)</button>
+                            <button type="button" onclick="copyTextValue('time()', 'PHP time()')" class="p-2 rounded-lg bg-google-subtle/80 dark:bg-google-dark-subtle/80 hover:border-google-blue border border-transparent text-left truncate cursor-pointer"><span class="text-indigo-500 font-bold">PHP:</span> time()</button>
+                            <button type="button" onclick="copyTextValue('int(time.time())', 'Python timestamp')" class="p-2 rounded-lg bg-google-subtle/80 dark:bg-google-dark-subtle/80 hover:border-google-blue border border-transparent text-left truncate cursor-pointer"><span class="text-sky-500 font-bold">Py:</span> int(time.time())</button>
+                            <button type="button" onclick="copyTextValue('UNIX_TIMESTAMP()', 'MySQL UNIX_TIMESTAMP')" class="p-2 rounded-lg bg-google-subtle/80 dark:bg-google-dark-subtle/80 hover:border-google-blue border border-transparent text-left truncate cursor-pointer"><span class="text-emerald-600 font-bold">SQL:</span> UNIX_TIMESTAMP()</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- TAB 6: CRYPTO HASH, HMAC, FILE CHECKSUM & UUID/API KEY  -->
+        <!-- ======================================================= -->
+        <section id="panel-crypto" class="dev-panel hidden space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <!-- Left: Hash & HMAC -->
+                <div class="lg:col-span-7 g-card p-4 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <h2 class="text-sm font-heading font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved text-rose-500"></i> SHA-1 / SHA-256 / SHA-384 / SHA-512 &amp; HMAC
+                        </h2>
+                        <label class="inline-flex items-center gap-1.5 text-xs font-semibold cursor-pointer">
+                            <input type="checkbox" id="hash-uppercase" onchange="updateHashes()" class="accent-rose-600">
+                            <span>ตัวพิมพ์ใหญ่ (UPPER)</span>
+                        </label>
+                    </div>
+
+                    <textarea id="hash-input" rows="4" spellcheck="false" oninput="updateHashes()" placeholder="พิมพ์ข้อความเพื่อสร้างค่า Hash อัตโนมัติ (Web Crypto API 100%)..." class="dev-input w-full p-3 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border text-xs outline-none focus:border-google-blue"></textarea>
+
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <input id="hash-hmac-secret" type="text" spellcheck="false" oninput="updateHashes()" placeholder="ใส่ HMAC Secret Key (เว้นว่างไว้เพื่อคำนวณ SHA ปกติ)" class="dev-input flex-1 px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs outline-none focus:border-google-blue">
+                        <label class="px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface hover:bg-google-subtle border border-google-border dark:border-google-dark-border text-xs font-semibold cursor-pointer flex items-center justify-center gap-1.5 shrink-0">
+                            <i class="fa-solid fa-file-shield text-rose-500"></i> ตรวจ SHA-256 ไฟล์
+                            <input type="file" id="hash-file-input" class="hidden" onchange="hashFileSha256(this)">
+                        </label>
+                    </div>
+
+                    <div id="hash-file-result" class="hidden p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs"></div>
+                    <div id="hash-outputs" class="space-y-2 text-xs"></div>
+                </div>
+
+                <!-- Right: UUID v4 & API Secret Generator -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="g-card p-4 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <h2 class="text-sm font-heading font-bold">สุ่ม UUID v4 (มาตรฐาน RFC 4122)</h2>
+                            <div class="flex items-center gap-1.5">
+                                <select id="uuid-count" onchange="generateUuids()" class="px-2 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                                    <option value="1">1 ค่า</option>
+                                    <option value="5" selected>5 ค่า</option>
+                                    <option value="10">10 ค่า</option>
+                                    <option value="20">20 ค่า</option>
+                                </select>
+                                <button type="button" onclick="generateUuids()" class="px-2.5 py-1 rounded-lg bg-google-blue text-white text-xs font-semibold cursor-pointer">
+                                    <i class="fa-solid fa-dice mr-1"></i> สุ่มใหม่
+                                </button>
+                                <button type="button" onclick="copyTextFromEl('uuid-output', 'รายการ UUID v4')" class="px-2.5 py-1 rounded-lg border border-google-border dark:border-google-dark-border text-xs font-semibold cursor-pointer">คัดลอก</button>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-3 text-xs">
+                            <label class="inline-flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="uuid-upper" onchange="generateUuids()" class="accent-google-blue"> UPPERCASE</label>
+                            <label class="inline-flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="uuid-nohyphen" onchange="generateUuids()" class="accent-google-blue"> ตัดขีด (-) ออก</label>
+                        </div>
+                        <textarea id="uuid-output" rows="5" readonly class="dev-input w-full p-3 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border text-xs outline-none"></textarea>
+                    </div>
+
+                    <div class="g-card p-4 space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <h2 class="text-sm font-heading font-bold">สร้าง API Secret / Random Key (.env)</h2>
+                            <button type="button" onclick="generateApiSecret()" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold cursor-pointer">⚡ สร้าง Key</button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <select id="secret-len" onchange="generateApiSecret()" class="px-2.5 py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle border border-google-border dark:border-google-dark-border font-semibold">
+                                <option value="24">24 chars</option>
+                                <option value="32" selected>32 chars (แนะนำ)</option>
+                                <option value="48">48 chars</option>
+                                <option value="64">64 chars</option>
+                            </select>
+                            <select id="secret-charset" onchange="generateApiSecret()" class="px-2.5 py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle border border-google-border dark:border-google-dark-border font-semibold">
+                                <option value="urlsafe">URL-Safe Token</option>
+                                <option value="hex">Hex (0-9a-f)</option>
+                                <option value="strong">Strong (+Symbols)</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <input id="secret-output" type="text" readonly class="dev-input flex-1 px-3 py-2 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border text-xs outline-none">
+                            <button type="button" onclick="copyTextFromEl('secret-output', 'API Secret Key')" class="px-3 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-semibold cursor-pointer">คัดลอก</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- CORE APPLICATION SCRIPT                    -->
+    <!-- ========================================== -->
+    <script>
+        const DEV_TABS = ['json', 'jwt', 'base64', 'url', 'timestamp', 'crypto'];
+        let currentTab = 'json';
+        let lastJsonRawOutput = '';
+        let lastJsonParsed = undefined;
+        let lastJsonErrorOffset = 0;
+        let currentJsonView = 'code';
+        let b64UrlSafeMode = false;
+        let tsClockPaused = false;
+        let tsClockTimer = null;
+
+        // ==================== SHARED HELPERS ====================
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function showToast(message, isError = false) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto cursor-pointer px-4 py-2.5 rounded-full shadow-xl border border-white/10 dark:border-slate-200 text-xs font-semibold flex items-center gap-2 bg-slate-900/95 text-white dark:bg-white/95 dark:text-slate-900 backdrop-blur-md max-w-full';
+            const icon = document.createElement('i');
+            icon.className = isError ? 'fa-solid fa-circle-exclamation text-rose-400 shrink-0' : 'fa-solid fa-check-circle text-emerald-400 shrink-0';
+            const textSpan = document.createElement('span');
+            textSpan.className = 'truncate';
+            textSpan.textContent = String(message ?? '');
+            const closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.setAttribute('aria-label', 'ปิดการแจ้งเตือน');
+            closeBtn.className = 'ml-1 text-slate-400 hover:text-white dark:hover:text-slate-900 shrink-0';
+            closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            toast.append(icon, textSpan, closeBtn);
+            toast.onclick = () => toast.remove();
+            container.appendChild(toast);
+            setTimeout(() => { if (toast.isConnected) toast.remove(); }, 2500);
+        }
+
+        async function copyTextValue(text, label = 'ข้อมูล') {
+            const val = String(text ?? '');
+            if (!val) {
+                showToast('ไม่มีข้อมูลสำหรับคัดลอก', true);
+                return false;
+            }
+            try {
+                await navigator.clipboard.writeText(val);
+                showToast(`คัดลอก ${label} เรียบร้อย!`);
+                return true;
+            } catch (_) {
+                const ta = document.createElement('textarea');
+                ta.value = val;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                let ok = false;
+                try { ok = document.execCommand('copy'); } catch (_e) {}
+                ta.remove();
+                showToast(ok ? `คัดลอก ${label} เรียบร้อย!` : 'ไม่สามารถคัดลอกได้ กรุณาคัดลอกด้วยตนเอง', !ok);
+                return ok;
+            }
+        }
+
+        function copyTextFromEl(elId, label) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            const val = 'value' in el && el.tagName !== 'PRE' ? el.value : el.textContent;
+            copyTextValue(val, label);
+        }
+
+        function toggleSecretVis(inputId, btn) {
+            const inp = document.getElementById(inputId);
+            if (!inp) return;
+            const show = inp.type === 'password';
+            inp.type = show ? 'text' : 'password';
+            btn.innerHTML = show ? '<i class="fa-regular fa-eye-slash"></i>' : '<i class="fa-regular fa-eye"></i>';
+        }
+
+        // UTF-8 Safe Base64 / Base64URL Encoding & Decoding
+        function bytesToBase64(bytes, urlSafe = false) {
+            let bin = '';
+            const chunk = 0x8000;
+            for (let i = 0; i < bytes.length; i += chunk) {
+                bin += String.fromCharCode(...bytes.subarray(i, i + chunk));
+            }
+            let b64 = btoa(bin);
+            if (urlSafe) b64 = b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+            return b64;
+        }
+
+        function base64ToBytes(b64Str) {
+            let clean = String(b64Str ?? '').trim().replace(/\s+/g, '');
+            const dataUriMatch = clean.match(/^data:[^;]+;base64,(.+)$/i);
+            if (dataUriMatch) clean = dataUriMatch[1];
+            clean = clean.replace(/-/g, '+').replace(/_/g, '/');
+            if (/[^A-Za-z0-9+/=]/.test(clean)) {
+                throw new Error('พบอักขระที่ไม่ถูกต้องในสตริง Base64');
+            }
+            while (clean.length % 4 !== 0) clean += '=';
+            const bin = atob(clean);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            return bytes;
+        }
+
+        function utf8ToBase64(str, urlSafe = false) {
+            return bytesToBase64(new TextEncoder().encode(str), urlSafe);
+        }
+
+        function base64ToUtf8(b64Str) {
+            const bytes = base64ToBytes(b64Str);
+            return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+        }
+
+        function formatByteSize(bytes) {
+            if (bytes < 1024) return `${bytes} B`;
+            if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+            return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+        }
+
+        // ==================== TAB SWITCHING ====================
+        function switchDevTab(tab) {
+            if (!DEV_TABS.includes(tab)) tab = 'json';
+            currentTab = tab;
+            document.querySelectorAll('.dev-panel').forEach(p => {
+                p.classList.toggle('hidden', p.id !== `panel-${tab}`);
+            });
+            document.querySelectorAll('.dev-tab-btn').forEach(btn => {
+                const active = btn.dataset.tab === tab;
+                btn.className = active
+                    ? 'dev-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-bold flex items-center gap-2 transition cursor-pointer bg-google-blue text-white shadow-sm'
+                    : 'dev-tab-btn shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-semibold flex items-center gap-2 transition cursor-pointer text-google-text-body dark:text-google-dark-text-body hover:bg-google-subtle dark:hover:bg-google-dark-subtle';
+                const icon = btn.querySelector('i');
+                if (icon && active) icon.dataset.origColor = icon.dataset.origColor || icon.className;
+                if (icon && icon.dataset.origColor) {
+                    icon.className = active ? icon.dataset.origColor.replace(/text-\S+/g, 'text-white') : icon.dataset.origColor;
+                }
+            });
+            try { localStorage.setItem('feel_dev_tab', tab); } catch (_) {}
+            if (history.replaceState && location.hash !== `#${tab}`) {
+                history.replaceState(null, '', `#${tab}`);
+            }
+        }
+
+        // ==================== 1. JSON FORMATTER & VALIDATOR ====================
+        function getJsonStats(val, depth = 0) {
+            if (val === null || typeof val !== 'object') return { keys: 0, maxDepth: depth };
+            let keys = Array.isArray(val) ? val.length : Object.keys(val).length;
+            let maxDepth = depth + 1;
+            const children = Array.isArray(val) ? val : Object.values(val);
+            for (const c of children) {
+                if (c !== null && typeof c === 'object') {
+                    const sub = getJsonStats(c, depth + 1);
+                    keys += sub.keys;
+                    if (sub.maxDepth > maxDepth) maxDepth = sub.maxDepth;
+                }
+            }
+            return { keys, maxDepth };
+        }
+
+        function findJsonSyntaxError(src) {
+            let i = 0;
+            const len = src.length;
+            const ws = () => { while (i < len && (src[i] === ' ' || src[i] === '\t' || src[i] === '\n' || src[i] === '\r')) i++; };
+            const fail = (reason) => ({ offset: i, reason });
+
+            function parseValue() {
+                ws();
+                if (i >= len) return fail('ข้อความ JSON สิ้นสุดก่อนกำหนด (Unexpected end of JSON)');
+                const ch = src[i];
+                if (ch === '{') return parseObject();
+                if (ch === '[') return parseArray();
+                if (ch === '"') return parseString();
+                if (ch === '-' || (ch >= '0' && ch <= '9')) return parseNumber();
+                if (src.startsWith('true', i)) { i += 4; return null; }
+                if (src.startsWith('false', i)) { i += 5; return null; }
+                if (src.startsWith('null', i)) { i += 4; return null; }
+                if (ch === '\'') return fail("JSON ต้องใช้เครื่องหมายคำพูดคู่ (\") เท่านั้น ห้ามใช้ (')");
+                return fail(`พบอักขระที่ไม่คาดคิด '${ch}' ขณะอ่านค่า Value`);
+            }
+
+            function parseString() {
+                i++;
+                while (i < len) {
+                    const c = src[i];
+                    if (c === '"') { i++; return null; }
+                    if (c === '\\') {
+                        i++;
+                        if (i >= len) return fail('Escape sequence ท้ายสตริงไม่สมบูรณ์');
+                        const e = src[i];
+                        if ('"\\/bfnrt'.includes(e)) { i++; continue; }
+                        if (e === 'u') {
+                            if (!/^[0-9a-fA-F]{4}/.test(src.slice(i + 1, i + 5))) {
+                                return fail('รหัส Unicode \\uXXXX ไม่ถูกต้อง (ต้องเป็นเลขฐานสิบหก 4 หลัก)');
+                            }
+                            i += 5;
+                            continue;
+                        }
+                        return fail(`Escape character ไม่ถูกต้อง: \\${e}`);
+                    }
+                    if (c.charCodeAt(0) < 0x20) return fail('ห้ามขึ้นบรรทัดใหม่หรือใช้ control char ดิบภายใน "..."');
+                    i++;
+                }
+                return fail('ลืมปิดเครื่องหมายคำพูด (") ของสตริง');
+            }
+
+            function parseNumber() {
+                if (src[i] === '-') i++;
+                if (i >= len || src[i] < '0' || src[i] > '9') return fail('รูปแบบตัวเลขไม่ถูกต้องหลังเครื่องหมาย -');
+                if (src[i] === '0') {
+                    i++;
+                    if (i < len && src[i] >= '0' && src[i] <= '9') return fail('ตัวเลข JSON ห้ามมีเลข 0 นำหน้า (เช่น 01)');
+                } else {
+                    while (i < len && src[i] >= '0' && src[i] <= '9') i++;
+                }
+                if (src[i] === '.') {
+                    i++;
+                    if (i >= len || src[i] < '0' || src[i] > '9') return fail('หลังจุดทศนิยม (.) ต้องมีตัวเลข');
+                    while (i < len && src[i] >= '0' && src[i] <= '9') i++;
+                }
+                if (src[i] === 'e' || src[i] === 'E') {
+                    i++;
+                    if (src[i] === '+' || src[i] === '-') i++;
+                    if (i >= len || src[i] < '0' || src[i] > '9') return fail('รูปแบบเลขยกกำลัง (Exponent) ไม่ถูกต้อง');
+                    while (i < len && src[i] >= '0' && src[i] <= '9') i++;
+                }
+                return null;
+            }
+
+            function parseArray() {
+                i++;
+                ws();
+                if (i < len && src[i] === ']') { i++; return null; }
+                while (true) {
+                    const err = parseValue();
+                    if (err) return err;
+                    ws();
+                    if (i >= len) return fail('Array ยังไม่ปิดเครื่องหมาย ]');
+                    if (src[i] === ',') {
+                        i++;
+                        ws();
+                        if (src[i] === ']') return fail('พบคอมม่าเกิน (Trailing Comma) ก่อนปิด ]');
+                        continue;
+                    }
+                    if (src[i] === ']') { i++; return null; }
+                    return fail(`คาดว่าจะพบ ',' หรือ ']' แต่พบ '${src[i]}'`);
+                }
+            }
+
+            function parseObject() {
+                i++;
+                ws();
+                if (i < len && src[i] === '}') { i++; return null; }
+                while (true) {
+                    ws();
+                    if (i >= len) return fail('Object ยังไม่ปิดเครื่องหมาย }');
+                    if (src[i] !== '"') return fail(`ชื่อ Key ใน Object ต้องขึ้นต้นด้วย " แต่พบ '${src[i]}'`);
+                    let err = parseString();
+                    if (err) return err;
+                    ws();
+                    if (src[i] !== ':') return fail(`คาดว่าจะพบ ':' หลังชื่อ Key แต่พบ '${src[i] || 'EOF'}'`);
+                    i++;
+                    err = parseValue();
+                    if (err) return err;
+                    ws();
+                    if (i >= len) return fail('Object ยังไม่ปิดเครื่องหมาย }');
+                    if (src[i] === ',') {
+                        i++;
+                        ws();
+                        if (src[i] === '}') return fail('พบคอมม่าเกิน (Trailing Comma) ก่อนปิด }');
+                        continue;
+                    }
+                    if (src[i] === '}') { i++; return null; }
+                    return fail(`คาดว่าจะพบ ',' หรือ '}' แต่พบ '${src[i]}'`);
+                }
+            }
+
+            const rootErr = parseValue();
+            if (rootErr) return rootErr;
+            ws();
+            if (i < len) return fail(`พบข้อมูลเกินมาหลังปิด JSON Root: '${src[i]}'`);
+            return null;
+        }
+
+        function locateJsonError(src, errMsg) {
+            const exact = findJsonSyntaxError(src);
+            let pos = null;
+            let reason = '';
+            if (exact) {
+                pos = Math.min(src.length, exact.offset);
+                reason = exact.reason;
+            } else {
+                const posMatch = errMsg.match(/position\s+(\d+)/i);
+                const lcMatch = errMsg.match(/line\s+(\d+)\s+column\s+(\d+)/i);
+                if (lcMatch) {
+                    const targetLine = parseInt(lcMatch[1], 10);
+                    const targetCol = parseInt(lcMatch[2], 10);
+                    const lines = src.split('\n');
+                    let offset = 0;
+                    for (let i = 0; i < Math.min(targetLine - 1, lines.length); i++) offset += lines[i].length + 1;
+                    return { line: targetLine, col: targetCol, offset: Math.min(src.length, offset + Math.max(0, targetCol - 1)), reason: '' };
+                }
+                pos = posMatch ? Math.min(src.length, parseInt(posMatch[1], 10)) : src.length;
+            }
+            const upTo = src.slice(0, pos);
+            const lines = upTo.split('\n');
+            return { line: lines.length, col: lines[lines.length - 1].length + 1, offset: pos, reason };
+        }
+
+        function highlightJsonString(jsonStr) {
+            const tokenRe = /("(?:\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|\btrue\b|\bfalse\b|\bnull\b)/g;
+            let out = '';
+            let last = 0;
+            let m;
+            while ((m = tokenRe.exec(jsonStr)) !== null) {
+                out += escapeHtml(jsonStr.slice(last, m.index));
+                const tok = m[0];
+                let cls = 'tok-num';
+                if (tok.startsWith('"')) {
+                    if (tok.endsWith(':')) {
+                        const keyPart = tok.slice(0, -1);
+                        out += `<span class="tok-key">${escapeHtml(keyPart)}</span>:`;
+                        last = tokenRe.lastIndex;
+                        continue;
+                    }
+                    cls = 'tok-str';
+                } else if (tok === 'true' || tok === 'false') {
+                    cls = 'tok-bool';
+                } else if (tok === 'null') {
+                    cls = 'tok-null';
+                }
+                out += `<span class="${cls}">${escapeHtml(tok)}</span>`;
+                last = tokenRe.lastIndex;
+            }
+            out += escapeHtml(jsonStr.slice(last));
+            return out;
+        }
+
+        function stripTrailingCommasAndComments(src) {
+            let out = '';
+            let inStr = false;
+            let esc = false;
+            for (let i = 0; i < src.length; i++) {
+                const ch = src[i];
+                const next = src[i + 1];
+                if (inStr) {
+                    out += ch;
+                    if (esc) esc = false;
+                    else if (ch === '\\') esc = true;
+                    else if (ch === '"') inStr = false;
+                    continue;
+                }
+                if (ch === '"') {
+                    inStr = true;
+                    out += ch;
+                    continue;
+                }
+                if (ch === '/' && next === '/') {
+                    while (i < src.length && src[i] !== '\n') i++;
+                    out += '\n';
+                    continue;
+                }
+                if (ch === '/' && next === '*') {
+                    i += 2;
+                    while (i < src.length && !(src[i] === '*' && src[i + 1] === '/')) i++;
+                    i++;
+                    continue;
+                }
+                if (ch === ',') {
+                    let j = i + 1;
+                    while (j < src.length && /\s/.test(src[j])) j++;
+                    if (src[j] === '}' || src[j] === ']') continue;
+                }
+                out += ch;
+            }
+            return out;
+        }
+
+        function sortObjectDeep(val) {
+            if (Array.isArray(val)) return val.map(sortObjectDeep);
+            if (val !== null && typeof val === 'object') {
+                const sorted = {};
+                for (const k of Object.keys(val).sort((a, b) => a.localeCompare(b))) {
+                    sorted[k] = sortObjectDeep(val[k]);
+                }
+                return sorted;
+            }
+            return val;
+        }
+
+        function getIndentOption() {
+            const v = document.getElementById('json-indent').value;
+            return v === 'tab' ? '\t' : parseInt(v, 10) || 2;
+        }
+
+        function buildJsonTreeNode(keyLabel, val, pathStr) {
+            const row = document.createElement('div');
+            const isObj = val !== null && typeof val === 'object';
+            if (!isObj) {
+                const item = document.createElement('div');
+                item.className = 'flex items-baseline gap-1.5 px-2 py-1 rounded-md hover:bg-google-subtle dark:hover:bg-google-dark-subtle cursor-pointer transition';
+                item.title = `คลิกเพื่อคัดลอก Path: ${pathStr}`;
+                item.onclick = () => copyTextValue(pathStr, `Path (${pathStr})`);
+
+                if (keyLabel !== null) {
+                    const kSpan = document.createElement('span');
+                    kSpan.className = 'tok-key';
+                    kSpan.textContent = `${keyLabel}:`;
+                    item.appendChild(kSpan);
+                }
+                const vSpan = document.createElement('span');
+                if (val === null) { vSpan.className = 'tok-null'; vSpan.textContent = 'null'; }
+                else if (typeof val === 'boolean') { vSpan.className = 'tok-bool'; vSpan.textContent = String(val); }
+                else if (typeof val === 'number') { vSpan.className = 'tok-num'; vSpan.textContent = String(val); }
+                else { vSpan.className = 'tok-str break-all'; vSpan.textContent = JSON.stringify(val); }
+                item.appendChild(vSpan);
+                row.appendChild(item);
+                return row;
+            }
+
+            const isArr = Array.isArray(val);
+            const entries = isArr ? val.map((v, idx) => [`[${idx}]`, v, `${pathStr}[${idx}]`]) : Object.entries(val).map(([k, v]) => [k, v, /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(k) ? `${pathStr}.${k}` : `${pathStr}[${JSON.stringify(k)}]`]);
+            const det = document.createElement('details');
+            det.open = pathStr.split('.').length <= 3;
+
+            const sum = document.createElement('summary');
+            sum.className = 'cursor-pointer select-none px-2 py-1 rounded-md hover:bg-google-subtle dark:hover:bg-google-dark-subtle flex items-center gap-1.5';
+            const kSpan = document.createElement('span');
+            kSpan.className = 'tok-key';
+            kSpan.textContent = keyLabel !== null ? `${keyLabel}` : 'root';
+            kSpan.onclick = (e) => { e.stopPropagation(); copyTextValue(pathStr, `Path (${pathStr})`); };
+
+            const meta = document.createElement('span');
+            meta.className = 'text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-zinc-700 text-slate-500 dark:text-slate-300';
+            meta.textContent = isArr ? `Array[${entries.length}]` : `Object{${entries.length}}`;
+            sum.append(kSpan, meta);
+            det.appendChild(sum);
+
+            const kids = document.createElement('div');
+            kids.className = 'pl-4 ml-2 border-l border-google-border dark:border-google-dark-border';
+            const limit = Math.min(entries.length, 250);
+            for (let i = 0; i < limit; i++) {
+                kids.appendChild(buildJsonTreeNode(entries[i][0], entries[i][1], entries[i][2]));
+            }
+            if (entries.length > limit) {
+                const more = document.createElement('div');
+                more.className = 'px-2 py-1 text-[11px] text-amber-600';
+                more.textContent = `... ยังมีอีก ${entries.length - limit} รายการ (ดูทั้งหมดได้ที่โหมด Code)`;
+                kids.appendChild(more);
+            }
+            det.appendChild(kids);
+            row.appendChild(det);
+            return row;
+        }
+
+        function processJsonLive(reformatOnlyOutput = false) {
+            const inp = document.getElementById('json-input');
+            const raw = inp.value;
+            const statsEl = document.getElementById('json-input-stats');
+            const lineCount = raw ? raw.split('\n').length : 1;
+            statsEl.textContent = `${raw.length} chars • ${lineCount} lines`;
+
+            const badge = document.getElementById('json-status-badge');
+            const metricsEl = document.getElementById('json-metrics');
+            const errBox = document.getElementById('json-error-box');
+            const outEl = document.getElementById('json-output');
+            const treeEl = document.getElementById('json-tree');
+            const fixBtn = document.getElementById('json-fix-btn');
+
+            if (!raw.trim()) {
+                badge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-zinc-700 text-slate-600 dark:text-slate-300';
+                badge.textContent = 'รอข้อมูล JSON';
+                metricsEl.textContent = '';
+                errBox.classList.add('hidden');
+                outEl.textContent = 'ผลลัพธ์ JSON ที่จัดระเบียบแล้วจะปรากฏที่นี่...';
+                treeEl.innerHTML = '';
+                lastJsonRawOutput = '';
+                lastJsonParsed = undefined;
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(raw);
+                lastJsonParsed = parsed;
+                const formatted = JSON.stringify(parsed, null, getIndentOption());
+                lastJsonRawOutput = formatted;
+
+                badge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
+                badge.textContent = '✓ JSON ถูกต้อง';
+                errBox.classList.add('hidden');
+
+                const st = getJsonStats(parsed);
+                const rootType = Array.isArray(parsed) ? 'Array' : (parsed !== null && typeof parsed === 'object' ? 'Object' : typeof parsed);
+                const byteLen = new TextEncoder().encode(formatted).length;
+                metricsEl.textContent = `${rootType} • ${st.keys} keys • ลึก ${st.maxDepth} ชั้น • ${formatByteSize(byteLen)}`;
+
+                outEl.innerHTML = highlightJsonString(formatted);
+                treeEl.innerHTML = '';
+                treeEl.appendChild(buildJsonTreeNode(null, parsed, 'data'));
+            } catch (err) {
+                lastJsonParsed = undefined;
+                lastJsonRawOutput = '';
+                const errMsg = err?.message || String(err);
+                const loc = locateJsonError(raw, errMsg);
+                lastJsonErrorOffset = loc.offset;
+
+                badge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300';
+                badge.textContent = `✕ Error บรรทัด ${loc.line}:${loc.col}`;
+                metricsEl.textContent = '';
+
+                document.getElementById('json-error-title').innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> พบ Syntax Error ที่บรรทัด ${loc.line}, คอลัมน์ ${loc.col}`;
+                document.getElementById('json-error-msg').textContent = loc.reason ? `${loc.reason} (${errMsg})` : errMsg;
+
+                const lines = raw.split('\n');
+                const startLine = Math.max(0, loc.line - 2);
+                const endLine = Math.min(lines.length - 1, loc.line);
+                const snippetLines = [];
+                for (let i = startLine; i <= endLine; i++) {
+                    const num = String(i + 1).padStart(3, ' ');
+                    snippetLines.push(`${num} | ${lines[i]}`);
+                    if (i === loc.line - 1) {
+                        const caretPad = ' '.repeat(Math.max(0, loc.col - 1));
+                        snippetLines.push(`    | ${caretPad}^-- จุดที่คาดว่าผิดพลาด`);
+                    }
+                }
+                document.getElementById('json-error-snippet').textContent = snippetLines.join('\n');
+
+                // Check if stripping trailing commas / comments makes it valid
+                let canAutoFix = false;
+                try {
+                    JSON.parse(stripTrailingCommasAndComments(raw));
+                    canAutoFix = true;
+                } catch (_) {}
+                fixBtn.classList.toggle('hidden', !canAutoFix);
+                errBox.classList.remove('hidden');
+                if (!reformatOnlyOutput) outEl.textContent = raw;
+            }
+        }
+
+        function formatJsonAction() {
+            const inp = document.getElementById('json-input');
+            try {
+                const parsed = JSON.parse(inp.value);
+                inp.value = JSON.stringify(parsed, null, getIndentOption());
+                processJsonLive();
+                showToast('จัดระเบียบ JSON เรียบร้อย!');
+            } catch (_) {
+                processJsonLive();
+                showToast('พบ Syntax Error — กรุณาแก้ไขจุดที่แจ้งเตือนด้านขวา', true);
+            }
+        }
+
+        function minifyJsonAction() {
+            const inp = document.getElementById('json-input');
+            try {
+                const parsed = JSON.parse(inp.value);
+                const min = JSON.stringify(parsed);
+                inp.value = min;
+                lastJsonRawOutput = min;
+                processJsonLive();
+                document.getElementById('json-output').textContent = min;
+                lastJsonRawOutput = min;
+                showToast('ย่อ JSON (Minify) เรียบร้อย!');
+            } catch (_) {
+                processJsonLive();
+                showToast('JSON ไม่ถูกต้อง ไม่สามารถย่อได้', true);
+            }
+        }
+
+        function sortJsonKeysAction() {
+            const inp = document.getElementById('json-input');
+            try {
+                const parsed = sortObjectDeep(JSON.parse(inp.value));
+                inp.value = JSON.stringify(parsed, null, getIndentOption());
+                processJsonLive();
+                showToast('เรียงชื่อ Key จาก A-Z เรียบร้อย!');
+            } catch (_) {
+                showToast('JSON ไม่ถูกต้อง กรุณาตรวจสอบก่อนเรียง Key', true);
+            }
+        }
+
+        function toggleEscapeJson() {
+            const inp = document.getElementById('json-input');
+            const raw = inp.value.trim();
+            if (!raw) return;
+            try {
+                const parsed = JSON.parse(raw);
+                if (typeof parsed === 'string') {
+                    // Already an escaped JSON string -> unescape
+                    inp.value = parsed;
+                    processJsonLive();
+                    showToast('Unescape สตริงเป็น JSON ปกติแล้ว!');
+                } else {
+                    const escaped = JSON.stringify(JSON.stringify(parsed));
+                    inp.value = escaped;
+                    processJsonLive();
+                    showToast('Escape เป็น String JSON แล้ว!');
+                }
+            } catch (_) {
+                inp.value = JSON.stringify(inp.value);
+                processJsonLive();
+                showToast('Escape ข้อความเป็น JSON String แล้ว!');
+            }
+        }
+        function escapeJsonAction() { toggleEscapeJson(); }
+
+        function autoRepairJson() {
+            const inp = document.getElementById('json-input');
+            const fixed = stripTrailingCommasAndComments(inp.value);
+            try {
+                const parsed = JSON.parse(fixed);
+                inp.value = JSON.stringify(parsed, null, getIndentOption());
+                processJsonLive();
+                showToast('ซ่อม Trailing Comma / Comment เรียบร้อย!');
+            } catch (_) {
+                showToast('ไม่สามารถซ่อมอัตโนมัติได้ทั้งหมด', true);
+            }
+        }
+
+        function jumpToJsonError() {
+            const inp = document.getElementById('json-input');
+            inp.focus();
+            inp.setSelectionRange(lastJsonErrorOffset, Math.min(inp.value.length, lastJsonErrorOffset + 1));
+        }
+
+        function setJsonOutputView(mode) {
+            currentJsonView = mode;
+            const isTree = mode === 'tree';
+            document.getElementById('json-pretty-wrap').classList.toggle('hidden', isTree);
+            document.getElementById('json-tree-wrap').classList.toggle('hidden', !isTree);
+            document.getElementById('json-view-code-btn').className = !isTree
+                ? 'px-2.5 py-1 rounded-md bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer'
+                : 'px-2.5 py-1 rounded-md text-google-text-muted dark:text-google-dark-text-muted cursor-pointer';
+            document.getElementById('json-view-tree-btn').className = isTree
+                ? 'px-2.5 py-1 rounded-md bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer'
+                : 'px-2.5 py-1 rounded-md text-google-text-muted dark:text-google-dark-text-muted cursor-pointer';
+        }
+
+        function copyJsonOutput() {
+            copyTextValue(lastJsonRawOutput || document.getElementById('json-output').textContent, 'JSON');
+        }
+
+        function downloadJsonOutput() {
+            const text = lastJsonRawOutput || document.getElementById('json-input').value;
+            if (!text.trim()) return showToast('ไม่มีข้อมูลสำหรับดาวน์โหลด', true);
+            const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `formatted-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('ดาวน์โหลดไฟล์ .json แล้ว!');
+        }
+
+        function handleJsonFileUpload(input) {
+            const file = input.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                document.getElementById('json-input').value = String(reader.result || '');
+                processJsonLive();
+                showToast(`โหลดไฟล์ ${file.name} แล้ว!`);
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+
+        function loadJsonSample() {
+            const sample = {
+                status: 'ok',
+                code: 200,
+                service: 'feel-portfolio-api',
+                timestamp: Math.floor(Date.now() / 1000),
+                user: {
+                    id: 1001,
+                    name: 'นายภคพล สมัยแก้ว (ฟีล)',
+                    college: 'วิทยาลัยอาชีวศึกษานครศรีธรรมราช',
+                    skills: ['ESP32 / IoT', 'AI Prompt & API', 'Full-Stack Web'],
+                    verified: true,
+                    note: null
+                },
+                endpoints: [
+                    { path: '/api/vault', auth: 'PIN-6 + AES-256-GCM', rateLimit: 60 },
+                    { path: '/api/cctv', cameras: 222, live: true }
+                ]
+            };
+            document.getElementById('json-input').value = JSON.stringify(sample, null, 2);
+            processJsonLive();
+        }
+
+        function clearJsonTool() {
+            document.getElementById('json-input').value = '';
+            processJsonLive();
+        }
+
+        // ==================== 2. JWT TOKEN DEBUGGER ====================
+        function formatThaiDateTime(date) {
+            return date.toLocaleString('th-TH', {
+                year: 'numeric',
+                month: 'short',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+        }
+
+        function formatRelativeSeconds(diffSec) {
+            const abs = Math.abs(Math.round(diffSec));
+            const past = diffSec < 0;
+            let txt;
+            if (abs < 60) txt = `${abs} วินาที`;
+            else if (abs < 3600) txt = `${Math.floor(abs / 60)} นาที ${abs % 60} วินาที`;
+            else if (abs < 86400) txt = `${Math.floor(abs / 3600)} ชม. ${Math.floor((abs % 3600) / 60)} นาที`;
+            else txt = `${Math.floor(abs / 86400)} วัน ${Math.floor((abs % 86400) / 3600)} ชม.`;
+            return past ? `ผ่านมาแล้ว ${txt}` : `อีก ${txt}`;
+        }
+
+        async function verifyJwtHmac(header, signingInput, sigB64Url, secret) {
+            const algMap = { HS256: 'SHA-256', HS384: 'SHA-384', HS512: 'SHA-512' };
+            const hashAlg = algMap[header?.alg];
+            if (!hashAlg) return { supported: false, alg: header?.alg || 'unknown' };
+            if (!crypto?.subtle) return { supported: false, alg: 'WebCrypto unavailable' };
+            const key = await crypto.subtle.importKey(
+                'raw',
+                new TextEncoder().encode(secret),
+                { name: 'HMAC', hash: { name: hashAlg } },
+                false,
+                ['verify']
+            );
+            const sigBytes = base64ToBytes(sigB64Url);
+            const valid = await crypto.subtle.verify('HMAC', key, sigBytes, new TextEncoder().encode(signingInput));
+            return { supported: true, valid, alg: header.alg };
+        }
+
+        async function parseJwtLive() {
+            let raw = document.getElementById('jwt-input').value.trim();
+            if (/^Bearer\s+/i.test(raw)) raw = raw.replace(/^Bearer\s+/i, '').trim();
+
+            const badge = document.getElementById('jwt-valid-badge');
+            const headerOut = document.getElementById('jwt-header-out');
+            const payloadOut = document.getElementById('jwt-payload-out');
+            const claimsList = document.getElementById('jwt-claims-list');
+            const expBanner = document.getElementById('jwt-exp-banner');
+            const sigStatus = document.getElementById('jwt-sig-status');
+
+            if (!raw) {
+                badge.className = 'ml-auto font-semibold text-google-text-muted dark:text-google-dark-text-muted';
+                badge.textContent = 'รอวาง Token';
+                headerOut.textContent = '{}';
+                payloadOut.textContent = '{}';
+                claimsList.innerHTML = '<span class="text-google-text-muted dark:text-google-dark-text-muted">ยังไม่มีข้อมูล Claims</span>';
+                expBanner.classList.add('hidden');
+                sigStatus.className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-slate-300';
+                sigStatus.innerHTML = '<i class="fa-solid fa-circle-info mr-1"></i> ใส่ Secret Key เพื่อตรวจสอบความถูกต้องของลายเซ็น';
+                return;
+            }
+
+            const parts = raw.split('.');
+            if (parts.length !== 3) {
+                badge.className = 'ml-auto font-bold text-rose-600 dark:text-rose-400';
+                badge.textContent = `รูปแบบไม่ถูกต้อง (${parts.length} ส่วน — ต้องมี 3 ส่วนคั่นด้วยจุด)`;
+                headerOut.textContent = 'Invalid JWT structure';
+                payloadOut.textContent = '';
+                claimsList.innerHTML = '';
+                expBanner.classList.add('hidden');
+                return;
+            }
+
+            try {
+                const headerJson = JSON.parse(base64ToUtf8(parts[0]));
+                const payloadJson = JSON.parse(base64ToUtf8(parts[1]));
+
+                badge.className = 'ml-auto font-bold text-emerald-600 dark:text-emerald-400';
+                badge.textContent = `✓ ถอดรหัสสำเร็จ (${headerJson.alg || 'No alg'})`;
+
+                headerOut.innerHTML = highlightJsonString(JSON.stringify(headerJson, null, 2));
+                payloadOut.innerHTML = highlightJsonString(JSON.stringify(payloadJson, null, 2));
+
+                // Standard Claims Inspector
+                const nowSec = Math.floor(Date.now() / 1000);
+                const claimLabels = {
+                    iss: 'Issuer (ผู้ออก Token)',
+                    sub: 'Subject (รหัสผู้ใช้)',
+                    aud: 'Audience (ผู้รับ)',
+                    jti: 'JWT ID',
+                    iat: 'Issued At (ออกเมื่อ)',
+                    nbf: 'Not Before (เริ่มใช้ได้)',
+                    exp: 'Expires At (วันหมดอายุ)'
+                };
+                claimsList.innerHTML = '';
+                let hasAnyClaim = false;
+                for (const key of ['sub', 'iss', 'aud', 'jti', 'iat', 'nbf', 'exp']) {
+                    if (payloadJson[key] === undefined) continue;
+                    hasAnyClaim = true;
+                    const row = document.createElement('div');
+                    row.className = 'flex items-start justify-between gap-2 pb-1.5 border-b border-google-border/60 dark:border-google-dark-border/60 last:border-b-0';
+                    const left = document.createElement('div');
+                    left.innerHTML = `<span class="font-mono font-bold text-violet-600 dark:text-violet-400">${escapeHtml(key)}</span> <span class="text-[11px] text-google-text-muted block">${claimLabels[key]}</span>`;
+                    const right = document.createElement('div');
+                    right.className = 'text-right font-mono text-[11px]';
+                    if ((key === 'iat' || key === 'nbf' || key === 'exp') && typeof payloadJson[key] === 'number') {
+                        const d = new Date(payloadJson[key] * 1000);
+                        right.innerHTML = `<div class="font-semibold">${escapeHtml(formatThaiDateTime(d))}</div><div class="text-google-text-muted">${escapeHtml(formatRelativeSeconds(payloadJson[key] - nowSec))}</div>`;
+                    } else {
+                        right.textContent = typeof payloadJson[key] === 'object' ? JSON.stringify(payloadJson[key]) : String(payloadJson[key]);
+                    }
+                    row.append(left, right);
+                    claimsList.appendChild(row);
+                }
+                if (!hasAnyClaim) {
+                    claimsList.innerHTML = '<span class="text-google-text-muted">ไม่พบ Standard Claims (exp / iat / sub / iss) ใน Payload นี้</span>';
+                }
+
+                // Expiration Banner
+                if (typeof payloadJson.exp === 'number') {
+                    const diff = payloadJson.exp - nowSec;
+                    const expired = diff <= 0;
+                    expBanner.className = expired
+                        ? 'g-card px-4 py-3 flex flex-wrap items-center justify-between gap-2 border-l-4 border-l-rose-500 bg-rose-50/70 dark:bg-rose-950/30 text-xs'
+                        : 'g-card px-4 py-3 flex flex-wrap items-center justify-between gap-2 border-l-4 border-l-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/30 text-xs';
+                    const expDate = formatThaiDateTime(new Date(payloadJson.exp * 1000));
+                    expBanner.innerHTML = expired
+                        ? `<div class="font-bold text-rose-700 dark:text-rose-300"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Token หมดอายุแล้ว (${escapeHtml(formatRelativeSeconds(diff))})</div><div class="font-mono text-rose-600 dark:text-rose-200">หมดอายุ: ${escapeHtml(expDate)}</div>`
+                        : `<div class="font-bold text-emerald-700 dark:text-emerald-300"><i class="fa-solid fa-circle-check mr-1.5"></i> Token ยังใช้งานได้ (${escapeHtml(formatRelativeSeconds(diff))})</div><div class="font-mono text-emerald-700 dark:text-emerald-200">หมดอายุ: ${escapeHtml(expDate)}</div>`;
+                    expBanner.classList.remove('hidden');
+                } else {
+                    expBanner.classList.add('hidden');
+                }
+
+                await verifyCurrentJwt(headerJson, `${parts[0]}.${parts[1]}`, parts[2]);
+            } catch (err) {
+                badge.className = 'ml-auto font-bold text-rose-600 dark:text-rose-400';
+                badge.textContent = '✕ ถอดรหัส Header/Payload ไม่สำเร็จ';
+                headerOut.textContent = `Error: ${err.message}`;
+                payloadOut.textContent = '';
+                expBanner.classList.add('hidden');
+            }
+        }
+
+        async function verifyCurrentJwt(cachedHeader = null, cachedInput = null, cachedSig = null) {
+            const sigStatus = document.getElementById('jwt-sig-status');
+            let raw = document.getElementById('jwt-input').value.trim().replace(/^Bearer\s+/i, '').trim();
+            const secret = document.getElementById('jwt-secret').value;
+            if (!raw || raw.split('.').length !== 3) return;
+            const parts = raw.split('.');
+            const header = cachedHeader || (() => { try { return JSON.parse(base64ToUtf8(parts[0])); } catch (_) { return null; } })();
+            if (!header) return;
+
+            if (!secret) {
+                sigStatus.className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-slate-300';
+                sigStatus.innerHTML = '<i class="fa-solid fa-circle-info mr-1"></i> ใส่ Secret Key ด้านบนเพื่อตรวจสอบ HMAC Signature ในเครื่อง';
+                return;
+            }
+            try {
+                const res = await verifyJwtHmac(header, cachedInput || `${parts[0]}.${parts[1]}`, cachedSig || parts[2], secret);
+                if (!res.supported) {
+                    sigStatus.className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300';
+                    sigStatus.textContent = `อัลกอริทึม ${res.alg} ไม่ใช่ HMAC (HS256/384/512) จึงตรวจด้วย Secret ไม่ได้`;
+                } else if (res.valid) {
+                    sigStatus.className = 'px-3 py-2 rounded-xl text-xs font-bold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300';
+                    sigStatus.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Signature ถูกต้อง! (${escapeHtml(res.alg)} Verified)`;
+                } else {
+                    sigStatus.className = 'px-3 py-2 rounded-xl text-xs font-bold bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300';
+                    sigStatus.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> Signature ไม่ถูกต้อง (Secret Key ไม่ตรง)`;
+                }
+            } catch (e) {
+                sigStatus.className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-rose-50 text-rose-600';
+                sigStatus.textContent = `ตรวจลายเซ็นไม่สำเร็จ: ${e.message}`;
+            }
+        }
+
+        async function createSignedHs256Jwt(payloadObj, secret) {
+            const hB64 = utf8ToBase64(JSON.stringify({ alg: 'HS256', typ: 'JWT' }), true);
+            const pB64 = utf8ToBase64(JSON.stringify(payloadObj), true);
+            const signingInput = `${hB64}.${pB64}`;
+            const key = await crypto.subtle.importKey(
+                'raw',
+                new TextEncoder().encode(secret),
+                { name: 'HMAC', hash: { name: 'SHA-256' } },
+                false,
+                ['sign']
+            );
+            const sigBuf = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signingInput));
+            return `${signingInput}.${bytesToBase64(new Uint8Array(sigBuf), true)}`;
+        }
+
+        async function signTestJwt() {
+            const secret = document.getElementById('jwt-secret').value || 'feel-dev-secret-2026';
+            if (!document.getElementById('jwt-secret').value) {
+                document.getElementById('jwt-secret').value = secret;
+            }
+            let payloadObj;
+            try {
+                payloadObj = JSON.parse(document.getElementById('jwt-sign-payload').value);
+            } catch (err) {
+                return showToast(`Payload JSON ไม่ถูกต้อง: ${err.message}`, true);
+            }
+            const now = Math.floor(Date.now() / 1000);
+            const ttl = parseInt(document.getElementById('jwt-sign-ttl').value, 10);
+            payloadObj.iat = now;
+            if (ttl > 0) payloadObj.exp = now + ttl;
+            const jwt = await createSignedHs256Jwt(payloadObj, secret);
+            document.getElementById('jwt-input').value = jwt;
+            await parseJwtLive();
+            showToast('สร้างและ Sign HS256 JWT สำเร็จ!');
+        }
+
+        async function loadJwtSample() {
+            const now = Math.floor(Date.now() / 1000);
+            const samplePayload = {
+                sub: 'dev_9001',
+                name: 'นายภคพล สมัยแก้ว (ฟีล)',
+                role: 'developer',
+                scope: ['api:read', 'vault:write'],
+                iat: now - 300,
+                exp: now + 7200
+            };
+            const demoSecret = 'feel-dev-secret-2026';
+            document.getElementById('jwt-secret').value = demoSecret;
+            document.getElementById('jwt-input').value = await createSignedHs256Jwt(samplePayload, demoSecret);
+            await parseJwtLive();
+        }
+
+        function clearJwtTool() {
+            document.getElementById('jwt-input').value = '';
+            document.getElementById('jwt-secret').value = '';
+            parseJwtLive();
+        }
+
+        // ==================== 3. BASE64 & BASE64URL ====================
+        function setBase64Mode(urlSafe) {
+            b64UrlSafeMode = urlSafe;
+            document.getElementById('b64-mode-std').className = !urlSafe
+                ? 'px-3 py-1 rounded-lg bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer'
+                : 'px-3 py-1 rounded-lg text-google-text-muted dark:text-google-dark-text-muted cursor-pointer';
+            document.getElementById('b64-mode-url').className = urlSafe
+                ? 'px-3 py-1 rounded-lg bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer'
+                : 'px-3 py-1 rounded-lg text-google-text-muted dark:text-google-dark-text-muted cursor-pointer';
+            document.getElementById('b64-encoded-title').textContent = urlSafe
+                ? 'รหัส Base64URL (วางเพื่อถอดรหัสทันที)'
+                : 'รหัส Base64 (วางเพื่อถอดรหัสทันที)';
+            if (document.getElementById('b64-plain').value) encodeBase64Live();
+        }
+
+        function updateBase64Counters() {
+            const plain = document.getElementById('b64-plain').value;
+            const enc = document.getElementById('b64-encoded').value;
+            document.getElementById('b64-plain-bytes').textContent = `${new TextEncoder().encode(plain).length} bytes`;
+            document.getElementById('b64-enc-len').textContent = `${enc.length} chars`;
+        }
+
+        function encodeBase64Live() {
+            const plain = document.getElementById('b64-plain').value;
+            document.getElementById('b64-error').classList.add('hidden');
+            document.getElementById('b64-img-preview-box').classList.add('hidden');
+            document.getElementById('b64-encoded').value = plain ? utf8ToBase64(plain, b64UrlSafeMode) : '';
+            updateBase64Counters();
+        }
+
+        function decodeBase64Live() {
+            const enc = document.getElementById('b64-encoded').value;
+            const errEl = document.getElementById('b64-error');
+            const imgBox = document.getElementById('b64-img-preview-box');
+            imgBox.classList.add('hidden');
+            if (!enc.trim()) {
+                errEl.classList.add('hidden');
+                document.getElementById('b64-plain').value = '';
+                updateBase64Counters();
+                return;
+            }
+            if (/^data:image\/[a-zA-Z0-9+.-]+;base64,/i.test(enc.trim())) {
+                document.getElementById('b64-img-preview').src = enc.trim();
+                document.getElementById('b64-img-meta').textContent = formatByteSize(Math.floor(enc.length * 0.75));
+                imgBox.classList.remove('hidden');
+            }
+            try {
+                const decoded = base64ToUtf8(enc);
+                document.getElementById('b64-plain').value = decoded;
+                errEl.classList.add('hidden');
+            } catch (e) {
+                errEl.textContent = `✕ ${e.message} (หากเป็นไฟล์ Binary/รูปภาพ ให้ใช้ Data URI หรือดูเฉพาะไบต์)`;
+                errEl.classList.remove('hidden');
+            }
+            updateBase64Counters();
+        }
+
+        function handleBase64FileUpload(input) {
+            const file = input.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                const dataUri = String(reader.result || '');
+                document.getElementById('b64-plain').value = `File: ${file.name} (${formatByteSize(file.size)})`;
+                document.getElementById('b64-encoded').value = dataUri;
+                document.getElementById('b64-error').classList.add('hidden');
+                if (file.type.startsWith('image/')) {
+                    document.getElementById('b64-img-preview').src = dataUri;
+                    document.getElementById('b64-img-meta').textContent = `${file.name} • ${formatByteSize(file.size)}`;
+                    document.getElementById('b64-img-preview-box').classList.remove('hidden');
+                }
+                updateBase64Counters();
+                showToast(`แปลงไฟล์ ${file.name} เป็น Base64 Data URI แล้ว!`);
+            };
+            reader.readAsDataURL(file);
+            input.value = '';
+        }
+
+        function loadBase64Sample() {
+            document.getElementById('b64-plain').value = '{"user":"นายภคพล (ฟีล)","city":"นครศรีธรรมราช","ok":true,"emoji":"🚀"}';
+            encodeBase64Live();
+        }
+
+        function clearBase64Tool() {
+            document.getElementById('b64-plain').value = '';
+            document.getElementById('b64-encoded').value = '';
+            document.getElementById('b64-error').classList.add('hidden');
+            document.getElementById('b64-img-preview-box').classList.add('hidden');
+            updateBase64Counters();
+        }
+
+        // ==================== 4. URL ENCODE/DECODE & PARSER ====================
+        function encodeUrlLive() {
+            const raw = document.getElementById('url-raw').value;
+            const mode = document.getElementById('url-enc-mode').value;
+            document.getElementById('url-error').classList.add('hidden');
+            document.getElementById('url-encoded').value = mode === 'uri' ? encodeURI(raw) : encodeURIComponent(raw);
+        }
+
+        function decodeUrlLive() {
+            const enc = document.getElementById('url-encoded').value;
+            const errEl = document.getElementById('url-error');
+            const mode = document.getElementById('url-enc-mode').value;
+            try {
+                document.getElementById('url-raw').value = mode === 'uri' ? decodeURI(enc) : decodeURIComponent(enc.replace(/\+/g, ' '));
+                errEl.classList.add('hidden');
+            } catch (e) {
+                errEl.textContent = `✕ รูปแบบ %XX ไม่สมบูรณ์: ${e.message}`;
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        function parseFullUrl() {
+            const raw = document.getElementById('url-parser-input').value.trim();
+            const partsGrid = document.getElementById('url-parts-grid');
+            const tbody = document.getElementById('url-params-tbody');
+            const rebuiltEl = document.getElementById('url-rebuilt-output');
+            if (!raw) {
+                partsGrid.innerHTML = '';
+                tbody.innerHTML = '<tr><td colspan="3" class="px-3 py-4 text-center text-google-text-muted">วาง URL ด้านบน หรือกด "+ เพิ่ม Parameter"</td></tr>';
+                rebuiltEl.textContent = '-';
+                return;
+            }
+            let u;
+            try {
+                u = new URL(raw);
+            } catch (_) {
+                partsGrid.innerHTML = '<div class="col-span-full text-rose-600 font-semibold">URL ไม่ถูกต้อง (กรุณาขึ้นต้นด้วย https:// หรือ http://)</div>';
+                rebuiltEl.textContent = raw;
+                return;
+            }
+            const parts = [
+                ['Protocol', u.protocol],
+                ['Hostname', u.hostname + (u.port ? `:${u.port}` : '')],
+                ['Pathname', u.pathname],
+                ['Hash', u.hash || '(ไม่มี)']
+            ];
+            partsGrid.innerHTML = '';
+            for (const [label, val] of parts) {
+                const box = document.createElement('div');
+                box.className = 'p-2 rounded-lg bg-google-subtle/70 dark:bg-google-dark-subtle/70 border border-google-border dark:border-google-dark-border min-w-0';
+                box.innerHTML = `<span class="text-[10px] font-bold text-google-text-muted block">${label}</span><code class="font-mono text-xs truncate block text-google-text dark:text-white"></code>`;
+                box.querySelector('code').textContent = val;
+                partsGrid.appendChild(box);
+            }
+
+            tbody.innerHTML = '';
+            const entries = [...u.searchParams.entries()];
+            if (entries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="px-3 py-3 text-center text-google-text-muted">ไม่พบ Query Parameters ใน URL นี้</td></tr>';
+            } else {
+                entries.forEach(([k, v]) => appendParamRowDom(k, v));
+            }
+            rebuildParsedUrl();
+        }
+
+        function appendParamRowDom(key, val) {
+            const tbody = document.getElementById('url-params-tbody');
+            if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+            const tr = document.createElement('tr');
+            const tdKey = document.createElement('td');
+            tdKey.className = 'p-1.5';
+            const inKey = document.createElement('input');
+            inKey.type = 'text';
+            inKey.value = key;
+            inKey.placeholder = 'key';
+            inKey.className = 'url-param-key dev-input w-full px-2 py-1 rounded border border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-bg text-xs outline-none';
+            inKey.oninput = rebuildParsedUrl;
+            tdKey.appendChild(inKey);
+
+            const tdVal = document.createElement('td');
+            tdVal.className = 'p-1.5';
+            const inVal = document.createElement('input');
+            inVal.type = 'text';
+            inVal.value = val;
+            inVal.placeholder = 'value';
+            inVal.className = 'url-param-val dev-input w-full px-2 py-1 rounded border border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-bg text-xs outline-none';
+            inVal.oninput = rebuildParsedUrl;
+            tdVal.appendChild(inVal);
+
+            const tdDel = document.createElement('td');
+            tdDel.className = 'p-1.5 text-center';
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'text-rose-500 hover:text-rose-700 p-1 cursor-pointer';
+            delBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+            delBtn.onclick = () => { tr.remove(); rebuildParsedUrl(); };
+            tdDel.appendChild(delBtn);
+
+            tr.append(tdKey, tdVal, tdDel);
+            tbody.appendChild(tr);
+        }
+
+        function addUrlParamRow(key, val) {
+            appendParamRowDom(key, val);
+            rebuildParsedUrl();
+        }
+
+        function rebuildParsedUrl() {
+            const baseRaw = document.getElementById('url-parser-input').value.trim();
+            const rebuiltEl = document.getElementById('url-rebuilt-output');
+            let baseUrl;
+            try {
+                baseUrl = new URL(baseRaw || 'https://api.example.com/');
+            } catch (_) {
+                baseUrl = new URL('https://api.example.com/');
+            }
+            baseUrl.search = '';
+            document.querySelectorAll('#url-params-tbody tr').forEach(tr => {
+                const k = tr.querySelector('.url-param-key')?.value;
+                const v = tr.querySelector('.url-param-val')?.value ?? '';
+                if (k) baseUrl.searchParams.append(k, v);
+            });
+            rebuiltEl.textContent = baseUrl.toString();
+        }
+
+        function copyQueryParamsAsJson() {
+            const obj = {};
+            document.querySelectorAll('#url-params-tbody tr').forEach(tr => {
+                const k = tr.querySelector('.url-param-key')?.value;
+                const v = tr.querySelector('.url-param-val')?.value ?? '';
+                if (!k) return;
+                if (obj[k] !== undefined) obj[k] = Array.isArray(obj[k]) ? [...obj[k], v] : [obj[k], v];
+                else obj[k] = v;
+            });
+            copyTextValue(JSON.stringify(obj, null, 2), 'Query Params JSON');
+        }
+
+        function loadUrlSample() {
+            const sample = 'https://api.example.com/v1/search?q=ร้านอาหาร นครศรีธรรมราช&category=cafe&page=2#results';
+            document.getElementById('url-raw').value = 'ร้านอาหาร นครศรีธรรมราช & คาเฟ่=ดี';
+            encodeUrlLive();
+            document.getElementById('url-parser-input').value = encodeURI(sample).replace('#results', '') + '#results';
+            parseFullUrl();
+        }
+
+        function clearUrlTool() {
+            document.getElementById('url-raw').value = '';
+            document.getElementById('url-encoded').value = '';
+            document.getElementById('url-parser-input').value = '';
+            document.getElementById('url-error').classList.add('hidden');
+            parseFullUrl();
+        }
+
+        // ==================== 5. TIMESTAMP CONVERTER ====================
+        function tickTimestampClock() {
+            if (tsClockPaused) return;
+            const now = new Date();
+            document.getElementById('ts-now-sec').textContent = Math.floor(now.getTime() / 1000);
+            document.getElementById('ts-now-ms').textContent = now.getTime();
+            document.getElementById('ts-now-human').textContent = `${formatThaiDateTime(now)} (+07:00) • UTC: ${now.toISOString()}`;
+        }
+
+        function toggleTsClock() {
+            tsClockPaused = !tsClockPaused;
+            document.getElementById('ts-pause-btn').textContent = tsClockPaused ? '▶ เล่นต่อ' : '⏸ พักเวลา';
+            if (!tsClockPaused) tickTimestampClock();
+        }
+
+        function renderTimestampRows(container, rows) {
+            container.innerHTML = '';
+            for (const [label, val] of rows) {
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between gap-2 p-2 rounded-lg bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border/70 dark:border-google-dark-border';
+                const left = document.createElement('div');
+                left.className = 'min-w-0';
+                left.innerHTML = `<span class="text-[10px] font-bold text-google-text-muted block">${escapeHtml(label)}</span><code class="font-mono text-xs break-all text-google-text dark:text-white"></code>`;
+                left.querySelector('code').textContent = String(val);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'shrink-0 px-2 py-1 rounded bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-[11px] font-semibold hover:border-google-blue cursor-pointer';
+                btn.textContent = 'คัดลอก';
+                btn.onclick = () => copyTextValue(val, label);
+                row.append(left, btn);
+                container.appendChild(row);
+            }
+        }
+
+        function convertTimestampInput() {
+            const raw = document.getElementById('ts-input').value.trim();
+            const unit = document.getElementById('ts-unit').value;
+            const noteEl = document.getElementById('ts-detected-note');
+            const resEl = document.getElementById('ts-results');
+
+            if (!raw) {
+                noteEl.textContent = '';
+                resEl.innerHTML = '';
+                return;
+            }
+
+            let dateObj = null;
+            let detectedNote = '';
+            if (/^-?\d+(\.\d+)?$/.test(raw)) {
+                const num = Number(raw);
+                let ms = num;
+                const abs = Math.abs(num);
+                if (unit === 's' || (unit === 'auto' && abs < 1e11)) {
+                    ms = num * 1000;
+                    detectedNote = 'หน่วยที่ตรวจพบ: Seconds (วินาที)';
+                } else if (unit === 'ms' || (unit === 'auto' && abs < 1e14)) {
+                    ms = num;
+                    detectedNote = 'หน่วยที่ตรวจพบ: Milliseconds (มิลลิวินาที)';
+                } else if (unit === 'us' || (unit === 'auto' && abs < 1e17)) {
+                    ms = num / 1000;
+                    detectedNote = 'หน่วยที่ตรวจพบ: Microseconds (µs)';
+                } else {
+                    ms = num / 1e6;
+                    detectedNote = 'หน่วยที่ตรวจพบ: Nanoseconds (ns)';
+                }
+                dateObj = new Date(ms);
+            } else {
+                const parsed = new Date(raw);
+                if (!Number.isNaN(parsed.getTime())) {
+                    dateObj = parsed;
+                    detectedNote = 'แปลงจาก Date / ISO String';
+                }
+            }
+
+            if (!dateObj || Number.isNaN(dateObj.getTime())) {
+                noteEl.textContent = '✕ ไม่สามารถแปลงค่านี้ได้ กรุณาระบุตัวเลข Timestamp หรือ ISO Date';
+                resEl.innerHTML = '';
+                return;
+            }
+
+            noteEl.textContent = detectedNote;
+            const sec = Math.floor(dateObj.getTime() / 1000);
+            const ms = dateObj.getTime();
+            const rel = formatRelativeSeconds(sec - Math.floor(Date.now() / 1000));
+            const localIso = new Date(ms - dateObj.getTimezoneOffset() * 60000).toISOString().slice(0, 19);
+            renderTimestampRows(resEl, [
+                ['เวลาไทยอ่านง่าย (พ.ศ.)', formatThaiDateTime(dateObj)],
+                ['ISO 8601 (UTC)', dateObj.toISOString()],
+                ['Local DateTime', localIso],
+                ['RFC 2822', dateObj.toUTCString()],
+                ['Unix Seconds / Milliseconds', `${sec}  |  ${ms}`],
+                ['เทียบกับปัจจุบัน (Relative)', rel]
+            ]);
+        }
+
+        function fillCurrentTimestamp() {
+            document.getElementById('ts-unit').value = 'auto';
+            document.getElementById('ts-input').value = String(Math.floor(Date.now() / 1000));
+            convertTimestampInput();
+        }
+
+        function shiftTimestamp(deltaSec) {
+            const inp = document.getElementById('ts-input');
+            const cur = Number(inp.value.trim());
+            const baseSec = Number.isFinite(cur) && inp.value.trim() ? (Math.abs(cur) > 1e11 ? Math.floor(cur / 1000) : cur) : Math.floor(Date.now() / 1000);
+            inp.value = String(baseSec + deltaSec);
+            document.getElementById('ts-unit').value = 's';
+            convertTimestampInput();
+        }
+
+        function setPickerToNow() {
+            const now = new Date();
+            const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 19);
+            document.getElementById('ts-picker').value = local;
+            convertDatePickerToTs();
+        }
+
+        function convertDatePickerToTs() {
+            const val = document.getElementById('ts-picker').value;
+            const tz = document.getElementById('ts-picker-tz').value;
+            const resEl = document.getElementById('ts-picker-results');
+            if (!val) { resEl.innerHTML = ''; return; }
+            const d = tz === 'utc' ? new Date(`${val}Z`) : new Date(val);
+            if (Number.isNaN(d.getTime())) { resEl.innerHTML = ''; return; }
+            renderTimestampRows(resEl, [
+                ['Unix Seconds (s)', Math.floor(d.getTime() / 1000)],
+                ['Unix Milliseconds (ms)', d.getTime()],
+                ['ISO 8601 (UTC)', d.toISOString()],
+                ['เวลาไทย (พ.ศ.)', formatThaiDateTime(d)]
+            ]);
+        }
+
+        // ==================== 6. HASH, HMAC, FILE SHA-256 & UUID ====================
+        function bufToHex(buf, upper) {
+            const hex = [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+            return upper ? hex.toUpperCase() : hex;
+        }
+
+        async function updateHashes() {
+            const text = document.getElementById('hash-input').value;
+            const secret = document.getElementById('hash-hmac-secret').value;
+            const upper = document.getElementById('hash-uppercase').checked;
+            const container = document.getElementById('hash-outputs');
+            if (!crypto?.subtle) {
+                container.innerHTML = '<div class="text-rose-600">เบราว์เซอร์ไม่รองรับ Web Crypto API</div>';
+                return;
+            }
+            const enc = new TextEncoder().encode(text);
+            const algs = ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
+            const rows = [];
+            for (const alg of algs) {
+                let digest;
+                let label = alg;
+                if (secret) {
+                    label = `HMAC-${alg}`;
+                    const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: { name: alg } }, false, ['sign']);
+                    digest = await crypto.subtle.sign('HMAC', key, enc);
+                } else {
+                    digest = await crypto.subtle.digest(alg, enc);
+                }
+                rows.push([label, bufToHex(digest, upper)]);
+            }
+            renderTimestampRows(container, rows);
+        }
+
+        async function hashFileSha256(input) {
+            const file = input.files?.[0];
+            if (!file) return;
+            const box = document.getElementById('hash-file-result');
+            const upper = document.getElementById('hash-uppercase').checked;
+            const buf = await file.arrayBuffer();
+            const digest = await crypto.subtle.digest('SHA-256', buf);
+            const hex = bufToHex(digest, upper);
+            box.classList.remove('hidden');
+            box.innerHTML = `<div class="flex items-center justify-between gap-2"><span class="font-bold text-emerald-700 dark:text-emerald-300">SHA-256 ของไฟล์: ${escapeHtml(file.name)} (${formatByteSize(file.size)})</span><button type="button" class="px-2 py-0.5 rounded bg-emerald-600 text-white font-semibold cursor-pointer">คัดลอก</button></div><code class="font-mono text-[11px] break-all block mt-1"></code>`;
+            box.querySelector('code').textContent = hex;
+            box.querySelector('button').onclick = () => copyTextValue(hex, 'SHA-256 ไฟล์');
+            input.value = '';
+        }
+
+        function randomUuidV4() {
+            if (crypto?.randomUUID) return crypto.randomUUID();
+            const b = crypto.getRandomValues(new Uint8Array(16));
+            b[6] = (b[6] & 0x0f) | 0x40;
+            b[8] = (b[8] & 0x3f) | 0x80;
+            const hex = [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+            return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+        }
+
+        function generateUuids() {
+            const count = parseInt(document.getElementById('uuid-count').value, 10) || 5;
+            const upper = document.getElementById('uuid-upper').checked;
+            const noHyphen = document.getElementById('uuid-nohyphen').checked;
+            const list = [];
+            for (let i = 0; i < count; i++) {
+                let u = randomUuidV4();
+                if (noHyphen) u = u.replace(/-/g, '');
+                if (upper) u = u.toUpperCase();
+                list.push(u);
+            }
+            document.getElementById('uuid-output').value = list.join('\n');
+        }
+
+        function generateApiSecret() {
+            const len = parseInt(document.getElementById('secret-len').value, 10) || 32;
+            const kind = document.getElementById('secret-charset').value;
+            let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+            if (kind === 'hex') chars = '0123456789abcdef';
+            else if (kind === 'strong') chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*_-+=';
+            const arr = crypto.getRandomValues(new Uint32Array(len));
+            let res = '';
+            for (let i = 0; i < len; i++) res += chars[arr[i] % chars.length];
+            document.getElementById('secret-output').value = res;
+        }
+
+        // ==================== THEME & APP SWITCHER ====================
+        function initTheme() {
+            const saved = localStorage.getItem('feel_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        function toggleSubAppSwitcher(forceState) {
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu) return;
+            const willOpen = typeof forceState === 'boolean' ? forceState : menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !willOpen);
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('app-switcher-btn');
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu || menu.classList.contains('hidden')) return;
+            if ((!btn || !btn.contains(e.target)) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleSubAppSwitcher(false);
+            if (e.altKey && e.key >= '1' && e.key <= '6') {
+                e.preventDefault();
+                switchDevTab(DEV_TABS[parseInt(e.key, 10) - 1]);
+            }
+        });
+
+        // ==================== INIT ====================
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+
+            const jsonInput = document.getElementById('json-input');
+            jsonInput.addEventListener('input', () => processJsonLive());
+            jsonInput.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    formatJsonAction();
+                }
+            });
+            const updateCursor = () => {
+                const pos = jsonInput.selectionStart || 0;
+                const upTo = jsonInput.value.slice(0, pos).split('\n');
+                document.getElementById('json-cursor-pos').textContent = `Ln ${upTo.length}, Col ${upTo[upTo.length - 1].length + 1}`;
+            };
+            jsonInput.addEventListener('click', updateCursor);
+            jsonInput.addEventListener('keyup', updateCursor);
+
+            document.getElementById('jwt-input').addEventListener('input', () => parseJwtLive());
+
+            loadJsonSample();
+            fillCurrentTimestamp();
+            setPickerToNow();
+            tickTimestampClock();
+            tsClockTimer = setInterval(tickTimestampClock, 1000);
+            updateHashes();
+            generateUuids();
+            generateApiSecret();
+
+            const hashTab = location.hash.replace('#', '');
+            const savedTab = localStorage.getItem('feel_dev_tab');
+            switchDevTab(DEV_TABS.includes(hashTab) ? hashTab : (DEV_TABS.includes(savedTab) ? savedTab : 'json'));
+        });
+    </script>
+</body>
+</html>

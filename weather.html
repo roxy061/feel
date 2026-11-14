@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เรดาร์สภาพอากาศ & พายุฟ้าคะนองเรียลไทม์ (Live Weather Radar) | นายภคพล สมัยแก้ว</title>
-    <meta name="description" content="ระบบติดตามสภาพอากาศ เรดาร์ตรวจจับกลุ่มฝน พายุฝนฟ้าคะนอง ทิศทางลม และคลื่นลมทะเลแบบเรียลไทม์ นครศรีธรรมราชและภาคใต้ เชื่อมต่อโดย นายภคพล สมัยแก้ว (ฟีล)">
+    <title>เรดาร์สภาพอากาศ & พยากรณ์ฝนภาคใต้ (Live Weather Radar) | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="ระบบติดตามสภาพอากาศ อ่านง่าย ครบทั้งตัวเลขพยากรณ์อากาศภาษาไทย รายชั่วโมง ราย 7 วัน และแผนที่เรดาร์พายุฝนฟ้าคะนองภาคใต้แบบเรียลไทม์">
 
     <!-- Google Fonts (Sarabun, Kanit, Inter) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- FontAwesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -40,14 +40,13 @@
                             text: '#202124',
                             'text-body': '#3c4043',
                             'text-muted': '#5f6368',
-                            // Dark Mode Tokens
                             'dark-bg': '#1e1f20',
                             'dark-surface': '#282a2d',
                             'dark-subtle': '#35373a',
                             'dark-border': '#444746',
                             'dark-text': '#e3e3e3',
                             'dark-text-body': '#c4c7c5',
-                            'dark-text-muted': '#8e918f'
+                            'dark-text-muted': '#9aa0a6'
                         }
                     },
                     fontFamily: {
@@ -72,12 +71,10 @@
             color: #202124;
             transition: background-color 0.25s ease, color 0.25s ease;
         }
-
         .dark body {
             background-color: #1e1f20;
             color: #e3e3e3;
         }
-
         .g-card {
             background-color: #ffffff;
             border: 1px solid #dadce0;
@@ -85,45 +82,28 @@
             box-shadow: 0 1px 2px 0 rgba(60,64,67,0.12), 0 1px 3px 1px rgba(60,64,67,0.08);
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         .dark .g-card {
             background-color: #282a2d;
             border-color: #444746;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
-
         .g-navbar {
             background-color: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid #dadce0;
         }
-
         .dark .g-navbar {
             background-color: rgba(30, 31, 32, 0.94);
             border-bottom-color: #444746;
         }
 
-        /* Clean Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #dadce0;
-            border-radius: 9999px;
-        }
-        .dark ::-webkit-scrollbar-thumb {
-            background: #444746;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #1a73e8;
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c4c7c5; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+        ::-webkit-scrollbar-thumb:hover { background: #1a73e8; }
 
-        /* Fullscreen Viewport Mode */
         #radar-viewport-wrapper:fullscreen {
             background-color: #0f172a !important;
             padding: 0 !important;
@@ -132,326 +112,401 @@
             border-radius: 0 !important;
             border: none !important;
         }
-        #radar-viewport-wrapper:fullscreen iframe {
-            border-radius: 0 !important;
-        }
+        #radar-viewport-wrapper:fullscreen iframe { border-radius: 0 !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-google-blue selection:text-white">
 
     <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-md pointer-events-none"></div>
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-md pointer-events-none"></div>
 
     <!-- ========================================== -->
-    <!-- TOP NAVIGATION BAR (Google Material Appbar) -->
+    <!-- TOP NAVIGATION BAR                         -->
     <!-- ========================================== -->
     <header class="h-16 g-navbar shrink-0 sticky top-0 flex items-center justify-between px-3 sm:px-6 z-30">
-        <!-- Left: Back Button & Branding -->
         <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-            <a href="index.html" class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0" title="กลับสู่หน้าหลัก Portfolio">
+            <a href="index.html" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0" title="กลับสู่หน้าหลัก Portfolio">
                 <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
-                <span class="hidden sm:inline">หน้าหลัก Portfolio</span>
+                <span class="hidden sm:inline">หน้าหลัก</span>
             </a>
 
-            <div class="h-5 w-[1px] bg-google-border dark:bg-google-dark-border mx-0.5 sm:mx-1 hidden md:block"></div>
+            <div class="h-5 w-[1px] bg-google-border dark:bg-google-dark-border hidden sm:block"></div>
 
-            <div class="flex items-center gap-2 sm:gap-2.5 min-w-0">
-                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-sky-100 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-900/60 flex items-center justify-center text-sky-600 dark:text-sky-400 text-sm shadow-xs shrink-0">
-                    <i class="fa-solid fa-cloud-bolt"></i>
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-sky-100 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-900/60 flex items-center justify-center text-sky-600 dark:text-sky-400 text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-cloud-sun-rain"></i>
                 </div>
                 <div class="min-w-0">
                     <div class="flex items-center gap-1.5 sm:gap-2">
-                        <h1 class="text-xs sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
-                            เรดาร์สภาพอากาศเรียลไทม์
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            เรดาร์อากาศ & พายุภาคใต้
                         </h1>
-                        <span class="inline-flex items-center gap-1 text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.2 sm:py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-bold border border-sky-200 dark:border-sky-800 shrink-0">
+                        <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-bold border border-sky-200 dark:border-sky-800 shrink-0">
                             <span class="w-1.5 h-1.5 rounded-full bg-sky-600 animate-ping"></span>
                             LIVE
                         </span>
                     </div>
-                    <p class="text-[10px] sm:text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
-                        นครศรีธรรมราช & ภาคใต้ • เชื่อมโยงระบบตรวจการณ์โดย นายภคพล สมัยแก้ว (ฟีล)
+                    <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        พยากรณ์อากาศภาษาไทย + เรดาร์ดาวเทียมสด • พัฒนาโดย นายภคพล สมัยแก้ว (ฟีล)
                     </p>
                 </div>
             </div>
         </div>
 
-        <!-- Right: Actions & Page Switcher -->
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <!-- Unified 4-App Quick Switcher -->
+            <a href="cctv.html?group=water" class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 dark:bg-rose-950/60 text-red-700 dark:text-rose-300 border border-red-200 dark:border-red-800 hover:bg-red-100 text-xs font-bold transition shrink-0" title="ดูกล้องวัดระดับน้ำคลองจริงผ่าน CCTV">
+                <i class="fa-solid fa-video"></i>
+                <span>ดูระดับน้ำ CCTV</span>
+            </a>
+
             <nav class="hidden xl:flex items-center gap-1 bg-google-subtle dark:bg-google-dark-subtle p-1 rounded-full border border-google-border dark:border-google-dark-border text-xs">
-                <a href="wheel.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">1. วงล้อ 3D</a>
-                <a href="southern-food.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">2. สุ่มร้านอาหาร</a>
-                <a href="cctv.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">3. กล้อง CCTV สด</a>
+                <a href="wheel.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">1. วงล้อ 3D</a>
+                <a href="southern-food.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">2. สุ่มร้านอาหาร</a>
+                <a href="cctv.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">3. กล้อง CCTV สด</a>
                 <a href="weather.html" class="px-2.5 py-1 rounded-full font-bold bg-sky-600 text-white shadow-xs">4. เรดาร์อากาศสด</a>
-                <a href="rubik.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">5. รูบิค 3x3</a>
-                <a href="ai-assistant.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">6. ผู้ช่วย AI</a>
-                <a href="vault.html" class="px-2.5 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">7. ตู้เซฟฝากไฟล์</a>
+                <a href="rubik.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">5. รูบิค 3x3</a>
+                <a href="ai-assistant.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">6. ผู้ช่วย AI</a>
+                <a href="vault.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">7. ตู้เซฟฝากไฟล์</a>
                 <a href="photo-studio.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">8. ลบพื้นหลัง/แต่งรูป</a>
             </nav>
 
-            <!-- Fullscreen Toggle -->
-            <button onclick="toggleRadarFullscreen()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-all shadow-xs" title="ขยายเรดาร์เต็มจอ (Fullscreen)">
-                <i class="fa-solid fa-expand text-xs"></i>
-            </button>
-
-            <!-- Reload Map -->
-            <button onclick="reloadRadar()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-all shadow-xs" title="รีเฟรชข้อมูลเรดาร์">
+            <button onclick="refreshAllWeatherData()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle transition shadow-xs cursor-pointer" title="อัปเดตข้อมูลล่าสุด">
                 <i id="refresh-icon" class="fa-solid fa-arrows-rotate text-xs"></i>
             </button>
 
-            <!-- Theme Toggle -->
-            <button onclick="toggleTheme()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-all shadow-xs" title="สลับโหมดสว่าง / โหมดมืด">
+            <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
                 <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
             </button>
         </div>
     </header>
 
     <!-- ========================================== -->
-    <!-- MAIN CONTENT AREA                          -->
+    <!-- MAIN CONTENT                               -->
     <!-- ========================================== -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 lg:p-6 space-y-4 sm:space-y-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 lg:p-6 space-y-5">
 
-        <!-- Top Weather Banner Card -->
-        <div class="g-card p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-gradient-to-r from-sky-500/10 via-indigo-500/5 to-transparent border-sky-200/80 dark:border-sky-900/60">
-            <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-600 text-white shadow-xs">เว็บแอปที่ 4 • เรดาร์อุตุนิยมวิทยาภาคใต้</span>
-                    <span class="text-xs text-google-text-muted dark:text-google-dark-text-muted font-medium">ข้อมูลดาวเทียมสด ECMWF</span>
-                </div>
-                <h2 class="text-base sm:text-xl font-bold text-google-text dark:text-google-dark-text font-heading">
-                    ระบบติดตามกลุ่มเมฆฝน พายุฟ้าคะนอง และคลื่นลมทะเลภาคใต้แบบเรียลไทม์
-                </h2>
-                <p class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed">
-                    <strong>บทความที่จะสื่อ:</strong> ช่วยตรวจสอบพื้นที่ฝนตกหนัก ทิศทางพายุ และคลื่นลมในจังหวัดนครศรีธรรมราชและภาคใต้ • <strong>วิธีใช้งาน:</strong> เลือกพื้นที่มุมขวา แล้วกดสลับ <strong>"ชั้นข้อมูล"</strong> ทั้ง 6 ด้านล่างเพื่อดูพายุ ฝน ลม หรือคลื่นทะเล
-                </p>
-            </div>
-
-            <!-- Quick Action Links -->
-            <div class="flex items-center gap-2 shrink-0 flex-wrap">
-                <button onclick="setLocationPreset('nst')" id="preset-btn-nst" class="loc-preset-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-google-blue text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <span>นครศรีธรรมราช</span>
-                </button>
-                <button onclick="setLocationPreset('south')" id="preset-btn-south" class="loc-preset-btn px-3 py-1.5 rounded-full text-xs font-medium bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text hover:text-google-blue transition-all flex items-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-compass"></i>
-                    <span>ภาคใต้ทั้งหมด</span>
-                </button>
-                <button onclick="setLocationPreset('thailand')" id="preset-btn-thailand" class="loc-preset-btn px-3 py-1.5 rounded-full text-xs font-medium bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text hover:text-google-blue transition-all flex items-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-earth-asia"></i>
-                    <span>ทั่วประเทศไทย</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Main Radar Card -->
-        <div class="g-card p-3 sm:p-5 flex flex-col shadow-google-md space-y-3">
+        <!-- 1. Location Selector + Instant Readable Weather Summary (เข้าใจสภาพอากาศทันทีใน 3 วินาที) -->
+        <section class="g-card p-4 sm:p-6 bg-gradient-to-br from-sky-500/10 via-blue-500/5 to-transparent border-sky-200/80 dark:border-sky-900/60 space-y-5">
             
-            <!-- Controls Toolbar: Layer/Overlay Selector -->
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-google-border dark:border-google-dark-border">
+            <!-- Area Selector Row -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-4 border-b border-google-border/70 dark:border-google-dark-border">
+                <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-600 text-white">เลือกพื้นที่ตรวจสอบ</span>
+                        <span id="weather-updated-at" class="text-xs text-google-text-muted dark:text-google-dark-text-muted">กำลังดึงข้อมูลอากาศสด...</span>
+                    </div>
+                    <h2 id="selected-area-heading" class="text-xl sm:text-2xl font-extrabold text-google-text dark:text-white font-heading mt-1">
+                        📍 อ.เมืองนครศรีธรรมราช
+                    </h2>
+                </div>
+
+                <!-- 6 Accurate Southern Preset Buttons -->
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <button onclick="selectLocation('nst')" id="preset-btn-nst" class="loc-preset-btn px-3.5 py-2 rounded-full text-xs sm:text-sm font-bold bg-google-blue text-white shadow-xs transition cursor-pointer">
+                        📍 อ.เมืองนครฯ
+                    </button>
+                    <button onclick="selectLocation('pakphanang')" id="preset-btn-pakphanang" class="loc-preset-btn px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-google-blue transition cursor-pointer">
+                        🌊 อ.ปากพนัง
+                    </button>
+                    <button onclick="selectLocation('thungsong')" id="preset-btn-thungsong" class="loc-preset-btn px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-google-blue transition cursor-pointer">
+                        ⛰️ อ.ทุ่งสง
+                    </button>
+                    <button onclick="selectLocation('surat')" id="preset-btn-surat" class="loc-preset-btn px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-google-blue transition cursor-pointer">
+                        🌴 สุราษฎร์ฯ
+                    </button>
+                    <button onclick="selectLocation('hatyai')" id="preset-btn-hatyai" class="loc-preset-btn px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-google-blue transition cursor-pointer">
+                        🏙️ หาดใหญ่/สงขลา
+                    </button>
+                    <button onclick="selectLocation('south')" id="preset-btn-south" class="loc-preset-btn px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-google-blue transition cursor-pointer">
+                        🗺️ ภาพรวมภาคใต้
+                    </button>
+                </div>
+            </div>
+
+            <!-- Live Summary Cards: Big Thai Text + 4 Clear Metrics -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
                 
-                <!-- Layer Pills -->
-                <div class="flex items-center gap-1.5 flex-wrap text-xs">
+                <!-- Left: Big Condition & Risk Alert Banner (5 cols) -->
+                <div class="lg:col-span-5 p-4 sm:p-5 rounded-2xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border flex flex-col justify-between gap-3">
+                    <div class="flex items-center gap-4">
+                        <div id="hero-weather-icon" class="w-16 h-16 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center text-3xl shrink-0">
+                            <i class="fa-solid fa-cloud"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-baseline gap-2">
+                                <span id="hero-temp" class="text-4xl font-extrabold font-heading text-google-text dark:text-white">--°C</span>
+                                <span id="hero-feels-like" class="text-xs sm:text-sm text-google-text-muted">รู้สึกเหมือน --°C</span>
+                            </div>
+                            <p id="hero-condition-text" class="text-base sm:text-lg font-bold text-google-blue dark:text-sky-300 font-heading mt-0.5">
+                                กำลังอ่านสภาพอากาศ...
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Auto Risk Advisory Badge -->
+                    <div id="hero-risk-banner" class="p-3 rounded-xl bg-slate-50 dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs sm:text-sm leading-relaxed">
+                        กำลังวิเคราะห์โอกาสฝนตกและความเสี่ยงพายุวันนี้...
+                    </div>
+                </div>
+
+                <!-- Right: 4 Easy-to-Read Stat Tiles (7 cols) -->
+                <div class="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border flex flex-col justify-between">
+                        <span class="text-xs font-semibold text-google-text-muted flex items-center gap-1.5">
+                            <i class="fa-solid fa-cloud-rain text-sky-500"></i> โอกาสฝนวันนี้
+                        </span>
+                        <div class="my-1">
+                            <span id="stat-rain-prob" class="text-2xl sm:text-3xl font-extrabold font-heading text-sky-600 dark:text-sky-400">--%</span>
+                        </div>
+                        <span id="stat-rain-sum" class="text-xs text-google-text-body dark:text-google-dark-text-body">ปริมาณรวม -- มม.</span>
+                    </div>
+
+                    <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border flex flex-col justify-between">
+                        <span class="text-xs font-semibold text-google-text-muted flex items-center gap-1.5">
+                            <i class="fa-solid fa-wind text-teal-500"></i> ความเร็วลม
+                        </span>
+                        <div class="my-1">
+                            <span id="stat-wind-speed" class="text-2xl sm:text-3xl font-extrabold font-heading text-teal-600 dark:text-teal-400">--</span>
+                            <span class="text-xs font-semibold text-google-text-muted">กม./ชม.</span>
+                        </div>
+                        <span id="stat-wind-dir" class="text-xs text-google-text-body dark:text-google-dark-text-body">ทิศทางลม: --</span>
+                    </div>
+
+                    <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border flex flex-col justify-between">
+                        <span class="text-xs font-semibold text-google-text-muted flex items-center gap-1.5">
+                            <i class="fa-solid fa-droplet text-blue-500"></i> ความชื้นสัมพัทธ์
+                        </span>
+                        <div class="my-1">
+                            <span id="stat-humidity" class="text-2xl sm:text-3xl font-extrabold font-heading text-blue-600 dark:text-blue-400">--%</span>
+                        </div>
+                        <span id="stat-clouds" class="text-xs text-google-text-body dark:text-google-dark-text-body">เมฆปกคลุม --%</span>
+                    </div>
+
+                    <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border flex flex-col justify-between">
+                        <span class="text-xs font-semibold text-google-text-muted flex items-center gap-1.5">
+                            <i class="fa-solid fa-temperature-half text-orange-500"></i> ช่วงอุณหภูมิ
+                        </span>
+                        <div class="my-1">
+                            <span id="stat-temp-range" class="text-xl sm:text-2xl font-extrabold font-heading text-orange-600 dark:text-orange-400">--° / --°</span>
+                        </div>
+                        <span class="text-xs text-google-text-body dark:text-google-dark-text-body">ต่ำสุด / สูงสุดวันนี้</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 6-Point Quick Comparison Strip (เช็กสภาพอากาศ 6 จุดภาคใต้พร้อมกันในแถวเดียว) -->
+            <div class="space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-google-text-body dark:text-google-dark-text-body">
+                        <i class="fa-solid fa-map-pin text-sky-500 mr-1"></i>เทียบสภาพอากาศล่าสุดทั่วภาคใต้ (คลิกเพื่อดูจุดนั้นทันที):
+                    </span>
+                    <a href="cctv.html?group=water" class="text-red-600 dark:text-rose-400 font-bold hover:underline inline-flex items-center gap-1">
+                        <i class="fa-solid fa-water"></i> เปิดกล้อง CCTV ดูระดับน้ำคลองในตัวเมืองนครฯ <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+                <div id="south-compare-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Easy-to-Read Forecast Timeline (Hourly 24h / Daily 7 Days) -->
+        <section class="g-card p-4 sm:p-5 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-google-border dark:border-google-dark-border">
+                <div>
+                    <h3 class="text-base sm:text-lg font-extrabold font-heading text-google-text dark:text-white flex items-center gap-2">
+                        <i class="fa-regular fa-clock text-google-blue"></i>
+                        <span>พยากรณ์อากาศล่วงหน้าแบบอ่านง่าย (<span id="forecast-loc-label">อ.เมืองนครฯ</span>)</span>
+                    </h3>
+                    <p class="text-xs text-google-text-muted">ดูช่วงเวลาที่มีโอกาสฝนตกหนักเพื่อวางแผนการเดินทางล่วงหน้า</p>
+                </div>
+                <div class="flex items-center bg-google-subtle dark:bg-google-dark-subtle p-1 rounded-full border border-google-border dark:border-google-dark-border text-xs self-start sm:self-auto">
+                    <button id="fc-tab-hourly" onclick="switchForecastTab('hourly')" class="px-3.5 py-1.5 rounded-full font-bold bg-google-blue text-white shadow-xs cursor-pointer transition">
+                        ⏰ ราย 3 ชม. (24 ชม.)
+                    </button>
+                    <button id="fc-tab-daily" onclick="switchForecastTab('daily')" class="px-3.5 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue cursor-pointer transition">
+                        📅 ล่วงหน้า 7 วัน
+                    </button>
+                </div>
+            </div>
+
+            <div id="forecast-hourly-list" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
+                <!-- Populated by JS -->
+            </div>
+
+            <div id="forecast-daily-list" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-2.5">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- 3. Interactive Windy Satellite Radar + Simple Legend -->
+        <section class="g-card p-3 sm:p-5 flex flex-col shadow-google-md space-y-3">
+            
+            <!-- Toolbar -->
+            <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-3 border-b border-google-border dark:border-google-dark-border">
+                <div class="flex items-center gap-1.5 flex-wrap text-xs sm:text-sm">
                     <span class="text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted mr-1 flex items-center gap-1">
                         <i class="fa-solid fa-layer-group text-google-blue"></i>
-                        <span>ชั้นข้อมูล:</span>
+                        <span>เลือกดูบนแผนที่:</span>
                     </span>
 
-                    <button onclick="setOverlay('thunder')" id="layer-btn-thunder" class="layer-pill px-3 py-1.5 rounded-full font-semibold bg-google-blue text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer" title="พายุฝนฟ้าคะนอง & ฟ้าผ่า">
+                    <button onclick="setOverlay('thunder')" id="layer-btn-thunder" class="layer-pill px-3.5 py-1.5 rounded-full font-bold bg-google-blue text-white shadow-xs transition flex items-center gap-1.5 cursor-pointer">
                         <i class="fa-solid fa-bolt text-amber-300"></i>
                         <span>พายุฟ้าคะนอง</span>
                     </button>
 
-                    <button onclick="setOverlay('radar')" id="layer-btn-radar" class="layer-pill px-3 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body bg-google-subtle dark:bg-google-dark-subtle hover:text-google-blue transition-all flex items-center gap-1.5 cursor-pointer" title="เรดาร์ตรวจจับเมฆฝนสด">
-                        <i class="fa-solid fa-cloud-showers-heavy text-sky-400"></i>
+                    <button onclick="setOverlay('radar')" id="layer-btn-radar" class="layer-pill px-3.5 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body bg-google-subtle dark:bg-google-dark-subtle hover:text-google-blue transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-cloud-showers-heavy text-sky-500"></i>
                         <span>เรดาร์ฝนสด</span>
                     </button>
 
-                    <button onclick="setOverlay('wind')" id="layer-btn-wind" class="layer-pill px-3 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body bg-google-subtle dark:bg-google-dark-subtle hover:text-google-blue transition-all flex items-center gap-1.5 cursor-pointer" title="กระแสลมและทิศทางลม">
-                        <i class="fa-solid fa-wind text-teal-400"></i>
-                        <span>กระแสลม</span>
+                    <button onclick="setOverlay('wind')" id="layer-btn-wind" class="layer-pill px-3.5 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body bg-google-subtle dark:bg-google-dark-subtle hover:text-google-blue transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-wind text-teal-500"></i>
+                        <span>ทิศทางลม</span>
                     </button>
 
-                    <button onclick="setOverlay('temp')" id="layer-btn-temp" class="layer-pill px-3 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body bg-google-subtle dark:bg-google-dark-subtle hover:text-google-blue transition-all flex items-center gap-1.5 cursor-pointer" title="อุณหภูมิพื้นผิว">
-                        <i class="fa-solid fa-temperature-half text-rose-400"></i>
+                    <button onclick="setOverlay('waves')" id="layer-btn-waves" class="layer-pill px-3.5 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body bg-google-subtle dark:bg-google-dark-subtle hover:text-google-blue transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-water text-cyan-500"></i>
+                        <span>คลื่นทะเล</span>
+                    </button>
+
+                    <button onclick="setOverlay('temp')" id="layer-btn-temp" class="layer-pill px-3.5 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body bg-google-subtle dark:bg-google-dark-subtle hover:text-google-blue transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-temperature-half text-rose-500"></i>
                         <span>อุณหภูมิ</span>
                     </button>
 
-                    <button onclick="setOverlay('clouds')" id="layer-btn-clouds" class="layer-pill px-3 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body bg-google-subtle dark:bg-google-dark-subtle hover:text-google-blue transition-all flex items-center gap-1.5 cursor-pointer" title="ปริมาณเมฆปกคลุม">
+                    <button onclick="setOverlay('clouds')" id="layer-btn-clouds" class="layer-pill px-3.5 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body bg-google-subtle dark:bg-google-dark-subtle hover:text-google-blue transition flex items-center gap-1.5 cursor-pointer">
                         <i class="fa-solid fa-cloud text-slate-400"></i>
                         <span>ปริมาณเมฆ</span>
                     </button>
-
-                    <button onclick="setOverlay('waves')" id="layer-btn-waves" class="layer-pill px-3 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body bg-google-subtle dark:bg-google-dark-subtle hover:text-google-blue transition-all flex items-center gap-1.5 cursor-pointer" title="คลื่นลมทะเลอ่าวไทยและอันดามัน">
-                        <i class="fa-solid fa-water text-cyan-400"></i>
-                        <span>คลื่นลมทะเล</span>
-                    </button>
                 </div>
 
-                <!-- Secondary Tools -->
-                <div class="flex items-center gap-2 shrink-0">
-                    <button onclick="openInWindy()" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-blue text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer" title="เปิดดูบนเว็บไซต์ Windy.com ต้นทาง">
-                        <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
-                        <span>เปิดใน Windy</span>
+                <!-- Map Controls -->
+                <div class="flex items-center gap-2 shrink-0 flex-wrap">
+                    <button onclick="toggleRadarHeight()" id="radar-height-btn" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-white hover:border-google-blue text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer">
+                        <i class="fa-solid fa-up-down"></i> <span id="radar-height-label">ขยายความสูงแผนที่</span>
                     </button>
-
-                    <button onclick="copyRadarLink()" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-green text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer" title="คัดลอกลิงก์เรดาร์นี้">
-                        <i class="fa-solid fa-share-nodes text-xs"></i>
-                        <span>แชร์</span>
+                    <button onclick="toggleRadarFullscreen()" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-white hover:border-google-blue text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer">
+                        <i class="fa-solid fa-expand"></i> <span>เต็มจอ</span>
+                    </button>
+                    <button onclick="openInWindy()" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-blue text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Windy.com</span>
+                    </button>
+                    <button onclick="copyRadarLink()" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-green text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer">
+                        <i class="fa-solid fa-share-nodes"></i> <span>แชร์</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Windy Embed Viewport -->
-            <div id="radar-viewport-wrapper" class="w-full h-[520px] sm:h-[620px] lg:h-[680px] relative rounded-xl overflow-hidden bg-slate-950 border border-slate-700/80 shadow-inner flex flex-col">
+            <!-- Windy Embed Map -->
+            <div id="radar-viewport-wrapper" class="w-full h-[480px] sm:h-[580px] relative rounded-xl overflow-hidden bg-slate-950 border border-slate-700/80 shadow-inner flex flex-col transition-all duration-300">
                 <iframe 
                     id="windy-frame"
-                    src="https://embed.windy.com/embed2.html?lat=8.051&lon=99.249&detailLat=8.051&detailLon=99.249&width=650&height=450&zoom=6&level=surface&overlay=thunder&product=ecmwf&menu=&message=true&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
+                    src="https://embed.windy.com/embed2.html?lat=8.4304&lon=99.9631&detailLat=8.4304&detailLon=99.9631&width=650&height=450&zoom=9&level=surface&overlay=thunder&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1"
                     class="w-full h-full border-none"
                     loading="lazy"
                     allowfullscreen>
                 </iframe>
             </div>
 
-            <!-- Status Indicator and Helper Info -->
-            <div class="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-google-text-muted dark:text-google-dark-text-muted">
+            <!-- Easy Rain Color Legend & Status Footer -->
+            <div class="pt-1 flex flex-col lg:flex-row lg:items-center justify-between gap-3 text-xs">
                 <div class="flex items-center gap-2 flex-wrap">
-                    <span class="inline-flex items-center gap-1.5 font-medium text-google-text-body dark:text-google-dark-text-body">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        สัญญาณดาวเทียมและเรดาร์อัปเดตต่อเนื่อง
-                    </span>
-                    <span>•</span>
-                    <span id="current-layer-label">ชั้นข้อมูลปัจจุบัน: <strong>พายุฟ้าคะนอง (Thunder)</strong></span>
+                    <span class="font-bold text-google-text dark:text-white">วิธีอ่านสีฝนบนแผนที่:</span>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span> ฟ้า = ฝนโปรยปราย</span>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> เขียว = ฝนปานกลาง</span>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> เหลือง/ส้ม = ฝนตกหนัก</span>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-rose-600"></span> แดง/ม่วง = พายุฝนฟ้าคะนอง</span>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <span>ข้อมูลอุตุนิยมวิทยา: <strong class="text-google-text dark:text-google-dark-text">ECMWF • Windy.com</strong></span>
+                <div class="text-google-text-muted dark:text-google-dark-text-muted shrink-0">
+                    กำลังแสดง: <strong id="current-layer-label" class="text-google-text dark:text-white">พายุฟ้าคะนอง (Thunder)</strong> • ข้อมูล ECMWF / Open-Meteo
                 </div>
             </div>
-
-        </div>
-
-        <!-- 3 Feature & Integration Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            
-            <!-- Card 1: Monitoring Coordinates -->
-            <div class="g-card p-4 sm:p-5 flex flex-col justify-between space-y-3">
-                <div class="space-y-2">
-                    <div class="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center text-lg border border-sky-200 dark:border-sky-900/60">
-                        <i class="fa-solid fa-map-location-dot"></i>
-                    </div>
-                    <h3 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading">
-                        พิกัดศูนย์กลางการตรวจการณ์
-                    </h3>
-                    <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">
-                        ศูนย์กลางตั้งอยู่ที่ ละติจูด 8.051° N ลองจิจูด 99.249° E บริเวณจังหวัดนครศรีธรรมราช เพื่อเฝ้าระวังกลุ่มฝนและมรสุมตะวันออกเฉียงเหนือ-ตะวันตกเฉียงใต้
-                    </p>
-                </div>
-                <div class="pt-2 border-t border-google-border dark:border-google-dark-border text-[11px] font-mono text-google-blue dark:text-sky-300">
-                    LAT: 8.051° | LON: 99.249° (NST)
-                </div>
-            </div>
-
-            <!-- Card 2: Cross Reference CCTV -->
-            <div class="g-card p-4 sm:p-5 flex flex-col justify-between space-y-3">
-                <div class="space-y-2">
-                    <div class="w-10 h-10 rounded-xl bg-red-50 dark:bg-rose-950/60 text-red-600 dark:text-rose-400 flex items-center justify-center text-lg border border-red-200 dark:border-red-900/60">
-                        <i class="fa-solid fa-video"></i>
-                    </div>
-                    <h3 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading">
-                        ตรวจภาพจริงผ่านกล้องวงจรปิด
-                    </h3>
-                    <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">
-                        ท่านสามารถตรวจสอบสภาพท้องฟ้า น้ำท่วมขัง และการจราจรจริงตามจุดสำคัญในเขตเทศบาลนครนครศรีธรรมราชได้จากระบบ CCTV กว่า 220 จุด
-                    </p>
-                </div>
-                <div class="pt-2 border-t border-google-border dark:border-google-dark-border">
-                    <a href="cctv.html" class="inline-flex items-center gap-1 text-xs font-bold text-red-600 dark:text-rose-400 hover:underline">
-                        <span>เปิดระบบ CCTV สด (สูงสุด 6 จอ)</span>
-                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Card 3: Meteorological Standards -->
-            <div class="g-card p-4 sm:p-5 flex flex-col justify-between space-y-3">
-                <div class="space-y-2">
-                    <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg border border-amber-200 dark:border-amber-900/60">
-                        <i class="fa-solid fa-satellite-dish"></i>
-                    </div>
-                    <h3 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading">
-                        มาตรฐานข้อมูลสภาพอากาศ
-                    </h3>
-                    <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">
-                        ข้อมูลอ้างอิงจากแบบจำลองชั้นนำระดับสากล ได้แก่ ECMWF (ยุโรป) และ GFS (สหรัฐอเมริกา) พร้อมการประมวลผลความละเอียดสูงสำหรับพายุหมุนและลมมรสุม
-                    </p>
-                </div>
-                <div class="pt-2 border-t border-google-border dark:border-google-dark-border text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
-                    <span>อ้างอิง: กรมอุตุนิยมวิทยา & Windy.com</span>
-                </div>
-            </div>
-
-        </div>
+        </section>
 
         <!-- Footer -->
         <footer class="pt-4 pb-8 border-t border-google-border dark:border-google-dark-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-google-text-muted dark:text-google-dark-text-muted">
-            <div class="flex items-center gap-2">
-                <a href="index.html" class="hover:text-google-blue transition-colors font-medium">หน้าหลัก Portfolio</a>
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="index.html" class="hover:text-google-blue font-semibold">หน้าหลัก Portfolio</a>
                 <span>•</span>
-                <a href="cctv.html" class="hover:text-google-blue transition-colors font-medium">กล้อง CCTV เรียลไทม์</a>
+                <a href="cctv.html?group=water" class="hover:text-red-600 font-semibold">กล้อง CCTV วัดระดับน้ำ (32 จุด)</a>
                 <span>•</span>
-                <a href="https://www.windy.com" target="_blank" rel="noopener" class="hover:text-google-blue transition-colors">Windy.com</a>
+                <a href="https://www.windy.com" target="_blank" rel="noopener" class="hover:text-google-blue">Windy.com</a>
+                <span>•</span>
+                <a href="https://open-meteo.com" target="_blank" rel="noopener" class="hover:text-google-blue">Open-Meteo</a>
             </div>
-
             <div>
-                <span>พัฒนาและเชื่อมต่อโดย <strong class="text-google-text dark:text-google-dark-text">นายภคพล สมัยแก้ว (ฟีล)</strong></span>
+                พัฒนาและปรับปรุงโดย <strong class="text-google-text dark:text-white">นายภคพล สมัยแก้ว (ฟีล)</strong>
             </div>
         </footer>
 
     </main>
 
-    <!-- ========================================== -->
-    <!-- JAVASCRIPT CONTROLLER                      -->
-    <!-- ========================================== -->
     <script>
-        // Preset configurations
         const LOCATION_PRESETS = {
-            nst: {
-                name: 'นครศรีธรรมราช & ภาคใต้ตอนกลาง',
-                lat: 8.051,
-                lon: 99.249,
-                zoom: 6
-            },
-            south: {
-                name: 'ภาคใต้ทั้งหมด (อ่าวไทย-อันดามัน)',
-                lat: 8.051,
-                lon: 99.249,
-                zoom: 6
-            },
-            thailand: {
-                name: 'ทั่วประเทศไทย',
-                lat: 13.736,
-                lon: 100.523,
-                zoom: 5
-            }
+            nst:        { key: 'nst',        name: 'อ.เมืองนครศรีธรรมราช',  short: 'อ.เมืองนครฯ',   lat: 8.4304, lon: 99.9631, zoom: 9 },
+            pakphanang: { key: 'pakphanang', name: 'อ.ปากพนัง (ชายฝั่งอ่าวไทย)', short: 'อ.ปากพนัง', lat: 8.3561, lon: 100.1973, zoom: 9 },
+            thungsong:  { key: 'thungsong',  name: 'อ.ทุ่งสง (นครศรีฯ ตะวันตก)', short: 'อ.ทุ่งสง',   lat: 8.1650, lon: 99.6810, zoom: 9 },
+            surat:      { key: 'surat',      name: 'จ.สุราษฎร์ธานี',        short: 'สุราษฎร์ฯ',     lat: 9.1382, lon: 99.3217, zoom: 8 },
+            hatyai:     { key: 'hatyai',     name: 'อ.หาดใหญ่ จ.สงขลา',      short: 'หาดใหญ่/สงขลา', lat: 7.0086, lon: 100.4747, zoom: 8 },
+            phuket:     { key: 'phuket',     name: 'จ.ภูเก็ต',               short: 'ภูเก็ต',        lat: 7.8804, lon: 98.3923, zoom: 9 },
+            south:      { key: 'south',      name: 'ภาคใต้ทั้งหมด (อ่าวไทย–อันดามัน)', short: 'ภาคใต้รวม', lat: 8.2000, lon: 99.6500, zoom: 6 }
         };
+
+        const COMPARE_SPOTS = [
+            { key: 'nst',        label: 'เมืองนครศรีฯ',  lat: 8.4304, lon: 99.9631 },
+            { key: 'pakphanang', label: 'ปากพนัง',       lat: 8.3561, lon: 100.1973 },
+            { key: 'thungsong',  label: 'ทุ่งสง',        lat: 8.1650, lon: 99.6810 },
+            { key: 'surat',      label: 'สุราษฎร์ฯ',    lat: 9.1382, lon: 99.3217 },
+            { key: 'hatyai',     label: 'หาดใหญ่',       lat: 7.0086, lon: 100.4747 },
+            { key: 'phuket',     label: 'ภูเก็ต',        lat: 7.8804, lon: 98.3923, zoom: 8 }
+        ];
 
         const OVERLAY_NAMES = {
             thunder: 'พายุฟ้าคะนอง (Thunder)',
             radar: 'เรดาร์ฝนสด (Weather Radar)',
-            wind: 'กระแสลมและทิศทางลม (Wind)',
+            wind: 'กระแสลมมรสุม (Wind)',
+            waves: 'คลื่นลมทะเล (Waves)',
             temp: 'อุณหภูมิพื้นผิว (Temperature)',
-            clouds: 'ปริมาณเมฆปกคลุม (Clouds)',
-            waves: 'คลื่นลมทะเล (Waves)'
+            clouds: 'ปริมาณเมฆดาวเทียม (Clouds)'
         };
 
-        // State
         let currentPresetKey = 'nst';
         let currentOverlay = 'thunder';
+        let forecastTab = 'hourly';
+        let activeWeatherData = null;
+        let radarExpanded = false;
 
-        // 1. Theme Management
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[m]));
+        }
+
+        // WMO Weather Code -> Simple Thai Text + Icon + Severity
+        function decodeWeatherCode(code) {
+            const c = Number(code);
+            if (c === 0) return { text: 'ท้องฟ้าแจ่มใส', icon: 'fa-sun text-amber-500', risk: 0 };
+            if (c === 1 || c === 2) return { text: 'มีเมฆบางส่วน', icon: 'fa-cloud-sun text-amber-400', risk: 0 };
+            if (c === 3) return { text: 'ท้องฟ้ามีเมฆมาก', icon: 'fa-cloud text-slate-400', risk: 0 };
+            if (c === 45 || c === 48) return { text: 'มีหมอก / อากาศชื้น', icon: 'fa-smog text-slate-400', risk: 0 };
+            if ([51, 53, 55, 61, 80].includes(c)) return { text: 'ฝนตกเล็กน้อย', icon: 'fa-cloud-rain text-sky-500', risk: 1 };
+            if ([63, 81].includes(c)) return { text: 'ฝนตกปานกลาง', icon: 'fa-cloud-showers-heavy text-blue-500', risk: 1 };
+            if ([65, 82].includes(c)) return { text: 'ฝนตกหนัก!', icon: 'fa-cloud-showers-water text-indigo-600', risk: 2 };
+            if (c >= 95) return { text: 'พายุฝนฟ้าคะนอง!', icon: 'fa-cloud-bolt text-amber-500', risk: 2 };
+            return { text: 'มีเมฆและฝนกระจาย', icon: 'fa-cloud-sun-rain text-sky-500', risk: 1 };
+        }
+
+        function windDegToThai(deg) {
+            const dirs = ['ทิศเหนือ', 'ตะวันออกเฉียงเหนือ', 'ทิศตะวันออก', 'ตะวันออกเฉียงใต้', 'ทิศใต้', 'ตะวันตกเฉียงใต้', 'ทิศตะวันตก', 'ตะวันตกเฉียงเหนือ'];
+            return dirs[Math.round(((deg || 0) % 360) / 45) % 8];
+        }
+
+        // Theme Management
         function initTheme() {
-            const savedTheme = localStorage.getItem('feel_theme') || 
+            const savedTheme = localStorage.getItem('feel_theme') ||
                 (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
             applyTheme(savedTheme);
         }
@@ -469,173 +524,325 @@
         }
 
         function toggleTheme() {
-            const isDark = document.documentElement.classList.contains('dark');
-            applyTheme(isDark ? 'light' : 'dark');
+            applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
         }
 
-        // 2. Build Windy Embed URL
-        function buildWindyUrl(presetKey, overlay) {
-            const loc = LOCATION_PRESETS[presetKey] || LOCATION_PRESETS.nst;
-            return `https://embed.windy.com/embed2.html?lat=${loc.lat}&lon=${loc.lon}&detailLat=${loc.lat}&detailLon=${loc.lon}&width=650&height=450&zoom=${loc.zoom}&level=surface&overlay=${overlay}&product=ecmwf&menu=&message=true&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
+        // Fetch Live Thai-Readable Forecast via Open-Meteo
+        async function fetchLocationWeather(lat, lon, displayName) {
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&timezone=Asia%2FBangkok&forecast_days=7`;
+                const data = await fetch(url).then(r => r.json());
+                activeWeatherData = data;
+                renderWeatherSummary(data, displayName);
+                renderForecastCards(data);
+            } catch (err) {
+                console.warn('Open-Meteo error:', err);
+            }
         }
 
-        // 3. Update Iframe Source
-        function updateRadarFrame() {
+        function renderWeatherSummary(data, displayName) {
+            const cur = data.current || {};
+            const daily = data.daily || {};
+            const info = decodeWeatherCode(cur.weather_code);
+            const rainProbToday = daily.precipitation_probability_max?.[0] ?? 0;
+            const rainSumToday = daily.precipitation_sum?.[0] ?? 0;
+            const tMin = daily.temperature_2m_min?.[0];
+            const tMax = daily.temperature_2m_max?.[0];
+
+            document.getElementById('selected-area-heading').textContent = `📍 ${displayName}`;
+            document.getElementById('forecast-loc-label').textContent = displayName;
+            document.getElementById('weather-updated-at').textContent = `อัปเดตข้อมูลล่าสุดเวลา ${new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น.`;
+
+            document.getElementById('hero-weather-icon').innerHTML = `<i class="fa-solid ${info.icon}"></i>`;
+            document.getElementById('hero-temp').textContent = cur.temperature_2m !== undefined ? `${Math.round(cur.temperature_2m)}°C` : '--°C';
+            document.getElementById('hero-feels-like').textContent = cur.apparent_temperature !== undefined ? `รู้สึกจริง ${Math.round(cur.apparent_temperature)}°C` : '';
+            document.getElementById('hero-condition-text').textContent = info.text;
+
+            document.getElementById('stat-rain-prob').textContent = `${rainProbToday}%`;
+            document.getElementById('stat-rain-sum').textContent = `ฝนสะสมวันนี้ ~${Number(rainSumToday).toFixed(1)} มม.`;
+            document.getElementById('stat-wind-speed').textContent = cur.wind_speed_10m !== undefined ? Math.round(cur.wind_speed_10m) : '--';
+            document.getElementById('stat-wind-dir').textContent = `ลม${windDegToThai(cur.wind_direction_10m)}`;
+            document.getElementById('stat-humidity').textContent = cur.relative_humidity_2m !== undefined ? `${cur.relative_humidity_2m}%` : '--%';
+            document.getElementById('stat-clouds').textContent = cur.cloud_cover !== undefined ? `เมฆปกคลุม ${cur.cloud_cover}%` : '';
+            document.getElementById('stat-temp-range').textContent = (tMin !== undefined && tMax !== undefined) ? `${Math.round(tMin)}° – ${Math.round(tMax)}°C` : '--';
+
+            const banner = document.getElementById('hero-risk-banner');
+            const todayCode = daily.weather_code?.[0] ?? cur.weather_code;
+            if (info.risk === 2 || todayCode >= 95 || rainSumToday >= 25) {
+                banner.className = 'p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs sm:text-sm font-medium leading-relaxed';
+                banner.innerHTML = `<strong>⚠️ แจ้งเตือนเฝ้าระวัง:</strong> วันนี้มีโอกาสฝนตก/พายุฝนฟ้าคะนองสูง (<strong>${rainProbToday}%</strong>, คาดการณ์ฝน ~${Number(rainSumToday).toFixed(1)} มม.) ควรตรวจสอบเส้นทางน้ำและเตรียมร่มก่อนเดินทาง`;
+            } else if (info.risk === 1 || rainProbToday >= 50 || rainSumToday >= 5) {
+                banner.className = 'p-3 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-medium leading-relaxed';
+                banner.innerHTML = `<strong>🌦️ เตรียมพร้อมก่อนออกเดินทาง:</strong> มีโอกาสพบฝนกระจายในพื้นที่ (<strong>${rainProbToday}%</strong>) แนะนำตรวจดูแนวกลุ่มฝนบนเรดาร์ด้านล่าง`;
+            } else {
+                banner.className = 'p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 text-xs sm:text-sm font-medium leading-relaxed';
+                banner.innerHTML = `<strong>☀️ สภาพอากาศโดยรวมปกติ:</strong> โอกาสเกิดฝนตกน้อย (${rainProbToday}%) เหมาะสำหรับเดินทางและทำกิจกรรมกลางแจ้ง`;
+            }
+        }
+
+        function renderForecastCards(data) {
+            // 1. Hourly (Every 3 hours for next 24h = 8 cards)
+            const hourlyBox = document.getElementById('forecast-hourly-list');
+            const hTimes = data.hourly?.time || [];
+            const nowMs = Date.now() - 3600000;
+            let startIdx = hTimes.findIndex(t => new Date(t).getTime() >= nowMs);
+            if (startIdx < 0) startIdx = 0;
+
+            let hourlyHtml = '';
+            for (let k = 0; k < 8; k++) {
+                const idx = startIdx + k * 3;
+                if (idx >= hTimes.length) break;
+                const timeLabel = k === 0 ? 'ชั่วโมงนี้' : `${hTimes[idx].slice(11, 16)} น.`;
+                const temp = Math.round(data.hourly.temperature_2m[idx]);
+                const prob = data.hourly.precipitation_probability?.[idx] ?? 0;
+                const precip = Number(data.hourly.precipitation?.[idx] ?? 0).toFixed(1);
+                const w = decodeWeatherCode(data.hourly.weather_code?.[idx]);
+
+                hourlyHtml += `
+                    <div class="p-3 rounded-2xl border ${k === 0 ? 'bg-sky-50/70 dark:bg-sky-950/40 border-sky-300 dark:border-sky-800' : 'bg-google-bg dark:bg-google-dark-bg border-google-border dark:border-google-dark-border'} text-center flex flex-col justify-between gap-1.5">
+                        <span class="text-xs font-bold ${k === 0 ? 'text-sky-700 dark:text-sky-300' : 'text-google-text-muted'}">${timeLabel}</span>
+                        <div class="text-2xl py-1"><i class="fa-solid ${w.icon}"></i></div>
+                        <div class="text-base font-extrabold font-heading text-google-text dark:text-white">${temp}°C</div>
+                        <div class="text-[11px] font-semibold ${prob >= 60 ? 'text-sky-600 dark:text-sky-400' : 'text-google-text-muted'}">
+                            💧 ${prob}% ${Number(precip) > 0 ? `(${precip}มม.)` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            hourlyBox.innerHTML = hourlyHtml;
+
+            // 2. Daily (7 Days)
+            const dailyBox = document.getElementById('forecast-daily-list');
+            const dTimes = data.daily?.time || [];
+            const thDays = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+
+            let dailyHtml = '';
+            for (let i = 0; i < Math.min(7, dTimes.length); i++) {
+                const dt = new Date(dTimes[i]);
+                const dayTitle = i === 0 ? 'วันนี้' : i === 1 ? 'พรุ่งนี้' : `วัน${thDays[dt.getDay()]} ${dt.getDate()}/${dt.getMonth() + 1}`;
+                const w = decodeWeatherCode(data.daily.weather_code?.[i]);
+                const minT = Math.round(data.daily.temperature_2m_min[i]);
+                const maxT = Math.round(data.daily.temperature_2m_max[i]);
+                const prob = data.daily.precipitation_probability_max?.[i] ?? 0;
+                const rain = Number(data.daily.precipitation_sum?.[i] ?? 0).toFixed(1);
+
+                dailyHtml += `
+                    <div class="p-3 rounded-2xl border ${i === 0 ? 'bg-sky-50/70 dark:bg-sky-950/40 border-sky-300 dark:border-sky-800' : 'bg-google-bg dark:bg-google-dark-bg border-google-border dark:border-google-dark-border'} flex lg:flex-col items-center justify-between gap-2 text-center">
+                        <span class="text-xs font-bold ${i === 0 ? 'text-sky-700 dark:text-sky-300' : 'text-google-text dark:text-white'} min-w-[60px] text-left lg:text-center">${dayTitle}</span>
+                        <div class="flex items-center gap-2 lg:flex-col">
+                            <i class="fa-solid ${w.icon} text-xl"></i>
+                            <span class="text-[11px] font-medium text-google-text-muted">${w.text}</span>
+                        </div>
+                        <div class="text-right lg:text-center">
+                            <div class="text-sm font-extrabold font-heading text-google-text dark:text-white">${minT}° – ${maxT}°C</div>
+                            <div class="text-[11px] font-semibold ${prob >= 60 ? 'text-sky-600 dark:text-sky-400' : 'text-google-text-muted'}">🌧️ ${prob}% • ${rain} มม.</div>
+                        </div>
+                    </div>
+                `;
+            }
+            dailyBox.innerHTML = dailyHtml;
+        }
+
+        function switchForecastTab(tab) {
+            forecastTab = tab;
+            const hBtn = document.getElementById('fc-tab-hourly');
+            const dBtn = document.getElementById('fc-tab-daily');
+            const hList = document.getElementById('forecast-hourly-list');
+            const dList = document.getElementById('forecast-daily-list');
+
+            if (tab === 'hourly') {
+                hList.classList.remove('hidden');
+                dList.classList.add('hidden');
+                hBtn.className = 'px-3.5 py-1.5 rounded-full font-bold bg-google-blue text-white shadow-xs cursor-pointer transition';
+                dBtn.className = 'px-3.5 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue cursor-pointer transition';
+            } else {
+                hList.classList.add('hidden');
+                dList.classList.remove('hidden');
+                dBtn.className = 'px-3.5 py-1.5 rounded-full font-bold bg-google-blue text-white shadow-xs cursor-pointer transition';
+                hBtn.className = 'px-3.5 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue cursor-pointer transition';
+            }
+        }
+
+        // Batch Southern Thailand Comparison Cards
+        async function fetchCompareSpots() {
+            const container = document.getElementById('south-compare-grid');
+            if (!container) return;
+
+            try {
+                const lats = COMPARE_SPOTS.map(s => s.lat).join(',');
+                const lons = COMPARE_SPOTS.map(s => s.lon).join(',');
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=temperature_2m,weather_code&daily=precipitation_probability_max&forecast_days=1&timezone=Asia%2FBangkok`;
+                const list = await fetch(url).then(r => r.json());
+                const items = Array.isArray(list) ? list : [list];
+
+                container.innerHTML = COMPARE_SPOTS.map((spot, idx) => {
+                    const d = items[idx] || {};
+                    const t = d.current?.temperature_2m !== undefined ? `${Math.round(d.current.temperature_2m)}°C` : '--';
+                    const w = decodeWeatherCode(d.current?.weather_code);
+                    const prob = d.daily?.precipitation_probability_max?.[0] ?? 0;
+                    const isSelected = spot.key === currentPresetKey;
+
+                    return `
+                        <button type="button" onclick="focusCustomSpot(${spot.lat}, ${spot.lon}, ${spot.zoom || 9}, '${escapeHtml(spot.label)}', '${spot.key}')" 
+                            class="p-3 rounded-xl border text-left transition cursor-pointer ${isSelected ? 'bg-sky-50 dark:bg-sky-950/60 border-google-blue ring-1 ring-google-blue' : 'bg-white dark:bg-google-dark-surface border-google-border dark:border-google-dark-border hover:border-google-blue'}">
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="text-xs font-bold text-google-text dark:text-white truncate">${escapeHtml(spot.label)}</span>
+                                <i class="fa-solid ${w.icon} text-sm shrink-0"></i>
+                            </div>
+                            <div class="flex items-baseline justify-between mt-1">
+                                <span class="text-base font-extrabold font-heading text-google-text dark:text-white">${t}</span>
+                                <span class="text-[11px] font-semibold ${prob >= 60 ? 'text-sky-600 dark:text-sky-400' : 'text-google-text-muted'}">🌧️ ${prob}%</span>
+                            </div>
+                        </button>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.warn('Compare batch error:', err);
+            }
+        }
+
+        function focusCustomSpot(lat, lon, zoom, label, presetKey) {
+            if (LOCATION_PRESETS[presetKey]) {
+                selectLocation(presetKey);
+                return;
+            }
+            currentPresetKey = presetKey;
+            document.querySelectorAll('.loc-preset-btn').forEach(btn => {
+                btn.className = 'loc-preset-btn px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-google-blue transition cursor-pointer';
+            });
+            updateWindyFrame(lat, lon, zoom);
+            fetchLocationWeather(lat, lon, label);
+            fetchCompareSpots();
+            showToast(`สลับดูข้อมูลและเรดาร์ของ ${label}`, 'info');
+        }
+
+        function buildWindyUrl(lat, lon, zoom, overlay) {
+            return `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&detailLat=${lat}&detailLon=${lon}&width=650&height=450&zoom=${zoom}&level=surface&overlay=${overlay}&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1`;
+        }
+
+        function updateWindyFrame(lat, lon, zoom) {
             const frame = document.getElementById('windy-frame');
             if (!frame) return;
-
-            const newUrl = buildWindyUrl(currentPresetKey, currentOverlay);
-            frame.src = newUrl;
-
-            // Update status label
+            frame.src = buildWindyUrl(lat, lon, zoom, currentOverlay);
             const label = document.getElementById('current-layer-label');
-            if (label) {
-                label.innerHTML = `ชั้นข้อมูลปัจจุบัน: <strong>${OVERLAY_NAMES[currentOverlay] || currentOverlay}</strong>`;
-            }
+            if (label) label.textContent = OVERLAY_NAMES[currentOverlay] || currentOverlay;
         }
 
-        // 4. Change Overlay/Layer
-        function setOverlay(overlay) {
-            currentOverlay = overlay;
+        function selectLocation(presetKey) {
+            const loc = LOCATION_PRESETS[presetKey] || LOCATION_PRESETS.nst;
+            currentPresetKey = loc.key;
 
-            // Update layer button styles
-            const overlays = ['thunder', 'radar', 'wind', 'temp', 'clouds', 'waves'];
-            overlays.forEach(ov => {
-                const btn = document.getElementById(`layer-btn-${ov}`);
-                if (!btn) return;
-                if (ov === overlay) {
-                    btn.className = 'layer-pill px-3 py-1.5 rounded-full font-semibold bg-google-blue text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer';
-                } else {
-                    btn.className = 'layer-pill px-3 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body bg-google-subtle dark:bg-google-dark-subtle hover:text-google-blue transition-all flex items-center gap-1.5 cursor-pointer';
-                }
-            });
-
-            updateRadarFrame();
-            showToast(`สลับชั้นข้อมูลเป็น ${OVERLAY_NAMES[overlay] || overlay}`, 'info');
-        }
-
-        // 5. Change Location Preset
-        function setLocationPreset(presetKey) {
-            currentPresetKey = presetKey;
-
-            // Update preset button styles
-            ['nst', 'south', 'thailand'].forEach(key => {
+            Object.keys(LOCATION_PRESETS).forEach(key => {
                 const btn = document.getElementById(`preset-btn-${key}`);
                 if (!btn) return;
-                if (key === presetKey) {
-                    btn.className = 'loc-preset-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-google-blue text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer';
-                } else {
-                    btn.className = 'loc-preset-btn px-3 py-1.5 rounded-full text-xs font-medium bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text hover:text-google-blue transition-all flex items-center gap-1.5 cursor-pointer';
-                }
+                btn.className = key === presetKey
+                    ? 'loc-preset-btn px-3.5 py-2 rounded-full text-xs sm:text-sm font-bold bg-google-blue text-white shadow-xs transition cursor-pointer'
+                    : 'loc-preset-btn px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-google-blue transition cursor-pointer';
             });
 
-            updateRadarFrame();
-            const locName = LOCATION_PRESETS[presetKey]?.name || presetKey;
-            showToast(`ปรับตำแหน่งแผนที่เป็น ${locName}`, 'info');
+            updateWindyFrame(loc.lat, loc.lon, loc.zoom);
+            fetchLocationWeather(loc.lat, loc.lon, loc.name);
+            fetchCompareSpots();
         }
 
-        // 6. Reload Radar
-        function reloadRadar() {
-            const icon = document.getElementById('refresh-icon');
-            if (icon) icon.classList.add('fa-spin');
+        function setOverlay(overlay) {
+            currentOverlay = overlay;
+            ['thunder', 'radar', 'wind', 'waves', 'temp', 'clouds'].forEach(ov => {
+                const btn = document.getElementById(`layer-btn-${ov}`);
+                if (!btn) return;
+                btn.className = ov === overlay
+                    ? 'layer-pill px-3.5 py-1.5 rounded-full font-bold bg-google-blue text-white shadow-xs transition flex items-center gap-1.5 cursor-pointer'
+                    : 'layer-pill px-3.5 py-1.5 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body bg-google-subtle dark:bg-google-dark-subtle hover:text-google-blue transition flex items-center gap-1.5 cursor-pointer';
+            });
+            const loc = LOCATION_PRESETS[currentPresetKey] || LOCATION_PRESETS.nst;
+            updateWindyFrame(loc.lat, loc.lon, loc.zoom);
+            showToast(`สลับแผนที่เป็น: ${OVERLAY_NAMES[overlay]}`, 'info');
+        }
 
-            const frame = document.getElementById('windy-frame');
-            if (frame) {
-                const currentSrc = frame.src;
-                frame.src = 'about:blank';
-                setTimeout(() => {
-                    frame.src = currentSrc;
-                    if (icon) icon.classList.remove('fa-spin');
-                    showToast('รีเฟรชข้อมูลเรดาร์สภาพอากาศเรียบร้อย', 'success');
-                }, 200);
+        function toggleRadarHeight() {
+            const wrap = document.getElementById('radar-viewport-wrapper');
+            const label = document.getElementById('radar-height-label');
+            if (!wrap) return;
+            radarExpanded = !radarExpanded;
+            if (radarExpanded) {
+                wrap.classList.remove('h-[480px]', 'sm:h-[580px]');
+                wrap.classList.add('h-[680px]', 'sm:h-[780px]');
+                if (label) label.textContent = 'ย่อขนาดปกติ';
+            } else {
+                wrap.classList.remove('h-[680px]', 'sm:h-[780px]');
+                wrap.classList.add('h-[480px]', 'sm:h-[580px]');
+                if (label) label.textContent = 'ขยายความสูงแผนที่';
             }
         }
 
-        // 7. Fullscreen Toggle
+        function refreshAllWeatherData() {
+            const icon = document.getElementById('refresh-icon');
+            icon?.classList.add('fa-spin');
+            const loc = LOCATION_PRESETS[currentPresetKey] || LOCATION_PRESETS.nst;
+            updateWindyFrame(loc.lat, loc.lon, loc.zoom);
+            Promise.all([
+                fetchLocationWeather(loc.lat, loc.lon, loc.name),
+                fetchCompareSpots()
+            ]).finally(() => {
+                setTimeout(() => icon?.classList.remove('fa-spin'), 400);
+                showToast('อัปเดตพยากรณ์อากาศและเรดาร์ล่าสุดแล้ว', 'success');
+            });
+        }
+
         function toggleRadarFullscreen() {
             const el = document.getElementById('radar-viewport-wrapper');
             if (!el) return;
-
             if (!document.fullscreenElement) {
-                if (el.requestFullscreen) {
-                    el.requestFullscreen();
-                } else if (el.webkitRequestFullscreen) {
-                    el.webkitRequestFullscreen();
-                } else if (el.msRequestFullscreen) {
-                    el.msRequestFullscreen();
-                }
+                el.requestFullscreen?.() || el.webkitRequestFullscreen?.() || el.msRequestFullscreen?.();
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
+                document.exitFullscreen?.();
             }
         }
 
-        // 8. Open External Windy
         function openInWindy() {
             const loc = LOCATION_PRESETS[currentPresetKey] || LOCATION_PRESETS.nst;
-            const externalUrl = `https://www.windy.com/?${currentOverlay},${loc.lat},${loc.lon},${loc.zoom}`;
-            window.open(externalUrl, '_blank');
+            window.open(`https://www.windy.com/?${currentOverlay},${loc.lat},${loc.lon},${loc.zoom}`, '_blank');
         }
 
-        // 9. Copy Link
         function copyRadarLink() {
             const url = new URL(window.location.href);
             url.searchParams.set('overlay', currentOverlay);
             url.searchParams.set('preset', currentPresetKey);
-            navigator.clipboard.writeText(url.href).then(() => {
-                showToast('คัดลอกลิงก์เรดาร์สภาพอากาศเรียบร้อยแล้ว', 'success');
-            }).catch(() => {
-                showToast('ไม่สามารถคัดลอกลิงก์ได้', 'error');
-            });
+            navigator.clipboard.writeText(url.href)
+                .then(() => showToast('คัดลอกลิงก์หน้าเรดาร์อากาศแล้ว', 'success'))
+                .catch(() => showToast('ไม่สามารถคัดลอกลิงก์ได้', 'error'));
         }
 
-        // 10. Toast Helper
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             if (!container) return;
-
             const colors = {
                 success: 'bg-emerald-600 text-white',
                 warning: 'bg-amber-600 text-white',
                 error: 'bg-rose-600 text-white',
                 info: 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
             };
-
             const toast = document.createElement('div');
-            toast.className = `pointer-events-auto px-4 py-2.5 rounded-xl shadow-google-lg text-xs font-semibold flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 ${colors[type] || colors.info}`;
-            toast.innerHTML = `
-                <i class="fa-solid fa-circle-info text-sm"></i>
-                <span>${message}</span>
-            `;
-
+            toast.className = `pointer-events-auto px-4 py-2.5 rounded-xl shadow-google-lg text-xs font-semibold flex items-center gap-2 transition-all duration-300 ${colors[type] || colors.info}`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i><span>${escapeHtml(message)}</span>`;
             container.appendChild(toast);
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            });
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            setTimeout(() => toast.remove(), 2600);
         }
 
-        // 11. Run on Page Load
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
-
-            // Check URL query params e.g. ?overlay=radar&preset=south
             const params = new URLSearchParams(window.location.search);
-            const urlOverlay = params.get('overlay');
             const urlPreset = params.get('preset');
+            const urlOverlay = params.get('overlay');
 
-            if (urlPreset && LOCATION_PRESETS[urlPreset]) {
-                currentPresetKey = urlPreset;
-                setLocationPreset(urlPreset);
-            }
             if (urlOverlay && OVERLAY_NAMES[urlOverlay]) {
                 currentOverlay = urlOverlay;
                 setOverlay(urlOverlay);
+            }
+            if (urlPreset && LOCATION_PRESETS[urlPreset]) {
+                selectLocation(urlPreset);
+            } else {
+                selectLocation('nst');
             }
         });
     </script>

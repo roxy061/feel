@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สตูดิโอลบพื้นหลัง & แต่งตัดต่อรูปภาพ (Feel Photo Studio & BG Remover) | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="เว็บแอปลบพื้นหลังรูปภาพอัตโนมัติ (Background Remover) เปลี่ยนสีพื้นหลังรูปติดบัตร ปรับแสงสี ฟิลเตอร์ หมุนครอบตัด และใส่ข้อความ ดาวน์โหลด PNG โปร่งใสความชัดเต็ม 100% โดย นายภคพล สมัยแก้ว (ฟีล)">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.25rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.12), 0 1px 3px 1px rgba(60,64,67,0.08);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        /* Checkerboard pattern for transparent background preview */
+        .checkerboard-bg {
+            background-color: #ffffff;
+            background-image: 
+                linear-gradient(45deg, #e5e7eb 25%, transparent 25%), 
+                linear-gradient(-45deg, #e5e7eb 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #e5e7eb 75%), 
+                linear-gradient(-45deg, transparent 75%, #e5e7eb 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+        .dark .checkerboard-bg {
+            background-color: #18181b;
+            background-image: 
+                linear-gradient(45deg, #27272a 25%, transparent 25%), 
+                linear-gradient(-45deg, #27272a 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #27272a 75%), 
+                linear-gradient(-45deg, transparent 75%, #27272a 75%);
+        }
+        #editorCanvas {
+            max-width: 100%;
+            max-height: 540px;
+            object-fit: contain;
+            touch-action: none;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-pink-600 selection:text-white">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- TOP NAVIGATION BAR                         -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-4 sm:px-6 flex items-center justify-between gap-3">
+        <!-- Left: Back Button & Branding -->
+        <div class="flex items-center gap-2.5 min-w-0">
+            <a href="index.html" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก Portfolio</span>
+            </a>
+
+            <div class="h-5 w-[1px] bg-google-border dark:bg-google-dark-border mx-0.5 hidden sm:block"></div>
+
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-pink-600 via-rose-500 to-amber-500 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-wand-sparkles"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-xs sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            สตูดิโอลบพื้นหลัง & แต่งตัดต่อรูปภาพ (Feel Photo Studio)
+                        </h1>
+                        <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-950/70 text-pink-700 dark:text-pink-300 text-[10px] font-bold">
+                            ลบพื้นหลัง • แต่งภาพ • รูปติดบัตร
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        ทักษะการผลิตและตัดต่อสื่อดิจิทัล • นายภคพล สมัยแก้ว (ฟีล)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Unified 8-App Switcher & Theme Toggle -->
+        <div class="flex items-center gap-2 shrink-0">
+            <nav class="hidden xl:flex items-center gap-1 bg-google-subtle dark:bg-google-dark-subtle p-1 rounded-full border border-google-border dark:border-google-dark-border text-xs">
+                <a href="wheel.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">1. วงล้อ 3D</a>
+                <a href="southern-food.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">2. ร้านอาหาร</a>
+                <a href="cctv.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">3. CCTV</a>
+                <a href="weather.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">4. เรดาร์อากาศ</a>
+                <a href="rubik.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">5. รูบิค 3x3</a>
+                <a href="ai-assistant.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">6. ผู้ช่วย AI</a>
+                <a href="vault.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">7. ตู้เซฟไฟล์</a>
+                <a href="photo-studio.html" class="px-2.5 py-1 rounded-full font-bold bg-pink-600 text-white shadow-xs">8. ลบพื้นหลัง/แต่งรูป</a>
+            </nav>
+
+            <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle transition-all shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN CONTENT                               -->
+    <!-- ========================================== -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-6 space-y-5">
+
+        <!-- 1. Clear Purpose & Guide Banner (เข้าใจบทความที่จะสื่อใน 3 วินาที) -->
+        <section class="g-card p-4 sm:p-5 bg-gradient-to-r from-pink-500/10 via-amber-500/5 to-indigo-500/5 border-pink-200/80 dark:border-pink-900/50 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="space-y-1 max-w-4xl">
+                <div class="inline-flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-pink-600 text-white">เว็บแอปที่ 8 • เครื่องมือลบพื้นหลังและตัดต่อรูปภาพดิจิทัล (Digital Media Studio)</span>
+                    <span class="text-xs text-google-text-muted dark:text-google-dark-text-muted font-medium">ฟรี 100% ไม่มีลายน้ำบังภาพ</span>
+                </div>
+                <h2 class="text-base sm:text-xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
+                    ลบภาพพื้นหลังอัตโนมัติ เปลี่ยนฉากหลังรูปติดบัตร ปรับแสงสี และตัดต่อรูปภาพครบจบในหน้าเดียว
+                </h2>
+                <p class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed">
+                    <strong>บทความที่จะสื่อ:</strong> สอดคล้องกับทักษะด้านการผลิตและตัดต่อสื่อดิจิทัลของ <strong>นายภคพล สมัยแก้ว (ฟีล)</strong> ช่วยให้ผู้ใช้งานสามารถลบฉากหลังเป็นภาพโปร่งใส (PNG), เปลี่ยนพื้นหลังสีน้ำเงิน/ขาวสำหรับทำรูปติดบัตรนักศึกษา, ปรับแต่งแสงสี หมุน/ครอบตัด และบันทึกเข้า <strong>ตู้เซฟฝากไฟล์</strong> หรือดาวน์โหลดความชัดเต็มได้ทันที
+                </p>
+            </div>
+
+            <!-- Upload / Sample Photo Buttons -->
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <label class="px-4 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs sm:text-sm font-heading font-bold shadow-sm transition flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-upload"></i> เลือกรูปภาพของคุณ
+                    <input type="file" id="photo-upload-input" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden">
+                </label>
+                <button type="button" onclick="loadSamplePortrait()" class="px-3.5 py-2.5 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-google-subtle border border-google-border dark:border-google-dark-border text-xs font-heading font-semibold text-google-text dark:text-white transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-image text-pink-600"></i> ลองด้วยรูปตัวอย่าง
+                </button>
+            </div>
+        </section>
+
+        <!-- 2. Main Studio Workspace: Left = Tools Sidebar (5 cols), Right = Interactive Canvas Preview & Download (7 cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- ========================================== -->
+            <!-- LEFT COLUMN: 3 EASY EDITING TOOL TABS      -->
+            <!-- ========================================== -->
+            <div class="lg:col-span-5 g-card p-4 sm:p-5 space-y-4">
+
+                <!-- 3 Tool Mode Tabs -->
+                <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-google-subtle dark:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs">
+                    <button type="button" onclick="switchToolTab('bg')" id="tool-tab-bg" class="py-2 px-2 rounded-lg font-heading font-bold bg-white dark:bg-google-dark-surface text-pink-600 dark:text-pink-400 shadow-xs transition cursor-pointer">
+                        ✂️ 1. ลบ/เปลี่ยนพื้นหลัง
+                    </button>
+                    <button type="button" onclick="switchToolTab('adjust')" id="tool-tab-adjust" class="py-2 px-2 rounded-lg font-heading font-medium text-google-text-muted hover:text-google-text transition cursor-pointer">
+                        🎨 2. แต่งแสงสี/ฟิลเตอร์
+                    </button>
+                    <button type="button" onclick="switchToolTab('crop')" id="tool-tab-crop" class="py-2 px-2 rounded-lg font-heading font-medium text-google-text-muted hover:text-google-text transition cursor-pointer">
+                        📐 3. หมุน/ครอป/ข้อความ
+                    </button>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- TAB 1: BACKGROUND REMOVER & ID PHOTO BG    -->
+                <!-- ========================================== -->
+                <div id="tool-panel-bg" class="space-y-4">
+                    
+                    <!-- Step 1: Auto Remove Background -->
+                    <div class="p-3.5 rounded-2xl bg-pink-50/60 dark:bg-pink-950/25 border border-pink-200/80 dark:border-pink-900/50 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs sm:text-sm font-heading font-bold text-pink-700 dark:text-pink-300 flex items-center gap-1.5">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> ขั้นที่ 1: ลบภาพพื้นหลังอัตโนมัติ
+                            </span>
+                            <button type="button" onclick="resetToOriginalMask()" class="text-[11px] text-google-text-muted hover:text-rose-600 underline cursor-pointer">
+                                คืนค่าพื้นหลังเดิม
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <button type="button" onclick="autoRemoveEdgesBackground()" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-heading font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-bolt"></i> ลบพื้นหลังอัตโนมัติ (1 คลิก)
+                            </button>
+                            <button type="button" onclick="setInteractMode('wand')" id="btn-mode-wand" class="py-2.5 px-3 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-pink-50 border border-pink-300 dark:border-pink-800 text-pink-700 dark:text-pink-300 font-heading font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-eye-dropper"></i> จิ้มสีบนภาพเพื่อลบ
+                            </button>
+                        </div>
+
+                        <!-- Tolerance & Edge Feather Sliders -->
+                        <div class="space-y-2 pt-1">
+                            <div>
+                                <div class="flex justify-between text-xs mb-0.5">
+                                    <span class="text-google-text-body dark:text-google-dark-text-body font-medium">ความแรงในการตัดสีพื้นหลัง (Tolerance):</span>
+                                    <span id="tol-val-label" class="font-mono font-bold text-pink-600">38</span>
+                                </div>
+                                <input type="range" id="bg-tolerance" min="8" max="95" value="38" oninput="document.getElementById('tol-val-label').textContent = this.value" class="w-full accent-pink-600 cursor-pointer">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-0.5">
+                                    <span class="text-google-text-body dark:text-google-dark-text-body font-medium">ความเนียนของขอบภาพ (Edge Smooth):</span>
+                                    <span id="feather-val-label" class="font-mono font-bold text-pink-600">12</span>
+                                </div>
+                                <input type="range" id="bg-feather" min="0" max="35" value="12" oninput="document.getElementById('feather-val-label').textContent = this.value" class="w-full accent-pink-600 cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Manual Eraser / Restore Brush -->
+                    <div class="p-3.5 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-heading font-bold text-google-text dark:text-white">
+                                <i class="fa-solid fa-paintbrush text-amber-500 mr-1"></i> ขั้นที่ 2: พู่กันเก็บรายละเอียดด้วยมือ
+                            </span>
+                            <span id="brush-mode-status" class="text-[11px] font-semibold text-google-text-muted">โหมดปกติ</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1.5 text-xs">
+                            <button type="button" onclick="setInteractMode('erase')" id="btn-mode-erase" class="py-2 px-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-pink-500 font-heading font-semibold transition cursor-pointer">
+                                🧽 ยางลบพื้นหลัง
+                            </button>
+                            <button type="button" onclick="setInteractMode('restore')" id="btn-mode-restore" class="py-2 px-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-emerald-500 font-heading font-semibold transition cursor-pointer">
+                                🖌️ พู่กันกู้คืนภาพ
+                            </button>
+                            <button type="button" onclick="setInteractMode('none')" id="btn-mode-none" class="py-2 px-2 rounded-xl bg-slate-800 text-white font-heading font-semibold transition cursor-pointer">
+                                ✋ หยุดใช้พู่กัน
+                            </button>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-0.5">
+                                <span class="text-google-text-muted">ขนาดหัวแปรง (Brush Size):</span>
+                                <span id="brush-size-label" class="font-mono font-bold">28 px</span>
+                            </div>
+                            <input type="range" id="brush-size" min="5" max="90" value="28" oninput="document.getElementById('brush-size-label').textContent = this.value + ' px'" class="w-full accent-pink-600 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Background Replacement (Transparent / ID Photo Blue / White / Gradient) -->
+                    <div class="p-3.5 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2.5">
+                        <span class="text-xs font-heading font-bold text-google-text dark:text-white block">
+                            <i class="fa-solid fa-fill-drip text-sky-500 mr-1"></i> ขั้นที่ 3: เลือกสีพื้นหลังใหม่ (หรือเว้นโปร่งใส)
+                        </span>
+                        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center text-[11px] font-heading font-semibold">
+                            <button type="button" onclick="setBgFill('transparent')" class="p-2 rounded-xl border-2 border-pink-500 checkerboard-bg text-slate-800 dark:text-white cursor-pointer">
+                                โปร่งใส
+                            </button>
+                            <button type="button" onclick="setBgFill('#1d4ed8')" class="p-2 rounded-xl border border-slate-300 bg-[#1d4ed8] text-white cursor-pointer" title="สีน้ำเงินรูปติดบัตรนักศึกษา">
+                                น้ำเงินบัตร
+                            </button>
+                            <button type="button" onclick="setBgFill('#ffffff')" class="p-2 rounded-xl border border-slate-300 bg-white text-slate-800 cursor-pointer">
+                                ขาวล้วน
+                            </button>
+                            <button type="button" onclick="setBgFill('#dc2626')" class="p-2 rounded-xl border border-slate-300 bg-[#dc2626] text-white cursor-pointer">
+                                แดงบัตร
+                            </button>
+                            <button type="button" onclick="setBgFill('gradient-sky')" class="p-2 rounded-xl border border-slate-300 bg-gradient-to-br from-sky-400 to-indigo-600 text-white cursor-pointer">
+                                ไล่สีฟ้า
+                            </button>
+                            <label class="p-2 rounded-xl border border-slate-300 bg-amber-100 text-amber-900 cursor-pointer flex items-center justify-center gap-1">
+                                <span>เลือกสี</span>
+                                <input type="color" id="custom-bg-color" onchange="setBgFill(this.value)" class="w-4 h-4 border-0 p-0 bg-transparent cursor-pointer">
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ========================================== -->
+                <!-- TAB 2: COLOR ADJUSTMENTS & FILTERS         -->
+                <!-- ========================================== -->
+                <div id="tool-panel-adjust" class="hidden space-y-4">
+                    <div class="space-y-3 p-3.5 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-heading font-bold text-google-text dark:text-white">ปรับแต่งแสงและสีของภาพ</span>
+                            <button type="button" onclick="resetColorAdjustments()" class="text-xs text-pink-600 hover:underline font-semibold cursor-pointer">รีเซ็ตค่าสี</button>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-0.5">
+                                <span>☀️ ความสว่าง (Brightness)</span>
+                                <span id="lbl-bright" class="font-mono font-bold">100%</span>
+                            </div>
+                            <input type="range" id="adj-bright" min="50" max="160" value="100" oninput="updateAdjustments()" class="w-full accent-pink-600 cursor-pointer">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-0.5">
+                                <span>🌗 ความคมชัดแสงเงา (Contrast)</span>
+                                <span id="lbl-contrast" class="font-mono font-bold">100%</span>
+                            </div>
+                            <input type="range" id="adj-contrast" min="50" max="170" value="100" oninput="updateAdjustments()" class="w-full accent-pink-600 cursor-pointer">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-0.5">
+                                <span>🌈 ความอิ่มตัวของสี (Saturation)</span>
+                                <span id="lbl-sat" class="font-mono font-bold">100%</span>
+                            </div>
+                            <input type="range" id="adj-sat" min="0" max="200" value="100" oninput="updateAdjustments()" class="w-full accent-pink-600 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- 1-Click Presets -->
+                    <div class="space-y-2">
+                        <span class="text-xs font-heading font-bold text-google-text-muted block">ฟิลเตอร์สำเร็จรูป 1 คลิก:</span>
+                        <div class="grid grid-cols-3 gap-2 text-xs font-heading font-semibold">
+                            <button type="button" onclick="applyFilterPreset(100,100,100)" class="py-2 rounded-xl bg-google-subtle dark:bg-google-dark-subtle hover:bg-pink-600 hover:text-white transition cursor-pointer">✨ ต้นฉบับ</button>
+                            <button type="button" onclick="applyFilterPreset(108,115,130)" class="py-2 rounded-xl bg-google-subtle dark:bg-google-dark-subtle hover:bg-pink-600 hover:text-white transition cursor-pointer">🔥 สีสดคมชัด</button>
+                            <button type="button" onclick="applyFilterPreset(112,104,108)" class="py-2 rounded-xl bg-google-subtle dark:bg-google-dark-subtle hover:bg-pink-600 hover:text-white transition cursor-pointer">💡 หน้าสว่างใส</button>
+                            <button type="button" onclick="applyFilterPreset(105,120,0)" class="py-2 rounded-xl bg-google-subtle dark:bg-google-dark-subtle hover:bg-pink-600 hover:text-white transition cursor-pointer">🖤 ขาว-ดำ</button>
+                            <button type="button" onclick="applyFilterPreset(95,115,75)" class="py-2 rounded-xl bg-google-subtle dark:bg-google-dark-subtle hover:bg-pink-600 hover:text-white transition cursor-pointer">🎞️ โทนฟิล์ม</button>
+                            <button type="button" onclick="applyFilterPreset(102,128,115)" class="py-2 rounded-xl bg-google-subtle dark:bg-google-dark-subtle hover:bg-pink-600 hover:text-white transition cursor-pointer">💎 คมเข้ม HDR</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- TAB 3: ROTATE, FLIP, CROP & TEXT OVERLAY   -->
+                <!-- ========================================== -->
+                <div id="tool-panel-crop" class="hidden space-y-4">
+                    
+                    <!-- Rotate & Flip -->
+                    <div class="p-3.5 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2.5">
+                        <span class="text-xs font-heading font-bold text-google-text dark:text-white block">หมุนและพลิกกลับด้านรูปภาพ:</span>
+                        <div class="grid grid-cols-4 gap-2 text-xs font-heading font-semibold">
+                            <button type="button" onclick="rotateImage(-90)" class="py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-pink-500 transition cursor-pointer">
+                                <i class="fa-solid fa-rotate-left mr-1"></i> ซ้าย 90°
+                            </button>
+                            <button type="button" onclick="rotateImage(90)" class="py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-pink-500 transition cursor-pointer">
+                                <i class="fa-solid fa-rotate-right mr-1"></i> ขวา 90°
+                            </button>
+                            <button type="button" onclick="flipImage('h')" class="py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-pink-500 transition cursor-pointer">
+                                <i class="fa-solid fa-arrows-left-right mr-1"></i> พลิกซ้าย-ขวา
+                            </button>
+                            <button type="button" onclick="flipImage('v')" class="py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-pink-500 transition cursor-pointer">
+                                <i class="fa-solid fa-arrows-up-down mr-1"></i> พลิกบน-ล่าง
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Smart Aspect Ratio Crop -->
+                    <div class="p-3.5 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2.5">
+                        <span class="text-xs font-heading font-bold text-google-text dark:text-white block">ตัดสัดส่วนภาพอัตโนมัติ (Smart Crop):</span>
+                        <div class="grid grid-cols-4 gap-2 text-xs font-heading font-semibold">
+                            <button type="button" onclick="cropToAspectRatio(1, 1)" class="py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-pink-600 hover:text-white transition cursor-pointer">
+                                1:1 จัตุรัส
+                            </button>
+                            <button type="button" onclick="cropToAspectRatio(3, 4)" class="py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-pink-600 hover:text-white transition cursor-pointer">
+                                3:4 รูปติดบัตร
+                            </button>
+                            <button type="button" onclick="cropToAspectRatio(4, 3)" class="py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-pink-600 hover:text-white transition cursor-pointer">
+                                4:3 มาตรฐาน
+                            </button>
+                            <button type="button" onclick="cropToAspectRatio(16, 9)" class="py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-pink-600 hover:text-white transition cursor-pointer">
+                                16:9 หน้าปก
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Text Caption / Watermark -->
+                    <div class="p-3.5 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2.5">
+                        <span class="text-xs font-heading font-bold text-google-text dark:text-white block">พิมพ์ข้อความ / ป้ายชื่อลงบนรูปภาพ:</span>
+                        <input type="text" id="overlay-text-input" oninput="renderCanvas()" placeholder="พิมพ์ข้อความที่ต้องการแสดงด้านล่างภาพ..." class="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs sm:text-sm focus:border-pink-500 focus:outline-none">
+                        <div class="flex items-center justify-between gap-2 text-xs">
+                            <label class="flex items-center gap-1.5">
+                                <span>สีข้อความ:</span>
+                                <input type="color" id="overlay-text-color" value="#ffffff" onchange="renderCanvas()" class="w-6 h-6 border-0 bg-transparent cursor-pointer">
+                            </label>
+                            <button type="button" onclick="document.getElementById('overlay-text-input').value=''; renderCanvas();" class="text-rose-500 hover:underline font-medium cursor-pointer">ล้างข้อความ</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ========================================== -->
+            <!-- RIGHT COLUMN: INTERACTIVE CANVAS & EXPORT  -->
+            <!-- ========================================== -->
+            <div class="lg:col-span-7 g-card p-4 sm:p-5 flex flex-col justify-between space-y-4">
+                
+                <!-- Top Canvas Status Bar -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-google-border dark:border-google-dark-border">
+                    <div class="flex items-center gap-2 text-xs">
+                        <span id="canvas-resolution-badge" class="px-2.5 py-1 rounded-full bg-google-subtle dark:bg-google-dark-subtle font-mono font-bold text-google-text dark:text-white">
+                            กำลังโหลดภาพ...
+                        </span>
+                        <span id="active-tool-hint" class="text-google-text-muted hidden sm:inline">
+                            💡 กดปุ่ม "ลบพื้นหลังอัตโนมัติ" หรือคลิกเลือกสีที่ต้องการลบได้เลย
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-1.5">
+                        <button 
+                            type="button" 
+                            onmousedown="toggleOriginalPreview(true)" 
+                            onmouseup="toggleOriginalPreview(false)" 
+                            onmouseleave="toggleOriginalPreview(false)"
+                            ontouchstart="toggleOriginalPreview(true)"
+                            ontouchend="toggleOriginalPreview(false)"
+                            class="px-3 py-1 rounded-full bg-google-subtle dark:bg-google-dark-subtle hover:bg-slate-200 text-xs font-heading font-semibold text-google-text dark:text-white transition cursor-pointer select-none"
+                        >
+                            👁️ กดค้างเพื่อดูภาพก่อนแต่ง
+                        </button>
+                        <button type="button" onclick="fullResetImage()" class="px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 hover:bg-rose-100 text-xs font-heading font-semibold transition cursor-pointer">
+                            <i class="fa-solid fa-rotate-left"></i> เริ่มต้นใหม่
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Checkerboard Canvas Viewport -->
+                <div class="checkerboard-bg rounded-2xl border border-google-border dark:border-google-dark-border min-h-[380px] sm:min-h-[460px] flex items-center justify-center p-3 relative overflow-hidden">
+                    <canvas id="editorCanvas" class="rounded-lg shadow-md cursor-crosshair"></canvas>
+                </div>
+
+                <!-- Bottom Download & Save to Vault Bar -->
+                <div class="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="font-heading font-semibold text-google-text-muted">รูปแบบไฟล์:</span>
+                        <select id="export-format" class="px-3 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-heading font-bold text-google-text dark:text-white">
+                            <option value="image/png">PNG (พื้นหลังโปร่งใส • ชัดสูงสุด)</option>
+                            <option value="image/jpeg">JPG (สำหรับรูปติดบัตร/ทั่วไป)</option>
+                            <option value="image/webp">WebP (สำหรับทำเว็บไซต์)</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="saveEditedPhotoToVault()" class="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-heading font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-vault"></i> ฝากเข้าตู้เซฟ (SafeBox)
+                        </button>
+                        <button type="button" onclick="downloadEditedPhoto()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-heading font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-download"></i> ดาวน์โหลดรูปภาพ
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-8 border-t border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface py-5 px-4 sm:px-6 text-xs text-google-text-muted dark:text-google-dark-text-muted">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="index.html" class="hover:text-google-blue font-semibold">หน้าหลัก Portfolio</a>
+                <span>•</span>
+                <a href="wheel.html" class="hover:text-google-blue">1. วงล้อผลงาน 3D</a>
+                <span>•</span>
+                <a href="southern-food.html" class="hover:text-google-blue">2. สุ่มร้านอาหารนครฯ</a>
+                <span>•</span>
+                <a href="cctv.html" class="hover:text-google-blue">3. กล้อง CCTV สด</a>
+                <span>•</span>
+                <a href="weather.html" class="hover:text-google-blue">4. เรดาร์อากาศสด</a>
+                <span>•</span>
+                <a href="rubik.html" class="hover:text-google-blue">5. รูบิค 3x3</a>
+                <span>•</span>
+                <a href="ai-assistant.html" class="hover:text-google-blue">6. ผู้ช่วย AI</a>
+                <span>•</span>
+                <a href="vault.html" class="hover:text-google-blue">7. ตู้เซฟฝากไฟล์</a>
+            </div>
+            <div>
+                พัฒนาโดย <strong class="text-google-text dark:text-white">นายภคพล สมัยแก้ว (ฟีล)</strong> • วิทยาลัยอาชีวศึกษานครศรีธรรมราช
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== PHOTO STUDIO & BACKGROUND REMOVER ENGINE ====================
+        const canvas = document.getElementById('editorCanvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+        // Offscreen buffers:
+        // baseCanvas holds the current geometric state (rotated/flipped/cropped original RGB pixels)
+        // alphaMask holds 0..255 alpha transparency per pixel for background removal & brush erase/restore
+        const baseCanvas = document.createElement('canvas');
+        const baseCtx = baseCanvas.getContext('2d', { willReadFrequently: true });
+
+        let alphaMask = null; // Uint8ClampedArray of length width * height
+        let originalImageObj = null;
+        let currentFileName = 'feel-studio-photo';
+
+        // Interactive modes: 'none' | 'wand' | 'erase' | 'restore'
+        let interactMode = 'none';
+        let isPointerDown = false;
+        let bgFillMode = 'transparent'; // 'transparent' | hex color | 'gradient-sky'
+        let showOriginalPreview = false;
+
+        // Color adjustment state
+        let adjBright = 100;
+        let adjContrast = 100;
+        let adjSat = 100;
+
+        function switchToolTab(tab) {
+            ['bg', 'adjust', 'crop'].forEach(t => {
+                const panel = document.getElementById(`tool-panel-${t}`);
+                const btn = document.getElementById(`tool-tab-${t}`);
+                if (t === tab) {
+                    panel.classList.remove('hidden');
+                    btn.className = 'py-2 px-2 rounded-lg font-heading font-bold bg-white dark:bg-google-dark-surface text-pink-600 dark:text-pink-400 shadow-xs transition cursor-pointer';
+                } else {
+                    panel.classList.add('hidden');
+                    btn.className = 'py-2 px-2 rounded-lg font-heading font-medium text-google-text-muted hover:text-google-text transition cursor-pointer';
+                }
+            });
+        }
+
+        function initFromImageElement(img, name = 'photo') {
+            originalImageObj = img;
+            currentFileName = name.replace(/\.[^.]+$/, '');
+
+            // Cap working dimension to 1400px for smooth real-time brush & flood-fill while keeping high quality
+            const maxDim = 1400;
+            let w = img.naturalWidth || img.width;
+            let h = img.naturalHeight || img.height;
+            if (w > maxDim || h > maxDim) {
+                const ratio = Math.min(maxDim / w, maxDim / h);
+                w = Math.round(w * ratio);
+                h = Math.round(h * ratio);
+            }
+
+            baseCanvas.width = w;
+            baseCanvas.height = h;
+            baseCtx.clearRect(0, 0, w, h);
+            baseCtx.drawImage(img, 0, 0, w, h);
+
+            alphaMask = new Uint8ClampedArray(w * h);
+            alphaMask.fill(255);
+
+            document.getElementById('canvas-resolution-badge').textContent = `📐 ${w} × ${h} px`;
+            renderCanvas();
+        }
+
+        function handlePhotoUpload(e) {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            loadFileIntoStudio(file);
+        }
+
+        function loadFileIntoStudio(file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    resetColorAdjustments(false);
+                    bgFillMode = 'transparent';
+                    initFromImageElement(img, file.name);
+                    showToast(`โหลดรูปภาพ "${file.name}" เรียบร้อยแล้ว!`);
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Generate a crisp built-in demo studio portrait with a clean removable backdrop so it works 100% offline/CORS-free
+        function loadSamplePortrait() {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                resetColorAdjustments(false);
+                bgFillMode = 'transparent';
+                initFromImageElement(img, 'pakapol-portrait');
+                showToast('โหลดรูปตัวอย่างแล้ว! ลองกดปุ่ม "ลบพื้นหลังอัตโนมัติ (1 คลิก)" ได้เลย');
+            };
+            img.onerror = () => {
+                // Fallback synthetic badge illustration if local image missing
+                const temp = document.createElement('canvas');
+                temp.width = 720;
+                temp.height = 720;
+                const tctx = temp.getContext('2d');
+                tctx.fillStyle = '#e2e8f0';
+                tctx.fillRect(0, 0, 720, 720);
+                tctx.fillStyle = '#1d4ed8';
+                tctx.beginPath();
+                tctx.arc(360, 420, 190, 0, Math.PI * 2);
+                tctx.fill();
+                tctx.fillStyle = '#fcd34d';
+                tctx.beginPath();
+                tctx.arc(360, 250, 95, 0, Math.PI * 2);
+                tctx.fill();
+                const fallbackImg = new Image();
+                fallbackImg.onload = () => initFromImageElement(fallbackImg, 'sample-avatar');
+                fallbackImg.src = temp.toDataURL();
+            };
+            img.src = './ตัวเอง.jpg';
+        }
+
+        // ==================== SMART BACKGROUND REMOVAL (FLOOD FILL + FEATHER) ====================
+        function colorDistance(r1, g1, b1, r2, g2, b2) {
+            const dr = r1 - r2;
+            const dg = g1 - g2;
+            const db = b1 - b2;
+            return Math.sqrt(dr * dr * 0.3 + dg * dg * 0.59 + db * db * 0.11);
+        }
+
+        function removeBackgroundFloodFillFromSeeds(seeds) {
+            const w = baseCanvas.width;
+            const h = baseCanvas.height;
+            if (!w || !h) return;
+
+            const imgData = baseCtx.getImageData(0, 0, w, h);
+            const data = imgData.data;
+            const tol = Number(document.getElementById('bg-tolerance').value) || 38;
+            const feather = Number(document.getElementById('bg-feather').value) || 12;
+
+            const visited = new Uint8Array(w * h);
+            const queue = new Int32Array(w * h);
+            let qHead = 0;
+            let qTail = 0;
+
+            // Sample reference colors from seed points
+            const refColors = seeds.map(([sx, sy]) => {
+                const idx = (sy * w + sx) * 4;
+                return [data[idx], data[idx + 1], data[idx + 2]];
+            });
+
+            seeds.forEach(([sx, sy]) => {
+                const p = sy * w + sx;
+                if (!visited[p]) {
+                    visited[p] = 1;
+                    queue[qTail++] = p;
+                }
+            });
+
+            while (qHead < qTail) {
+                const p = queue[qHead++];
+                const x = p % w;
+                const y = (p - x) / w;
+                const idx = p * 4;
+                const r = data[idx];
+                const g = data[idx + 1];
+                const b = data[idx + 2];
+
+                // Find minimum distance to any seed reference color
+                let minDist = 999;
+                for (let i = 0; i < refColors.length; i++) {
+                    const rc = refColors[i];
+                    const d = colorDistance(r, g, b, rc[0], rc[1], rc[2]);
+                    if (d < minDist) minDist = d;
+                }
+
+                if (minDist <= tol + feather) {
+                    if (minDist <= tol) {
+                        alphaMask[p] = 0;
+                    } else if (feather > 0) {
+                        const softAlpha = Math.round(((minDist - tol) / feather) * 255);
+                        alphaMask[p] = Math.min(alphaMask[p], softAlpha);
+                    }
+
+                    // Push 4 neighbors
+                    if (x > 0 && !visited[p - 1]) { visited[p - 1] = 1; queue[qTail++] = p - 1; }
+                    if (x < w - 1 && !visited[p + 1]) { visited[p + 1] = 1; queue[qTail++] = p + 1; }
+                    if (y > 0 && !visited[p - w]) { visited[p - w] = 1; queue[qTail++] = p - w; }
+                    if (y < h - 1 && !visited[p + w]) { visited[p + w] = 1; queue[qTail++] = p + w; }
+                }
+            }
+
+            renderCanvas();
+        }
+
+        function autoRemoveEdgesBackground() {
+            const w = baseCanvas.width;
+            const h = baseCanvas.height;
+            if (!w || !h) return;
+
+            // Sample corners and top/left/right border midpoints as background seeds
+            const seeds = [
+                [2, 2],
+                [w - 3, 2],
+                [Math.floor(w / 2), 2],
+                [2, Math.floor(h / 3)],
+                [w - 3, Math.floor(h / 3)],
+                [2, Math.floor(h * 0.7)],
+                [w - 3, Math.floor(h * 0.7)]
+            ];
+            removeBackgroundFloodFillFromSeeds(seeds);
+            showToast('✨ ลบภาพพื้นหลังอัตโนมัติเรียบร้อย! (ปรับความเนียนหรือเลือกสีพื้นหลังใหม่ได้เลย)');
+        }
+
+        function resetToOriginalMask() {
+            if (!alphaMask) return;
+            alphaMask.fill(255);
+            renderCanvas();
+            showToast('คืนค่าพื้นหลังเดิมแล้ว');
+        }
+
+        // ==================== INTERACTIVE MAGIC WAND & BRUSH ====================
+        function setInteractMode(mode) {
+            interactMode = mode;
+            const status = document.getElementById('brush-mode-status');
+            ['wand', 'erase', 'restore', 'none'].forEach(m => {
+                const btn = document.getElementById(`btn-mode-${m}`);
+                if (!btn) return;
+                if (m === mode) {
+                    btn.classList.add('ring-2', 'ring-pink-500');
+                } else {
+                    btn.classList.remove('ring-2', 'ring-pink-500');
+                }
+            });
+
+            if (mode === 'wand') {
+                status.textContent = '🪄 โหมดจิ้มสี: คลิกจุดพื้นหลังบนภาพเพื่อลบ';
+                showToast('คลิกที่สีพื้นหลังบนรูปภาพเพื่อลบบริเวณนั้นได้เลย');
+            } else if (mode === 'erase') {
+                status.textContent = '🧽 โหมดยางลบ: ลากเมาส์บนภาพเพื่อลบพื้นหลัง';
+            } else if (mode === 'restore') {
+                status.textContent = '🖌️ โหมดกู้คืน: ลากเมาส์เพื่อวาดเนื้อภาพกลับคืนมา';
+            } else {
+                status.textContent = 'โหมดปกติ';
+            }
+        }
+
+        function getCanvasCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return [
+                Math.max(0, Math.min(canvas.width - 1, Math.round((clientX - rect.left) * scaleX))),
+                Math.max(0, Math.min(canvas.height - 1, Math.round((clientY - rect.top) * scaleY)))
+            ];
+        }
+
+        function applyBrushAt(cx, cy, isRestore) {
+            const w = baseCanvas.width;
+            const h = baseCanvas.height;
+            const radius = Number(document.getElementById('brush-size').value) || 28;
+            const rSq = radius * radius;
+            const targetAlpha = isRestore ? 255 : 0;
+
+            const minX = Math.max(0, cx - radius);
+            const maxX = Math.min(w - 1, cx + radius);
+            const minY = Math.max(0, cy - radius);
+            const maxY = Math.min(h - 1, cy + radius);
+
+            for (let y = minY; y <= maxY; y++) {
+                for (let x = minX; x <= maxX; x++) {
+                    const dx = x - cx;
+                    const dy = y - cy;
+                    if (dx * dx + dy * dy <= rSq) {
+                        alphaMask[y * w + x] = targetAlpha;
+                    }
+                }
+            }
+            renderCanvas();
+        }
+
+        canvas.addEventListener('pointerdown', (e) => {
+            if (interactMode === 'none') return;
+            const [cx, cy] = getCanvasCoords(e);
+            if (interactMode === 'wand') {
+                removeBackgroundFloodFillFromSeeds([[cx, cy]]);
+                return;
+            }
+            isPointerDown = true;
+            canvas.setPointerCapture(e.pointerId);
+            applyBrushAt(cx, cy, interactMode === 'restore');
+        });
+
+        canvas.addEventListener('pointermove', (e) => {
+            if (!isPointerDown || (interactMode !== 'erase' && interactMode !== 'restore')) return;
+            const [cx, cy] = getCanvasCoords(e);
+            applyBrushAt(cx, cy, interactMode === 'restore');
+        });
+
+        canvas.addEventListener('pointerup', () => {
+            isPointerDown = false;
+        });
+
+        // ==================== BACKGROUND FILL, FILTERS, ROTATE, CROP ====================
+        function setBgFill(mode) {
+            bgFillMode = mode;
+            renderCanvas();
+        }
+
+        function updateAdjustments() {
+            adjBright = Number(document.getElementById('adj-bright').value) || 100;
+            adjContrast = Number(document.getElementById('adj-contrast').value) || 100;
+            adjSat = Number(document.getElementById('adj-sat').value) || 100;
+
+            document.getElementById('lbl-bright').textContent = `${adjBright}%`;
+            document.getElementById('lbl-contrast').textContent = `${adjContrast}%`;
+            document.getElementById('lbl-sat').textContent = `${adjSat}%`;
+            renderCanvas();
+        }
+
+        function applyFilterPreset(b, c, s) {
+            document.getElementById('adj-bright').value = b;
+            document.getElementById('adj-contrast').value = c;
+            document.getElementById('adj-sat').value = s;
+            updateAdjustments();
+        }
+
+        function resetColorAdjustments(reRender = true) {
+            document.getElementById('adj-bright').value = 100;
+            document.getElementById('adj-contrast').value = 100;
+            document.getElementById('adj-sat').value = 100;
+            adjBright = 100;
+            adjContrast = 100;
+            adjSat = 100;
+            document.getElementById('lbl-bright').textContent = '100%';
+            document.getElementById('lbl-contrast').textContent = '100%';
+            document.getElementById('lbl-sat').textContent = '100%';
+            if (reRender) renderCanvas();
+        }
+
+        function rotateImage(deg) {
+            const w = baseCanvas.width;
+            const h = baseCanvas.height;
+            if (!w || !h) return;
+
+            // Create composite with current alphaMask before rotating
+            const temp = document.createElement('canvas');
+            temp.width = w;
+            temp.height = h;
+            const tctx = temp.getContext('2d');
+            const srcData = baseCtx.getImageData(0, 0, w, h);
+            for (let i = 0; i < alphaMask.length; i++) {
+                srcData.data[i * 4 + 3] = alphaMask[i];
+            }
+            tctx.putImageData(srcData, 0, 0);
+
+            baseCanvas.width = h;
+            baseCanvas.height = w;
+            baseCtx.save();
+            baseCtx.translate(baseCanvas.width / 2, baseCanvas.height / 2);
+            baseCtx.rotate((deg * Math.PI) / 180);
+            baseCtx.drawImage(temp, -w / 2, -h / 2);
+            baseCtx.restore();
+
+            const newData = baseCtx.getImageData(0, 0, baseCanvas.width, baseCanvas.height);
+            alphaMask = new Uint8ClampedArray(baseCanvas.width * baseCanvas.height);
+            for (let i = 0; i < alphaMask.length; i++) {
+                alphaMask[i] = newData.data[i * 4 + 3];
+            }
+            document.getElementById('canvas-resolution-badge').textContent = `📐 ${baseCanvas.width} × ${baseCanvas.height} px`;
+            renderCanvas();
+        }
+
+        function flipImage(dir) {
+            const w = baseCanvas.width;
+            const h = baseCanvas.height;
+            if (!w || !h) return;
+
+            const temp = document.createElement('canvas');
+            temp.width = w;
+            temp.height = h;
+            const tctx = temp.getContext('2d');
+            const srcData = baseCtx.getImageData(0, 0, w, h);
+            for (let i = 0; i < alphaMask.length; i++) {
+                srcData.data[i * 4 + 3] = alphaMask[i];
+            }
+            tctx.putImageData(srcData, 0, 0);
+
+            baseCtx.clearRect(0, 0, w, h);
+            baseCtx.save();
+            if (dir === 'h') {
+                baseCtx.translate(w, 0);
+                baseCtx.scale(-1, 1);
+            } else {
+                baseCtx.translate(0, h);
+                baseCtx.scale(1, -1);
+            }
+            baseCtx.drawImage(temp, 0, 0);
+            baseCtx.restore();
+
+            const newData = baseCtx.getImageData(0, 0, w, h);
+            for (let i = 0; i < alphaMask.length; i++) {
+                alphaMask[i] = newData.data[i * 4 + 3];
+            }
+            renderCanvas();
+        }
+
+        function cropToAspectRatio(rw, rh) {
+            const w = baseCanvas.width;
+            const h = baseCanvas.height;
+            if (!w || !h) return;
+
+            const targetRatio = rw / rh;
+            const currentRatio = w / h;
+            let cropW = w;
+            let cropH = h;
+            if (currentRatio > targetRatio) {
+                cropW = Math.round(h * targetRatio);
+            } else {
+                cropH = Math.round(w / targetRatio);
+            }
+            const startX = Math.floor((w - cropW) / 2);
+            const startY = Math.floor((h - cropH) / 2);
+
+            const temp = document.createElement('canvas');
+            temp.width = w;
+            temp.height = h;
+            const tctx = temp.getContext('2d');
+            const srcData = baseCtx.getImageData(0, 0, w, h);
+            for (let i = 0; i < alphaMask.length; i++) {
+                srcData.data[i * 4 + 3] = alphaMask[i];
+            }
+            tctx.putImageData(srcData, 0, 0);
+
+            baseCanvas.width = cropW;
+            baseCanvas.height = cropH;
+            baseCtx.drawImage(temp, startX, startY, cropW, cropH, 0, 0, cropW, cropH);
+
+            const newData = baseCtx.getImageData(0, 0, cropW, cropH);
+            alphaMask = new Uint8ClampedArray(cropW * cropH);
+            for (let i = 0; i < alphaMask.length; i++) {
+                alphaMask[i] = newData.data[i * 4 + 3];
+            }
+            document.getElementById('canvas-resolution-badge').textContent = `📐 ${cropW} × ${cropH} px`;
+            renderCanvas();
+            showToast(`ตัดสัดส่วนภาพเป็น ${rw}:${rh} เรียบร้อยแล้ว!`);
+        }
+
+        function toggleOriginalPreview(show) {
+            showOriginalPreview = show;
+            renderCanvas();
+        }
+
+        function fullResetImage() {
+            if (!originalImageObj) return;
+            resetColorAdjustments(false);
+            bgFillMode = 'transparent';
+            document.getElementById('overlay-text-input').value = '';
+            initFromImageElement(originalImageObj, currentFileName);
+            showToast('รีเซ็ตรูปภาพกลับสู่ต้นฉบับแล้ว');
+        }
+
+        // ==================== MASTER RENDER PIPELINE ====================
+        function renderCanvas() {
+            const w = baseCanvas.width;
+            const h = baseCanvas.height;
+            if (!w || !h) return;
+
+            canvas.width = w;
+            canvas.height = h;
+            ctx.clearRect(0, 0, w, h);
+
+            if (showOriginalPreview) {
+                ctx.drawImage(baseCanvas, 0, 0);
+                return;
+            }
+
+            // 1. Draw Background Fill if selected
+            if (bgFillMode !== 'transparent') {
+                if (bgFillMode === 'gradient-sky') {
+                    const grad = ctx.createLinearGradient(0, 0, w, h);
+                    grad.addColorStop(0, '#38bdf8');
+                    grad.addColorStop(1, '#4f46e5');
+                    ctx.fillStyle = grad;
+                } else {
+                    ctx.fillStyle = bgFillMode;
+                }
+                ctx.fillRect(0, 0, w, h);
+            }
+
+            // 2. Prepare masked foreground on temporary canvas
+            const fgCanvas = document.createElement('canvas');
+            fgCanvas.width = w;
+            fgCanvas.height = h;
+            const fgCtx = fgCanvas.getContext('2d');
+            const imgData = baseCtx.getImageData(0, 0, w, h);
+            const data = imgData.data;
+            for (let i = 0; i < alphaMask.length; i++) {
+                data[i * 4 + 3] = alphaMask[i];
+            }
+            fgCtx.putImageData(imgData, 0, 0);
+
+            // 3. Apply CSS Filter adjustments & draw foreground
+            ctx.save();
+            ctx.filter = `brightness(${adjBright}%) contrast(${adjContrast}%) saturate(${adjSat}%)`;
+            ctx.drawImage(fgCanvas, 0, 0);
+            ctx.restore();
+
+            // 4. Optional Text Overlay
+            const textVal = (document.getElementById('overlay-text-input')?.value || '').trim();
+            if (textVal) {
+                const fontSize = Math.max(20, Math.round(h * 0.055));
+                ctx.save();
+                ctx.font = `700 ${fontSize}px Kanit, Sarabun, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.fillStyle = 'rgba(0,0,0,0.65)';
+                ctx.fillText(textVal, w / 2 + 2, h - Math.round(h * 0.05) + 2);
+                ctx.fillStyle = document.getElementById('overlay-text-color').value || '#ffffff';
+                ctx.fillText(textVal, w / 2, h - Math.round(h * 0.05));
+                ctx.restore();
+            }
+        }
+
+        // ==================== DOWNLOAD & SAVE TO SAFEBOX VAULT ====================
+        function downloadEditedPhoto() {
+            const format = document.getElementById('export-format').value || 'image/png';
+            const ext = format === 'image/jpeg' ? 'jpg' : format === 'image/webp' ? 'webp' : 'png';
+
+            // If exporting JPG with transparent bg, fill white automatically so it doesn't turn black
+            if (format === 'image/jpeg' && bgFillMode === 'transparent') {
+                const temp = document.createElement('canvas');
+                temp.width = canvas.width;
+                temp.height = canvas.height;
+                const tctx = temp.getContext('2d');
+                tctx.fillStyle = '#ffffff';
+                tctx.fillRect(0, 0, temp.width, temp.height);
+                tctx.drawImage(canvas, 0, 0);
+                const url = temp.toDataURL(format, 0.98);
+                triggerDownload(url, `${currentFileName}-edited.${ext}`);
+                return;
+            }
+
+            const url = canvas.toDataURL(format, 0.98);
+            triggerDownload(url, `${currentFileName}-edited.${ext}`);
+        }
+
+        function triggerDownload(dataUrl, fileName) {
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = fileName;
+            a.click();
+            showToast(`ดาวน์โหลดไฟล์ "${fileName}" เรียบร้อยแล้ว!`);
+        }
+
+        async function saveEditedPhotoToVault() {
+            try {
+                const dataUrl = canvas.toDataURL('image/png');
+                const res = await fetch(dataUrl);
+                const blob = await res.blob();
+                const buffer = await blob.arrayBuffer();
+                const hashBuf = await crypto.subtle.digest('SHA-256', buffer);
+                const sha256 = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+                const newItem = {
+                    id: 'v-studio-' + Date.now(),
+                    timestamp: Date.now(),
+                    type: 'image',
+                    title: `${currentFileName}-studio.png`,
+                    mimeType: 'image/png',
+                    size: blob.size,
+                    sha256,
+                    dataUrl,
+                    note: 'ตัดต่อและลบพื้นหลังจาก Feel Photo Studio (PNG ต้นฉบับ)',
+                    createdAt: new Date().toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' })
+                };
+
+                const req = indexedDB.open('FeelSafeBoxVaultDB', 1);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('vault_items')) {
+                        db.createObjectStore('vault_items', { keyPath: 'id' });
+                    }
+                };
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    const tx = db.transaction('vault_items', 'readwrite');
+                    tx.objectStore('vault_items').put(newItem);
+                    showToast('📦 บันทึกรูปที่แต่งเสร็จเข้า "ตู้เซฟฝากไฟล์ (SafeBox)" เรียบร้อยแล้ว!');
+                };
+            } catch {
+                showToast('ไม่สามารถบันทึกเข้าตู้เซฟได้ กรุณากดดาวน์โหลดลงเครื่อง');
+            }
+        }
+
+        // ==================== PASTE IMAGE SUPPORT & THEME ====================
+        window.addEventListener('paste', (e) => {
+            if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+            const files = e.clipboardData?.files;
+            if (files && files.length > 0 && files[0].type.startsWith('image/')) {
+                e.preventDefault();
+                loadFileIntoStudio(files[0]);
+            }
+        });
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('feel_theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(savedTheme);
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 transition-all duration-300';
+            toast.innerHTML = `<i class="fa-solid fa-wand-sparkles text-pink-400"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 2800);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadSamplePortrait();
+        });
+    </script>
+</body>
+</html>

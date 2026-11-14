@@ -323,6 +323,12 @@
 
                         <canvas id="cube-3d-canvas" class="relative z-10 w-full h-[265px] sm:h-[295px] block cursor-grab active:cursor-grabbing touch-none" aria-label="แบบจำลองรูบิค 3x3 สามมิติแบบโต้ตอบได้"></canvas>
 
+                        <!-- Live Algorithm Step Ticker (shown while playing a formula on 3D) -->
+                        <div id="cube-demo-banner" class="hidden relative z-10 mx-3 mb-2 px-3 py-1.5 rounded-xl bg-slate-900/95 border border-emerald-500/40 text-xs flex items-center justify-between gap-2 flex-wrap">
+                            <span id="cube-demo-title" class="font-heading font-bold text-emerald-300 truncate"></span>
+                            <div id="cube-demo-tokens" class="font-mono text-[11px] flex flex-wrap items-center gap-1"></div>
+                        </div>
+
                         <div class="relative z-10 px-3 pb-3 pt-2 space-y-2 border-t border-slate-800/80 bg-slate-900/60">
                             <div class="flex flex-wrap items-center justify-center gap-1.5">
                                 <button type="button" onclick="setCameraPreset('front')" class="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-semibold transition cursor-pointer" title="มุมมองด้านหน้า-บน-ขวา (F·U·R)">
@@ -497,18 +503,88 @@
 
             </div>
 
-            <!-- Interactive Formula Tryout Bar -->
+            <!-- Quick Popular Showcase Bar -->
             <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-900/50 flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body">
-                    <strong class="text-emerald-800 dark:text-emerald-300 font-heading"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>ทดลองรันสูตรอัลกอริทึมบนรูบิคจำลองด้านบน:</strong> กดปุ่มเพื่อดูการเปลี่ยนแปลงของหน้ารูบิคตามสูตรยอดนิยมได้ทันที
+                    <strong class="text-emerald-800 dark:text-emerald-300 font-heading"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>ทดลองสูตรยอดนิยมบนรูบิค 3D ด้านบน:</strong> กดปุ่มเพื่อดูแอนิเมชันหมุนทีละจังหวะได้ทันที
                 </div>
                 <div class="flex flex-wrap items-center gap-2 shrink-0">
                     <button type="button" onclick="applyAlgorithmDemo('R U R\' U\'', 'Sexy Move (ทำซ้ำ 6 ครั้งจะกลับมาที่เดิม)')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-emerald-600 hover:text-white border border-emerald-300 dark:border-emerald-800 text-xs font-heading font-bold transition cursor-pointer">
-                        ลองสูตร Sexy Move (R U R' U')
+                        ▶ Sexy Move (R U R' U')
                     </button>
-                    <button type="button" onclick="applyAlgorithmDemo('R U R\' U R U2 R\'', 'สูตรปลาตะเพียน Sune (พลิกหน้าเหลือง OLL)')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-amber-500 hover:text-white border border-amber-300 dark:border-amber-800 text-xs font-heading font-bold transition cursor-pointer">
-                        ลองสูตร Sune (R U R' U R U2 R')
+                    <button type="button" onclick="applyAlgorithmDemo('R U R\' U R U2 R\'', 'Sune #27 (พลิกหน้าเหลือง OLL)')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-amber-500 hover:text-white border border-amber-300 dark:border-amber-800 text-xs font-heading font-bold transition cursor-pointer">
+                        ▶ Sune (R U R' U R U2 R')
                     </button>
+                    <button type="button" onclick="applyAlgorithmDemo('R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\'', 'T-Perm (สลับชิ้นชั้นบน PLL)')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-rose-600 hover:text-white border border-rose-300 dark:border-rose-800 text-xs font-heading font-bold transition cursor-pointer">
+                        ▶ T-Perm (PLL)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Complete CFOP Formula Encyclopedia (129 Formulas + Notation) -->
+            <div id="cfop-library" class="pt-4 border-t border-google-border dark:border-google-dark-border space-y-5">
+                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-google-blue-light dark:bg-sky-950/60 text-google-blue dark:text-sky-300 text-[11px] font-heading font-bold mb-1.5">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span>คลังสูตร CFOP ฉบับสมบูรณ์ (127 สูตร + สัญลักษณ์หมุน 18 รูปแบบ)</span>
+                        </div>
+                        <h4 class="text-lg sm:text-xl font-extrabold font-heading text-google-text dark:text-white">
+                            ตารางรวมสูตร 2-Look OLL (10) • F2L (41) • Full OLL (55) • PLL (21)
+                        </h4>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted mt-0.5">
+                            จัดกลุ่มให้อ่านง่าย แยกสีจังหวะ <code class="px-1 rounded bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 font-bold">(วงเล็บ)</code> พร้อมกด <strong class="text-emerald-600 dark:text-emerald-400">ดู 3D</strong> หรือ <strong>คัดลอกสูตร</strong> ได้ทุกข้อ
+                        </p>
+                    </div>
+
+                    <!-- Demo Mode & Search Controls -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                        <div class="inline-flex items-center p-1 rounded-full bg-google-subtle dark:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs self-start sm:self-auto" title="เลือกว่าเมื่อกด ดู 3D จะเตรียมโจทย์เคสนั้นก่อนหรือหมุนต่อทันที">
+                            <button type="button" id="demo-mode-setup" onclick="setCfopDemoMode('setup')" class="px-3 py-1 rounded-full font-heading font-bold bg-emerald-600 text-white shadow-xs transition cursor-pointer">
+                                ✨ เตรียมเคสแล้วแก้ 3D
+                            </button>
+                            <button type="button" id="demo-mode-direct" onclick="setCfopDemoMode('direct')" class="px-3 py-1 rounded-full font-heading font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition cursor-pointer">
+                                ▶ หมุนสดทันที
+                            </button>
+                        </div>
+
+                        <div class="relative min-w-[230px]">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-google-text-muted"></i>
+                            <input type="text" id="cfop-search-input" oninput="handleCfopSearch(this.value)" placeholder="ค้นหาสูตร เช่น Sune, T-Perm, #33, Fish..." class="w-full pl-8 pr-8 py-1.5 rounded-full bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border focus:border-google-blue focus:outline-none text-xs text-google-text dark:text-white">
+                            <button type="button" id="cfop-search-clear" onclick="clearCfopSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-google-text-muted hover:text-rose-500 cursor-pointer" title="ล้างคำค้นหา">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5 Category Tabs -->
+                <div class="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border">
+                    <button type="button" id="cfop-tab-btn-notation" onclick="selectCfopTab('notation')" class="cfop-tab-btn px-3.5 py-2 rounded-xl text-xs font-heading font-bold transition cursor-pointer flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span>1. สัญลักษณ์หมุน (Notation)</span>
+                    </button>
+                    <button type="button" id="cfop-tab-btn-twolook" onclick="selectCfopTab('twolook')" class="cfop-tab-btn px-3.5 py-2 rounded-xl text-xs font-heading font-bold transition cursor-pointer flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                        <span>2. 2-Look OLL (10)</span>
+                    </button>
+                    <button type="button" id="cfop-tab-btn-f2l" onclick="selectCfopTab('f2l')" class="cfop-tab-btn px-3.5 py-2 rounded-xl text-xs font-heading font-bold transition cursor-pointer flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span>3. F2L (41)</span>
+                    </button>
+                    <button type="button" id="cfop-tab-btn-oll" onclick="selectCfopTab('oll')" class="cfop-tab-btn px-3.5 py-2 rounded-xl text-xs font-heading font-bold transition cursor-pointer flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                        <span>4. Full OLL (55)</span>
+                    </button>
+                    <button type="button" id="cfop-tab-btn-pll" onclick="selectCfopTab('pll')" class="cfop-tab-btn px-3.5 py-2 rounded-xl text-xs font-heading font-bold transition cursor-pointer flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                        <span>5. PLL (21)</span>
+                    </button>
+                </div>
+
+                <!-- Dynamic Content Area Rendered by JS -->
+                <div id="cfop-library-body" class="space-y-5">
+                    <!-- Populated via renderCfopLibrary() -->
                 </div>
             </div>
         </section>
@@ -596,6 +672,13 @@
             ];
         }
 
+        const COMPOSITE_MOVES = {
+            r: ['R', "M'"], l: ['L', 'M'],
+            u: ['U', "E'"], d: ['D', 'E'],
+            f: ['F', 'S'],  b: ['B', "S'"],
+            x: ['R', "M'", "L'"], y: ['U', "E'", "D'"], z: ['F', 'S', "B'"]
+        };
+
         function applyBaseMoveCW(move) {
             const s = cubeState;
             let temp;
@@ -648,22 +731,58 @@
                     [s.D[8], s.D[7], s.D[6]] = [s.L[6], s.L[3], s.L[0]];
                     [s.L[6], s.L[3], s.L[0]] = temp;
                     break;
+                case 'M':
+                    temp = [s.U[1], s.U[4], s.U[7]];
+                    [s.U[1], s.U[4], s.U[7]] = [s.B[7], s.B[4], s.B[1]];
+                    [s.B[7], s.B[4], s.B[1]] = [s.D[1], s.D[4], s.D[7]];
+                    [s.D[1], s.D[4], s.D[7]] = [s.F[1], s.F[4], s.F[7]];
+                    [s.F[1], s.F[4], s.F[7]] = temp;
+                    break;
+                case 'E':
+                    temp = [s.F[3], s.F[4], s.F[5]];
+                    [s.F[3], s.F[4], s.F[5]] = [s.L[3], s.L[4], s.L[5]];
+                    [s.L[3], s.L[4], s.L[5]] = [s.B[3], s.B[4], s.B[5]];
+                    [s.B[3], s.B[4], s.B[5]] = [s.R[3], s.R[4], s.R[5]];
+                    [s.R[3], s.R[4], s.R[5]] = temp;
+                    break;
+                case 'S':
+                    temp = [s.U[3], s.U[4], s.U[5]];
+                    [s.U[3], s.U[4], s.U[5]] = [s.L[7], s.L[4], s.L[1]];
+                    [s.L[7], s.L[4], s.L[1]] = [s.D[5], s.D[4], s.D[3]];
+                    [s.D[5], s.D[4], s.D[3]] = [s.R[1], s.R[4], s.R[7]];
+                    [s.R[1], s.R[4], s.R[7]] = temp;
+                    break;
             }
         }
 
+        function parseMoveTokens(seqStr) {
+            return String(seqStr || '').replace(/[()]/g, ' ').trim().split(/\s+/).filter(Boolean);
+        }
+
+        function invertAlgorithm(seqStr) {
+            return parseMoveTokens(seqStr).reverse().map(tok => {
+                const base = tok[0];
+                const mod = tok.slice(1);
+                if (mod.startsWith('2')) return base + '2';
+                return mod === "'" ? base : base + "'";
+            }).join(' ');
+        }
+
         function executeMoveToken(token) {
-            if (!token) return;
-            const base = token[0];
-            const mod = token.slice(1);
-            const times = mod === '2' ? 2 : mod === "'" ? 3 : 1;
+            const clean = String(token || '').replace(/[()]/g, '').trim();
+            if (!clean) return;
+            const base = clean[0];
+            const mod = clean.slice(1);
+            const times = mod.startsWith('2') ? 2 : (mod === "'" ? 3 : 1);
+            const composite = COMPOSITE_MOVES[base];
             for (let i = 0; i < times; i++) {
-                applyBaseMoveCW(base);
+                if (composite) composite.forEach(executeMoveToken);
+                else applyBaseMoveCW(base);
             }
         }
 
         function applyMoveSequence(seqStr) {
-            const tokens = seqStr.trim().split(/\s+/);
-            tokens.forEach(executeMoveToken);
+            parseMoveTokens(seqStr).forEach(executeMoveToken);
             renderCubeVisualizer();
         }
 
@@ -694,12 +813,24 @@
             B: { n: [0, 0, -1], u: [-1, 0, 0], v: [0, 1,  0], axisIdx: 2, val: -1 }
         };
         const SLICE_DEFS = {
-            U: { coordIdx: 1, layer:  1, axis: [0,  1, 0] },
-            D: { coordIdx: 1, layer: -1, axis: [0, -1, 0] },
-            R: { coordIdx: 0, layer:  1, axis: [ 1, 0, 0] },
-            L: { coordIdx: 0, layer: -1, axis: [-1, 0, 0] },
-            F: { coordIdx: 2, layer:  1, axis: [0, 0,  1] },
-            B: { coordIdx: 2, layer: -1, axis: [0, 0, -1] }
+            U: { coordIdx: 1, layers: [ 1],      axis: [0,  1, 0] },
+            D: { coordIdx: 1, layers: [-1],      axis: [0, -1, 0] },
+            R: { coordIdx: 0, layers: [ 1],      axis: [ 1, 0, 0] },
+            L: { coordIdx: 0, layers: [-1],      axis: [-1, 0, 0] },
+            F: { coordIdx: 2, layers: [ 1],      axis: [0, 0,  1] },
+            B: { coordIdx: 2, layers: [-1],      axis: [0, 0, -1] },
+            M: { coordIdx: 0, layers: [ 0],      axis: [-1, 0, 0] },
+            E: { coordIdx: 1, layers: [ 0],      axis: [0, -1, 0] },
+            S: { coordIdx: 2, layers: [ 0],      axis: [0, 0,  1] },
+            r: { coordIdx: 0, layers: [0,  1],   axis: [ 1, 0, 0] },
+            l: { coordIdx: 0, layers: [-1, 0],   axis: [-1, 0, 0] },
+            u: { coordIdx: 1, layers: [0,  1],   axis: [0,  1, 0] },
+            d: { coordIdx: 1, layers: [-1, 0],   axis: [0, -1, 0] },
+            f: { coordIdx: 2, layers: [0,  1],   axis: [0, 0,  1] },
+            b: { coordIdx: 2, layers: [-1, 0],   axis: [0, 0, -1] },
+            x: { coordIdx: 0, layers: [-1,0,1],  axis: [ 1, 0, 0] },
+            y: { coordIdx: 1, layers: [-1,0,1],  axis: [0,  1, 0] },
+            z: { coordIdx: 2, layers: [-1,0,1],  axis: [0, 0,  1] }
         };
         const ALL_FACE_KEYS = ['U', 'D', 'L', 'R', 'F', 'B'];
         const CUBIE_POSITIONS = [];
@@ -823,21 +954,53 @@
         let lastFrameTs = 0;
         let moveQueue = [];
         let activeSliceAnim = null;
+        let pendingDemoTimer = null;
+        let activeDemoMeta = null;
+
+        function updateDemoBanner(stepIdx = -1) {
+            const banner = document.getElementById('cube-demo-banner');
+            const titleEl = document.getElementById('cube-demo-title');
+            const tokensEl = document.getElementById('cube-demo-tokens');
+            if (!banner || !titleEl || !tokensEl) return;
+            if (!activeDemoMeta) {
+                banner.classList.add('hidden');
+                return;
+            }
+            banner.classList.remove('hidden');
+            titleEl.textContent = `▶ ${activeDemoMeta.label}`;
+            tokensEl.innerHTML = activeDemoMeta.tokens.map((tok, i) => {
+                const isCur = i === stepIdx;
+                const isDone = i < stepIdx;
+                const cls = isCur
+                    ? 'px-1.5 py-0.5 rounded bg-emerald-500 text-white font-bold shadow-xs scale-105'
+                    : isDone
+                        ? 'text-slate-500'
+                        : 'text-slate-200';
+                return `<span class="${cls}">${tok}</span>`;
+            }).join('');
+        }
 
         function clearMoveQueue() {
             moveQueue = [];
             activeSliceAnim = null;
+            if (pendingDemoTimer) {
+                clearTimeout(pendingDemoTimer);
+                pendingDemoTimer = null;
+            }
+            activeDemoMeta = null;
+            updateDemoBanner(-1);
         }
 
-        function enqueueMove3D(token, beepFreq = 520) {
-            if (!token) return;
-            const base = token[0];
-            const mod = token.slice(1);
+        function enqueueMove3D(token, beepFreq = 520, metaIdx = null) {
+            const clean = String(token || '').replace(/[()]/g, '').trim();
+            if (!clean) return;
+            const base = clean[0];
+            const mod = clean.slice(1);
             const def = SLICE_DEFS[base];
             if (!def) return;
-            // Outward right-hand rule: CW turn = -90deg, prime CCW = +90deg, double = -180deg
-            const targetAngle = mod === '2' ? -Math.PI : (mod === "'" ? Math.PI / 2 : -Math.PI / 2);
-            moveQueue.push({ token, def, targetAngle, beepFreq });
+            // Outward right-hand rule: CW turn = -90deg, prime CCW = +90deg, double = +/-180deg
+            const targetAngle = mod === "2'" ? Math.PI : mod === '2' ? -Math.PI : (mod === "'" ? Math.PI / 2 : -Math.PI / 2);
+            moveQueue.push({ token: clean, def, targetAngle, beepFreq, metaIdx });
             request3DRender();
         }
 
@@ -855,9 +1018,10 @@
 
             if (!activeSliceAnim && moveQueue.length > 0) {
                 const nextItem = moveQueue.shift();
-                const baseDur = moveQueue.length >= 8 ? 95 : moveQueue.length >= 2 ? 120 : 165;
+                const baseDur = moveQueue.length >= 10 ? 115 : moveQueue.length >= 2 ? 155 : 175;
                 const dur = baseDur * (Math.abs(nextItem.targetAngle) > 2 ? 1.25 : 1);
                 activeSliceAnim = { ...nextItem, startMs: now, duration: dur, curAngle: 0 };
+                if (nextItem.metaIdx !== null) updateDemoBanner(nextItem.metaIdx);
                 if (nextItem.beepFreq) playBeep(nextItem.beepFreq, 0.04, 0.05);
             }
 
@@ -870,7 +1034,11 @@
                     activeSliceAnim = null;
                     executeMoveToken(finished.token);
                     render2DCubeNet();
-                    if (moveQueue.length > 0) keepRunning = true;
+                    if (moveQueue.length > 0) {
+                        keepRunning = true;
+                    } else if (activeDemoMeta && !pendingDemoTimer) {
+                        updateDemoBanner(activeDemoMeta.tokens.length);
+                    }
                 } else {
                     keepRunning = true;
                 }
@@ -1003,7 +1171,7 @@
 
             slabOrder.forEach(slabVal => {
                 const list = slabs[String(slabVal)].map(basePos => {
-                    const inSlice = activeSliceAnim && basePos[activeSliceAnim.def.coordIdx] === activeSliceAnim.def.layer;
+                    const inSlice = activeSliceAnim && activeSliceAnim.def.layers.includes(basePos[activeSliceAnim.def.coordIdx]);
                     const angle = inSlice ? activeSliceAnim.curAngle : 0;
                     const axis = inSlice ? activeSliceAnim.def.axis : null;
                     const centerModel = angle ? rotatePointAxis(basePos, axis, angle) : basePos;
@@ -1123,8 +1291,10 @@
             clearMoveQueue();
             initSolvedCube();
             renderCubeVisualizer();
-            const tokens = currentScramble.trim().split(/\s+/);
-            tokens.forEach((t, idx) => enqueueMove3D(t, idx % 2 === 0 ? 500 : 560));
+            const tokens = parseMoveTokens(currentScramble);
+            activeDemoMeta = { label: 'WCA Scramble (20 จังหวะ)', tokens };
+            updateDemoBanner(0);
+            tokens.forEach((t, idx) => enqueueMove3D(t, idx % 2 === 0 ? 500 : 560, idx));
             showToast('กำลังเล่นแอนิเมชัน 3D ตามโจทย์ Scramble...');
         }
 
@@ -1220,10 +1390,11 @@
             applyAlgorithmDemo("R U R' U'", "Sexy Move (R U R' U')");
         }
 
-        function applyAlgorithmDemo(alg, label) {
+        function applyAlgorithmDemo(alg, label, setupFirst = false) {
             clearMoveQueue();
-            const tokens = alg.trim().split(/\s+/);
-            tokens.forEach((t, idx) => enqueueMove3D(t, 480 + idx * 55));
+            const tokens = parseMoveTokens(alg);
+            if (!tokens.length) return;
+
             const card = document.getElementById('cube-visualizer-card');
             if (card) {
                 const rect = card.getBoundingClientRect();
@@ -1231,7 +1402,569 @@
                     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }
-            showToast(`รันสูตร 3D: ${label}`);
+
+            if (setupFirst) {
+                initSolvedCube();
+                applyMoveSequence(invertAlgorithm(alg));
+                activeDemoMeta = { label: `${label} (ตั้งโจทย์ -> แก้ 3D)`, tokens };
+                updateDemoBanner(0);
+                pendingDemoTimer = setTimeout(() => {
+                    pendingDemoTimer = null;
+                    tokens.forEach((t, idx) => enqueueMove3D(t, 480 + (idx % 6) * 45, idx));
+                }, 460);
+                showToast(`ตั้งโจทย์และกำลังแก้ 3D: ${label}`);
+            } else {
+                activeDemoMeta = { label, tokens };
+                updateDemoBanner(0);
+                tokens.forEach((t, idx) => enqueueMove3D(t, 480 + (idx % 6) * 45, idx));
+                showToast(`รันสูตร 3D: ${label}`);
+            }
+        }
+
+        // ==================== COMPLETE CFOP FORMULA ENCYCLOPEDIA DATA (129 ALGORITHMS) ====================
+        const CFOP_NOTATION_GROUPS = [
+            {
+                title: 'หมุน 1 ชั้นด้านนอก (ตามเข็มนาฬิกา 90°)',
+                badge: 'Basic Turns',
+                color: 'bg-google-blue text-white',
+                desc: "เติมเครื่องหมาย ' = หมุนทวนเข็มนาฬิกา 90° • เติมเลข 2 = หมุน 2 ครั้ง (180°)",
+                items: [
+                    { sym: 'U', name: 'Up (บน)', tip: 'หมุนชั้นบนตามเข็ม (มองจากด้านบน)', demo: 'U' },
+                    { sym: 'D', name: 'Down (ล่าง)', tip: 'หมุนชั้นล่างตามเข็ม (มองจากด้านล่าง)', demo: 'D' },
+                    { sym: 'R', name: 'Right (ขวา)', tip: 'หมุนชั้นขวาขึ้น (ตามเข็มด้านขวา)', demo: 'R' },
+                    { sym: 'L', name: 'Left (ซ้าย)', tip: 'หมุนชั้นซ้ายลง (ตามเข็มด้านซ้าย)', demo: 'L' },
+                    { sym: 'F', name: 'Front (หน้า)', tip: 'หมุนด้านหน้าตามเข็ม', demo: 'F' },
+                    { sym: 'B', name: 'Back (หลัง)', tip: 'หมุนด้านหลังตามเข็ม', demo: 'B' }
+                ]
+            },
+            {
+                title: 'หมุน 2 ชั้นพร้อมกัน (Wide Moves — อักษรพิมพ์เล็ก)',
+                badge: '2 Layers',
+                color: 'bg-emerald-600 text-white',
+                desc: 'หมุนชั้นนอกพร้อมแถวกลางติดกันในคราวเดียว พบมากในสูตร OLL และ G-Perm / V-Perm',
+                items: [
+                    { sym: 'u', name: 'Wide Up', tip: "2 ชั้นบน (= U + E')", demo: 'u' },
+                    { sym: 'd', name: 'Wide Down', tip: '2 ชั้นล่าง (= D + E)', demo: 'd' },
+                    { sym: 'r', name: 'Wide Right', tip: "2 ชั้นขวา (= R + M')", demo: 'r' },
+                    { sym: 'l', name: 'Wide Left', tip: '2 ชั้นซ้าย (= L + M)', demo: 'l' },
+                    { sym: 'f', name: 'Wide Front', tip: '2 ชั้นหน้า (= F + S)', demo: 'f' },
+                    { sym: 'b', name: 'Wide Back', tip: "2 ชั้นหลัง (= B + S')", demo: 'b' }
+                ]
+            },
+            {
+                title: 'หมุนแถวกลาง (Slices)',
+                badge: 'Middle Layer',
+                color: 'bg-amber-500 text-white',
+                desc: 'หมุนเฉพาะแถวกลาง ไม่หมุนหน้า-ขอบด้านนอก ใช้บ่อยใน H-Perm, Z-Perm และ OLL Dot Cases',
+                items: [
+                    { sym: 'M', name: 'Middle (ระหว่าง L–R)', tip: "หมุนทิศเดียวกับ L (ลงด้านหน้า / M' ขึ้น)", demo: 'M' },
+                    { sym: 'E', name: 'Equatorial (ระหว่าง U–D)', tip: 'หมุนทิศเดียวกับ D (ซ้ายไปขวาด้านหน้า)', demo: 'E' },
+                    { sym: 'S', name: 'Standing (ระหว่าง F–B)', tip: 'หมุนทิศเดียวกับ F (ตามเข็มเมื่อมองด้านหน้า)', demo: 'S' }
+                ]
+            },
+            {
+                title: 'พลิกทั้งลูก (Cube Rotations)',
+                badge: 'Whole Cube',
+                color: 'bg-purple-600 text-white',
+                desc: 'เปลี่ยนมุมจับรูบิคทั้งลูกโดยไม่บิดหน้าใดหน้าหนึ่ง (x ตามแกน R, y ตามแกน U, z ตามแกน F)',
+                items: [
+                    { sym: 'x', name: 'Rotation x', tip: 'พลิกลูกขึ้นตามแนว R (หน้า F ขึ้นไปด้านบน U)', demo: 'x' },
+                    { sym: 'y', name: 'Rotation y', tip: 'หมุนลูกตามแนว U (หน้า R เลื่อนมาด้านหน้า F)', demo: 'y' },
+                    { sym: 'z', name: 'Rotation z', tip: 'เอียงลูกตามแนว F (ด้านบน U เอียงไปทางขวา R)', demo: 'z' }
+                ]
+            }
+        ];
+
+        const CFOP_TWO_LOOK_OLL = [
+            {
+                groupTitle: 'รอบแรก (First Look — สร้างเครื่องหมายบวกสีเหลือง 3 สูตร)',
+                accent: 'amber',
+                items: [
+                    { id: '2L-1', name: '1. รูปเส้นตรง (Line)', note: 'วางเส้นเหลืองแนวนอน (ซ้าย–ขวา)', alg: "F (R U R' U') F'" },
+                    { id: '2L-2', name: '2. รูปตัว L เล็ก (L-Shape)', note: 'วางตัว L ไว้ชี้มุมบน-ซ้าย (9 และ 12 นาฬิกา)', alg: "f (R U R' U') f'" },
+                    { id: '2L-3', name: '3. รูปจุดตรงกลาง (Dot)', note: 'มีจุดเหลืองตรงกลางจุดเดียว ทำ Line ต่อด้วย L-Shape', alg: "F (R U R' U') F' f (R U R' U') f'" }
+                ]
+            },
+            {
+                groupTitle: 'รอบสอง (Second Look — เก็บมุมเหลืองให้เต็มหน้าบน 7 สูตร)',
+                accent: 'amber',
+                items: [
+                    { id: '2L-4', name: '4. Sune (ปลาตะเพียนหันหัวซ้าย-ล่าง)', note: 'ยอดนิยมที่สุด พลิก 3 มุม', alg: "(R U R' U) (R U2 R')" },
+                    { id: '2L-5', name: '5. Anti-Sune (ปลาตะเพียนย้อนกลับ)', note: 'พลิก 3 มุมทิศตรงข้าม Sune', alg: "(R U2 R') (U' R U' R')" },
+                    { id: '2L-6', name: '6. Cross-Headlights (H)', note: 'ไฟหน้าคู่ 2 ฝั่งตรงข้าม (ซ้ายและขวา)', alg: "(R U R' U) (R U' R' U) (R U2 R')" },
+                    { id: '2L-7', name: '7. Cross-Car (Pi)', note: 'คล้ายรูปตัว Pi (ไฟหน้าด้านซ้าย + คู่แยกขวา)', alg: "R U2 (R2 U') (R2 U') R2 U2 R" },
+                    { id: '2L-8', name: '8. Chameleon (T)', note: 'สีเหลืองรูป T — มุมชี้หน้า-หลังคนละฝั่ง', alg: "(r U R' U') (r' F R F')" },
+                    { id: '2L-9', name: '9. Kite (Bowtie)', note: 'สีเหลืองมุมทแยงตรงข้ามกันคล้ายหูกระต่าย', alg: "F' (r U R' U') (r' F R)" },
+                    { id: '2L-10', name: '10. Headlights (U)', note: 'มุมคู่หน้าตรงกัน (ไฟหน้ารถด้านหน้า)', alg: "R2 D (R' U2 R) D' (R' U2 R')" }
+                ]
+            }
+        ];
+
+        const CFOP_PLL_GROUPS = [
+            {
+                groupTitle: 'คอลัมน์ซ้าย (1 – 11) • สลับมุมและขอบแบบผสม (Adjacent / Diagonal Swaps)',
+                accent: 'rose',
+                items: [
+                    { id: 'PLL-1', name: '1. Ja-Perm', note: 'บล็อก 3 สีด้านซ้าย (กลุ่ม J)', alg: "F2 R U R' F2 L D' L D L2" },
+                    { id: 'PLL-2', name: '2. Jb-Perm', note: 'บล็อก 3 สีด้านขวา (สมมาตร Ja)', alg: "F2 L' U' L F2 R' D R' D' R2" },
+                    { id: 'PLL-3', name: '3. T-Perm', note: 'สลับ 2 มุมขวา + 2 ขอบตรงข้าม', alg: "R U R' U' R' F R2 U' R' U' R U R' F'" },
+                    { id: 'PLL-4', name: '4. Aa-Perm', note: 'สลับ 3 มุมทวนเข็ม (มีบล็อกมุม 2x2)', alg: "R' F R' B2 R F' R' B2 R2" },
+                    { id: 'PLL-5', name: '5. Ab-Perm', note: 'สลับ 3 มุมตามเข็ม (สมมาตร Aa)', alg: "R2 B2 R F R' B2 R F' R" },
+                    { id: 'PLL-6', name: '6. Y-Perm', note: 'สลับมุมทแยง 2 ตัว + 2 ขอบติดกัน', alg: "F R U' R' U' R U R' F' R U R' U' R' F R F'" },
+                    { id: 'PLL-7', name: '7. E-Perm', note: 'สลับมุมเป็นคู่ขนาน 2 คู่ (ขอบอยู่กับที่)', alg: "x' R U' R' D R U R' D' R U R' D R U' R' D'" },
+                    { id: 'PLL-8', name: '8. Na-Perm', note: 'สลับ 2 มุมทแยง + 2 ขอบตรงข้าม (ซ้าย)', alg: "R' U L' U2 R U' L R' U L' U2 R U' L U'" },
+                    { id: 'PLL-9', name: '9. Nb-Perm', note: 'สลับ 2 มุมทแยง + 2 ขอบตรงข้าม (ขวา)', alg: "L U' R U2 L' U R' L U' R U2 L' U R' U" },
+                    { id: 'PLL-10', name: '10. V-Perm', note: 'มีบล็อก 2x2 หนึ่งมุม + สลับทแยง', alg: "R' U R' d' R' F' R2 U' R' U R' F R F" },
+                    { id: 'PLL-11', name: '11. F-Perm', note: 'มีแถบ 3 สีเต็ม 1 ด้าน (เหมือน T แต่สลับแนวตั้ง)', alg: "R' U2 R' d' R' F' R2 U' R' U R' F R U' F" }
+                ]
+            },
+            {
+                groupTitle: 'คอลัมน์ขวา (12 – 21) • สลับขอบ (Ua, Ub, H, Z) & ตระกูล R, G',
+                accent: 'rose',
+                items: [
+                    { id: 'PLL-12', name: '12. Ua-Perm', note: 'สลับ 3 ขอบทวนเข็ม (ด้านหลังเต็มแถบ)', alg: "R2 U R U R' U' R' U' R' U R'" },
+                    { id: 'PLL-13', name: '13. Ub-Perm', note: 'สลับ 3 ขอบตามเข็ม', alg: "R U' R U R U R U' R' U' R2" },
+                    { id: 'PLL-14', name: '14. H-Perm', note: 'สลับขอบตรงข้ามทั้ง 2 คู่ (+)', alg: "M2 U' M2 U2 M2 U' M2" },
+                    { id: 'PLL-15', name: '15. Z-Perm', note: 'สลับขอบติดกัน 2 คู่แบบทแยงมุม', alg: "M2 U' M2 U' M U2 M2 U2 M U2" },
+                    { id: 'PLL-16', name: '16. Ra-Perm', note: 'Headlights ซ้าย + คู่บล็อกหน้า', alg: "R' U2 R U2 R' F R U R' U' R' F' R2 U'" },
+                    { id: 'PLL-17', name: '17. Rb-Perm', note: 'Headlights ขวา + คู่บล็อกหน้า (สมมาตร Ra)', alg: "L U2 L' U2 L F' L' U' L U L F L2 U" },
+                    { id: 'PLL-18', name: '18. Ga-Perm', note: 'กลุ่ม G (Headlights + บล็อก 2 ชิ้น #1)', alg: "F2 M2 D R2 D' R2 U R2 U' r2 F2" },
+                    { id: 'PLL-19', name: '19. Gb-Perm', note: 'กลุ่ม G (Headlights + บล็อก 2 ชิ้น #2)', alg: "F2 r2 U R2 U' R2 D R2 D' M2 F2" },
+                    { id: 'PLL-20', name: '20. Gc-Perm', note: 'กลุ่ม G (Headlights + บล็อก 2 ชิ้น #3)', alg: "F2 M2 D' L2 D L2 U' L2 U l2 F2" },
+                    { id: 'PLL-21', name: '21. Gd-Perm', note: 'กลุ่ม G (Headlights + บล็อก 2 ชิ้น #4)', alg: "F2 l2 U' L2 U L2 D' L2 D M2 F2" }
+                ]
+            }
+        ];
+
+        const CFOP_FULL_OLL_GROUPS = [
+            {
+                key: 'all-edges',
+                groupTitle: 'All Edges Oriented — กากบาทครบ (21–27)',
+                items: [
+                    { id: 'OLL-21', name: 'OLL #21', note: 'Cross Double Headlights (H)', alg: "R U R' U R U' R' U R U2 R'" },
+                    { id: 'OLL-22', name: 'OLL #22', note: 'Cross Pi', alg: "R U2' (R2' U' R2 U' R2') U2' R" },
+                    { id: 'OLL-23', name: 'OLL #23', note: 'Cross Headlights (U)', alg: "R2 D R' U2 R D' R' U2 R'" },
+                    { id: 'OLL-24', name: 'OLL #24', note: 'Cross T (Chameleon)', alg: "(r U R' U') (r' F R F')" },
+                    { id: 'OLL-25', name: 'OLL #25', note: 'Cross Bowtie (L)', alg: "(F R' F' r) (U R U' r')" },
+                    { id: 'OLL-26', name: 'OLL #26', note: 'Anti-Sune', alg: "R U2' R' U' R U' R'" },
+                    { id: 'OLL-27', name: 'OLL #27', note: 'Sune', alg: "R U R' U R U2' R'" }
+                ]
+            },
+            {
+                key: 'all-corners',
+                groupTitle: 'All Corners Oriented — มุมครบ 4 มุม (28, 57)',
+                items: [
+                    { id: 'OLL-28', name: 'OLL #28', note: 'Stealth / Corner All Oriented L-Edges', alg: "(r U R' U') r' R (U R U' R')" },
+                    { id: 'OLL-57', name: 'OLL #57', note: 'H-Shape / Mummy', alg: "(R U R' U') M' (U R U' r')" }
+                ]
+            },
+            {
+                key: 't-shapes',
+                groupTitle: 'T Shapes — รูปตัว T (33, 45)',
+                items: [
+                    { id: 'OLL-33', name: 'OLL #33', note: 'T + Sledgehammer', alg: "(R U R' U') (R' F R F')" },
+                    { id: 'OLL-45', name: 'OLL #45', note: 'Suit Up (T)', alg: "F (R U R' U') F'" }
+                ]
+            },
+            {
+                key: 'w-shapes',
+                groupTitle: 'W Shapes — รูปขั้นบันได W (36, 38)',
+                items: [
+                    { id: 'OLL-36', name: 'OLL #36', note: 'Wario (Left W)', alg: "L' U' L U' L' U L U (L F' L' F)" },
+                    { id: 'OLL-38', name: 'OLL #38', note: 'Mario (Right W)', alg: "R U R' U R U' R' U' (R' F R F')" }
+                ]
+            },
+            {
+                key: 'square-shapes',
+                groupTitle: 'Square Shapes — รูปสี่เหลี่ยม 2x2 (5, 6)',
+                items: [
+                    { id: 'OLL-5', name: 'OLL #5', note: 'Left Back Square', alg: "l' U2 L U L' U l" },
+                    { id: 'OLL-6', name: 'OLL #6', note: 'Right Back Square', alg: "r U2' R' U' R U' r'" }
+                ]
+            },
+            {
+                key: 'p-shapes',
+                groupTitle: 'P Shapes — รูปตัว P (31, 32, 43, 44)',
+                items: [
+                    { id: 'OLL-31', name: 'OLL #31', note: 'Couch', alg: "R' U' F (U R U' R') F' R" },
+                    { id: 'OLL-32', name: 'OLL #32', note: 'Anti-Couch', alg: "L U F' (U' L' U L) F L'" },
+                    { id: 'OLL-43', name: 'OLL #43', note: 'Anti-P (Right)', alg: "R' U' F' U F R" },
+                    { id: 'OLL-44', name: 'OLL #44', note: 'P (Front Wide F)', alg: "F (U R U' R') F'" }
+                ]
+            },
+            {
+                key: 'fish-shapes',
+                groupTitle: 'Fish Shapes — รูปตัวปลา (9, 10)',
+                items: [
+                    { id: 'OLL-9', name: 'OLL #9', note: 'Kite (Left Fish)', alg: "(R U R' U') R' F (R2 U R' U') F'" },
+                    { id: 'OLL-10', name: 'OLL #10', note: 'Anti-Kite (Right Fish)', alg: "R U R' U (R' F R F') R U2' R'" }
+                ]
+            },
+            {
+                key: 'c-shapes',
+                groupTitle: 'C Shapes — รูปตัว C (34, 46)',
+                items: [
+                    { id: 'OLL-34', name: 'OLL #34', note: 'City (C & T)', alg: "f R f' U' r' U' R U M'" },
+                    { id: 'OLL-46', name: 'OLL #46', note: "Seein' Headlights", alg: "R' U' (R' F R F') U R" }
+                ]
+            },
+            {
+                key: 'small-lightning',
+                groupTitle: 'Small Lightning Bolts — สายฟ้าเล็ก (7, 8, 11, 12)',
+                items: [
+                    { id: 'OLL-7', name: 'OLL #7', note: 'Wide Sune (Lightning)', alg: "r U R' U R U2' r'" },
+                    { id: 'OLL-8', name: 'OLL #8', note: 'Left Wide Sune', alg: "l' U' L U' L' U2 l" },
+                    { id: 'OLL-11', name: 'OLL #11', note: 'Downstairs Lightning', alg: "S' U2 R U R' U R U2' R' S" },
+                    { id: 'OLL-12', name: 'OLL #12', note: 'Upstairs Lightning', alg: "M' R' U' R U' R' U2 R U' R r'" }
+                ]
+            },
+            {
+                key: 'big-lightning',
+                groupTitle: 'Big Lightning Bolts — สายฟ้าใหญ่ (39, 40)',
+                items: [
+                    { id: 'OLL-39', name: 'OLL #39', note: 'Fung (Big Bolt Left)', alg: "(f' L F L') (U' L' U L) S" },
+                    { id: 'OLL-40', name: 'OLL #40', note: 'Anti-Fung (Big Bolt Right)', alg: "(f R' F' R) (U R U' R') S'" }
+                ]
+            },
+            {
+                key: 'small-l',
+                groupTitle: 'Small L Shapes — รูปตัว L และบรรทัด (47–50, 53, 54)',
+                items: [
+                    { id: 'OLL-47', name: 'OLL #47', note: 'Anti-Breakneck', alg: "(F R' F' R) U2 R U' R' U R U2' R'" },
+                    { id: 'OLL-48', name: 'OLL #48', note: 'Breakneck (Double Sexy)', alg: "F (R U R' U') (R U R' U') F'" },
+                    { id: 'OLL-49', name: 'OLL #49', note: 'Right Back Squeegy', alg: "r U' r2' U r2 U r2' U' r" },
+                    { id: 'OLL-50', name: 'OLL #50', note: 'Right Front Squeegy', alg: "l' U l2 U' l2' U' l2 U l'" },
+                    { id: 'OLL-53', name: 'OLL #53', note: 'Frying Pan', alg: "l' U' L U' L' U L U' L' U2 l" },
+                    { id: 'OLL-54', name: 'OLL #54', note: 'Anti-Frying Pan', alg: "r U R' U R U' R' U R U2' r'" }
+                ]
+            },
+            {
+                key: 'knight-move',
+                groupTitle: 'Knight Move Shapes — รูปตัว L หักมุมม้าหมากรุก (13–16)',
+                items: [
+                    { id: 'OLL-13', name: 'OLL #13', note: 'Gun', alg: "F (U R U' R2') F' R (U R U' R')" },
+                    { id: 'OLL-14', name: 'OLL #14', note: 'Anti-Gun', alg: "R' F R U R' F' R F U' F'" },
+                    { id: 'OLL-15', name: 'OLL #15', note: 'Squeegee', alg: "l' U' l (L' U' L U) l' U l" },
+                    { id: 'OLL-16', name: 'OLL #16', note: 'Anti-Squeegee', alg: "r U r' (R U R' U') r U' r'" }
+                ]
+            },
+            {
+                key: 'awkward',
+                groupTitle: 'Awkward / Cactus Shapes — รูปกระบองเพชร (29, 30, 41, 42)',
+                items: [
+                    { id: 'OLL-29', name: 'OLL #29', note: 'Chameleon + Sexy', alg: "(R U R' U') (R U' R') (F' U' F) (R U R')" },
+                    { id: 'OLL-30', name: 'OLL #30', note: 'Anti-Spotted Chameleon', alg: "r' D' r U' r' D r2 U' r' U r U r'" },
+                    { id: 'OLL-41', name: 'OLL #41', note: 'Awkward Dalmation', alg: "R U R' U R U2' R' F (R U R' U') F'" },
+                    { id: 'OLL-42', name: 'OLL #42', note: 'Lefty Awkward Dalmation', alg: "(R' F R F') (R' F R F') (R U R' U') R U R'" }
+                ]
+            },
+            {
+                key: 'dot-cases',
+                groupTitle: 'No Edges Oriented / Dot Cases — ไม่มีขอบตรงบนเลย (1–4, 17–20)',
+                items: [
+                    { id: 'OLL-1', name: 'OLL #1', note: 'Runway (Blank)', alg: "R U2' (R2' F R F') U2' (R' F R F')" },
+                    { id: 'OLL-2', name: 'OLL #2', note: 'Zamboni', alg: "L F L' (U2 R U2' R') L F' L'" },
+                    { id: 'OLL-3', name: 'OLL #3', note: 'Anti-Mouse', alg: "f (R U R' U') f' U' F (R U R' U') F'" },
+                    { id: 'OLL-4', name: 'OLL #4', note: 'Mouse', alg: "f (R U R' U') f' U F (R U R' U') F'" },
+                    { id: 'OLL-17', name: 'OLL #17', note: 'Slash (Diagonal)', alg: "F R' F' R2 r' (U R U' R') U' M'" },
+                    { id: 'OLL-18', name: 'OLL #18', note: 'Crown', alg: "r U R' U R U2' r2' U' R U' R' U2 r" },
+                    { id: 'OLL-19', name: 'OLL #19', note: 'Bunny', alg: "r' R U (R U R' U') M' (R' F R F')" },
+                    { id: 'OLL-20', name: 'OLL #20', note: 'X-Checkers', alg: "(r U R' U') M2' (U R U' R') U' M'" }
+                ]
+            },
+            {
+                key: 'other',
+                groupTitle: 'Other Shapes — รูป I และแบบพิเศษ (51, 52, 55, 56)',
+                items: [
+                    { id: 'OLL-51', name: 'OLL #51', note: 'Bottlecap (Wide Double Sexy)', alg: "f (R U R' U') (R U R' U') f'" },
+                    { id: 'OLL-52', name: 'OLL #52', note: 'Rice Cooker', alg: "R' F' U' F U' R U R' U R" },
+                    { id: 'OLL-55', name: 'OLL #55', note: 'Highway (I-Bar + Bar)', alg: "R' F U R U' R2' F' R2 U R' U' R" },
+                    { id: 'OLL-56', name: 'OLL #56', note: 'Streetlights', alg: "r U r' (U R U' R') U R U' M' U' r'" }
+                ]
+            }
+        ];
+
+        const CFOP_F2L_GROUPS = [
+            {
+                groupTitle: 'พื้นฐาน: เก็บคู่มุม-ขอบลงช่องขวาหน้า (#1 – #4)',
+                items: [
+                    { id: 'F2L-1', name: 'F2L #1', note: 'คู่เข้ากันแล้ว เสียบลงด้านขวา (Right Trigger)', alg: "U R U' R'" },
+                    { id: 'F2L-2', name: 'F2L #2', note: 'คู่เข้ากันแล้ว เสียบลงด้านหน้า', alg: "U' F' U F" },
+                    { id: 'F2L-3', name: 'F2L #3', note: 'มุม-ขอบหันสีต่าง เก็บเร็ว 3 จังหวะหน้า', alg: "F' U' F" },
+                    { id: 'F2L-4', name: 'F2L #4', note: 'มุม-ขอบหันสีต่าง เก็บเร็ว 3 จังหวะขวา', alg: "R U R'" }
+                ]
+            },
+            {
+                groupTitle: 'ชิ้นมุมและชิ้นขอบอยู่ชั้นบน U (#5 – #24)',
+                items: [
+                    { id: 'F2L-5', name: 'F2L #5', note: 'ขาวหันด้านข้าง สีบนต่างกัน', alg: "U' R U R' U2 R U' R'" },
+                    { id: 'F2L-6', name: 'F2L #6', note: 'ขาวหันหน้า สีบนต่างกัน (ด้านซ้ายหน้า)', alg: "U F' U' F U2 F' U F" },
+                    { id: 'F2L-7', name: 'F2L #7', note: 'ขาวหันขวา ขอบอยู่ฝั่งตรงข้าม', alg: "U' R U2 R' U2 R U' R'" },
+                    { id: 'F2L-8', name: 'F2L #8', note: 'ขาวหันหน้า ขอบอยู่ฝั่งตรงข้าม', alg: "U F' U2 F U2 F' U F" },
+                    { id: 'F2L-9', name: 'F2L #9', note: 'สีบนต่าง จับคู่ผ่านสล็อตหลัง/หน้า', alg: "U' R U' R' U F' U' F" },
+                    { id: 'F2L-10', name: 'F2L #10', note: 'สีบนเหมือนกัน ยกจับคู่ 7 จังหวะ', alg: "U' R U R' U R U R'" },
+                    { id: 'F2L-11', name: 'F2L #11', note: 'แยกคู่แล้วสลับฝั่งเสียบหน้า', alg: "U' R U2 R' U F' U' F" },
+                    { id: 'F2L-12', name: 'F2L #12', note: 'คู่ติดกันกลับด้าน (สีขอบพลิก)', alg: "R U' R' U R U' R' U2 R U' R'" },
+                    { id: 'F2L-13', name: 'F2L #13', note: 'จับคู่ด้านข้างแล้วหมุนใส่หน้า', alg: "U F' U F U' F' U' F" },
+                    { id: 'F2L-14', name: 'F2L #14', note: 'จับคู่ด้านหน้าแล้วหมุนใส่ขวา', alg: "U' R U' R' U R U R'" },
+                    { id: 'F2L-15', name: 'F2L #15', note: 'มุม-ขอบติดกันแต่สีสลับข้าง', alg: "R U R' U2 R U' R' U R U' R'" },
+                    { id: 'F2L-16', name: 'F2L #16', note: 'มุม-ขอบติดกัน ยกหลบแล้วเสียบหน้า', alg: "R U' R' U2 F' U' F" },
+                    { id: 'F2L-17', name: 'F2L #17', note: 'ขาวอยู่ด้านบน (White Facing Up) #1', alg: "R U2 R' U' R U R'" },
+                    { id: 'F2L-18', name: 'F2L #18', note: 'ขาวอยู่ด้านบน (White Facing Up) #2', alg: "F' U2 F U F' U' F" },
+                    { id: 'F2L-19', name: 'F2L #19', note: 'ขาวอยู่ด้านบน สีด้านหน้าตรงกับเซ็นเตอร์', alg: "U R U2 R' U R U' R'" },
+                    { id: 'F2L-20', name: 'F2L #20', note: 'ขาวอยู่ด้านบน สีด้านขวาตรงกับเซ็นเตอร์', alg: "U' F' U2 F U' F' U F" },
+                    { id: 'F2L-21', name: 'F2L #21', note: 'ขาวอยู่ด้านบน จับคู่หมุน U2', alg: "U2 R U R' U R U' R'" },
+                    { id: 'F2L-22', name: 'F2L #22', note: 'ขาวอยู่ด้านบน จับคู่ด้านหน้าด้วย U2', alg: "U2 F' U' F U' F' U F" },
+                    { id: 'F2L-23', name: 'F2L #23', note: 'ขาวอยู่ด้านบน ชิ้นติดกันผิดแนว #1', alg: "R U R' U2 R U R' U' R U R'" },
+                    { id: 'F2L-24', name: 'F2L #24', note: 'ขาวอยู่ด้านบน ชิ้นติดกันผิดแนว #2', alg: "F' U' F U2 F' U' F U F' U' F" }
+                ]
+            },
+            {
+                groupTitle: 'แกะและหมุนชิ้นส่วนที่ติดค้างในช่องล่าง (#25 – #41)',
+                items: [
+                    { id: 'F2L-25', name: 'F2L #25', note: 'มุมลงถูกด้าน ขอบอยู่ชั้นบน #1', alg: "U' F' U F U R U' R'" },
+                    { id: 'F2L-26', name: 'F2L #26', note: 'มุมลงถูกด้าน ขอบอยู่ชั้นบน #2', alg: "U R U' R' U' F' U F" },
+                    { id: 'F2L-27', name: 'F2L #27', note: 'มุมบิดขาวหันหน้า ขอบอยู่บน', alg: "R U' R' U R U' R'" },
+                    { id: 'F2L-28', name: 'F2L #28', note: 'มุมบิดขาวหันข้าง (ใช้ Sledge)', alg: "R U R' U' F R' F' R" },
+                    { id: 'F2L-29', name: 'F2L #29', note: 'มุมหันขาวไปหน้า Double Sledge', alg: "R' F R F' R' F R F'" },
+                    { id: 'F2L-30', name: 'F2L #30', note: 'มุมหันขาวไปขวา (Sexy Move)', alg: "R U R' U' R U R'" },
+                    { id: 'F2L-31', name: 'F2L #31', note: 'มุมลงช่อง ขอบพลิกกลับหัว #1', alg: "U' R' F R F' R U' R'" },
+                    { id: 'F2L-32', name: 'F2L #32', note: 'มุม-ขอบตรงตำแหน่งแต่มุมหมุน (3x Sexy)', alg: "(R U R' U') (R U R' U') (R U R')" },
+                    { id: 'F2L-33', name: 'F2L #33', note: 'ขอบลงถูกช่อง มุมอยู่ชั้นบน #1', alg: "U' R U' R' U2 R U' R'" },
+                    { id: 'F2L-34', name: 'F2L #34', note: 'ขอบลงถูกช่อง มุมอยู่ชั้นบน #2', alg: "U F' U F U2 F' U F" },
+                    { id: 'F2L-35', name: 'F2L #35', note: 'ขอบลงช่องแต่มุมขาวหันข้าง', alg: "U' R U R' U F' U' F" },
+                    { id: 'F2L-36', name: 'F2L #36', note: 'ขอบลงช่องผิดด้าน มุมขาวบน', alg: "U2 R' F R F' U2 R U R'" },
+                    { id: 'F2L-37', name: 'F2L #37', note: 'ทั้งคู่ลงถูกช่อง แต่ขอบกลับด้าน (Flip Edge)', alg: "R2 U2 F R2 F' U2 R' U R'" },
+                    { id: 'F2L-38', name: 'F2L #38', note: 'มุม-ขอบค้างในช่อง แบบบิดขาว #1', alg: "R U' R' U' R U R' U2 R U' R'" },
+                    { id: 'F2L-39', name: 'F2L #39', note: 'มุม-ขอบค้างในช่อง แบบบิดขาว #2', alg: "R U' R' U R U2 R' U R U' R'" },
+                    { id: 'F2L-40', name: 'F2L #40', note: 'มุมลงถูกที่ ขอบค้างสลับด้าน (ใช้ Wide r)', alg: "r U' r' U2 r U r' R U R'" },
+                    { id: 'F2L-41', name: 'F2L #41', note: 'มุม-ขอบค้างในช่องและกลับสีทั้งคู่', alg: "R U R' U' R U' R' U2 F' U' F" }
+                ]
+            }
+        ];
+
+        let cfopActiveTab = 'twolook';
+        let cfopDemoMode = 'setup';
+        let cfopSearchQuery = '';
+        let cfopOllShapeFilter = 'all';
+
+        function escapeCfopHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[m]));
+        }
+
+        function formatFormulaHtml(alg) {
+            return escapeCfopHtml(alg).replace(/\(([^)]+)\)/g, (_, inner) =>
+                `<span class="inline-block px-1.5 py-0.5 mx-0.5 rounded-md bg-sky-100/90 dark:bg-sky-950/80 text-sky-800 dark:text-sky-300 font-bold border border-sky-200/70 dark:border-sky-800/50">(${inner})</span>`
+            );
+        }
+
+        function setCfopDemoMode(mode) {
+            cfopDemoMode = mode;
+            const setupBtn = document.getElementById('demo-mode-setup');
+            const directBtn = document.getElementById('demo-mode-direct');
+            if (setupBtn && directBtn) {
+                setupBtn.className = mode === 'setup'
+                    ? 'px-3 py-1 rounded-full font-heading font-bold bg-emerald-600 text-white shadow-xs transition cursor-pointer'
+                    : 'px-3 py-1 rounded-full font-heading font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition cursor-pointer';
+                directBtn.className = mode === 'direct'
+                    ? 'px-3 py-1 rounded-full font-heading font-bold bg-google-blue text-white shadow-xs transition cursor-pointer'
+                    : 'px-3 py-1 rounded-full font-heading font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition cursor-pointer';
+            }
+        }
+
+        function selectCfopTab(tab) {
+            cfopActiveTab = tab;
+            renderCfopLibrary();
+        }
+
+        function setOllShapeFilter(key) {
+            cfopOllShapeFilter = key;
+            renderCfopLibrary();
+        }
+
+        function handleCfopSearch(val) {
+            cfopSearchQuery = val.trim();
+            const clearBtn = document.getElementById('cfop-search-clear');
+            if (clearBtn) clearBtn.classList.toggle('hidden', !cfopSearchQuery);
+            renderCfopLibrary();
+        }
+
+        function clearCfopSearch() {
+            const inp = document.getElementById('cfop-search-input');
+            if (inp) inp.value = '';
+            handleCfopSearch('');
+        }
+
+        function runCfopFormulaById(itemId) {
+            const item = findCfopItemById(itemId);
+            if (!item) return;
+            applyAlgorithmDemo(item.alg, item.name, cfopDemoMode === 'setup');
+        }
+
+        function copyCfopFormulaById(itemId) {
+            const item = findCfopItemById(itemId);
+            if (!item) return;
+            navigator.clipboard.writeText(item.alg).then(() => {
+                showToast(`คัดลอกสูตร ${item.name}: ${item.alg}`);
+            });
+        }
+
+        function findCfopItemById(id) {
+            const pools = [...CFOP_TWO_LOOK_OLL, ...CFOP_F2L_GROUPS, ...CFOP_FULL_OLL_GROUPS, ...CFOP_PLL_GROUPS];
+            for (const grp of pools) {
+                const found = grp.items.find(it => it.id === id);
+                if (found) return found;
+            }
+            return null;
+        }
+
+        function renderCfopCard(item, badgeCls, categoryLabel = '') {
+            return `
+                <div class="p-3.5 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border hover:border-emerald-400/80 dark:hover:border-emerald-600/80 transition flex flex-col justify-between gap-2.5">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                ${categoryLabel ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeCls}">${escapeCfopHtml(categoryLabel)}</span>` : ''}
+                                <h6 class="font-heading font-bold text-sm text-google-text dark:text-white">${escapeCfopHtml(item.name)}</h6>
+                            </div>
+                            <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5 leading-snug">${escapeCfopHtml(item.note)}</p>
+                        </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button type="button" onclick="copyCfopFormulaById('${item.id}')" class="w-7 h-7 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-google-blue text-google-text-muted hover:text-google-blue flex items-center justify-center text-xs transition cursor-pointer" title="คัดลอกสูตรนี้">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                            <button type="button" onclick="runCfopFormulaById('${item.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-heading font-bold shadow-xs transition flex items-center gap-1 cursor-pointer" title="เล่นแอนิเมชันบนรูบิค 3D ด้านบน">
+                                <i class="fa-solid fa-play text-[9px]"></i>
+                                <span>ดู 3D</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="px-3 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border/80 dark:border-google-dark-border font-mono text-xs sm:text-[13px] leading-relaxed text-google-text dark:text-slate-100 select-all break-words">
+                        ${formatFormulaHtml(item.alg)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderNotationTab() {
+            return CFOP_NOTATION_GROUPS.map(grp => `
+                <div class="p-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${grp.color}">${grp.badge}</span>
+                                <h5 class="font-heading font-bold text-sm sm:text-base text-google-text dark:text-white">${grp.title}</h5>
+                            </div>
+                            <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted mt-1">${grp.desc}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                        ${grp.items.map(it => `
+                            <div class="p-3 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border flex items-center justify-between gap-2.5">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <span class="w-10 h-10 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-mono text-lg font-extrabold flex items-center justify-center shrink-0">${it.sym}</span>
+                                    <div class="min-w-0">
+                                        <div class="font-heading font-bold text-xs sm:text-sm text-google-text dark:text-white truncate">${it.name}</div>
+                                        <div class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted leading-snug">${it.tip}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <button type="button" onclick="manualMove('${it.demo}')" class="px-2 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-600 hover:text-white text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-mono text-xs font-bold transition cursor-pointer" title="ลองหมุน ${it.demo} บน 3D">${it.demo}</button>
+                                    <button type="button" data-move="${it.demo}'" onclick="manualMove(this.dataset.move)" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-google-blue hover:text-white text-google-text-body dark:text-slate-200 font-mono text-xs font-bold transition cursor-pointer" title="ลองหมุน ${it.demo}' บน 3D">${it.demo}'</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderGroupList(groups, badgeCls, colClass = 'grid-cols-1 md:grid-cols-2') {
+            return groups.map(grp => `
+                <div class="space-y-2.5">
+                    <div class="flex items-center justify-between gap-2 px-1">
+                        <h5 class="font-heading font-bold text-sm sm:text-base text-google-text dark:text-white flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-current opacity-80"></span>
+                            <span>${escapeCfopHtml(grp.groupTitle)}</span>
+                        </h5>
+                        <span class="text-xs font-mono font-semibold text-google-text-muted dark:text-google-dark-text-muted">${grp.items.length} สูตร</span>
+                    </div>
+                    <div class="grid ${colClass} gap-3">
+                        ${grp.items.map(it => renderCfopCard(it, badgeCls)).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCfopLibrary() {
+            const tabIds = ['notation', 'twolook', 'f2l', 'oll', 'pll'];
+            tabIds.forEach(t => {
+                const btn = document.getElementById(`cfop-tab-btn-${t}`);
+                if (!btn) return;
+                const active = !cfopSearchQuery && cfopActiveTab === t;
+                btn.className = active
+                    ? 'cfop-tab-btn px-3.5 py-2 rounded-xl text-xs font-heading font-bold bg-white dark:bg-google-dark-surface text-google-blue dark:text-sky-300 border border-google-border dark:border-google-dark-border shadow-xs transition cursor-pointer flex items-center gap-1.5'
+                    : 'cfop-tab-btn px-3.5 py-2 rounded-xl text-xs font-heading font-semibold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer flex items-center gap-1.5';
+            });
+
+            const body = document.getElementById('cfop-library-body');
+            if (!body) return;
+
+            // Cross-category instant search mode
+            if (cfopSearchQuery) {
+                const q = cfopSearchQuery.toLowerCase();
+                const allSets = [
+                    { label: '2-Look OLL', badge: 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300', groups: CFOP_TWO_LOOK_OLL },
+                    { label: 'F2L', badge: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300', groups: CFOP_F2L_GROUPS },
+                    { label: 'Full OLL', badge: 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300', groups: CFOP_FULL_OLL_GROUPS },
+                    { label: 'PLL', badge: 'bg-rose-100 text-rose-800 dark:bg-rose-950/70 dark:text-rose-300', groups: CFOP_PLL_GROUPS }
+                ];
+                const matches = [];
+                allSets.forEach(set => {
+                    set.groups.forEach(grp => {
+                        grp.items.forEach(it => {
+                            const hay = `${it.name} ${it.note} ${it.alg} ${grp.groupTitle}`.toLowerCase();
+                            if (hay.includes(q)) matches.push({ item: it, badge: set.badge, cat: set.label });
+                        });
+                    });
+                });
+                if (!matches.length) {
+                    body.innerHTML = `<div class="p-8 text-center rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-sm text-google-text-muted">ไม่พบสูตรที่ตรงกับ "<strong>${escapeCfopHtml(cfopSearchQuery)}</strong>" — ลองค้นหาด้วยคำว่า Sune, T-Perm, Fish, #21 หรือ F2L</div>`;
+                    return;
+                }
+                body.innerHTML = `
+                    <div class="text-xs font-heading font-semibold text-google-text-muted dark:text-google-dark-text-muted">พบสูตรที่เกี่ยวข้องทั้งหมด <strong class="text-google-text dark:text-white">${matches.length}</strong> สูตร</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        ${matches.map(m => renderCfopCard(m.item, m.badge, m.cat)).join('')}
+                    </div>
+                `;
+                return;
+            }
+
+            if (cfopActiveTab === 'notation') {
+                body.innerHTML = renderNotationTab();
+            } else if (cfopActiveTab === 'twolook') {
+                body.innerHTML = renderGroupList(CFOP_TWO_LOOK_OLL, 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300');
+            } else if (cfopActiveTab === 'f2l') {
+                body.innerHTML = renderGroupList(CFOP_F2L_GROUPS, 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300');
+            } else if (cfopActiveTab === 'oll') {
+                const shapePills = `
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button type="button" onclick="setOllShapeFilter('all')" class="px-2.5 py-1 rounded-full text-[11px] font-heading font-bold transition cursor-pointer ${cfopOllShapeFilter === 'all' ? 'bg-amber-500 text-white' : 'bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-text'}">ทั้งหมด ${CFOP_FULL_OLL_GROUPS.reduce((s, g) => s + g.items.length, 0)} สูตร</button>
+                        ${CFOP_FULL_OLL_GROUPS.map(g => `
+                            <button type="button" onclick="setOllShapeFilter('${g.key}')" class="px-2.5 py-1 rounded-full text-[11px] font-heading font-semibold transition cursor-pointer ${cfopOllShapeFilter === g.key ? 'bg-amber-500 text-white' : 'bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-google-text'}">${g.groupTitle.split('—')[0].trim()} (${g.items.length})</button>
+                        `).join('')}
+                    </div>
+                `;
+                const visibleGroups = cfopOllShapeFilter === 'all'
+                    ? CFOP_FULL_OLL_GROUPS
+                    : CFOP_FULL_OLL_GROUPS.filter(g => g.key === cfopOllShapeFilter);
+                body.innerHTML = shapePills + renderGroupList(visibleGroups, 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300');
+            } else if (cfopActiveTab === 'pll') {
+                body.innerHTML = renderGroupList(CFOP_PLL_GROUPS, 'bg-rose-100 text-rose-800 dark:bg-rose-950/70 dark:text-rose-300');
+            }
         }
 
         function copyScramble() {
@@ -1529,6 +2262,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
             initCube3D();
+            renderCfopLibrary();
             loadSolves();
             generateNewScramble();
         });

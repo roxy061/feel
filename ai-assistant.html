@@ -172,15 +172,15 @@
         <!-- 1. Clear Purpose & Article Banner (เข้าใจบทความที่จะสื่อใน 3 วินาที) -->
         <section class="g-card p-4 sm:p-5 bg-gradient-to-r from-indigo-500/10 via-sky-500/5 to-emerald-500/5 border-indigo-200/80 dark:border-indigo-900/50 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div class="space-y-1.5 max-w-4xl">
-                <div class="inline-flex items-center gap-2">
-                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-600 text-white">เว็บแอปที่ 6 • การประยุกต์ใช้ AI ในการทำงาน (Applied AI Assistant)</span>
-                    <span class="text-xs text-google-text-muted dark:text-google-dark-text-muted font-medium">พร้อมใช้งานทันที ไม่ต้องตั้งค่า</span>
+                <div class="inline-flex flex-wrap items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-600 text-white">เว็บแอปที่ 6 • Grounded Reading AI + Multi-Turn Chat</span>
+                    <span class="text-xs text-emerald-700 dark:text-emerald-300 font-semibold">อ่านบริบทจริง • ตอบตรงคำถาม • ไม่มั่วข้อมูล</span>
                 </div>
                 <h2 class="text-base sm:text-xl font-extrabold text-google-text dark:text-google-dark-text font-heading">
-                    ผู้ช่วย AI ประจำเว็บไซต์: สรุปข้อมูล แนะนำผลงาน และถาม-ตอบได้ทุกเรื่องในคลิกเดียว
+                    ผู้ช่วย AI อัจฉริยะ: อ่านเอกสาร/ข้อมูลเว็บจริง วิเคราะห์คำถาม และตอบอย่างตรงประเด็น
                 </h2>
                 <p class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed">
-                    <strong>บทความที่จะสื่อ:</strong> สาธิตการนำปัญญาประดิษฐ์ (AI) มาช่วยจัดการข้อมูลในเว็บไซต์แฟ้มสะสมผลงานของ <strong>นายภคพล สมัยแก้ว (ฟีล)</strong> ให้ผู้เข้าชมสามารถ <strong>1) ถาม-ตอบข้อมูลประวัติ ผลงาน โค้ด ESP32 ร้านอาหารในนครฯ</strong>, <strong>2) สรุปบทความหรือรายงานยาวๆ ให้สั้นกระชับ</strong> และ <strong>3) รับคำแนะนำตามเป้าหมายของผู้เข้าชม</strong> ได้อย่างสะดวกรวดเร็ว
+                    <strong>ความสามารถจริง:</strong> ระบบ AI อ่านและจัดทำดัชนีเนื้อหาจากทุกหน้าเว็บในโปรเจกต์ <strong>+ เอกสารหรือข้อความที่คุณวาง/อัปโหลดเอง (.txt/.md/.csv/.json/.ino)</strong> ใช้การตัดคำภาษาไทย (Thai Segmentation) + BM25 Passage Retrieval แยกเจตนาคำถาม ถามต่อเนื่องได้หลายรอบ (Multi-turn) ปฏิเสธอย่างซื่อสัตย์เมื่อไม่มีข้อมูล และเชื่อมต่อ <strong>Gemini Live API</strong> เพิ่มได้ทันที
                 </p>
             </div>
 
@@ -199,25 +199,80 @@
         </section>
 
         <!-- ============================================================ -->
-        <!-- MODE 1: SMART Q&A CHAT & INSTANT RECOMMENDATIONS             -->
+        <!-- MODE 1: SMART Q&A CHAT & DOCUMENT READING CONTEXT            -->
         <!-- ============================================================ -->
         <section id="view-chat" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-            <!-- Left Sidebar: One-Click Quick Questions & Topics (4 cols) -->
+            <!-- Left Sidebar: Document Reader Context + Quick Questions (4 cols) -->
             <div class="lg:col-span-4 space-y-4">
-                <div class="g-card p-4 sm:p-5 space-y-3.5">
+
+                <!-- Context & Document Reader Panel -->
+                <div class="g-card p-4 sm:p-5 space-y-3 border-indigo-200/80 dark:border-indigo-900/60">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="text-sm sm:text-base font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-book-open-reader text-indigo-600 dark:text-indigo-400"></i>
+                            บริบท &amp; เอกสารให้ AI อ่าน
+                        </h3>
+                        <span id="kb-status-badge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold">
+                            พร้อมอ่าน
+                        </span>
+                    </div>
+
+                    <p class="text-[11px] sm:text-xs text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">
+                        วางบทความ โน้ตเรียน โค้ด หรืออัปโหลดไฟล์เพื่อให้ AI อ่านแล้วตอบคำถามจากข้อมูลนั้นโดยตรง (ไม่เดาสุ่ม):
+                    </p>
+
+                    <textarea
+                        id="ai-context-input"
+                        rows="4"
+                        oninput="onUserContextChanged()"
+                        placeholder="วางข้อความ/บทความ/ข้อมูลสเปคงานที่นี่... แล้วพิมพ์ถาม AI เกี่ยวกับเนื้อหานี้ได้เลย เช่น กฎกติกา ตัวเลข หรือรายละเอียดเทคนิค"
+                        class="w-full p-3 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border focus:border-indigo-500 focus:outline-none text-xs leading-relaxed text-google-text dark:text-white resize-y"
+                    ></textarea>
+
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <label class="px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-[11px] font-heading font-semibold cursor-pointer inline-flex items-center gap-1 transition">
+                            <i class="fa-solid fa-file-arrow-up"></i>
+                            <span>อัปโหลดไฟล์</span>
+                            <input type="file" id="ai-file-input" accept=".txt,.md,.csv,.json,.html,.js,.py,.ino,.c,.cpp,.log" class="hidden" onchange="handleContextFileUpload(event)">
+                        </label>
+                        <button type="button" onclick="pullFromSummarizerToChat()" class="px-2.5 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 text-[11px] font-heading font-semibold cursor-pointer inline-flex items-center gap-1 transition" title="ดึงข้อความจากโหมดสรุปมาอ่าน">
+                            <i class="fa-solid fa-paste"></i> ดึงจากหน้าสรุป
+                        </button>
+                        <button type="button" onclick="crawlSitePages(true)" id="btn-crawl-site" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-heading font-semibold cursor-pointer inline-flex items-center gap-1 transition" title="ดึงเนื้อหาจริงจากหน้าเว็บทั้งหมดในโปรเจกต์">
+                            <i class="fa-solid fa-globe"></i> อ่านหน้าเว็บจริง
+                        </button>
+                        <button type="button" onclick="clearUserContext()" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-rose-100 hover:text-rose-600 text-google-text-muted text-[11px] font-heading font-semibold cursor-pointer transition">
+                            ล้างเอกสาร
+                        </button>
+                    </div>
+
+                    <div class="pt-1 border-t border-google-border/60 dark:border-google-dark-border/60 flex flex-wrap gap-3 text-[11px] text-google-text-body dark:text-google-dark-text-body">
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                            <input type="checkbox" id="scope-user-doc" checked onchange="rebuildKnowledgeIndex()" class="accent-indigo-600 rounded">
+                            <span>อ่านเอกสารที่วาง</span>
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                            <input type="checkbox" id="scope-site-kb" checked onchange="rebuildKnowledgeIndex()" class="accent-indigo-600 rounded">
+                            <span>อ่านข้อมูลเว็บ &amp; Portfolio</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Quick Preset Questions -->
+                <div class="g-card p-4 sm:p-5 space-y-3">
                     <div class="flex items-center justify-between">
                         <h3 class="text-sm sm:text-base font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
                             <i class="fa-solid fa-bolt text-amber-500"></i>
-                            กดถามด่วนในคลิกเดียว (ไม่ต้องพิมพ์)
+                            กดถามด่วนในคลิกเดียว
                         </h3>
-                        <span class="text-[11px] text-indigo-600 dark:text-indigo-400 font-semibold">8 หัวข้อยอดฮิต</span>
+                        <span class="text-[11px] text-indigo-600 dark:text-indigo-400 font-semibold">8 หัวข้อหลัก</span>
                     </div>
                     <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">
-                        เลือกหัวข้อที่อยากรู้ด้านล่าง ระบบ AI จะสรุปคำตอบที่อ่านเข้าใจง่ายพร้อมลิงก์ที่เกี่ยวข้องให้ทันที:
+                        เลือกหัวข้อด้านล่าง หรือพิมพ์คำถามเจาะจงเองในแชท (เช่น วันเกิด, จำนวนร้านอาหาร, วิธีแชร์ PIN ใน SafeBox):
                     </p>
 
-                    <div class="space-y-2">
+                    <div class="space-y-1.5">
                         <button type="button" onclick="askPresetQuestion('summary_profile')" class="w-full p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-google-border dark:border-google-dark-border hover:border-indigo-400 text-left text-xs sm:text-sm font-medium transition flex items-center gap-2.5 cursor-pointer">
                             <span class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-user-graduate"></i></span>
                             <span>สรุปประวัติและการศึกษาของ นายภคพล</span>
@@ -245,12 +300,12 @@
 
                         <button type="button" onclick="askPresetQuestion('rubik_tips')" class="w-full p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg hover:bg-teal-50 dark:hover:bg-teal-950/40 border border-google-border dark:border-google-dark-border hover:border-teal-400 text-left text-xs sm:text-sm font-medium transition flex items-center gap-2.5 cursor-pointer">
                             <span class="w-7 h-7 rounded-lg bg-teal-100 dark:bg-teal-950 text-teal-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-cube"></i></span>
-                            <span>ขอสูตรและเทคนิคแก้รูบิค 3x3 แบบเข้าใจง่าย</span>
+                            <span>ขอสูตรและเทคนิคแก้รูบิค 3x3 (CFOP)</span>
                         </button>
 
                         <button type="button" onclick="askPresetQuestion('all_webapps')" class="w-full p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-google-border dark:border-google-dark-border hover:border-purple-400 text-left text-xs sm:text-sm font-medium transition flex items-center gap-2.5 cursor-pointer">
                             <span class="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-layer-group"></i></span>
-                            <span>ในเว็บไซต์นี้มีเว็บแอปเสริมอะไรให้ลองเล่นบ้าง?</span>
+                            <span>ในเว็บไซต์นี้มีเว็บแอปเสริมครบทั้ง 8 ระบบอะไรบ้าง?</span>
                         </button>
 
                         <button type="button" onclick="askPresetQuestion('contact_info')" class="w-full p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-google-border dark:border-google-dark-border hover:border-rose-400 text-left text-xs sm:text-sm font-medium transition flex items-center gap-2.5 cursor-pointer">
@@ -261,34 +316,79 @@
                 </div>
             </div>
 
-            <!-- Right Column: Chat Conversation Box (8 cols) -->
-            <div class="lg:col-span-8 g-card flex flex-col h-[600px] overflow-hidden">
+            <!-- Right Column: Grounded AI Conversation Box (8 cols) -->
+            <div class="lg:col-span-8 g-card flex flex-col h-[680px] overflow-hidden">
                 <!-- Chat Header -->
-                <div class="px-5 py-3.5 border-b border-google-border dark:border-google-dark-border bg-google-bg/60 dark:bg-google-dark-bg/60 flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-600 to-google-blue text-white flex items-center justify-center text-sm shadow-xs">
-                            <i class="fa-solid fa-robot"></i>
+                <div class="px-4 sm:px-5 py-3.5 border-b border-google-border dark:border-google-dark-border bg-google-bg/60 dark:bg-google-dark-bg/60 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-600 to-google-blue text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                            <i class="fa-solid fa-brain"></i>
                         </div>
-                        <div>
-                            <div class="flex items-center gap-2">
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
                                 <span class="font-heading font-bold text-sm sm:text-base text-google-text dark:text-white">Feel AI Assistant</span>
-                                <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> พร้อมตอบทันที
+                                <span id="ai-engine-badge" class="inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Grounded Reading AI
                                 </span>
                             </div>
-                            <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
-                                ถามได้ทั้งข้อมูลแฟ้มสะสมผลงาน โค้ดไมโครคอนโทรลเลอร์ รูบิค ร้านอาหารนครฯ หรือให้ช่วยสรุปข้อความ
+                            <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted truncate">
+                                อ่านเอกสาร + ข้อมูลทุกหน้าเว็บก่อนตอบ • อ้างอิงแหล่งที่มา • ไม่รู้จะบอกตรงๆ ไม่เดามั่ว
                             </p>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-1.5">
-                        <button type="button" onclick="speakLastAiReply()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text-body dark:text-google-dark-text-body hover:text-indigo-600 transition cursor-pointer" title="อ่านออกเสียงคำตอบล่าสุด">
-                            <i class="fa-solid fa-volume-high mr-1 text-indigo-500"></i> ฟังเสียงสรุป
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button type="button" onclick="toggleGeminiSettings()" id="btn-gemini-settings" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text-body dark:text-google-dark-text-body hover:border-indigo-500 hover:text-indigo-600 transition cursor-pointer" title="เชื่อมต่อ Google Gemini API (ไม่บังคับ)">
+                            <i class="fa-solid fa-sliders mr-1 text-sky-500"></i> เชื่อม Gemini API
                         </button>
-                        <button type="button" onclick="clearChatHistory()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text-muted hover:text-rose-600 transition cursor-pointer" title="ล้างแชท">
+                        <button type="button" onclick="speakLastAiReply()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text-body dark:text-google-dark-text-body hover:text-indigo-600 transition cursor-pointer" title="อ่านออกเสียงคำตอบล่าสุด">
+                            <i class="fa-solid fa-volume-high mr-1 text-indigo-500"></i> ฟังเสียง
+                        </button>
+                        <button type="button" onclick="clearChatHistory()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text-muted hover:text-rose-600 transition cursor-pointer" title="ล้างประวัติแชท">
                             <i class="fa-solid fa-rotate-left"></i> เริ่มใหม่
                         </button>
+                    </div>
+                </div>
+
+                <!-- Optional Gemini API Settings Drawer -->
+                <div id="gemini-settings-drawer" class="hidden px-4 sm:px-5 py-3.5 border-b border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/70 dark:bg-indigo-950/30 space-y-2.5 text-xs">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="font-heading font-bold text-indigo-800 dark:text-indigo-200 flex items-center gap-1.5">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>เชื่อมต่อ Google Gemini API จริง (BYOK • เก็บคีย์ไว้ในเบราว์เซอร์ของคุณเท่านั้น)</span>
+                        </div>
+                        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                            รับ API Key ฟรีที่ Google AI Studio →
+                        </a>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                        <input
+                            type="password"
+                            id="gemini-api-key-input"
+                            placeholder="วาง Gemini API Key (AIza...) — เว้นว่างได้ถ้าใช้ AI อ่านในเครื่อง"
+                            class="sm:col-span-6 px-3 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border focus:border-indigo-500 focus:outline-none text-xs text-google-text dark:text-white font-mono"
+                        >
+                        <select id="gemini-model-select" class="sm:col-span-3 px-2.5 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text dark:text-white">
+                            <option value="gemini-3.8-flash">gemini-3.8-flash (แนะนำ)</option>
+                            <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (ไวมาก)</option>
+                            <option value="gemini-3.6-flash">gemini-3.6-flash</option>
+                            <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                        </select>
+                        <div class="sm:col-span-3 flex items-center gap-1.5">
+                            <button type="button" onclick="saveGeminiConfig()" class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-heading font-bold text-xs cursor-pointer transition">
+                                บันทึก
+                            </button>
+                            <button type="button" onclick="clearGeminiConfig()" class="py-2 px-2.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-rose-600 hover:bg-rose-50 font-heading font-semibold text-xs cursor-pointer transition">
+                                ล้าง
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer text-google-text-body dark:text-google-dark-text-body">
+                            <input type="checkbox" id="gemini-strict-grounding" checked class="accent-indigo-600 rounded">
+                            <span>Strict Grounding: ให้ Gemini ตอบโดยยึดข้อมูลจากเอกสาร/หน้าเว็บเป็นหลัก และบอกตรงๆ หากไม่มีข้อมูล</span>
+                        </label>
+                        <button type="button" onclick="toggleGeminiSettings(false)" class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline cursor-pointer">ซ่อนแถบตั้งค่า ▲</button>
                     </div>
                 </div>
 
@@ -298,17 +398,19 @@
                 </div>
 
                 <!-- Chat Input Form -->
-                <form onsubmit="handleChatSubmit(event)" class="p-3 sm:p-4 border-t border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface flex items-center gap-2">
-                    <input 
-                        type="text" 
-                        id="chat-input" 
-                        placeholder="พิมพ์คำถามที่อยากรู้ เช่น 'สรุปจุดเด่นของภคพล', 'มีร้านข้าวแกงไหนอร่อยบ้าง', 'วางข้อความเพื่อให้สรุป'..." 
-                        class="flex-1 px-4 py-2.5 rounded-full bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border focus:border-indigo-500 focus:outline-none text-sm text-google-text dark:text-white"
-                    >
-                    <button type="submit" class="px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-heading font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-1.5 shrink-0 cursor-pointer">
-                        <span>ส่งคำถาม</span>
-                        <i class="fa-solid fa-paper-plane text-xs"></i>
-                    </button>
+                <form onsubmit="handleChatSubmit(event)" class="p-3 sm:p-4 border-t border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface space-y-2">
+                    <div class="flex items-center gap-2">
+                        <input
+                            type="text"
+                            id="chat-input"
+                            placeholder="ถามเฉพาะเจาะจงได้เลย เช่น 'เกิดวันไหน', 'SafeBox แชร์ด้วยอะไร', 'ร้านข้าวแกงนครฯ มีร้านไหนบ้าง' หรือถามจากเอกสารที่วาง..."
+                            class="flex-1 px-4 py-2.5 rounded-full bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border focus:border-indigo-500 focus:outline-none text-sm text-google-text dark:text-white"
+                        >
+                        <button type="submit" id="chat-submit-btn" class="px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-heading font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-1.5 shrink-0 cursor-pointer">
+                            <span>ส่งคำถาม</span>
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                    </div>
                 </form>
             </div>
 
@@ -379,9 +481,14 @@
                         <i class="fa-solid fa-sparkles text-amber-500"></i>
                         ผลลัพธ์การสรุปจาก AI (อ่านเข้าใจง่าย)
                     </h3>
-                    <button type="button" onclick="copySummaryResult()" class="px-3 py-1 rounded-full bg-google-subtle dark:bg-google-dark-subtle hover:bg-indigo-600 hover:text-white text-xs font-heading font-semibold transition cursor-pointer">
-                        <i class="fa-regular fa-copy mr-1"></i> คัดลอกบทสรุป
-                    </button>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="sendSummarizerToChatReader()" class="px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-600 hover:text-white text-xs font-heading font-semibold transition cursor-pointer">
+                            <i class="fa-solid fa-comments mr-1"></i> ถาม-ตอบจากข้อความนี้
+                        </button>
+                        <button type="button" onclick="copySummaryResult()" class="px-3 py-1 rounded-full bg-google-subtle dark:bg-google-dark-subtle hover:bg-indigo-600 hover:text-white text-xs font-heading font-semibold transition cursor-pointer">
+                            <i class="fa-regular fa-copy mr-1"></i> คัดลอกบทสรุป
+                        </button>
+                    </div>
                 </div>
 
                 <div id="summary-output" class="p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200/80 dark:border-zinc-800 min-h-[280px] text-sm leading-relaxed space-y-3">
@@ -457,6 +564,12 @@
                 <a href="weather.html" class="hover:text-google-blue">4. เรดาร์อากาศสด</a>
                 <span>•</span>
                 <a href="rubik.html" class="hover:text-google-blue">5. รูบิค 3x3</a>
+                <span>•</span>
+                <a href="ai-assistant.html" class="hover:text-google-blue font-semibold text-indigo-600 dark:text-indigo-400">6. ผู้ช่วย AI</a>
+                <span>•</span>
+                <a href="vault.html" class="hover:text-google-blue">7. ตู้เซฟฝากไฟล์</a>
+                <span>•</span>
+                <a href="photo-studio.html" class="hover:text-google-blue">8. ลบพื้นหลัง/แต่งรูป</a>
             </div>
             <div>
                 พัฒนาโดย <strong class="text-google-text dark:text-white">นายภคพล สมัยแก้ว (ฟีล)</strong> • วิทยาลัยอาชีวศึกษานครศรีธรรมราช
@@ -465,21 +578,115 @@
     </footer>
 
     <script>
-        // ==================== KNOWLEDGE BASE OF PAKAPOL'S PORTFOLIO ====================
+        // ==================== HTML & MARKDOWN SANITIZATION HELPERS ====================
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function sanitizeInternalUrl(url) {
+            const clean = String(url || '').trim();
+            if (/^(index|wheel|southern-food|cctv|weather|rubik|ai-assistant|vault|photo-studio)\.html(?:#[a-zA-Z0-9_-]+)?$/.test(clean)) {
+                return clean;
+            }
+            if (/^mailto:feel0627546143@gmail\.com$/i.test(clean) || /^https:\/\/line\.me\/ti\/p\/CdqbkYbcUv$/.test(clean)) {
+                return clean;
+            }
+            return '#';
+        }
+
+        function renderSafeMarkdown(mdText) {
+            const codeBlocks = [];
+            let text = String(mdText || '').replace(/\r\n/g, '\n');
+            text = text.replace(/```([a-zA-Z0-9_+-]*)\n([\s\S]*?)```/g, (_, lang, code) => {
+                const idx = codeBlocks.length;
+                codeBlocks.push(`<pre class="my-2 p-3 rounded-xl bg-slate-900 text-emerald-300 font-mono text-xs overflow-x-auto leading-relaxed"><code>${escapeHtml(code.trimEnd())}</code></pre>`);
+                return `@@CODE_BLOCK_${idx}@@`;
+            });
+
+            const lines = text.split('\n');
+            const out = [];
+            let inUl = false;
+            let inOl = false;
+
+            const closeLists = () => {
+                if (inUl) { out.push('</ul>'); inUl = false; }
+                if (inOl) { out.push('</ol>'); inOl = false; }
+            };
+
+            const formatInline = (raw) => {
+                let s = escapeHtml(raw);
+                s = s.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-zinc-800 font-mono text-[11px] text-indigo-700 dark:text-indigo-300">$1</code>');
+                s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+                s = s.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+                s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => {
+                    const safeHref = sanitizeInternalUrl(href);
+                    if (safeHref === '#') return label;
+                    const ext = safeHref.startsWith('http') ? ' target="_blank" rel="noopener noreferrer"' : '';
+                    return `<a href="${safeHref}"${ext} class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">${label}</a>`;
+                });
+                return s;
+            };
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                const codeMatch = trimmed.match(/^@@CODE_BLOCK_(\d+)@@$/);
+                if (codeMatch) {
+                    closeLists();
+                    out.push(codeBlocks[Number(codeMatch[1])]);
+                    continue;
+                }
+                if (!trimmed) {
+                    closeLists();
+                    continue;
+                }
+                const headingMatch = trimmed.match(/^#{1,4}\s+(.+)$/);
+                if (headingMatch) {
+                    closeLists();
+                    out.push(`<h4 class="font-heading font-bold text-indigo-700 dark:text-indigo-300 text-sm mt-2 mb-1">${formatInline(headingMatch[1])}</h4>`);
+                    continue;
+                }
+                const ulMatch = trimmed.match(/^(?:[-*•])\s+(.+)$/);
+                if (ulMatch) {
+                    if (inOl) { out.push('</ol>'); inOl = false; }
+                    if (!inUl) { out.push('<ul class="list-disc pl-5 space-y-1 my-1.5">'); inUl = true; }
+                    out.push(`<li>${formatInline(ulMatch[1])}</li>`);
+                    continue;
+                }
+                const olMatch = trimmed.match(/^\d+[.)]\s+(.+)$/);
+                if (olMatch) {
+                    if (inUl) { out.push('</ul>'); inUl = false; }
+                    if (!inOl) { out.push('<ol class="list-decimal pl-5 space-y-1 my-1.5">'); inOl = true; }
+                    out.push(`<li>${formatInline(olMatch[1])}</li>`);
+                    continue;
+                }
+                closeLists();
+                out.push(`<p class="my-1 leading-relaxed">${formatInline(trimmed)}</p>`);
+            }
+            closeLists();
+            return out.join('\n');
+        }
+
+        // ==================== QUICK PRESET ANSWERS (UP TO DATE WITH ALL 8 APPS) ====================
         const AI_ANSWERS = {
             summary_profile: {
                 q: "สรุปประวัติและการศึกษาของ นายภคพล สมัยแก้ว ให้ฟังหน่อย",
                 a: `<strong>📌 สรุปข้อมูลประวัติและการศึกษา (อ่านเข้าใจใน 10 วินาที):</strong>
 <ul class="list-disc pl-5 mt-2 space-y-1">
     <li><strong>ชื่อ-นามสกุล:</strong> นายภคพล สมัยแก้ว (ชื่อเล่น: ฟีล / Feel)</li>
-    <li><strong>วันเกิด & ภูมิลำเนา:</strong> เกิดวันที่ 10 ธันวาคม พ.ศ. 2550 • ภูมิลำเนา จ.นครศรีธรรมราช</li>
+    <li><strong>วันเกิด &amp; ภูมิลำเนา:</strong> เกิดวันที่ 10 ธันวาคม พ.ศ. 2550 • ภูมิลำเนา จ.นครศรีธรรมราช</li>
     <li><strong>การศึกษาปัจจุบัน:</strong> ระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) ณ <strong>วิทยาลัยอาชีวศึกษานครศรีธรรมราช</strong></li>
-    <li><strong>ความถนัดหลัก 4 ด้าน:</strong> 1) ไมโครคอนโทรลเลอร์ & IoT (ESP32) 2) การประยุกต์ใช้ AI ช่วยทำงานและเขียนโค้ด 3) การตัดต่อวิดีโอและสื่อดิจิทัล 4) นักแก้รูบิค 3x3 ฝึกการคิดเชิงตรรกะ</li>
+    <li><strong>ความถนัดหลัก 4 ด้าน:</strong> 1) ไมโครคอนโทรลเลอร์ &amp; IoT (ESP32) 2) การประยุกต์ใช้ AI ช่วยทำงานและเขียนโค้ด 3) การตัดต่อวิดีโอและสื่อดิจิทัล 4) นักแก้รูบิค 3x3 ฝึกการคิดเชิงตรรกะ</li>
 </ul>
 <div class="mt-3 flex flex-wrap gap-2">
     <a href="index.html#about" class="px-3 py-1 rounded-full bg-indigo-600 text-white text-xs font-semibold">เปิดอ่านหน้าประวัติเต็ม →</a>
 </div>`,
-                plainText: "นายภคพล สมัยแก้ว ชื่อเล่น ฟีล เกิดวันที่ 10 ธันวาคม 2550 ปัจจุบันศึกษาอยู่ระดับ ปวส.1 วิทยาลัยอาชีวศึกษานครศรีธรรมราช มีความถนัดด้านไมโครคอนโทรลเลอร์ ESP32, การประยุกต์ใช้ AI, การตัดต่อวิดีโอ และการแก้รูบิค 3 คูณ 3 ครับ"
+                plainText: "นายภคพล สมัยแก้ว ชื่อเล่น ฟีล เกิดวันที่ 10 ธันวาคม 2550 ปัจจุบันศึกษาอยู่ระดับ ปวส.1 วิทยาลัยอาชีวศึกษานครศรีธรรมราช มีความถนัดด้านไมโครคอนโทรลเลอร์ ESP32, การประยุกต์ใช้ AI, การตัดต่อวิดีโอ และการแก้รูบิค 3 คูณ 3 ครับ",
+                topicTokens: ['ภคพล', 'สมัยแก้ว', 'ฟีล', 'ประวัติ', 'การศึกษา', 'วันเกิด', 'ปวส', 'วิทยาลัยอาชีวศึกษา']
             },
             projects_certs: {
                 q: "มีผลงานสิ่งประดิษฐ์และเกียรติบัตรอะไรบ้าง?",
@@ -491,10 +698,11 @@
     <li><strong>เกียรติบัตรการแข่งขันทักษะวิทยาศาสตร์ (ระดับภาคใต้):</strong> เข้าร่วมแข่งขันทักษะวิชาการในระดับภูมิภาคภาคใต้</li>
 </ol>
 <div class="mt-3 flex flex-wrap gap-2">
-    <a href="index.html#projects" class="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-semibold">ดูรูปโครงงาน & เปิดไฟล์ PDF →</a>
+    <a href="index.html#projects" class="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-semibold">ดูรูปโครงงาน &amp; เปิดไฟล์ PDF →</a>
     <a href="wheel.html" class="px-3 py-1 rounded-full bg-amber-500 text-white text-xs font-semibold">หมุนชมในวงล้อ 3 มิติ →</a>
 </div>`,
-                plainText: "ผลงานหลักประกอบด้วย โครงงานตู้กดผ้าอนามัยอัตโนมัติ และเกียรติบัตร 3 รายการ ได้แก่ เกียรติบัตรรางวัลคนเก่ง และเกียรติบัตรการแข่งขันทักษะวิทยาศาสตร์ทั้งระดับจังหวัดและระดับภาคใต้ครับ"
+                plainText: "ผลงานหลักประกอบด้วย โครงงานตู้กดผ้าอนามัยอัตโนมัติ และเกียรติบัตร 3 รายการ ได้แก่ เกียรติบัตรรางวัลคนเก่ง และเกียรติบัตรการแข่งขันทักษะวิทยาศาสตร์ทั้งระดับจังหวัดและระดับภาคใต้ครับ",
+                topicTokens: ['ผลงาน', 'สิ่งประดิษฐ์', 'โครงงาน', 'ตู้กดผ้าอนามัยอัตโนมัติ', 'เกียรติบัตร', 'วิทยาศาสตร์']
             },
             internship_exp: {
                 q: "เล่าประสบการณ์ฝึกงาน บริษัท เชียร์ คอมมูนิเคชั่น ให้ฟังหน่อย",
@@ -508,7 +716,8 @@
     <a href="index.html#about" class="px-3 py-1 rounded-full bg-sky-600 text-white text-xs font-semibold">ดูไทม์ไลน์การฝึกงาน →</a>
     <a href="index.html#gallery" class="px-3 py-1 rounded-full bg-slate-700 text-white text-xs font-semibold">ดูภาพถ่ายขณะฝึกงาน →</a>
 </div>`,
-                plainText: "ในปี พ.ศ. 2567 นายภคพลได้ฝึกงานที่ บริษัท เชียร์ คอมมูนิเคชั่น จำกัด โดยได้ร่วมปฏิบัติงานจริงกับทีมช่างเทคนิคในการตรวจสอบและบำรุงรักษาระบบสื่อสารและอุปกรณ์เครือข่ายครับ"
+                plainText: "ในปี พ.ศ. 2567 นายภคพลได้ฝึกงานที่ บริษัท เชียร์ คอมมูนิเคชั่น จำกัด โดยได้ร่วมปฏิบัติงานจริงกับทีมช่างเทคนิคในการตรวจสอบและบำรุงรักษาระบบสื่อสารและอุปกรณ์เครือข่ายครับ",
+                topicTokens: ['ฝึกงาน', 'เชียร์', 'คอมมูนิเคชั่น', 'โทรคมนาคม', 'เครือข่าย', '2567']
             },
             esp32_code: {
                 q: "ขอตัวอย่างโค้ด ESP32 สั่งงานเซนเซอร์และรีเลย์เบื้องต้น",
@@ -532,63 +741,1104 @@ void loop() {
     delay(500);
   }
 }</pre>
-<p class="text-xs text-slate-500 mt-1.5">💡 แนวคิดนี้เป็นพื้นฐานเดียวกับระบบควบคุมการจ่ายสิ่งของในโครงงานตู้กดผ้าอนามัยอัตโนมัติครับ</p>`,
-                plainText: "นี่คือตัวอย่างโค้ดภาษาซีพลัสพลัสสำหรับบอร์ด ESP32 ในการรับค่าจากเซนเซอร์ที่ขา 14 และสั่งเปิดรีเลย์หรือมอเตอร์จ่ายสิ่งของที่ขา 26 เป็นเวลา 1.5 วินาทีครับ"
+<p class="text-xs text-slate-500 mt-1.5">💡 แนวคิดนี้ใช้ควบคุมการจ่ายของในโครงงานตู้กดผ้าอนามัยอัตโนมัติ โดยรับสัญญาณที่ขา GPIO 14 และสั่งรีเลย์ที่ขา GPIO 26</p>`,
+                plainText: "นี่คือตัวอย่างโค้ดภาษาซีพลัสพลัสสำหรับบอร์ด ESP32 ในการรับค่าจากเซนเซอร์ที่ขา GPIO 14 และสั่งเปิดรีเลย์หรือมอเตอร์จ่ายสิ่งของที่ขา GPIO 26 เป็นเวลา 1.5 วินาทีครับ",
+                topicTokens: ['esp32', 'โค้ด', 'เซนเซอร์', 'รีเลย์', 'gpio', '14', '26', 'arduino']
             },
             food_recommend: {
                 q: "แนะนำร้านอาหารเด็ดใน อ.เมือง นครศรีธรรมราช หน่อย",
                 a: `<strong>🍛 แนะนำร้านเด็ดห้ามพลาดใน อ.เมือง นครศรีธรรมราช (คัดจาก 48 ร้านในระบบ):</strong>
 <ul class="list-disc pl-5 mt-2 space-y-1">
-    <li><strong>มื้อเช้า (ติ่มซำ & กาแฟโบราณ):</strong> <em>ตังเกี๋ย แต่เตี้ยม</em>, <em>โกปี๊ ข้างศาลากลาง</em> (บักกุ๊ดเต๋, ชากาแฟโบราณ)</li>
-    <li><strong>มื้อกลางวัน (ขนมจีน & ข้าวแกงปักษ์ใต้):</strong> <em>ขนมจีนเมืองคอน ถนนพานยม</em>, <em>ข้าวแกงครัวเมืองคอน</em>, <em>ร้านชาวเรือ</em></li>
+    <li><strong>มื้อเช้า (ติ่มซำ &amp; กาแฟโบราณ):</strong> <em>ตังเกี๋ย แต่เตี้ยม</em>, <em>โกปี๊ ข้างศาลากลาง</em> (บักกุ๊ดเต๋, ชากาแฟโบราณ)</li>
+    <li><strong>มื้อกลางวัน (ขนมจีน &amp; ข้าวแกงปักษ์ใต้):</strong> <em>ขนมจีนเมืองคอน ถนนพานยม</em>, <em>ข้าวแกงครัวเมืองคอน</em>, <em>ร้านชาวเรือ</em></li>
     <li><strong>ร้านดังในห้าง (เซ็นทรัล / โรบินสัน โอเชี่ยน):</strong> <em>แหลมเจริญซีฟู้ด</em>, <em>บอนชอน</em>, <em>Sizzler</em></li>
-    <li><strong>มื้อเย็น & มื้อดึก (โรตีป้าหนอม):</strong> <em>ป้าหนอม โรตีชาชัก</em> (โรตีทิชชู่, โรตีแกงเนื้อ)</li>
+    <li><strong>มื้อเย็น &amp; มื้อดึก:</strong> <em>ป้าหนอม โรตีชาชัก</em> (โรตีทิชชู่, โรตีแกงเนื้อ)</li>
 </ul>
 <div class="mt-3 flex flex-wrap gap-2">
     <a href="southern-food.html" class="px-3 py-1 rounded-full bg-orange-600 text-white text-xs font-semibold">🎲 เปิดเว็บสุ่มร้านอาหารเมืองคอน (48 ร้าน) →</a>
 </div>`,
-                plainText: "ร้านอาหารแนะนำในอำเภอเมืองนครศรีธรรมราช เช่น มื้อเช้าร้านตังเกี๋ยแต่เตี้ยมและโกปี๊ มื้อกลางวันขนมจีนเมืองคอนและร้านชาวเรือ ส่วนมื้อดึกแนะนำโรตีป้าหนอม สามารถกดเปิดเว็บแอปสุ่มร้านอาหารทั้ง 48 ร้านได้เลยครับ"
+                plainText: "ร้านอาหารแนะนำในอำเภอเมืองนครศรีธรรมราช เช่น มื้อเช้าร้านตังเกี๋ยแต่เตี้ยมและโกปี๊ มื้อกลางวันขนมจีนเมืองคอนและร้านชาวเรือ ส่วนมื้อดึกแนะนำโรตีป้าหนอม สามารถกดเปิดเว็บแอปสุ่มร้านอาหารทั้ง 48 ร้านได้เลยครับ",
+                topicTokens: ['ร้านอาหาร', 'นครศรีธรรมราช', 'เมืองคอน', '48', 'ขนมจีน', 'โกปี๊', 'ตังเกี๋ย', 'ป้าหนอม']
             },
             rubik_tips: {
-                q: "ขอสูตรและเทคนิคแก้รูบิค 3x3 แบบเข้าใจง่าย",
-                a: `<strong>🧊 สรุป 4 ขั้นตอนแก้รูบิค 3x3 (CFOP) & สูตรพื้นฐานที่ต้องรู้:</strong>
+                q: "ขอสูตรและเทคนิคแก้รูบิค 3x3 (CFOP) แบบเข้าใจง่าย",
+                a: `<strong>🧊 สรุป 4 ขั้นตอนแก้รูบิค 3x3 (CFOP) &amp; สูตรสำคัญบนเว็บ:</strong>
 <ol class="list-decimal pl-5 mt-2 space-y-1">
-    <li><strong>Cross (ฐานบวกสีขาว):</strong> เรียงชิ้นขอบสีขาว 4 ชิ้นให้ตรงกับสีแกนกลางทั้ง 4 ด้าน</li>
-    <li><strong>F2L (เก็บ 2 ชั้นแรก):</strong> จับคู่ชิ้นมุมขาวกับชิ้นขอบชั้นที่ 2 แล้วลงช่องพร้อมกัน</li>
-    <li><strong>OLL (พลิกหน้าเหลือง):</strong> ใช้สูตรปลาตะเพียน <code>R U R' U R U2 R'</code> เพื่อพลิกสีเหลืองให้เต็มด้านบน</li>
-    <li><strong>PLL (สลับชิ้นส่วนชั้นบน):</strong> ใช้สูตรพื้นฐานและ <code>Sexy Move (R U R' U')</code> เพื่อเรียงสีรอบด้านให้ครบ 100%</li>
+    <li><strong>Cross (กากบาทขาว):</strong> สร้างฐานบวกสีขาว 4 ด้านให้ตรงสีแกนกลาง</li>
+    <li><strong>F2L (เก็บ 2 ชั้นแรก — 41 สูตร):</strong> จับคู่ชิ้นมุม-ขอบลงช่องพร้อมกัน เช่น <code>U R U' R'</code></li>
+    <li><strong>OLL (หน้าเหลืองเต็ม — 2-Look 10 สูตร / Full 57 สูตร):</strong> เช่น Sune <code>R U R' U R U2 R'</code></li>
+    <li><strong>PLL (จัดตำแหน่งชั้นบน — 21 สูตร):</strong> เช่น T-Perm <code>R U R' U' R' F R2 U' R' U' R U R' F'</code></li>
 </ol>
+<p class="text-xs text-slate-500 mt-1.5">หมายเหตุ: ในหน้า <strong>rubik.html</strong> มีตัวจำลอง <strong>3D Cube Visualizer</strong> ทั้ง 6 ด้าน + Scramble WCA และสถิติ Ao5/Ao12 ครบครับ</p>
 <div class="mt-3 flex flex-wrap gap-2">
-    <a href="rubik.html" class="px-3 py-1 rounded-full bg-teal-600 text-white text-xs font-semibold">⏱️ เปิดห้องจับเวลา & ลองหมุนรูบิค 3x3 บนเว็บ →</a>
+    <a href="rubik.html" class="px-3 py-1 rounded-full bg-teal-600 text-white text-xs font-semibold">⏱️ เปิดห้องจับเวลา &amp; จำลองรูบิค 3D →</a>
 </div>`,
-                plainText: "การแก้รูบิค 3 คูณ 3 แบ่งเป็น 4 ขั้นตอนคือ 1 สร้างฐานบวกสีขาว Cross 2 เก็บสองชั้นแรก F2L 3 พลิกหน้าสีเหลือง OLL ด้วยสูตร R U R' U R U2 R' และ 4 สลับตำแหน่งชั้นบน PLL สามารถเข้าไปฝึกจับเวลาและลองหมุนรูบิคจำลองได้ที่หน้าเว็บแอปรูบิค 3 คูณ 3 ครับ"
+                plainText: "การแก้รูบิค 3 คูณ 3 ระบบ CFOP มี 4 ขั้นตอนคือ Cross, F2L 41 สูตร, OLL (2-Look 10 สูตร / Full 57 สูตร) และ PLL 21 สูตร บนหน้าเว็บมีตัวจำลองรูบิค 3 มิติ 6 ด้านและจับเวลา WCA ครับ",
+                topicTokens: ['รูบิค', '3x3', 'cfop', 'f2l', 'oll', 'pll', 'cross', '3d', 'sune']
             },
             all_webapps: {
-                q: "ในเว็บไซต์นี้มีเว็บแอปเสริมอะไรให้ลองเล่นบ้าง?",
-                a: `<strong>🚀 เว็บไซต์นี้มีเว็บแอปเสริม 6 ระบบ 6 ด้านที่ไม่ซ้ำกันเลยครับ:</strong>
+                q: "ในเว็บไซต์นี้มีเว็บแอปเสริมครบทั้ง 8 ระบบอะไรบ้าง?",
+                a: `<strong>🚀 เว็บไซต์นี้มีเว็บแอปเสริมทั้งหมด 8 ระบบ 8 ด้าน ดังนี้ครับ:</strong>
 <ul class="list-disc pl-5 mt-2 space-y-1">
     <li><a href="wheel.html" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">1. วงล้อผลงาน 3 มิติ (wheel.html)</a> — หมุนชมผลงานและอ่านสรุปแนวคิดแบบ 3D</li>
-    <li><a href="southern-food.html" class="text-orange-600 dark:text-orange-400 font-bold hover:underline">2. สุ่มร้านอาหารเมืองคอน (southern-food.html)</a> — แนะนำ 48 ร้านเด็ดในเมืองนครฯ พร้อมโหมดสุ่มแผ่นดินไหว 20 วินาที</li>
-    <li><a href="cctv.html" class="text-red-600 dark:text-rose-400 font-bold hover:underline">3. กล้องวงจรปิดสด NST CCTV (cctv.html)</a> — ดูภาพสดจราจรและระดับน้ำในเมืองนครฯ 1–20 จอ</li>
-    <li><a href="weather.html" class="text-sky-600 dark:text-sky-400 font-bold hover:underline">4. เรดาร์สภาพอากาศสด (weather.html)</a> — ติดตามกลุ่มเมฆฝน พายุ และลมมรสุมภาคใต้</li>
-    <li><a href="rubik.html" class="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">5. จับเวลาและฝึกแก้รูบิค 3x3 (rubik.html)</a> — นาฬิกาจับเวลา WCA + จำลองรูบิค 3 มิติ (3D) 6 ด้าน</li>
-    <li><a href="ai-assistant.html" class="text-purple-600 dark:text-purple-400 font-bold hover:underline">6. ผู้ช่วย AI อัจฉริยะ (ai-assistant.html)</a> — ถาม-ตอบ สรุปบทความ และแนะนำข้อมูล</li>
+    <li><a href="southern-food.html" class="text-orange-600 dark:text-orange-400 font-bold hover:underline">2. สุ่มร้านอาหารเมืองคอน (southern-food.html)</a> — แนะนำ 48 ร้านเด็ดในเมืองนครฯ พร้อมโหมดสุ่มแผ่นดินไหวและพิกัดแผนที่</li>
+    <li><a href="cctv.html" class="text-red-600 dark:text-rose-400 font-bold hover:underline">3. กล้องวงจรปิดสด NST CCTV (cctv.html)</a> — ดูภาพสดกว่า 220 จุดในเทศบาลนครนครศรีธรรมราช ดูพร้อมกันได้สูงสุด 20 จอ</li>
+    <li><a href="weather.html" class="text-sky-600 dark:text-sky-400 font-bold hover:underline">4. เรดาร์สภาพอากาศและพายุภาคใต้ (weather.html)</a> — ติดตามเมฆฝน พายุ ทิศทางลม และพยากรณ์อากาศ</li>
+    <li><a href="rubik.html" class="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">5. จับเวลาและฝึกแก้รูบิค 3x3 (rubik.html)</a> — นาฬิกาจับเวลา WCA + ตัวจำลองรูบิค 3 มิติ 6 ด้าน + สูตร CFOP</li>
+    <li><a href="ai-assistant.html" class="text-purple-600 dark:text-purple-400 font-bold hover:underline">6. ผู้ช่วย AI อัจฉริยะ (ai-assistant.html)</a> — อ่านบริบทเอกสาร/ทุกหน้าเว็บ ตอบตรงประเด็น สรุป TextRank และเชื่อม Gemini API ได้</li>
+    <li><a href="vault.html" class="text-amber-600 dark:text-amber-400 font-bold hover:underline">7. ตู้เซฟฝากไฟล์รูปภาพ &amp; ลิงก์ (vault.html / Feel SafeBox)</a> — ฝากข้อมูลไม่เสียคุณภาพ 100% ตรวจ SHA-256 และแชร์ข้ามอุปกรณ์ด้วย PIN 6 หลัก (รีใหม่ทุก 10 นาที ไม่เปิดเผย IP) พร้อมเข้ารหัส AES-256-GCM</li>
+    <li><a href="photo-studio.html" class="text-pink-600 dark:text-pink-400 font-bold hover:underline">8. สตูดิโอลบพื้นหลัง &amp; แต่งรูป (photo-studio.html)</a> — ลบแบ็คกราวน์อัตโนมัติ เปลี่ยนฉากหลังรูปติดบัตร ปรับแสงสีและตัดต่อ ดาวน์โหลด PNG โปร่งใส</li>
 </ul>`,
-                plainText: "เว็บไซต์นี้มีเว็บแอปเสริม 6 ระบบที่ไม่ซ้ำกัน ได้แก่ 1 วงล้อผลงาน 3 มิติ 2 ระบบสุ่มร้านอาหารเมืองคอน 48 ร้าน 3 กล้องวงจรปิดสดเทศบาลนครนครศรีธรรมราช 4 เรดาร์สภาพอากาศสด 5 ห้องจับเวลาและฝึกแก้รูบิค 3 คูณ 3 และ 6 ผู้ช่วย AI อัจฉริยะครับ"
+                plainText: "เว็บไซต์นี้มีเว็บแอปเสริม 8 ระบบ ได้แก่ 1 วงล้อผลงาน 3 มิติ, 2 สุ่มร้านอาหารนครศรีธรรมราช 48 ร้าน, 3 กล้อง CCTV สดดูได้พร้อมกันสูงสุด 20 จอ, 4 เรดาร์อากาศภาคใต้, 5 รูบิค 3x3 จำลอง 3D, 6 ผู้ช่วย AI อัจฉริยะ, 7 ตู้เซฟ Feel SafeBox แชร์ด้วย PIN 6 หลัก, และ 8 สตูดิโอลบพื้นหลังและแต่งรูปภาพครับ",
+                topicTokens: ['เว็บแอป', 'ระบบ', '8', 'safebox', 'vault', 'photo-studio', 'cctv', 'weather', 'rubik', 'wheel', 'food']
             },
             contact_info: {
                 q: "ขอช่องทางติดต่อคุณฟีล (อีเมล / LINE)",
                 a: `<strong>📞 ช่องทางการติดต่อ นายภคพล สมัยแก้ว (ฟีล):</strong>
 <ul class="list-disc pl-5 mt-2 space-y-1">
     <li><strong>อีเมล (Email):</strong> <a href="mailto:feel0627546143@gmail.com" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">feel0627546143@gmail.com</a></li>
-    <li><strong>LINE Official / ID:</strong> <a href="https://line.me/ti/p/CdqbkYbcUv" target="_blank" class="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">CdqbkYbcUv (คลิกเพื่อเพิ่มเพื่อน)</a></li>
+    <li><strong>LINE ID:</strong> <a href="https://line.me/ti/p/CdqbkYbcUv" target="_blank" rel="noopener noreferrer" class="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">CdqbkYbcUv (คลิกเพื่อเพิ่มเพื่อน)</a></li>
     <li><strong>สถานศึกษา:</strong> วิทยาลัยอาชีวศึกษานครศรีธรรมราช อ.เมือง จ.นครศรีธรรมราช</li>
 </ul>`,
-                plainText: "สามารถติดต่อนายภคพล สมัยแก้ว ได้ทางอีเมล feel0627546143@gmail.com หรือทาง LINE ID CdqbkYbcUv ครับ"
+                plainText: "สามารถติดต่อนายภคพล สมัยแก้ว ได้ทางอีเมล feel0627546143@gmail.com หรือทาง LINE ID CdqbkYbcUv ครับ",
+                topicTokens: ['ติดต่อ', 'อีเมล', 'email', 'line', 'ไลน์', 'feel0627546143', 'cdqbkybcuv']
             }
         };
 
-        let lastSpokenPlainText = "สวัสดีครับ ผมคือผู้ช่วย AI ประจำเว็บไซต์แฟ้มสะสมผลงานของ นายภคพล สมัยแก้ว กดปุ่มหัวข้อด้านซ้ายหรือพิมพ์ถามได้เลยครับ";
+        // ==================== STRUCTURED SITE KNOWLEDGE BASE (GRANULAR PASSAGES) ====================
+        const BASE_PORTFOLIO_KB = [
+            {
+                id: 'kb_profile_identity',
+                title: 'ข้อมูลส่วนตัวและการศึกษา — นายภคพล สมัยแก้ว',
+                href: 'index.html#about',
+                linkText: 'ดูประวัติเต็ม',
+                category: 'profile',
+                text: 'ชื่อ-นามสกุล นายภคพล สมัยแก้ว ชื่อเล่น ฟีล (Feel) เกิดวันที่ 10 ธันวาคม พ.ศ. 2550 (10 ธ.ค. 2550) ภูมิลำเนาจังหวัดนครศรีธรรมราช ปัจจุบันกำลังศึกษาระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) ที่วิทยาลัยอาชีวศึกษานครศรีธรรมราช อำเภอเมือง จังหวัดนครศรีธรรมราช'
+            },
+            {
+                id: 'kb_skills_core',
+                title: 'ทักษะและความสามารถหลัก 4 ด้าน',
+                href: 'index.html#skills',
+                linkText: 'ดูทักษะทั้งหมด',
+                category: 'skills',
+                text: 'ความถนัดหลัก 4 ด้านของนายภคพล ได้แก่ 1. การเขียนโปรแกรมไมโครคอนโทรลเลอร์ ESP32 / ESP8266 ระบบสมองกลฝังตัวและเซนเซอร์ IoT 2. การประยุกต์ใช้ปัญญาประดิษฐ์ (AI) ช่วยเขียนโค้ด วิเคราะห์และสรุปข้อมูล 3. การผลิตสื่อดิจิทัล ตัดต่อวิดีโอ และปรับแต่งรูปภาพ 4. ทักษะการคิดเชิงตรรกะและอัลกอริทึมผ่านการแก้รูบิค 3x3'
+            },
+            {
+                id: 'kb_project_vending',
+                title: 'โครงงานสิ่งประดิษฐ์ — ตู้กดผ้าอนามัยอัตโนมัติ',
+                href: 'index.html#projects',
+                linkText: 'ดูรายละเอียดโครงงาน',
+                category: 'projects',
+                text: 'โครงงานสิ่งประดิษฐ์หลักคือ ตู้กดผ้าอนามัยอัตโนมัติ (Automated Sanitary Pad Dispenser) พัฒนาเพื่อแก้ไขปัญหาความฉุกเฉินและอำนวยความสะดวกในสถานศึกษา ใช้บอร์ดไมโครคอนโทรลเลอร์ ESP32 รับสัญญาณเซนเซอร์ตรวจจับที่ขา GPIO 14 และสั่งเปิดรีเลย์หรือมอเตอร์จ่ายสิ่งของที่ขา GPIO 26 เป็นเวลา 1.5 วินาที พร้อมโครงสร้างตู้แข็งแรงปลอดภัย ลดภาระเจ้าหน้าที่ห้องพยาบาล'
+            },
+            {
+                id: 'kb_certs_awards',
+                title: 'เกียรติบัตรและการแข่งขันทักษะวิชาการ (3 รายการ)',
+                href: 'index.html#projects',
+                linkText: 'เปิดดูเกียรติบัตร PDF',
+                category: 'projects',
+                text: 'เกียรติบัตรรางวัลสำคัญมี 3 รายการ พร้อมเอกสาร PDF ในหน้าผลงาน ได้แก่ 1. เกียรติบัตรรางวัลคนเก่ง (Excellence Award) ด้านความมุ่งมั่นตั้งใจและมาตรฐานการเรียนดีเด่น 2. เกียรติบัตรการแข่งขันทักษะวิทยาศาสตร์ ระดับจังหวัด 3. เกียรติบัตรการแข่งขันทักษะวิทยาศาสตร์ ระดับภาคใต้ (ระดับภูมิภาค)'
+            },
+            {
+                id: 'kb_internship',
+                title: 'ประสบการณ์ฝึกงาน — บริษัท เชียร์ คอมมูนิเคชั่น จำกัด',
+                href: 'index.html#about',
+                linkText: 'ดูประวัติการฝึกงาน',
+                category: 'internship',
+                text: 'ในปี พ.ศ. 2567 นายภคพลได้ฝึกงานวิชาชีพ ณ บริษัท เชียร์ คอมมูนิเคชั่น จำกัด (Cheer Communication Co., Ltd.) สายงานเทคนิคและสื่อสารโทรคมนาคม ปฏิบัติงานภาคสนามร่วมกับทีมช่างเทคนิคในการดูแล ตรวจสอบ ติดตั้ง และบำรุงรักษาระบบสื่อสารโทรคมนาคม อุปกรณ์โครงข่าย ตรวจสอบสัญญาณ และการแก้ไขปัญหาเฉพาะหน้า'
+            },
+            {
+                id: 'kb_contact',
+                title: 'ช่องทางการติดต่อ นายภคพล สมัยแก้ว',
+                href: 'index.html#contact',
+                linkText: 'เปิดช่องทางติดต่อ',
+                category: 'contact',
+                text: 'ช่องทางติดต่อนายภคพล สมัยแก้ว (ฟีล): อีเมล (Email) feel0627546143@gmail.com และ LINE ID: CdqbkYbcUv (ลิงก์ https://line.me/ti/p/CdqbkYbcUv) สถานศึกษาอยู่ที่วิทยาลัยอาชีวศึกษานครศรีธรรมราช อ.เมือง จ.นครศรีธรรมราช'
+            },
+            {
+                id: 'kb_esp32_code',
+                title: 'ตัวอย่างโค้ด Arduino C++ สำหรับบอร์ด ESP32 (เซนเซอร์ & รีเลย์)',
+                href: 'index.html#projects',
+                linkText: 'ดูโครงงาน IoT',
+                category: 'code',
+                code: `const int SENSOR_PIN = 14; // ขารับสัญญาณเซนเซอร์/เหรียญ
+const int RELAY_PIN  = 26; // ขาสั่งงานมอเตอร์/รีเลย์จ่ายของ
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(SENSOR_PIN, INPUT_PULLUP);
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW);
+}
+
+void loop() {
+  if (digitalRead(SENSOR_PIN) == LOW) {
+    Serial.println("ตรวจพบคำสั่ง! กำลังจ่ายสินค้า...");
+    digitalWrite(RELAY_PIN, HIGH); // เปิดมอเตอร์
+    delay(1500);                   // หมุนจ่ายของ 1.5 วินาที
+    digitalWrite(RELAY_PIN, LOW);  // หยุดมอเตอร์
+    delay(500);
+  }
+}`,
+                text: 'ตัวอย่างโค้ด ESP32 ภาษา C++ Arduino IDE ใช้พิน SENSOR_PIN ที่ขา GPIO 14 (INPUT_PULLUP) และ RELAY_PIN ที่ขา GPIO 26 (OUTPUT) ตั้ง Serial.begin(115200) เมื่อตรวจจับสัญญาณ LOW จะสั่ง digitalWrite RELAY_PIN HIGH เพื่อหมุนมอเตอร์จ่ายของ 1500 มิลลิวินาที (1.5 วินาที) แล้วหยุด LOW เป็นพื้นฐานเดียวกับตู้กดผ้าอนามัยอัตโนมัติ'
+            },
+            {
+                id: 'kb_app_wheel',
+                title: 'เว็บแอปที่ 1: นิทรรศการหมุนชมผลงาน 3 มิติ (wheel.html)',
+                href: 'wheel.html',
+                linkText: 'เปิดวงล้อผลงาน 3D',
+                category: 'webapp',
+                text: 'นิทรรศการหมุนชมผลงาน 3 มิติ (wheel.html) ใช้จัดแสดงผลงาน โครงงานสิ่งประดิษฐ์ เกียรติบัตรทั้ง 3 รายการ และประสบการณ์ฝึกงานบนวงล้อ CSS 3D Perspective ที่หมุนเลือกอ่านบทสรุปได้ในหน้าเดียว'
+            },
+            {
+                id: 'kb_app_food',
+                title: 'เว็บแอปที่ 2: หรอยเมืองคอน! สุ่มร้านอาหาร อ.เมือง นครศรีฯ 48 ร้าน',
+                href: 'southern-food.html',
+                linkText: 'เปิดสุ่มร้านอาหาร 48 ร้าน',
+                category: 'webapp',
+                text: 'เว็บแอปสุ่มร้านอาหาร อ.เมือง จังหวัดนครศรีธรรมราช (southern-food.html) รวบรวมไว้ทั้งหมด 48 ร้าน ทั้งร้านดังในเมืองและร้านในห้าง (เซ็นทรัล / โรบินสัน โอเชี่ยน) มีโหมดแผ่นดินไหว 20 วินาทีและพิกัดแผนที่ Google Maps ตัวอย่างร้านแนะนำ: มื้อเช้า ตังเกี๋ย แต่เตี้ยม และ โกปี๊ ข้างศาลากลาง, มื้อกลางวัน ขนมจีนเมืองคอน ถนนพานยม ข้าวแกงครัวเมืองคอน และร้านชาวเรือ, มื้อเย็น/ดึก โรตีป้าหนอม ชาชัก, ในห้าง แหลมเจริญซีฟู้ด บอนชอน Sizzler'
+            },
+            {
+                id: 'kb_app_cctv',
+                title: 'เว็บแอปที่ 3: กล้องวงจรปิดสด NST CCTV (ดูพร้อมกันสูงสุด 20 จอ)',
+                href: 'cctv.html',
+                linkText: 'เปิดระบบกล้อง CCTV สด',
+                category: 'webapp',
+                text: 'ระบบตรวจการณ์กล้องวงจรปิดเรียลไทม์ เทศบาลนครนครศรีธรรมราช (cctv.html / NST CCTV Live Monitor) มีจุดกล้องกว่า 220 จุด จัดหมวดหมู่ดูง่ายชัดเจน ได้แก่ จุดตรวจระดับน้ำท่วม จราจรสี่แยก หน้าโรงเรียน และ Safety Zone และรองรับการเปิดดูพร้อมกันได้สูงสุด 20 จอในหน้าจอเดียว'
+            },
+            {
+                id: 'kb_app_weather',
+                title: 'เว็บแอปที่ 4: เรดาร์สภาพอากาศและพายุภาคใต้ (weather.html)',
+                href: 'weather.html',
+                linkText: 'เปิดเรดาร์สภาพอากาศ',
+                category: 'webapp',
+                text: 'ระบบเรดาร์สภาพอากาศและพายุภาคใต้ (weather.html) แสดงแผนที่เรดาร์กลุ่มเมฆฝน พายุฝนฟ้าคะนอง ทิศทางลม อุณหภูมิ และพยากรณ์อากาศล่วงหน้าแบบอ่านง่าย สำหรับพื้นที่ อ.เมืองนครศรีธรรมราช และภาคใต้ก่อนออกเดินทาง'
+            },
+            {
+                id: 'kb_app_rubik',
+                title: 'เว็บแอปที่ 5: จับเวลาและฝึกแก้รูบิค 3x3 + ตัวจำลอง 3D (rubik.html)',
+                href: 'rubik.html',
+                linkText: 'เปิดห้องฝึกแก้รูบิค 3x3',
+                category: 'webapp',
+                text: 'เว็บแอปจับเวลาและฝึกแก้รูบิค 3x3 (rubik.html) รองรับการจับเวลาด้วย Spacebar ตามมาตรฐาน WCA สุ่ม Scramble สถิติ Ao5 และ Ao12 พร้อมตัวจำลองรูบิค 3 มิติ (3D Cube Visualizer) มองเห็นสถานะทั้ง 6 ด้านแบบหมุน 3D และคู่มือสูตร CFOP 4 ขั้นตอน: 1. Cross สร้างฐานบวกสีขาว 2. F2L เก็บ 2 ชั้นแรก (41 สูตร เช่น U R U\' R\') 3. OLL พลิกหน้าเหลือง (2-Look 10 สูตร และ Full OLL 57 สูตร เช่น Sune R U R\' U R U2 R\') 4. PLL เรียงสีชั้นบน (21 สูตร เช่น T-Perm, Ua, Ub, H, Z, J-Perm)'
+            },
+            {
+                id: 'kb_app_vault',
+                title: 'เว็บแอปที่ 7: ตู้เซฟฝากไฟล์ รูปภาพ ลิงก์ & ข้อมูล (Feel SafeBox / vault.html)',
+                href: 'vault.html',
+                linkText: 'เปิดตู้เซฟ Feel SafeBox',
+                category: 'webapp',
+                text: 'คลังฝากไฟล์ รูปภาพ ลิงก์ และข้อความโค้ด (vault.html / Feel SafeBox) เก็บข้อมูลระดับไบนารีต้นฉบับ ไม่ลดขนาดหรือคุณภาพ 100% ตรวจสอบความสมบูรณ์ไฟล์ด้วยรหัสแฮช SHA-256 และระบบแชร์ข้อมูลข้ามอุปกรณ์ด้วยรหัส PIN 6 หลักซึ่งรีเฟรชอัตโนมัติทุก 10 นาที โดยไม่เปิดเผยเลข IP ของผู้ใช้ พร้อมเข้ารหัส E2E แบบ AES-256-GCM และส่งชิ้นส่วนย่อยพร้อมตรวจสอบซ้ำ (NACK chunk recovery) ป้องกันข้อมูลขาดหาย'
+            },
+            {
+                id: 'kb_app_photo',
+                title: 'เว็บแอปที่ 8: สตูดิโอลบพื้นหลัง & แต่งรูปภาพ (Feel Photo Studio / photo-studio.html)',
+                href: 'photo-studio.html',
+                linkText: 'เปิดสตูดิโอแต่งรูป & ลบพื้นหลัง',
+                category: 'webapp',
+                text: 'สตูดิโอลบพื้นหลังและแต่งตัดต่อรูปภาพ (photo-studio.html / Feel Photo Studio & BG Remover) สามารถลบภาพพื้นหลังอัตโนมัติ เปลี่ยนสีพื้นหลังสำหรับทำรูปติดบัตร ปรับแสงสี ใส่ฟิลเตอร์ หมุนภาพ ครอบตัด ใส่ข้อความ และดาวน์โหลดเป็นไฟล์ PNG พื้นหลังโปร่งใสความคมชัดเต็ม 100%'
+            },
+            {
+                id: 'kb_app_ai',
+                title: 'เว็บแอปที่ 6: ผู้ช่วย AI อัจฉริยะ (ai-assistant.html)',
+                href: 'ai-assistant.html',
+                linkText: 'หน้าผู้ช่วย AI',
+                category: 'webapp',
+                text: 'ผู้ช่วย AI อัจฉริยะ (ai-assistant.html / Feel AI Assistant) มี 3 โหมดหลักคือ 1. ถาม-ตอบแบบอ่านบริบทจริงจากเอกสารผู้ใช้และข้อมูลหน้าเว็บ 2. สรุปบทความอัตโนมัติด้วยอัลกอริทึม TextRank เป็นหัวข้อย่อย/ผู้บริหาร/บทพูด 3. ระบบแนะนำเนื้อหาตามกลุ่มผู้เข้าชม 4 บทบาท และรองรับเชื่อมต่อ Google Gemini API เพิ่มเติม'
+            }
+        ];
+
+        // ==================== THAI NLP TOKENIZER, STOPWORDS & GROUNDED ENGINE ====================
+        const THAI_STOPWORDS = new Set([
+            'ครับ', 'ค่ะ', 'คะ', 'นะ', 'นะครับ', 'นะคะ', 'หน่อย', 'ด้วย', 'ได้ไหม', 'ไหม', 'มั้ย',
+            'หรือ', 'และ', 'แต่', 'กับ', 'ที่', 'ของ', 'ใน', 'บน', 'จาก', 'ถึง', 'เป็น', 'คือ', 'มี',
+            'ให้', 'ได้', 'จะ', 'มา', 'ไป', 'อยู่', 'แล้ว', 'ยัง', 'ไม่', 'ใช่', 'กัน', 'นี้', 'นั้น',
+            'เหล่านั้น', 'นี่', 'นั่น', 'อะไร', 'บ้าง', 'ไหน', 'ยังไง', 'อย่างไร', 'เท่าไหร่', 'เท่า', 'ไหร่',
+            'กี่', 'ทำไม', 'เพราะ', 'ช่วย', 'อยาก', 'ทราบ', 'อยากรู้', 'ขอ', 'บอก', 'เล่า', 'อธิบาย', 'สรุป',
+            'เกี่ยวกับ', 'เรื่อง', 'ข้อมูล', 'ทั้งหมด', 'ลอง', 'ดู', 'หา', 'อัน', 'แบบ', 'สุด', 'มาก', 'ล่ะ',
+            'เมื่อ', 'ไง', 'ผู้', 'ใด', 'แห่ง',
+            'the', 'is', 'am', 'are', 'was', 'were', 'a', 'an', 'of', 'to', 'in', 'on', 'for', 'with',
+            'and', 'or', 'what', 'which', 'who', 'where', 'when', 'how', 'please', 'tell', 'me', 'about',
+            'can', 'you', 'give', 'show', 'list', 'summarize', 'explain'
+        ]);
+
+        const SOFT_MODIFIERS = new Set([
+            'อร่อย', 'เด็ด', 'ดี', 'สุด', 'ดัง', 'น่าสนใจ', 'ละเอียด', 'คร่าวๆ', 'เจ๋ง', 'ฟรี', 'ง่าย', 'สั้น', 'เต็ม',
+            'วันนี้', 'ตอนนี้', 'ล่าสุด', 'ต่อ', 'เปิด', 'ปิด', 'ใช้งาน', 'ทำงาน', 'เข้า', 'ออก', 'จำนวน', 'หมดอายุ'
+        ]);
+
+        const SYNONYM_MAP = {
+            'วันเกิด': ['เกิด', '10', 'ธันวาคม', '2550'],
+            'เกิด': ['วันเกิด', 'พ.ศ.', '2550'],
+            'ติดต่อ': ['อีเมล', 'email', 'line', 'ไลน์', 'cdqbkybcuv'],
+            'ไลน์': ['line', 'cdqbkybcuv', 'ติดต่อ'],
+            'เมล': ['อีเมล', 'email', 'feel0627546143@gmail.com'],
+            'อีเมล': ['email', 'ติดต่อ'],
+            'โครงงาน': ['สิ่งประดิษฐ์', 'ตู้กดผ้าอนามัยอัตโนมัติ'],
+            'สิ่งประดิษฐ์': ['โครงงาน', 'ตู้กดผ้าอนามัยอัตโนมัติ'],
+            'เกียรติบัตร': ['รางวัล', 'แข่งขัน', 'วิทยาศาสตร์'],
+            'รางวัล': ['เกียรติบัตร', 'คนเก่ง'],
+            'ข้าว': ['ร้านอาหาร', 'อาหาร', 'สุ่มร้านอาหาร'],
+            'กิน': ['ร้านอาหาร', 'อาหาร'],
+            'ร้านอาหาร': ['เมืองคอน', '48', 'อาหาร'],
+            'กล้อง': ['cctv', 'วงจรปิด', '20', 'จอ'],
+            'cctv': ['กล้อง', 'วงจรปิด', 'เทศบาล'],
+            'ฝน': ['เรดาร์', 'พายุ', 'สภาพอากาศ', 'อากาศ'],
+            'พายุ': ['เรดาร์', 'สภาพอากาศ', 'ฝน'],
+            'อากาศ': ['เรดาร์', 'พายุ', 'ฝน'],
+            'รูบิค': ['rubik', '3x3', 'cfop', '3d'],
+            'cfop': ['รูบิค', 'f2l', 'oll', 'pll'],
+            'ฝากไฟล์': ['safebox', 'vault', 'ตู้เซฟ', 'pin'],
+            'safebox': ['vault', 'ตู้เซฟ', 'pin', 'aes-256-gcm', 'sha-256'],
+            'vault': ['safebox', 'ตู้เซฟ', 'ฝากไฟล์', 'pin'],
+            'ตู้เซฟ': ['safebox', 'vault', 'ฝากไฟล์', 'pin'],
+            'pin': ['6', 'หลัก', '10', 'นาที', 'safebox'],
+            'แชร์': ['pin', 'safebox', '6'],
+            'รหัส': ['pin', 'เข้ารหัส', 'sha-256', 'aes-256-gcm'],
+            'ลบพื้นหลัง': ['photo', 'ตัดต่อ', 'รูปติดบัตร', 'png'],
+            'แต่งรูป': ['ลบพื้นหลัง', 'photo', 'รูปติดบัตร'],
+            'เว็บแอป': ['ระบบ', '8', 'หน้า', 'โปรแกรม'],
+            'พอร์ต': ['ภคพล', 'สมัยแก้ว', 'ประวัติ', 'ผลงาน'],
+            'ประวัติ': ['ภคพล', 'เกิด', 'ปวส', 'ศึกษา'],
+            'เรียน': ['ปวส', 'วิทยาลัยอาชีวศึกษานครศรีธรรมราช', 'ศึกษา'],
+            'วิทยาลัย': ['ปวส', 'นครศรีธรรมราช', 'ศึกษา'],
+            'ฝึกงาน': ['เชียร์', 'คอมมูนิเคชั่น', '2567'],
+            'โค้ด': ['code', 'esp32', 'arduino', 'gpio', 'เซนเซอร์', 'รีเลย์'],
+            'พิน': ['gpio', 'ขา', '14', '26', 'เซนเซอร์', 'รีเลย์'],
+            'ขา': ['gpio', 'พิน', 'pin']
+        };
+
+        const thaiWordSegmenter = (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function')
+            ? new Intl.Segmenter('th', { granularity: 'word' })
+            : null;
+
+        function segmentWords(text) {
+            const cleaned = String(text || '')
+                .toLowerCase()
+                .replace(/[`'"()\[\]{}<>!?.,;:/*+=_|~@#$%^&\\—–-]+/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+            if (!cleaned) return [];
+
+            const tokens = [];
+            if (thaiWordSegmenter) {
+                for (const seg of thaiWordSegmenter.segment(cleaned)) {
+                    if (!seg.isWordLike) continue;
+                    const w = seg.segment.trim();
+                    if (w && !/^\s+$/.test(w)) tokens.push(w);
+                }
+            } else {
+                for (const w of cleaned.split(/\s+/)) {
+                    if (w) tokens.push(w);
+                }
+            }
+            const techMatches = String(text || '').toLowerCase().match(/[a-z0-9]+(?:-[a-z0-9]+)+|[a-z]{2,}\d+(?:[.-]\w+)*|\d+[a-z]+/g) || [];
+            for (const tm of techMatches) {
+                if (!tokens.includes(tm)) tokens.push(tm);
+            }
+            return tokens;
+        }
+
+        function tokenizeQueryAndDoc(text, includeBigrams = false) {
+            const raw = segmentWords(text);
+            const filtered = raw.filter(t => {
+                if (THAI_STOPWORDS.has(t)) return false;
+                if (t.length === 1 && !/\d/.test(t)) return false;
+                return true;
+            });
+            if (!includeBigrams || filtered.length < 2) return filtered;
+            const out = [...filtered];
+            for (let i = 0; i < filtered.length - 1; i++) {
+                out.push(filtered[i] + '_' + filtered[i + 1]);
+            }
+            return out;
+        }
+
+        function splitIntoSentences(text) {
+            const normalized = String(text || '').replace(/\r\n/g, '\n').trim();
+            if (!normalized) return [];
+            const lineChunks = normalized.split(/\n+/).map(s => s.trim()).filter(Boolean);
+            const sentences = [];
+            for (const line of lineChunks) {
+                const sub = line
+                    .split(/(?<=[.!?])\s+|\s{2,}|(?<=\s)(?=\d+\.\s)|(?<=นะครับ|นะคะ|ครับ|ค่ะ)\s*/g)
+                    .map(s => s.trim())
+                    .filter(s => s.length >= 4);
+                for (const s of sub) {
+                    if (s.length > 260) {
+                        const parts = s.split(/\s+(?=โดยเฉพาะ|นอกจากนี้|โดยใช้|ทั้งนี้|สำหรับ|ประกอบด้วย|ซึ่งมี)/).map(p => p.trim()).filter(Boolean);
+                        sentences.push(...parts);
+                    } else {
+                        sentences.push(s);
+                    }
+                }
+            }
+            return sentences;
+        }
+
+        function parseUserDocumentToChunks(rawText) {
+            const trimmed = String(rawText || '').trim();
+            if (!trimmed) return [];
+
+            let normalized = trimmed;
+            if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+                try {
+                    const obj = JSON.parse(trimmed);
+                    const lines = [];
+                    const walk = (val, prefix = '') => {
+                        if (val === null || val === undefined) return;
+                        if (typeof val !== 'object') {
+                            lines.push(`${prefix}: ${val}`);
+                            return;
+                        }
+                        if (Array.isArray(val)) {
+                            val.forEach((v, i) => walk(v, `${prefix}[${i + 1}]`));
+                        } else {
+                            for (const [k, v] of Object.entries(val)) {
+                                walk(v, prefix ? `${prefix} > ${k}` : k);
+                            }
+                        }
+                    };
+                    walk(obj, '');
+                    if (lines.length > 0) normalized = lines.join('\n');
+                } catch (_) {
+                    // Treat as plain text if invalid JSON
+                }
+            }
+
+            const paragraphs = normalized.split(/\n{2,}/).map(p => p.trim()).filter(Boolean);
+            const chunks = [];
+            let chunkCounter = 1;
+
+            for (const para of paragraphs) {
+                if (para.length <= 420) {
+                    chunks.push({
+                        id: `user_doc_${chunkCounter}`,
+                        title: `เอกสารที่ผู้ใช้วาง/อัปโหลด (ส่วนที่ ${chunkCounter})`,
+                        href: '',
+                        linkText: '',
+                        category: 'user_doc',
+                        sourceType: 'user_doc',
+                        priority: 2.35,
+                        text: para
+                    });
+                    chunkCounter++;
+                } else {
+                    const sents = splitIntoSentences(para);
+                    let buffer = [];
+                    let len = 0;
+                    for (let i = 0; i < sents.length; i++) {
+                        buffer.push(sents[i]);
+                        len += sents[i].length;
+                        if (len >= 340 || i === sents.length - 1) {
+                            chunks.push({
+                                id: `user_doc_${chunkCounter}`,
+                                title: `เอกสารที่ผู้ใช้วาง/อัปโหลด (ส่วนที่ ${chunkCounter})`,
+                                href: '',
+                                linkText: '',
+                                category: 'user_doc',
+                                sourceType: 'user_doc',
+                                priority: 2.35,
+                                text: buffer.join(' ')
+                            });
+                            chunkCounter++;
+                            buffer = sents[i] ? [sents[i]] : [];
+                            len = sents[i] ? sents[i].length : 0;
+                        }
+                    }
+                }
+            }
+            return chunks;
+        }
+
+        // ==================== KNOWLEDGE INDEXER & LIVE PAGE READER ====================
+        let liveCrawledChunks = [];
+        let knowledgeChunks = [];
+        let docFreqMap = new Map();
+        let avgDocLen = 30;
+        let chatHistory = [];
+        let lastActiveTopic = null;
+        let lastSpokenPlainText = "สวัสดีครับ ผมคือ Feel AI Assistant ที่พร้อมอ่านเอกสารและข้อมูลเว็บไซต์ทั้งหมดเพื่อตอบคำถามให้ตรงประเด็นที่สุดครับ";
+
+        function rebuildKnowledgeIndex() {
+            const useUserDoc = document.getElementById('scope-user-doc')?.checked ?? true;
+            const useSiteKb = document.getElementById('scope-site-kb')?.checked ?? true;
+            const userText = document.getElementById('ai-context-input')?.value || '';
+
+            const combined = [];
+            if (useUserDoc && userText.trim()) {
+                combined.push(...parseUserDocumentToChunks(userText));
+            }
+            if (useSiteKb) {
+                for (const item of BASE_PORTFOLIO_KB) {
+                    combined.push({ ...item, sourceType: 'kb', priority: 1.35 });
+                }
+                for (const lc of liveCrawledChunks) {
+                    combined.push({ ...lc, sourceType: 'live_page', priority: 1.0 });
+                }
+            }
+
+            docFreqMap = new Map();
+            let totalLen = 0;
+            knowledgeChunks = combined.map(chunk => {
+                const rawDocText = `${chunk.title} ${chunk.text}`;
+                const tokens = tokenizeQueryAndDoc(rawDocText, false);
+                const tf = new Map();
+                for (const t of tokens) {
+                    tf.set(t, (tf.get(t) || 0) + 1);
+                }
+                for (const uniqueTerm of tf.keys()) {
+                    docFreqMap.set(uniqueTerm, (docFreqMap.get(uniqueTerm) || 0) + 1);
+                }
+                totalLen += tokens.length;
+                return {
+                    ...chunk,
+                    lowerText: rawDocText.toLowerCase(),
+                    tokens,
+                    tf,
+                    len: tokens.length || 1
+                };
+            });
+
+            avgDocLen = knowledgeChunks.length ? (totalLen / knowledgeChunks.length) : 30;
+            updateContextStatusBadge();
+        }
+
+        function updateContextStatusBadge() {
+            const badge = document.getElementById('kb-status-badge');
+            if (!badge) return;
+            const userLen = (document.getElementById('ai-context-input')?.value || '').trim().length;
+            const liveCount = liveCrawledChunks.length;
+            if (userLen > 0) {
+                badge.textContent = `อ่านเอกสาร ${userLen.toLocaleString()} อักษร • รวม ${knowledgeChunks.length} ส่วน`;
+                badge.className = 'text-[11px] px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 font-bold';
+            } else {
+                badge.textContent = liveCount > 0
+                    ? `อ่านเว็บจริงแล้ว (${knowledgeChunks.length} ส่วน)`
+                    : `ดัชนีพร้อม (${knowledgeChunks.length} ส่วน)`;
+                badge.className = 'text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold';
+            }
+        }
+
+        function onUserContextChanged() {
+            rebuildKnowledgeIndex();
+        }
+
+        function handleContextFileUpload(event) {
+            const file = event.target?.files?.[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('รองรับไฟล์ข้อความขนาดไม่เกิน 2 MB เพื่อความรวดเร็วของเบราว์เซอร์ครับ');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = () => {
+                const input = document.getElementById('ai-context-input');
+                let content = String(reader.result || '');
+                if (file.name.toLowerCase().endsWith('.html')) {
+                    const doc = new DOMParser().parseFromString(content, 'text/html');
+                    content = (doc.body?.innerText || content).replace(/\n{3,}/g, '\n\n').trim();
+                }
+                input.value = content.slice(0, 60000);
+                document.getElementById('scope-user-doc').checked = true;
+                rebuildKnowledgeIndex();
+                showToast(`AI อ่านไฟล์ "${file.name}" (${input.value.length.toLocaleString()} ตัวอักษร) เรียบร้อย!`);
+            };
+            reader.readAsText(file, 'utf-8');
+            event.target.value = '';
+        }
+
+        function clearUserContext() {
+            const el = document.getElementById('ai-context-input');
+            if (el) el.value = '';
+            rebuildKnowledgeIndex();
+            showToast('ล้างข้อความเอกสารที่วางออกแล้ว');
+        }
+
+        function pullFromSummarizerToChat() {
+            const sumText = document.getElementById('summarize-input')?.value?.trim() || '';
+            if (!sumText) {
+                showToast('ในแท็บ "2. สรุปข้อมูล/บทความ" ยังไม่มีข้อความครับ');
+                return;
+            }
+            document.getElementById('ai-context-input').value = sumText;
+            document.getElementById('scope-user-doc').checked = true;
+            rebuildKnowledgeIndex();
+            showToast('ดึงบทความเข้าสู่บริบทการอ่านของ AI เรียบร้อย ถามต่อได้เลย!');
+        }
+
+        async function crawlSitePages(announce = false) {
+            const btn = document.getElementById('btn-crawl-site');
+            if (btn && announce) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังอ่าน...';
+            }
+            const pages = [
+                { file: 'index.html', label: 'หน้าหลัก Portfolio' },
+                { file: 'vault.html', label: 'ตู้เซฟ Feel SafeBox' },
+                { file: 'photo-studio.html', label: 'สตูดิโอลบพื้นหลัง' },
+                { file: 'cctv.html', label: 'ระบบกล้อง CCTV สด' },
+                { file: 'southern-food.html', label: 'สุ่มร้านอาหารเมืองคอน' },
+                { file: 'weather.html', label: 'เรดาร์สภาพอากาศ' },
+                { file: 'rubik.html', label: 'รูบิค 3x3 & สูตร CFOP' },
+                { file: 'wheel.html', label: 'วงล้อผลงาน 3D' }
+            ];
+
+            const newChunks = [];
+            let loadedPages = 0;
+
+            await Promise.all(pages.map(async (p) => {
+                try {
+                    const res = await fetch(p.file, { cache: 'no-cache' });
+                    if (!res.ok) return;
+                    const pageHtml = await res.text();
+                    const doc = new DOMParser().parseFromString(pageHtml, 'text/html');
+                    doc.querySelectorAll('script, style, nav, footer, header, noscript, svg, button, select, input, textarea, [aria-hidden="true"]').forEach(n => n.remove());
+                    const blocks = [...doc.querySelectorAll('section, article, main > div')];
+                    const seenTexts = new Set();
+                    let idx = 0;
+                    for (const blk of blocks) {
+                        const rawHeading = blk.querySelector('h1, h2, h3')?.innerText || p.label;
+                        const heading = rawHeading.replace(/กำลังเชื่อมต่อ\.\.\./g, '').replace(/\s+/g, ' ').trim() || p.label;
+                        const text = (blk.innerText || blk.textContent || '')
+                            .replace(/กำลังเชื่อมต่อ\.\.\./g, '')
+                            .replace(/\s+/g, ' ')
+                            .trim();
+                        if (text.length < 40 || text.length > 1400 || seenTexts.has(text)) continue;
+                        seenTexts.add(text);
+                        idx++;
+                        newChunks.push({
+                            id: `live_${p.file}_${idx}`,
+                            title: `${p.label}: ${heading.slice(0, 70)}`,
+                            href: p.file,
+                            linkText: `เปิด ${p.label}`,
+                            category: 'live_page',
+                            text: text.slice(0, 800)
+                        });
+                        if (idx >= 5) break;
+                    }
+                    loadedPages++;
+                } catch (_) {
+                    // Ignore silently offline; BASE_PORTFOLIO_KB covers everything
+                }
+            }));
+
+            if (newChunks.length > 0) {
+                liveCrawledChunks = newChunks;
+                rebuildKnowledgeIndex();
+            }
+            if (btn && announce) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-globe"></i> อ่านหน้าเว็บจริง';
+                showToast(loadedPages > 0
+                    ? `อ่านเนื้อหาจริงจาก ${loadedPages} หน้าเว็บสำเร็จ (${knowledgeChunks.length} ส่วนข้อมูล)!`
+                    : 'กำลังใช้ฐานความรู้ความแม่นยำสูงในตัว (รันผ่าน http://localhost เพื่ออ่านไฟล์หน้าอื่นอัตโนมัติ)');
+            }
+        }
+
+        // ==================== INTENT ANALYZER, BM25 RETRIEVAL & GROUNDED SYNTHESIS ====================
+        function analyzeQuestionIntent(query) {
+            const qLower = query.toLowerCase().trim();
+            if (/^(สวัสดี|หวัดดี|ดีครับ|ดีค่ะ|hello|hi|hey)[\s!?.ครับค่ะ]*$/i.test(qLower)) {
+                return { type: 'greeting' };
+            }
+            const mathCandidate = qLower.replace(/^(คิดเลข|คำนวณ|เท่ากับ|หาค่า)\s*/, '').replace(/[?=\s]+$/g, '');
+            if (/^[\d\s+\-*/().%]+$/.test(mathCandidate) && /[+\-*/%]/.test(mathCandidate) && /\d/.test(mathCandidate)) {
+                return { type: 'math', expr: mathCandidate };
+            }
+            if (/(สรุปเอกสารที่วาง|สรุปข้อความที่วาง|สรุปบทความนี้|เอกสารนี้เกี่ยวกับอะไร|บทความนี้ว่าไง)/.test(qLower)) {
+                return { type: 'summarize_doc' };
+            }
+
+            const isFollowUp =
+                /^(แล้ว|ต่อ|อธิบายเพิ่ม|ขอละเอียด|ละเอียดกว่านี้|ขอลิงก์|ขอโค้ด|อีกหน่อย|สรุปสั้น|ทำไมล่ะ|กี่อัน|ชื่ออะไรบ้าง)/.test(qLower)
+                || (qLower.length <= 16 && /(เพิ่ม|ต่อ|ละเอียด|โค้ด|ลิงก์|อีก|ยังไง)/.test(qLower));
+
+            let tag = 'general';
+            if (/(เกิดวัน|วันเกิด|พ\.ศ\.|เมื่อไหร่|ปีไหน|วันไหน)/.test(qLower)) tag = 'when';
+            else if (/(กี่ร้าน|กี่จอ|กี่จุด|กี่ระบบ|กี่หลัก|กี่นาที|กี่สูตร|กี่รายการ|กี่|จำนวน)/.test(qLower)) tag = 'count';
+            else if (/(ติดต่อ|อีเมล|email|line|ไลน์|เบอร์)/.test(qLower)) tag = 'contact';
+            else if (/(โค้ด|code|arduino|esp32|gpio|ขา|พิน)/.test(qLower)) tag = 'code';
+            else if (/(ใคร|ชื่ออะไร|ชื่อเล่น|นามสกุล|เรียนที่ไหน|ศึกษา)/.test(qLower)) tag = 'who';
+            else if (/(แชร์ยังไง|ทำยังไง|ขั้นตอน|วิธี|ทำงานยังไง|ใช้ยังไง|แก้ยังไง)/.test(qLower)) tag = 'how';
+            else if (/(มีอะไรบ้าง|เว็บแอป|แนะนำร้าน|รายชื่อ|ลิสต์|ยกตัวอย่าง)/.test(qLower)) tag = 'list';
+
+            return { type: 'qa', tag, isFollowUp };
+        }
+
+        function safeEvaluateMath(expr) {
+            const tokens = expr.match(/\d+(?:\.\d+)?|[+\-*/()%]/g);
+            if (!tokens) return null;
+            let pos = 0;
+            const peek = () => tokens[pos];
+            const consume = () => tokens[pos++];
+
+            function parseExpr() {
+                let left = parseTerm();
+                while (peek() === '+' || peek() === '-') {
+                    const op = consume();
+                    const right = parseTerm();
+                    left = op === '+' ? left + right : left - right;
+                }
+                return left;
+            }
+            function parseTerm() {
+                let left = parseFactor();
+                while (peek() === '*' || peek() === '/' || peek() === '%') {
+                    const op = consume();
+                    const right = parseFactor();
+                    if (op === '*') left *= right;
+                    else if (op === '/') { if (right === 0) throw new Error('หารด้วยศูนย์ไม่ได้'); left /= right; }
+                    else left %= right;
+                }
+                return left;
+            }
+            function parseFactor() {
+                if (peek() === '+') { consume(); return parseFactor(); }
+                if (peek() === '-') { consume(); return -parseFactor(); }
+                if (peek() === '(') {
+                    consume();
+                    const val = parseExpr();
+                    if (consume() !== ')') throw new Error('วงเล็บไม่ครบ');
+                    return val;
+                }
+                const tok = consume();
+                if (!tok || !/^\d/.test(tok)) throw new Error('นิพจน์ไม่ถูกต้อง');
+                return Number(tok);
+            }
+            const res = parseExpr();
+            if (pos !== tokens.length || !Number.isFinite(res)) return null;
+            return Number(res.toFixed(6));
+        }
+
+        function retrieveRelevantChunks(query, intent) {
+            let effectiveQuery = query;
+            if (intent.isFollowUp && lastActiveTopic) {
+                effectiveQuery = `${lastActiveTopic} ${query}`;
+            }
+
+            const baseTokens = tokenizeQueryAndDoc(effectiveQuery, false);
+            if (baseTokens.length === 0) return { hits: [], baseTokens, specificQueryTokens: [], unmatchedSpecific: [] };
+
+            const rawSpecific = [...new Set(tokenizeQueryAndDoc(query, false))];
+            const coreQueryTokens = rawSpecific.filter(t => !SOFT_MODIFIERS.has(t));
+            const specificQueryTokens = coreQueryTokens.length > 0 ? coreQueryTokens : rawSpecific;
+
+            const expandedTerms = new Map();
+            for (const tok of baseTokens) {
+                expandedTerms.set(tok, 1.0);
+                const syns = SYNONYM_MAP[tok];
+                if (syns) {
+                    for (const s of syns) {
+                        if (!expandedTerms.has(s)) expandedTerms.set(s, 0.55);
+                    }
+                }
+            }
+
+            const N = Math.max(knowledgeChunks.length, 1);
+            const k1 = 1.4;
+            const b = 0.65;
+            const queryLower = query.toLowerCase();
+
+            const scored = knowledgeChunks.map(chunk => {
+                let bm25 = 0;
+                let directTokenHits = 0;
+                let totalHitWeight = 0;
+
+                for (const [term, weight] of expandedTerms.entries()) {
+                    const tfVal = chunk.tf.get(term) || 0;
+                    const substringBoost = tfVal === 0 && term.length >= 2 && chunk.lowerText.includes(term) ? 1 : 0;
+                    const freq = tfVal || substringBoost;
+                    if (freq > 0) {
+                        const df = docFreqMap.get(term) || 1;
+                        const idf = Math.log(1 + (N - df + 0.5) / (df + 0.5));
+                        const denom = freq + k1 * (1 - b + b * (chunk.len / avgDocLen));
+                        const termScore = idf * ((freq * (k1 + 1)) / denom) * weight;
+                        bm25 += termScore;
+                        if (weight >= 0.99) directTokenHits++;
+                        totalHitWeight += weight;
+                    }
+                }
+
+                let phraseBonus = 0;
+                for (let i = 0; i < baseTokens.length - 1; i++) {
+                    const pair = `${baseTokens[i]}${baseTokens[i + 1]}`;
+                    const spacedPair = `${baseTokens[i]} ${baseTokens[i + 1]}`;
+                    if (chunk.lowerText.includes(spacedPair) || chunk.lowerText.includes(pair)) {
+                        phraseBonus += 1.6;
+                    }
+                }
+                if (queryLower.length >= 4 && chunk.lowerText.includes(queryLower)) {
+                    phraseBonus += 2.5;
+                }
+                if (intent.tag === 'code' && chunk.code) {
+                    phraseBonus += 1.2;
+                }
+
+                const coverage = directTokenHits / Math.max(specificQueryTokens.length, 1);
+                const finalScore = (bm25 + phraseBonus) * (chunk.priority || 1.0) * (0.45 + 0.55 * coverage);
+
+                return {
+                    chunk,
+                    score: finalScore,
+                    bm25,
+                    directTokenHits,
+                    coverage,
+                    totalHitWeight
+                };
+            }).filter(r => r.score > 0.35 && (r.directTokenHits >= 1 || r.totalHitWeight >= 1.1));
+
+            scored.sort((a, bScore) => bScore.score - a.score);
+
+            const uniqueHits = [];
+            const seenSig = new Set();
+            for (const h of scored) {
+                const sig = h.chunk.text.slice(0, 65);
+                if (!seenSig.has(sig)) {
+                    seenSig.add(sig);
+                    uniqueHits.push(h);
+                }
+            }
+
+            const topTextCombined = uniqueHits.slice(0, 3).map(h => h.chunk.lowerText).join(' ');
+            const unmatchedSpecific = specificQueryTokens.filter(t => {
+                if (topTextCombined.includes(t)) return false;
+                const syns = SYNONYM_MAP[t] || [];
+                return !syns.some(s => topTextCombined.includes(s));
+            });
+
+            return { hits: uniqueHits, baseTokens, specificQueryTokens, unmatchedSpecific };
+        }
+
+        function extractFocusedSentences(topChunk, queryTokens, intentTag) {
+            const sents = splitIntoSentences(topChunk.text);
+            if (sents.length <= 1) return sents;
+
+            const scoredSents = sents.map((sent, idx) => {
+                const lower = sent.toLowerCase();
+                let s = 0;
+                for (const qt of queryTokens) {
+                    if (lower.includes(qt)) s += 2.5;
+                    const syns = SYNONYM_MAP[qt] || [];
+                    for (const sy of syns) {
+                        if (lower.includes(sy)) s += 1.0;
+                    }
+                }
+                if (intentTag === 'when' && /(เกิด|วัน|ธันวาคม|พ\.ศ\.|2550|2567|\d{4}|นาที|วินาที)/.test(lower)) s += 2.5;
+                if (intentTag === 'count' && /\d+/.test(lower)) s += 2.5;
+                if (intentTag === 'contact' && /(@|line|cdqbk|อีเมล)/.test(lower)) s += 2.5;
+                if (intentTag === 'code' && /(gpio|pin|ขา|relay|sensor|14|26|esp32|code)/i.test(lower)) s += 2.5;
+                if (idx === 0) s += 0.4;
+                return { sent, idx, score: s };
+            });
+
+            scoredSents.sort((a, b) => b.score - a.score);
+            const picked = scoredSents.slice(0, 3).filter(x => x.score > 0);
+            if (picked.length === 0) return sents.slice(0, 2);
+            picked.sort((a, b) => a.idx - b.idx);
+            return picked.map(p => p.sent);
+        }
+
+        function highlightMatchedTerms(escapedHtml, tokens) {
+            let result = escapedHtml;
+            const ordered = [...new Set(tokens)].filter(t => t.length >= 2).sort((a, b) => b.length - a.length).slice(0, 6);
+            for (const tok of ordered) {
+                const safeRe = tok.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                try {
+                    result = result.replace(new RegExp(`(${safeRe})`, 'gi'), '<mark class="px-0.5 rounded bg-amber-200/80 dark:bg-amber-700/60 text-inherit font-semibold">$1</mark>');
+                } catch (_) {
+                    // Ignore regex failure silently
+                }
+            }
+            return result;
+        }
+
+        function answerWithLocalGroundedAI(query) {
+            if (knowledgeChunks.length === 0) rebuildKnowledgeIndex();
+            const intent = analyzeQuestionIntent(query);
+
+            if (intent.type === 'greeting') {
+                const msg = "สวัสดีครับ! ผมคือ Feel AI Assistant รุ่นอ่านบริบทจริง คุณสามารถถามเจาะจงเกี่ยวกับข้อมูลบนเว็บไซต์ หรือวางเอกสาร/ไฟล์ในช่องด้านซ้ายแล้วถามคำถามจากเอกสารนั้นได้เลยครับ";
+                return {
+                    html: `<div class="space-y-2">
+                        <p class="font-heading font-bold text-indigo-700 dark:text-indigo-300">👋 สวัสดีครับ! ผมพร้อมช่วยอ่านและตอบให้ตรงประเด็นที่สุดครับ</p>
+                        <p>คุณสามารถถามคำถามเจาะจงได้เลย หรือลองวางข้อความ/บทความลงในช่อง <strong>"บริบท &amp; เอกสารให้ AI อ่าน"</strong> ด้านซ้ายแล้วถามเกี่ยวกับข้อมูลนั้นโดยตรงก็ได้ครับ</p>
+                    </div>`,
+                    plain: msg,
+                    topic: null
+                };
+            }
+
+            if (intent.type === 'math') {
+                try {
+                    const ans = safeEvaluateMath(intent.expr);
+                    if (ans !== null) {
+                        return {
+                            html: `<div class="space-y-1.5">
+                                <div class="text-xs font-bold text-emerald-700 dark:text-emerald-300"><i class="fa-solid fa-calculator mr-1"></i> ผลการคำนวณโดยตรง</div>
+                                <div class="p-3 rounded-xl bg-slate-100 dark:bg-zinc-800 font-mono text-sm">
+                                    <code>${escapeHtml(intent.expr)}</code> = <strong class="text-indigo-600 dark:text-indigo-400 text-base">${ans}</strong>
+                                </div>
+                            </div>`,
+                            plain: `ผลลัพธ์ของ ${intent.expr} เท่ากับ ${ans}`,
+                            topic: null
+                        };
+                    }
+                } catch (err) {
+                    return {
+                        html: `<p class="text-rose-600 font-medium">⚠️ ไม่สามารถคำนวณนิพจน์นี้ได้: ${escapeHtml(err.message)}</p>`,
+                        plain: `ไม่สามารถคำนวณได้: ${err.message}`,
+                        topic: null
+                    };
+                }
+            }
+
+            if (intent.type === 'summarize_doc') {
+                const docText = document.getElementById('ai-context-input')?.value?.trim() || '';
+                if (!docText) {
+                    const msg = "ยังไม่มีข้อความหรือเอกสารในช่อง บริบทให้ AI อ่าน ทางด้านซ้ายครับ กรุณาวางบทความหรืออัปโหลดไฟล์ก่อนเพื่อให้ผมอ่านและสรุปให้ตรงตามเนื้อหาจริง";
+                    return {
+                        html: `<div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs sm:text-sm space-y-1.5">
+                            <div class="font-bold text-amber-800 dark:text-amber-300"><i class="fa-solid fa-circle-info mr-1"></i> ยังไม่มีเอกสารให้ AI อ่าน</div>
+                            <p>กรุณาวางข้อความหรืออัปโหลดไฟล์ลงในกล่อง <strong>"บริบท &amp; เอกสารให้ AI อ่าน"</strong> ทางด้านซ้ายก่อน แล้วสั่งให้ผมสรุปหรือตอบคำถามได้เลยครับ</p>
+                        </div>`,
+                        plain: msg,
+                        topic: null
+                    };
+                }
+                const tr = extractTextRankSummary(docText, 4);
+                const kwHtml = tr.keywords.map(k => `<span class="px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold">#${escapeHtml(k)}</span>`).join(' ');
+                return {
+                    html: `<div class="space-y-2.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="font-heading font-bold text-indigo-700 dark:text-indigo-300">📖 สรุปใจความสำคัญจากเอกสารที่อ่าน (TextRank)</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold">ลดขนาด ${tr.reductionPct}%</span>
+                        </div>
+                        <ul class="list-disc pl-5 space-y-1">
+                            ${tr.sentences.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+                        </ul>
+                        ${kwHtml ? `<div class="flex flex-wrap gap-1 pt-1"><span class="text-[11px] text-slate-500 mr-1">คำสำคัญ:</span>${kwHtml}</div>` : ''}
+                    </div>`,
+                    plain: tr.sentences.join(' '),
+                    topic: tr.keywords.slice(0, 4).join(' ')
+                };
+            }
+
+            const { hits, baseTokens, specificQueryTokens, unmatchedSpecific } = retrieveRelevantChunks(query, intent);
+
+            // Strict Anti-Hallucination Gate: refuse honestly when confidence is too low or key subjects are missing
+            const topHit = hits[0];
+            const missingAllSpecific = specificQueryTokens.length > 0 && unmatchedSpecific.length === specificQueryTokens.length;
+            const englishOrNumericTokens = specificQueryTokens.filter(t => /^[a-z0-9-]{2,}$/.test(t) && !/^\d+$/.test(t));
+            const criticalMissing = englishOrNumericTokens.length > 0
+                && englishOrNumericTokens.some(et => unmatchedSpecific.includes(et))
+                && (!topHit || topHit.coverage < 0.75);
+            const lowCoveragePartial = !intent.isFollowUp
+                && specificQueryTokens.length >= 2
+                && topHit
+                && topHit.coverage < 0.5;
+
+            if (!topHit || topHit.score < 1.25 || missingAllSpecific || criticalMissing || lowCoveragePartial) {
+                const missingList = unmatchedSpecific.slice(0, 5).map(w => `<code>${escapeHtml(w)}</code>`).join(', ');
+                const msg = `ขออภัยครับ ผมยังไม่พบข้อมูลที่ตรงประเด็นสำหรับ "${query}" ในเอกสารหรือข้อมูลเว็บไซต์ที่อ่านอยู่ตอนนี้ จึงขอไม่เดาคำตอบครับ คุณสามารถวางเอกสารอ้างอิงลงในช่องด้านซ้าย หรือเชื่อมต่อ Gemini API Key เพื่อค้นหาความรู้ทั่วไปเพิ่มเติมได้เลย`;
+                return {
+                    html: `<div class="space-y-2.5">
+                        <div class="p-3.5 rounded-xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-300/80 dark:border-amber-800 space-y-1.5">
+                            <div class="font-heading font-bold text-amber-800 dark:text-amber-300 text-xs sm:text-sm flex items-center gap-1.5">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <span>ไม่พบข้อมูลที่ตรงประเด็น — ระบบปฏิเสธการเดาสุ่มคำตอบ</span>
+                            </div>
+                            <p class="text-xs leading-relaxed text-amber-900/90 dark:text-amber-100/90">
+                                ผมค้นหาคำถาม <strong>"${escapeHtml(query)}"</strong> ในข้อมูลที่โหลดอ่านอยู่ทั้งหมด (${knowledgeChunks.length} ส่วน) แล้ว แต่ไม่พบหลักฐานหรือข้อความที่กล่าวถึง${missingList ? `คำสำคัญ ${missingList}` : 'เรื่องนี้โดยตรง'} จึงขอตอบตามจริงว่ายังไม่มีข้อมูลครับ
+                            </p>
+                        </div>
+                        <div class="text-xs text-google-text-muted dark:text-google-dark-text-muted space-y-1">
+                            <div><strong>วิธีทำให้ผมตอบเรื่องนี้ได้ทันที:</strong></div>
+                            <ul class="list-disc pl-5 space-y-0.5">
+                                <li>วางบทความหรือข้อมูลเรื่องนี้ลงในกล่อง <strong>"บริบท &amp; เอกสารให้ AI อ่าน"</strong> ด้านซ้ายแล้วถามใหม่อีกครั้ง</li>
+                                <li>หรือกดปุ่ม <strong>"เชื่อม Gemini API"</strong> ด้านบนเพื่อใช้งาน AI ความรู้รอบโลก (LLM เต็มรูปแบบ)</li>
+                            </ul>
+                        </div>
+                    </div>`,
+                    plain: msg,
+                    topic: null
+                };
+            }
+
+            // Found high-confidence evidence! Synthesize focused response directly addressing the question.
+            const primaryChunk = topHit.chunk;
+            const queryTokensForHighlight = [...specificQueryTokens, ...(specificQueryTokens.flatMap(t => SYNONYM_MAP[t] || []))];
+            const focusedSents = extractFocusedSentences(primaryChunk, specificQueryTokens, intent.tag);
+            const isUserDoc = primaryChunk.sourceType === 'user_doc';
+
+            const directBulletsHtml = focusedSents.map(s => {
+                const escaped = escapeHtml(s);
+                return `<li>${highlightMatchedTerms(escaped, queryTokensForHighlight)}</li>`;
+            }).join('');
+
+            const relatedHits = hits.slice(1, 3).filter(h => h.score >= topHit.score * 0.45 && h.chunk.id !== primaryChunk.id);
+            const relatedHtml = relatedHits.length > 0 ? `
+                <div class="pt-2 border-t border-google-border/70 dark:border-google-dark-border/70 space-y-1.5">
+                    <div class="text-[11px] font-heading font-bold text-google-text-muted dark:text-google-dark-text-muted">ข้อมูลประกอบเพิ่มเติมที่พบตรงกัน:</div>
+                    ${relatedHits.map(rh => {
+                        const snippet = extractFocusedSentences(rh.chunk, specificQueryTokens, intent.tag).slice(0, 1)[0] || rh.chunk.text.slice(0, 180);
+                        return `<div class="p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border/70 text-xs">
+                            <div class="font-semibold text-indigo-700 dark:text-indigo-300 text-[11px] mb-0.5">${escapeHtml(rh.chunk.title)}</div>
+                            <div class="text-google-text-body dark:text-google-dark-text-body">${highlightMatchedTerms(escapeHtml(snippet), queryTokensForHighlight)}</div>
+                        </div>`;
+                    }).join('')}
+                </div>
+            ` : '';
+
+            const codeBlockHtml = (primaryChunk.code && (intent.tag === 'code' || /โค้ด|code|esp32|gpio|ขา/i.test(query)))
+                ? `<pre class="mt-2 p-3 rounded-xl bg-slate-900 text-emerald-300 font-mono text-xs overflow-x-auto leading-relaxed"><code>${escapeHtml(primaryChunk.code)}</code></pre>`
+                : '';
+
+            const substantiveUnmatched = unmatchedSpecific.filter(w => !SOFT_MODIFIERS.has(w));
+            const partialWarning = (substantiveUnmatched.length >= 2 && substantiveUnmatched.length < specificQueryTokens.length)
+                ? `<div class="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2.5 py-1.5 rounded-lg border border-amber-200 dark:border-amber-800">หมายเหตุ: ไม่พบคำว่า ${substantiveUnmatched.slice(0, 3).map(w => `<code>${escapeHtml(w)}</code>`).join(', ')} ในเอกสาร แต่พบข้อมูลที่เกี่ยวข้องใกล้เคียงที่สุดดังนี้ครับ</div>`
+                : '';
+
+            const sourceTag = isUserDoc
+                ? '<span class="px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold">📄 อ่านจากเอกสารที่คุณวาง</span>'
+                : `<span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">🌐 อ้างอิง: ${escapeHtml(primaryChunk.title)}</span>`;
+
+            const linkBtn = primaryChunk.href
+                ? `<a href="${sanitizeInternalUrl(primaryChunk.href)}" class="px-3 py-1 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition inline-flex items-center gap-1">${escapeHtml(primaryChunk.linkText || 'เปิดหน้าเว็บที่เกี่ยวข้อง')} →</a>`
+                : '';
+
+            const answerHtml = `
+                <div class="space-y-2.5">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="font-heading font-bold text-indigo-700 dark:text-indigo-300 text-xs sm:text-sm">📌 คำตอบตรงประเด็นจากข้อมูลที่อ่านพบ:</span>
+                        ${sourceTag}
+                    </div>
+                    ${partialWarning}
+                    <ul class="list-disc pl-5 space-y-1.5 text-google-text-body dark:text-google-dark-text-body">
+                        ${directBulletsHtml}
+                    </ul>
+                    ${codeBlockHtml}
+                    ${relatedHtml}
+                    ${linkBtn ? `<div class="pt-1 flex flex-wrap gap-2">${linkBtn}</div>` : ''}
+                </div>
+            `;
+
+            const plainSummary = focusedSents.join(' ');
+            const nextTopic = baseTokens.slice(0, 5).join(' ');
+            return { html: answerHtml, plain: plainSummary, topic: nextTopic };
+        }
+
+        // ==================== OPTIONAL GOOGLE GEMINI API INTEGRATION (BYOK) ====================
+        const STORAGE_GEMINI_KEY = 'feel_gemini_api_key';
+        const STORAGE_GEMINI_MODEL = 'feel_gemini_model';
+
+        function toggleGeminiSettings(forceState) {
+            const drawer = document.getElementById('gemini-settings-drawer');
+            if (!drawer) return;
+            const shouldOpen = typeof forceState === 'boolean' ? forceState : drawer.classList.contains('hidden');
+            drawer.classList.toggle('hidden', !shouldOpen);
+            if (shouldOpen) {
+                const key = localStorage.getItem(STORAGE_GEMINI_KEY) || '';
+                const model = localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.8-flash';
+                document.getElementById('gemini-api-key-input').value = key;
+                const sel = document.getElementById('gemini-model-select');
+                if ([...sel.options].some(o => o.value === model)) sel.value = model;
+            }
+        }
+
+        function updateEngineBadge() {
+            const badge = document.getElementById('ai-engine-badge');
+            if (!badge) return;
+            const key = (localStorage.getItem(STORAGE_GEMINI_KEY) || '').trim();
+            const model = localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.8-flash';
+            if (key) {
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping"></span> Gemini Live (${escapeHtml(model)})`;
+                badge.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-bold';
+            } else {
+                badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Grounded Reading AI (ออฟไลน์)';
+                badge.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold';
+            }
+        }
+
+        function saveGeminiConfig() {
+            const key = document.getElementById('gemini-api-key-input').value.trim();
+            const model = document.getElementById('gemini-model-select').value;
+            if (key) {
+                localStorage.setItem(STORAGE_GEMINI_KEY, key);
+                localStorage.setItem(STORAGE_GEMINI_MODEL, model);
+                showToast(`เชื่อมต่อ Gemini Model: ${model} เรียบร้อยแล้ว!`);
+            } else {
+                localStorage.removeItem(STORAGE_GEMINI_KEY);
+                showToast('ใช้โหมด Grounded Reading AI ในเครื่อง (ไม่ต้องใช้คีย์)');
+            }
+            updateEngineBadge();
+            toggleGeminiSettings(false);
+        }
+
+        function clearGeminiConfig() {
+            localStorage.removeItem(STORAGE_GEMINI_KEY);
+            document.getElementById('gemini-api-key-input').value = '';
+            updateEngineBadge();
+            showToast('ลบ Gemini API Key ออกจากเบราว์เซอร์แล้ว');
+        }
+
+        async function callGeminiGrounded(query) {
+            const apiKey = (localStorage.getItem(STORAGE_GEMINI_KEY) || '').trim();
+            const model = localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.8-flash';
+            const strictMode = document.getElementById('gemini-strict-grounding')?.checked ?? true;
+
+            const userDoc = (document.getElementById('ai-context-input')?.value || '').trim().slice(0, 18000);
+            const intent = analyzeQuestionIntent(query);
+            const { hits } = retrieveRelevantChunks(query, intent);
+            const contextPassages = hits.slice(0, 6).map((h, i) => `[แหล่งที่ ${i + 1}: ${h.chunk.title} (${h.chunk.href || 'เอกสารผู้ใช้'})]\n${h.chunk.code ? h.chunk.text + '\nCode:\n' + h.chunk.code : h.chunk.text}`).join('\n\n');
+
+            const systemPrompt = [
+                'คุณคือ "Feel AI Assistant" ผู้ช่วย AI ประจำเว็บไซต์แฟ้มสะสมผลงานของ นายภคพล สมัยแก้ว (ฟีล) วิทยาลัยอาชีวศึกษานครศรีธรรมราช',
+                'กฎการตอบสำคัญ:',
+                '1. อ่านคำถามของผู้ใช้อย่างละเอียดและตอบให้ตรงจุดที่สุด ไม่เยิ่นเย้อ และไม่ยกข้อความที่ไม่เกี่ยวข้องมาตอบมั่ว',
+                strictMode
+                    ? '2. Strict Grounding เปิดอยู่: หากคำถามเกี่ยวกับข้อมูลบนเว็บ เอกสารที่ผู้ใช้แนบ หรือข้อมูลเฉพาะตัว ให้ตอบโดยอ้างอิงจาก [เอกสารผู้ใช้] และ [ข้อมูลจากเว็บไซต์] ด้านล่างเท่านั้น หากไม่พบข้อมูลจริง ให้บอกตรงๆ ว่าไม่พบในเอกสาร/เว็บไซต์ อย่าแต่งเรื่องหรือเดาตัวเลขเอง'
+                    : '2. อ้างอิงข้อมูลจาก [เอกสารผู้ใช้] และ [ข้อมูลจากเว็บไซต์] เป็นหลัก แต่สามารถอธิบายเสริมด้วยความรู้ทั่วไปได้เมื่อจำเป็น พร้อมระบุแยกให้ชัดเจนระหว่างข้อมูลในเอกสารกับความรู้ทั่วไป',
+                '3. ตอบเป็นภาษาไทยที่สุภาพ อ่านง่าย ใช้หัวข้อหรือรายการเท่าที่จำเป็น และใส่ลิงก์รูปแบบ Markdown [ชื่อหน้า](file.html) เฉพาะหน้าที่มีจริงในเว็บไซต์ (index.html, wheel.html, southern-food.html, cctv.html, weather.html, rubik.html, ai-assistant.html, vault.html, photo-studio.html)',
+                userDoc ? `\n[เอกสารที่ผู้ใช้วางให้อ่านโดยตรง]:\n${userDoc}` : '',
+                contextPassages ? `\n[ข้อมูลที่ค้นพบจากเว็บไซต์และฐานความรู้]:\n${contextPassages}` : ''
+            ].filter(Boolean).join('\n');
+
+            const contents = chatHistory.slice(-8).map(turn => ({
+                role: turn.role === 'model' ? 'model' : 'user',
+                parts: [{ text: turn.text }]
+            }));
+            contents.push({ role: 'user', parts: [{ text: query }] });
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': apiKey
+                },
+                body: JSON.stringify({
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    contents,
+                    generationConfig: {
+                        temperature: strictMode ? 0.2 : 0.45,
+                        maxOutputTokens: 1600
+                    }
+                })
+            });
+
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                const msg = data?.error?.message || `HTTP ${response.status}`;
+                throw new Error(msg);
+            }
+
+            const replyText = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+            if (!replyText.trim()) {
+                throw new Error('Gemini ไม่ได้ส่งข้อความตอบกลับมา');
+            }
+            return { model, text: replyText };
+        }
 
         // ==================== MODE SWITCHER ====================
         function switchAiMode(mode) {
@@ -607,10 +1857,11 @@ void loop() {
             });
         }
 
-        // ==================== CHAT ENGINE ====================
-        function appendChatMessage(role, htmlContent) {
+        // ==================== CHAT UI & ORCHESTRATOR ====================
+        function appendChatMessage(role, htmlContent, elementId = '') {
             const container = document.getElementById('chat-messages');
             const wrapper = document.createElement('div');
+            if (elementId) wrapper.id = elementId;
             wrapper.className = `msg-bubble flex items-start gap-2.5 ${role === 'user' ? 'justify-end' : 'justify-start'}`;
 
             if (role === 'ai') {
@@ -632,23 +1883,26 @@ void loop() {
 
             container.appendChild(wrapper);
             container.scrollTop = container.scrollHeight;
+            return wrapper;
         }
 
         function clearChatHistory() {
+            chatHistory = [];
+            lastActiveTopic = null;
             const container = document.getElementById('chat-messages');
             container.innerHTML = '';
             appendChatMessage('ai', `
-                <div class="space-y-2">
+                <div class="space-y-2.5">
                     <div class="font-heading font-bold text-indigo-600 dark:text-indigo-400">
-                        👋 สวัสดีครับ! ผมคือผู้ช่วย AI ประจำเว็บไซต์ของ นายภคพล สมัยแก้ว (ฟีล)
+                        👋 สวัสดีครับ! ผมคือ Feel AI Assistant (Grounded Reading AI)
                     </div>
-                    <p>
-                        คุณสามารถกดปุ่ม <strong>"ถามด่วนในคลิกเดียว"</strong> ทางฝั่งซ้าย หรือพิมพ์ถามเรื่องที่สนใจได้เลยครับ เช่น:
+                    <p class="leading-relaxed">
+                        ผมออกแบบมาให้ <strong>อ่านข้อมูลจริงก่อนตอบเสมอ</strong> ทั้งจากหน้าเว็บไซต์นี้และจากเอกสาร/ข้อความที่คุณวางในช่อง <strong>"บริบท &amp; เอกสารให้ AI อ่าน"</strong> ทางด้านซ้าย — ถามเจาะจง ถามต่อเนื่อง หรือกดหัวข้อด่วนได้เลยครับ:
                     </p>
-                    <div class="flex flex-wrap gap-1.5 pt-1">
+                    <div class="flex flex-wrap gap-1.5 pt-0.5">
                         <button type="button" onclick="askPresetQuestion('summary_profile')" class="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-xs font-semibold hover:bg-indigo-100 cursor-pointer">🎓 สรุปประวัติภคพล</button>
-                        <button type="button" onclick="askPresetQuestion('projects_certs')" class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-xs font-semibold hover:bg-emerald-100 cursor-pointer">🏆 สรุปผลงาน & รางวัล</button>
-                        <button type="button" onclick="askPresetQuestion('food_recommend')" class="px-2.5 py-1 rounded-full bg-orange-50 dark:bg-orange-950/70 text-orange-700 dark:text-orange-300 text-xs font-semibold hover:bg-orange-100 cursor-pointer">🍛 แนะนำร้านอาหารนครฯ</button>
+                        <button type="button" onclick="askPresetQuestion('projects_certs')" class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-xs font-semibold hover:bg-emerald-100 cursor-pointer">🏆 ผลงาน &amp; เกียรติบัตร</button>
+                        <button type="button" onclick="askPresetQuestion('all_webapps')" class="px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 text-xs font-semibold hover:bg-purple-100 cursor-pointer">🧩 เว็บแอปทั้งหมด 8 ระบบ</button>
                     </div>
                 </div>
             `);
@@ -658,83 +1912,79 @@ void loop() {
             switchAiMode('chat');
             const item = AI_ANSWERS[key];
             if (!item) return;
-            appendChatMessage('user', item.q);
+            appendChatMessage('user', escapeHtml(item.q));
+            chatHistory.push({ role: 'user', text: item.q });
+            chatHistory.push({ role: 'model', text: item.plainText });
+            lastActiveTopic = (item.topicTokens || []).join(' ');
             lastSpokenPlainText = item.plainText;
             setTimeout(() => {
                 appendChatMessage('ai', item.a);
-            }, 180);
+            }, 140);
         }
 
-        function matchSmartAnswer(qText) {
-            const q = qText.toLowerCase().trim();
-
-            // If user pasted a long text (> 140 chars) or asked to summarize text
-            if (qText.length > 140 || q.includes('สรุปข้อความ') || q.includes('สรุปบทความ')) {
-                const bulletSummary = generateBulletSummary(qText);
-                return {
-                    html: `<strong>📝 สรุปใจความสำคัญจากข้อความของคุณ:</strong><div class="mt-2">${bulletSummary}</div>`,
-                    plain: "สรุปใจความสำคัญจากข้อความของคุณเรียบร้อยแล้วครับ"
-                };
-            }
-            if (q.includes('ประวัติ') || q.includes('ใคร') || q.includes('เกิด') || q.includes('เรียนที่ไหน') || q.includes('การศึกษา') || q.includes('ภคพล') || q.includes('ฟีล')) {
-                return { html: AI_ANSWERS.summary_profile.a, plain: AI_ANSWERS.summary_profile.plainText };
-            }
-            if (q.includes('ผลงาน') || q.includes('โครงงาน') || q.includes('ตู้กด') || q.includes('ผ้าอนามัย') || q.includes('เกียรติบัตร') || q.includes('รางวัล')) {
-                return { html: AI_ANSWERS.projects_certs.a, plain: AI_ANSWERS.projects_certs.plainText };
-            }
-            if (q.includes('ฝึกงาน') || q.includes('เชียร์') || q.includes('ทำงาน') || q.includes('ประสบการณ์')) {
-                return { html: AI_ANSWERS.internship_exp.a, plain: AI_ANSWERS.internship_exp.plainText };
-            }
-            if (q.includes('esp32') || q.includes('โค้ด') || q.includes('arduino') || q.includes('เซนเซอร์') || q.includes('iot') || q.includes('ไมโคร')) {
-                return { html: AI_ANSWERS.esp32_code.a, plain: AI_ANSWERS.esp32_code.plainText };
-            }
-            if (q.includes('กิน') || q.includes('อาหาร') || q.includes('ร้าน') || q.includes('หิว') || q.includes('ขนมจีน') || q.includes('แต่เตี้ยม') || q.includes('โรตี')) {
-                return { html: AI_ANSWERS.food_recommend.a, plain: AI_ANSWERS.food_recommend.plainText };
-            }
-            if (q.includes('รูบิค') || q.includes('rubik') || q.includes('cfop') || q.includes('สูตร')) {
-                return { html: AI_ANSWERS.rubik_tips.a, plain: AI_ANSWERS.rubik_tips.plainText };
-            }
-            if (q.includes('ติดต่อ') || q.includes('เบอร์') || q.includes('ไลน์') || q.includes('line') || q.includes('อีเมล') || q.includes('email')) {
-                return { html: AI_ANSWERS.contact_info.a, plain: AI_ANSWERS.contact_info.plainText };
-            }
-            if (q.includes('อากาศ') || q.includes('ฝน') || q.includes('พายุ') || q.includes('กล้อง') || q.includes('cctv') || q.includes('น้ำท่วม')) {
-                return {
-                    html: `<strong>🌧️ ระบบตรวจสอบสภาพอากาศและกล้องวงจรปิดเมืองนครศรีธรรมราช:</strong>
-<ul class="list-disc pl-5 mt-2 space-y-1">
-    <li>หากต้องการดูภาพสดสภาพถนนและระดับน้ำตามสี่แยก สามารถเปิด <a href="cctv.html" class="text-red-600 font-bold underline">ระบบกล้องวงจรปิด NST CCTV สด (ดูพร้อมกันสูงสุด 20 จอ)</a></li>
-    <li>หากต้องการดูกลุ่มเมฆฝนและพายุฟ้าคะนองภาคใต้ สามารถเปิด <a href="weather.html" class="text-sky-600 font-bold underline">เรดาร์สภาพอากาศสด Windy</a></li>
-</ul>`,
-                    plain: "สามารถตรวจสอบสภาพจราจรและระดับน้ำได้ที่หน้ากล้องวงจรปิดสด NST CCTV หรือดูกลุ่มเมฆฝนได้ที่หน้าเรดาร์สภาพอากาศสดครับ"
-                };
-            }
-
-            // Default helpful comprehensive answer
-            return {
-                html: `<strong>🤖 สรุปคำตอบสำหรับ "${qText.replace(/</g, '&lt;')}":</strong>
-<p class="mt-1.5">ในเว็บไซต์แฟ้มสะสมผลงานของ <strong>นายภคพล สมัยแก้ว (ฟีล)</strong> มีข้อมูลครบทั้ง 4 หมวดหลักที่เกี่ยวข้องกับคำถามของคุณครับ:</p>
-<ul class="list-disc pl-5 mt-2 space-y-1">
-    <li><strong>ประวัติ & การศึกษา:</strong> นักศึกษา ปวส.1 วิทยาลัยอาชีวศึกษานครศรีธรรมราช (ผ่านการฝึกงานที่ บจก. เชียร์ คอมมูนิเคชั่น)</li>
-    <li><strong>ผลงาน & เกียรติบัตร:</strong> โครงงานตู้กดผ้าอนามัยอัตโนมัติ และเกียรติบัตรทักษะวิทยาศาสตร์ระดับจังหวัด/ภาคใต้</li>
-    <li><strong>ทักษะเด่น:</strong> ระบบสมองกลฝังตัว ESP32, การประยุกต์ใช้ AI, การตัดต่อวิดีโอ และการแก้รูบิค 3x3</li>
-    <li><strong>เว็บแอปเสริม 6 ระบบ:</strong> วงล้อผลงาน 3D, สุ่มร้านอาหารนครฯ 48 ร้าน, กล้อง CCTV สด, เรดาร์อากาศ, จับเวลารูบิค 3x3 และผู้ช่วย AI</li>
-</ul>`,
-                plain: "ในเว็บไซต์ของนายภคพล สมัยแก้ว มีข้อมูลครบทั้งประวัติการศึกษา ปวส.1 โครงงานตู้กดผ้าอนามัยอัตโนมัติ เกียรติบัตรทักษะวิทยาศาสตร์ และเว็บแอปเสริมทั้ง 6 ระบบครับ"
-            };
-        }
-
-        function handleChatSubmit(e) {
+        async function handleChatSubmit(e) {
             e.preventDefault();
             const input = document.getElementById('chat-input');
+            const submitBtn = document.getElementById('chat-submit-btn');
             const text = input.value.trim();
             if (!text) return;
             input.value = '';
 
-            appendChatMessage('user', text.replace(/</g, '&lt;'));
-            const reply = matchSmartAnswer(text);
+            appendChatMessage('user', escapeHtml(text));
+
+            const hasGeminiKey = !!(localStorage.getItem(STORAGE_GEMINI_KEY) || '').trim();
+            if (hasGeminiKey) {
+                const loadingId = 'ai-loading-' + Date.now();
+                appendChatMessage('ai', '<div class="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-300"><i class="fa-solid fa-circle-notch fa-spin"></i> <span>Gemini กำลังอ่านบริบทและวิเคราะห์คำตอบ...</span></div>', loadingId);
+                if (submitBtn) submitBtn.disabled = true;
+                try {
+                    const gRes = await callGeminiGrounded(text);
+                    document.getElementById(loadingId)?.remove();
+                    const formattedHtml = `
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between gap-2 pb-1 border-b border-google-border/50 dark:border-google-dark-border/50">
+                                <span class="text-[11px] font-heading font-bold text-sky-600 dark:text-sky-400"><i class="fa-solid fa-sparkles mr-1"></i> ตอบโดย ${escapeHtml(gRes.model)}</span>
+                            </div>
+                            <div class="text-google-text-body dark:text-google-dark-text-body">${renderSafeMarkdown(gRes.text)}</div>
+                        </div>
+                    `;
+                    appendChatMessage('ai', formattedHtml);
+                    chatHistory.push({ role: 'user', text });
+                    chatHistory.push({ role: 'model', text: gRes.text });
+                    lastSpokenPlainText = gRes.text.replace(/[#*`]/g, '');
+                    lastActiveTopic = tokenizeQueryAndDoc(text, false).slice(0, 5).join(' ') || lastActiveTopic;
+                    return;
+                } catch (err) {
+                    document.getElementById(loadingId)?.remove();
+                    const localFallback = answerWithLocalGroundedAI(text);
+                    const noticeHtml = `
+                        <div class="space-y-2.5">
+                            <div class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-[11px] text-rose-700 dark:text-rose-300">
+                                <strong>⚠️ เชื่อมต่อ Gemini API ไม่สำเร็จ:</strong> ${escapeHtml(err.message)} — ระบบจึงใช้ AI อ่านบริบทในเครื่องตอบแทนให้ด้านล่างครับ
+                            </div>
+                            ${localFallback.html}
+                        </div>
+                    `;
+                    appendChatMessage('ai', noticeHtml);
+                    chatHistory.push({ role: 'user', text });
+                    chatHistory.push({ role: 'model', text: localFallback.plain });
+                    lastSpokenPlainText = localFallback.plain;
+                    if (localFallback.topic) lastActiveTopic = localFallback.topic;
+                    return;
+                } finally {
+                    if (submitBtn) submitBtn.disabled = false;
+                }
+            }
+
+            // Local Grounded Reading AI (zero API key required, fast & deterministic)
+            const reply = answerWithLocalGroundedAI(text);
+            chatHistory.push({ role: 'user', text });
+            chatHistory.push({ role: 'model', text: reply.plain });
+            if (reply.topic) lastActiveTopic = reply.topic;
             lastSpokenPlainText = reply.plain;
             setTimeout(() => {
                 appendChatMessage('ai', reply.html);
-            }, 200);
+            }, 140);
         }
 
         function speakLastAiReply() {
@@ -750,10 +2000,10 @@ void loop() {
             showToast('กำลังอ่านออกเสียงสรุปภาษาไทย...');
         }
 
-        // ==================== MODE 2: SUMMARIZER ENGINE ====================
+        // ==================== MODE 2: TEXTRANK EXTRACTIVE SUMMARIZER ENGINE ====================
         const SAMPLE_TEXTS = {
             bio: `กระผม นายภคพล สมัยแก้ว (ชื่อเล่น ฟีล) เกิดเมื่อวันที่ 10 ธันวาคม พ.ศ. 2550 ภูมิลำเนาจังหวัดนครศรีธรรมราช ปัจจุบันกำลังศึกษาอยู่ในระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) ณ วิทยาลัยอาชีวศึกษานครศรีธรรมราช มีความสนใจและลงมือพัฒนาโครงงานด้านไมโครคอนโทรลเลอร์ (ESP32 / ESP8266) ร่วมกับเซนเซอร์และระบบควบคุมอัตโนมัติ รวมถึงศึกษาการใช้เครื่องมือ AI สมัยใหม่มาช่วยในการเขียนโค้ด วิเคราะห์ข้อมูล และผลิตสื่อวิดีโอนำเสนอผลงาน นอกจากนี้ยังชื่นชอบการเล่นรูบิค 3x3 ซึ่งช่วยฝึกสมาธิและการคิดแก้ปัญหาอย่างเป็นลำดับขั้นตอน มีความมุ่งมั่น ตั้งใจเรียนรู้เทคโนโลยีใหม่ ๆ อยู่เสมอ มีวินัยและความรับผิดชอบในการทำงาน สามารถปรับตัวและทำงานร่วมกับผู้อื่นได้อย่างดี`,
-            vending: `โครงงานสิ่งประดิษฐ์ตู้กดผ้าอนามัยอัตโนมัติ พัฒนาขึ้นเพื่อแก้ไขปัญหาความฉุกเฉินและอำนวยความสะดวกให้แก่นักเรียนนักศึกษาในสถานศึกษา โดยประยุกต์ใช้บอร์ดไมโครคอนโทรลเลอร์ควบคุมการทำงานของเซนเซอร์ตรวจจับและกลไกมอเตอร์จ่ายสิ่งของอัตโนมัติ มีการออกแบบโครงสร้างตู้ให้แข็งแรง ใช้งานง่าย และปลอดภัย ช่วยลดภาระของเจ้าหน้าที่ห้องพยาบาลและส่งเสริมการนำความรู้ด้านอิเล็กทรอนิกส์และระบบสมองกลฝังตัวมาแก้ปัญหาจริงในชีวิตประจำวัน`,
+            vending: `โครงงานสิ่งประดิษฐ์ตู้กดผ้าอนามัยอัตโนมัติ พัฒนาขึ้นเพื่อแก้ไขปัญหาความฉุกเฉินและอำนวยความสะดวกให้แก่นักเรียนนักศึกษาในสถานศึกษา โดยประยุกต์ใช้บอร์ดไมโครคอนโทรลเลอร์ ESP32 ควบคุมการทำงานของเซนเซอร์ตรวจจับที่ขา GPIO 14 และกลไกมอเตอร์รีเลย์ที่ขา GPIO 26 เพื่อจ่ายสิ่งของอัตโนมัติ มีการออกแบบโครงสร้างตู้ให้แข็งแรง ใช้งานง่าย และปลอดภัย ช่วยลดภาระของเจ้าหน้าที่ห้องพยาบาลและส่งเสริมการนำความรู้ด้านอิเล็กทรอนิกส์และระบบสมองกลฝังตัวมาแก้ปัญหาจริงในชีวิตประจำวัน`,
             internship: `ประสบการณ์ฝึกงานวิชาชีพ ณ บริษัท เชียร์ คอมมูนิเคชั่น จำกัด ในปี พ.ศ. 2567 ได้รับมอบหมายให้ปฏิบัติงานร่วมกับทีมช่างเทคนิคในการดูแล ตรวจสอบ ติดตั้ง และบำรุงรักษาระบบสื่อสารโทรคมนาคมและอุปกรณ์โครงข่ายในพื้นที่จริง ทำให้ได้เรียนรู้ขั้นตอนการทำงานมาตรฐานทางเทคนิค การตรวจสอบสัญญาณ การแก้ไขปัญหาเฉพาะหน้าเมื่ออุปกรณ์ขัดข้อง ตลอดจนการมีวินัยและการทำงานร่วมกับทีมงานมืออาชีพ`
         };
 
@@ -762,18 +2012,71 @@ void loop() {
             runTextSummarizer();
         }
 
-        function generateBulletSummary(text) {
-            const rawSentences = text
-                .replace(/\n+/g, ' ')
-                .split(/(?:ครับ|ค่ะ|\.|•|โดย|รวมถึง|นอกจากนี้|ทำให้|เพื่อ)/)
-                .map(s => s.trim())
-                .filter(s => s.length >= 18);
-
-            const picked = rawSentences.slice(0, 5);
-            if (picked.length === 0) {
-                return `<p>${text}</p>`;
+        function extractTextRankSummary(text, maxSentences = 4) {
+            let rawSentences = splitIntoSentences(text).filter(s => s.length >= 12);
+            if (rawSentences.length <= 2) {
+                rawSentences = text
+                    .replace(/\r\n/g, '\n')
+                    .split(/(?<=[.!?])\s+|\n+|\s+(?=โดยประยุกต์|เพื่อ|มีการ|ช่วยลด|นอกจากนี้|ทำให้ตลอดจน|ตลอดจน|รวมถึง|และส่งเสริม)/)
+                    .map(s => s.trim())
+                    .filter(s => s.length >= 15);
             }
-            return `<ul class="list-disc pl-5 space-y-1.5">${picked.map(s => `<li>${s.replace(/</g, '&lt;')}</li>`).join('')}</ul>`;
+            if (rawSentences.length === 0) {
+                return { sentences: [text.trim()], keywords: [], reductionPct: 0 };
+            }
+
+            const docFreq = new Map();
+            const sentTokens = rawSentences.map(s => {
+                const toks = tokenizeQueryAndDoc(s, false);
+                for (const t of new Set(toks)) docFreq.set(t, (docFreq.get(t) || 0) + 1);
+                for (const t of toks) docFreq.set('__tf_' + t, (docFreq.get('__tf_' + t) || 0) + 1);
+                return toks;
+            });
+
+            const scores = rawSentences.map((sent, idx) => {
+                const toks = sentTokens[idx];
+                const uniqueToks = [...new Set(toks)];
+                let tfCentrality = 0;
+                for (const t of uniqueToks) {
+                    const globalCount = docFreq.get('__tf_' + t) || 1;
+                    tfCentrality += globalCount > 1 ? Math.log1p(globalCount) * 1.4 : 0.4;
+                }
+                const normCentrality = tfCentrality / Math.max(Math.sqrt(uniqueToks.length), 1);
+
+                let graphScore = 0;
+                const setA = new Set(uniqueToks);
+                for (let j = 0; j < rawSentences.length; j++) {
+                    if (j === idx || sentTokens[j].length === 0) continue;
+                    let overlap = 0;
+                    for (const t of new Set(sentTokens[j])) {
+                        if (setA.has(t)) overlap++;
+                    }
+                    if (overlap > 0) {
+                        graphScore += overlap / (Math.log(uniqueToks.length + 1) + Math.log(sentTokens[j].length + 1));
+                    }
+                }
+
+                const positionBonus = idx === 0 ? 1.5 : (idx === rawSentences.length - 1 ? 0.6 : 0);
+                const cueBonus = /(\d+|สรุป|สำคัญ|เป้าหมาย|พัฒนาเพื่อ|ได้รับ|ประยุกต์ใช้|ผลลัพธ์)/.test(sent) ? 0.9 : 0;
+
+                return { idx, sent, score: normCentrality + graphScore * 0.65 + positionBonus + cueBonus };
+            });
+
+            const k = Math.min(maxSentences, rawSentences.length >= 3 ? Math.max(2, Math.ceil(rawSentences.length * 0.6)) : rawSentences.length);
+            const top = [...scores].sort((a, b) => b.score - a.score).slice(0, k).sort((a, b) => a.idx - b.idx);
+            const summaryText = top.map(x => x.sent).join(' ');
+            const reductionPct = Math.max(0, Math.round((1 - summaryText.length / Math.max(text.length, 1)) * 100));
+
+            const kwEntries = [];
+            for (const [kKey, kVal] of docFreq.entries()) {
+                if (kKey.startsWith('__tf_') && !/^\d$/.test(kKey.slice(5))) {
+                    kwEntries.push([kKey.slice(5), kVal]);
+                }
+            }
+            kwEntries.sort((a, b) => b[1] - a[1]);
+            const keywords = kwEntries.slice(0, 6).map(x => x[0]);
+
+            return { sentences: top.map(x => x.sent), keywords, reductionPct };
         }
 
         function runTextSummarizer() {
@@ -787,40 +2090,57 @@ void loop() {
             }
 
             const charCount = input.length;
-            const bulletsHtml = generateBulletSummary(input);
+            const ranked = extractTextRankSummary(input, style === 'exec' ? 3 : 5);
+            const bulletsHtml = `<ul class="list-disc pl-5 space-y-1.5">${ranked.sentences.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>`;
+            const kwBadges = ranked.keywords.length
+                ? `<div class="flex flex-wrap items-center gap-1.5 pt-2"><span class="text-[11px] font-semibold text-google-text-muted">คำสำคัญเด่น (Keywords):</span>${ranked.keywords.map(k => `<span class="px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold">#${escapeHtml(k)}</span>`).join('')}</div>`
+                : '';
 
             if (style === 'bullets') {
                 out.innerHTML = `
-                    <div class="flex items-center justify-between text-xs text-indigo-600 dark:text-indigo-400 font-heading font-bold">
-                        <span>📌 สรุปประเด็นสำคัญแบบหัวข้อย่อย (อ่านเข้าใจทันที)</span>
-                        <span>ย่อจากข้อความ ${charCount} ตัวอักษร</span>
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-indigo-600 dark:text-indigo-400 font-heading font-bold">
+                        <span>📌 สรุปประเด็นสำคัญด้วย TextRank (คัดประโยคแกนกลางอัตโนมัติ)</span>
+                        <span>จาก ${charCount.toLocaleString()} อักษร (ย่อลง ${ranked.reductionPct}%)</span>
                     </div>
                     <div class="p-3.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text-body">
                         ${bulletsHtml}
                     </div>
+                    ${kwBadges}
                 `;
             } else if (style === 'exec') {
-                const shortPara = input.length > 180 ? input.slice(0, 180) + '...' : input;
+                const execLead = ranked.sentences.slice(0, 2).join(' ');
                 out.innerHTML = `
-                    <div class="text-xs text-emerald-600 dark:text-emerald-400 font-heading font-bold">
-                        🎯 บทสรุปผู้บริหาร (Executive Summary 1 ย่อหน้า)
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-heading font-bold">
+                        <span>🎯 บทสรุปผู้บริหาร (Executive Summary 1 ย่อหน้า)</span>
+                        <span>ย่อลง ${ranked.reductionPct}%</span>
                     </div>
-                    <p class="p-3.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text-body">
-                        <strong>ใจความหลัก:</strong> ${shortPara.replace(/</g, '&lt;')}
+                    <p class="p-3.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text-body leading-relaxed">
+                        <strong>ใจความหลัก:</strong> ${escapeHtml(execLead)}
                     </p>
-                    <div class="text-xs font-heading font-bold text-google-text-muted">ประเด็นย่อยที่สำคัญ:</div>
-                    ${bulletsHtml}
+                    <div class="text-xs font-heading font-bold text-google-text-muted">ประเด็นสำคัญที่คัดไว้:</div>
+                    <div class="p-3.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text-body">
+                        ${bulletsHtml}
+                    </div>
+                    ${kwBadges}
                 `;
             } else {
+                const pitchLead = ranked.sentences.slice(0, 3).join(' ');
                 out.innerHTML = `
                     <div class="text-xs text-amber-600 dark:text-amber-400 font-heading font-bold">
                         🎤 บทพูดสำหรับแนะนำตัว / นำเสนอหน้าชั้นเรียนและสัมภาษณ์งาน
                     </div>
                     <div class="p-4 rounded-xl bg-white dark:bg-google-dark-surface border border-amber-300/70 dark:border-amber-800 text-google-text dark:text-white leading-relaxed">
-                        "สวัสดีครับ จากข้อมูลข้างต้น สรุปสาระสำคัญได้ว่า: ${input.slice(0, 220).replace(/</g, '&lt;')}... ซึ่งสะท้อนถึงการลงมือปฏิบัติจริงและความมุ่งมั่นในการพัฒนาทักษะอย่างต่อเนื่องครับ ขอบคุณครับ"
+                        "สวัสดีครับ จากข้อมูลข้างต้น สามารถสรุปสาระสำคัญได้ว่า: ${escapeHtml(pitchLead)} ซึ่งสะท้อนถึงการลงมือปฏิบัติจริงและความมุ่งมั่นในการพัฒนาทักษะอย่างต่อเนื่องครับ ขอบคุณครับ"
                     </div>
+                    ${kwBadges}
                 `;
             }
+        }
+
+        function sendSummarizerToChatReader() {
+            pullFromSummarizerToChat();
+            switchAiMode('chat');
+            document.getElementById('chat-input')?.focus();
         }
 
         function copySummaryResult() {
@@ -837,7 +2157,7 @@ void loop() {
                 desc: "สรุปลำดับการตรวจชมผลงานและเอกสารสำคัญของ นายภคพล สมัยแก้ว ให้ครบถ้วนภายใน 2 นาที:",
                 items: [
                     { badge: "ลำดับที่ 1", name: "ตรวจดูโครงงานสิ่งประดิษฐ์ & เกียรติบัตร PDF 3 รายการ", detail: "ดูภาพถ่ายโครงงานตู้กดผ้าอนามัยอัตโนมัติ และเปิดดูไฟล์ PDF เกียรติบัตรรางวัลคนเก่ง & ทักษะวิทยาศาสตร์", href: "index.html#projects", btn: "เปิดส่วนผลงาน & เกียรติบัตร" },
-                    { badge: "ลำดับที่ 2", name: "ชมนิทรรศการหมุนชมผลงาน 3 มิติ พร้อมบทความสรุป", detail: "อ่านบทความสรุปที่มา วัตถุประสงค์ และสิ่งที่ได้รับจากผลงานทั้ง 6 ชิ้นในหน้าเดียว", href: "wheel.html", btn: "เปิดวงล้อผลงาน 3D" },
+                    { badge: "ลำดับที่ 2", name: "ชมนิทรรศการหมุนชมผลงาน 3 มิติ พร้อมบทความสรุป", detail: "อ่านบทความสรุปที่มา วัตถุประสงค์ และสิ่งที่ได้รับจากผลงานในหน้าเดียว", href: "wheel.html", btn: "เปิดวงล้อผลงาน 3D" },
                     { badge: "ลำดับที่ 3", name: "ประวัติการศึกษา ปวส.1 & ประสบการณ์ฝึกงาน", detail: "ข้อมูลการศึกษา ณ วิทยาลัยอาชีวศึกษานครศรีธรรมราช และการฝึกงาน บจก. เชียร์ คอมมูนิเคชั่น", href: "index.html#about", btn: "อ่านประวัติ & การศึกษา" }
                 ]
             },
@@ -846,7 +2166,7 @@ void loop() {
                 desc: "จุดเด่นด้านทักษะปฏิบัติงานจริง (Hands-on Technical Skills) ของ นายภคพล สมัยแก้ว:",
                 items: [
                     { badge: "ทักษะที่ 1", name: "ประสบการณ์ปฏิบัติงานภาคสนาม (บจก. เชียร์ คอมมูนิเคชั่น)", detail: "ผ่านการฝึกปฏิบัติงานดูแล ตรวจสอบ และบำรุงรักษาระบบสื่อสารโทรคมนาคมและอุปกรณ์เครือข่ายร่วมกับทีมช่างเทคนิค", href: "index.html#about", btn: "ดูประวัติการฝึกงาน" },
-                    { badge: "ทักษะที่ 2", name: "ไมโครคอนโทรลเลอร์ ESP32, การใช้ AI และสื่อวิดีโอ", detail: "สามารถเชื่อมต่อวงจรเซนเซอร์ ประยุกต์ใช้ AI ช่วยทำงาน และตัดต่อวิดีโอสรุปงานได้อย่างคล่องแคล่ว", href: "index.html#skills", btn: "ดูทักษะทั้ง 4 ด้าน" },
+                    { badge: "ทักษะที่ 2", name: "ไมโครคอนโทรลเลอร์ ESP32, การใช้ AI และสื่อดิจิทัล", detail: "พัฒนาโครงงาน IoT ประยุกต์ใช้ AI ตู้เซฟฝากไฟล์ PIN 6 หลัก (vault.html) และสตูดิโอลบพื้นหลัง (photo-studio.html)", href: "index.html#skills", btn: "ดูทักษะและเว็บแอป" },
                     { badge: "ติดต่อด่วน", name: "ช่องทางติดต่อประสานงานโดยตรง", detail: "อีเมล feel0627546143@gmail.com หรือเพิ่มเพื่อนทาง LINE ID: CdqbkYbcUv", href: "index.html#contact", btn: "เปิดช่องทางติดต่อ" }
                 ]
             },
@@ -855,8 +2175,8 @@ void loop() {
                 desc: "รวมเว็บแอป Interactive ในโปรเจกต์ที่พัฒนาขึ้นเพื่อฝึกทักษะการเขียนโค้ดและอัลกอริทึม:",
                 items: [
                     { badge: "แนะนำอันดับ 1", name: "ห้องปฏิบัติการจับเวลา & ฝึกแก้รูบิค 3x3 (Rubik's Lab)", detail: "สุ่ม Scramble มาตรฐาน WCA จับเวลาด้วยปุ่ม Spacebar พร้อมดูภาพจำลองรูบิค 3 มิติ (3D) ครบ 6 ด้านและสูตร CFOP", href: "rubik.html", btn: "เปิดเว็บจับเวลารูบิค 3x3" },
-                    { badge: "แนะนำอันดับ 2", name: "วงล้อผลงาน 3 มิติ (CSS 3D Perspective)", detail: "ศึกษาการจัดวางการ์ดบนทรงกระบอก 3 มิติด้วย JavaScript และการสรุปบทความโครงงาน", href: "wheel.html", btn: "เปิดวงล้อผลงาน 3D" },
-                    { badge: "แนะนำอันดับ 3", name: "คลังภาพการทำโครงงานและกิจกรรม", detail: "ดูภาพบรรยากาศการประกอบตู้กดอัตโนมัติและการฝึกงานจริง", href: "index.html#gallery", btn: "เปิดคลังภาพกิจกรรม" }
+                    { badge: "แนะนำอันดับ 2", name: "Feel SafeBox & Photo Studio", detail: "ฝากไฟล์/รูปต้นฉบับ 100% แชร์ข้ามเครื่องด้วย PIN 6 หลัก (vault.html) และสตูดิโอลบแบ็คกราวน์อัตโนมัติ (photo-studio.html)", href: "vault.html", btn: "เปิดตู้เซฟ Feel SafeBox" },
+                    { badge: "แนะนำอันดับ 3", name: "วงล้อผลงาน 3 มิติ (CSS 3D Perspective)", detail: "ศึกษาการจัดวางการ์ดบนทรงกระบอก 3 มิติด้วย JavaScript และการสรุปบทความโครงงาน", href: "wheel.html", btn: "เปิดวงล้อผลงาน 3D" }
                 ]
             },
             local: {
@@ -864,8 +2184,8 @@ void loop() {
                 desc: "รวมเครื่องมือออนไลน์สำหรับใช้ในชีวิตประจำวันในเขตอำเภอเมือง จังหวัดนครศรีธรรมราช:",
                 items: [
                     { badge: "ยอดฮิต", name: "หรอยเมืองคอน! สุ่มร้านอาหารในเมืองนครฯ (48 ร้าน)", detail: "คิดไม่ออกว่ามื้อนี้กินอะไรดี กดสุ่มร้านเด็ดพร้อมเอฟเฟกต์แผ่นดินไหว 20 วินาที และพิกัด Google Maps", href: "southern-food.html", btn: "เปิดสุ่มร้านอาหารนครฯ" },
-                    { badge: "เช็กจราจร/น้ำ", name: "ระบบกล้องวงจรปิดสด NST CCTV (ดูพร้อมกันสูงสุด 20 จอ)", detail: "ดูภาพสดสภาพถนน สี่แยกสำคัญ และหน้าโรงเรียนในเขตเทศบาลนครนครศรีธรรมราชแบบเรียลไทม์", href: "cctv.html", btn: "เปิดดูกล้อง CCTV สด" },
-                    { badge: "เช็กฝน/พายุ", name: "เรดาร์สภาพอากาศและพายุฝนภาคใต้ (Windy Radar)", detail: "ตรวจสอบกลุ่มเมฆฝน พายุฟ้าคะนอง และทิศทางลมในพื้นที่นครศรีธรรมราชก่อนออกเดินทาง", href: "weather.html", btn: "เปิดเรดาร์สภาพอากาศ" }
+                    { badge: "เช็กจราจร/น้ำ", name: "ระบบกล้องวงจรปิดสด NST CCTV (ดูพร้อมกันสูงสุด 20 จอ)", detail: "ดูภาพสดกว่า 220 จุดในเขตเทศบาลนครนครศรีธรรมราช ดูพร้อมกันสูงสุด 20 จอแบบเรียลไทม์", href: "cctv.html", btn: "เปิดดูกล้อง CCTV สด" },
+                    { badge: "เช็กฝน/พายุ", name: "เรดาร์สภาพอากาศและพายุฝนภาคใต้", detail: "ตรวจสอบกลุ่มเมฆฝน พายุฟ้าคะนอง และทิศทางลมในพื้นที่นครศรีธรรมราชก่อนออกเดินทาง", href: "weather.html", btn: "เปิดเรดาร์สภาพอากาศ" }
                 ]
             }
         };
@@ -937,16 +2257,26 @@ void loop() {
             if (!container) return;
             const toast = document.createElement('div');
             toast.className = 'pointer-events-auto px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 transition-all duration-300';
-            toast.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-indigo-400"></i><span>${message}</span>`;
+            const icon = document.createElement('i');
+            icon.className = 'fa-solid fa-wand-magic-sparkles text-indigo-400';
+            const span = document.createElement('span');
+            span.textContent = String(message ?? '');
+            toast.appendChild(icon);
+            toast.appendChild(span);
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 2600);
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
+            rebuildKnowledgeIndex();
+            updateEngineBadge();
             clearChatHistory();
             loadSampleText('bio');
             selectPersona('teacher');
+            if (location.protocol === 'http:' || location.protocol === 'https:') {
+                crawlSitePages(false);
+            }
         });
     </script>
 </body>

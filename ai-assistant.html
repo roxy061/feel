@@ -338,8 +338,8 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-1.5">
-                        <button type="button" onclick="toggleGeminiSettings()" id="btn-gemini-settings" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text-body dark:text-google-dark-text-body hover:border-indigo-500 hover:text-indigo-600 transition cursor-pointer" title="เชื่อมต่อ Google Gemini API (ไม่บังคับ)">
-                            <i class="fa-solid fa-sliders mr-1 text-sky-500"></i> เชื่อม Gemini API
+                        <button type="button" onclick="toggleGeminiSettings()" id="btn-gemini-settings" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text-body dark:text-google-dark-text-body hover:border-indigo-500 hover:text-indigo-600 transition cursor-pointer" title="ตั้งค่า WebGPU AI ไม่จำกัด, Ollama / Custom API หรือ Google Gemini API">
+                            <i class="fa-solid fa-sliders mr-1 text-sky-500"></i> ตั้งค่า AI ไม่จำกัด / API
                         </button>
                         <button type="button" onclick="speakLastAiReply()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text-body dark:text-google-dark-text-body hover:text-indigo-600 transition cursor-pointer" title="อ่านออกเสียงคำตอบล่าสุด">
                             <i class="fa-solid fa-volume-high mr-1 text-indigo-500"></i> ฟังเสียง
@@ -350,43 +350,165 @@
                     </div>
                 </div>
 
-                <!-- Optional Gemini API Settings Drawer -->
-                <div id="gemini-settings-drawer" class="hidden px-4 sm:px-5 py-3.5 border-b border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/70 dark:bg-indigo-950/30 space-y-2.5 text-xs">
+                <!-- Multi-Provider Unlimited AI & API Settings Drawer -->
+                <div id="gemini-settings-drawer" class="hidden px-4 sm:px-5 py-3.5 border-b border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/70 dark:bg-indigo-950/30 space-y-3 text-xs">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div class="font-heading font-bold text-indigo-800 dark:text-indigo-200 flex items-center gap-1.5">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            <span>เชื่อมต่อ Google Gemini API จริง (BYOK • เก็บคีย์ไว้ในเบราว์เซอร์ของคุณเท่านั้น)</span>
+                            <i class="fa-solid fa-microchip"></i>
+                            <span>ตั้งค่า AI Backend (ใช้งานฟรีไม่จำกัดผ่าน WebGPU, Ollama / Custom API หรือ Gemini)</span>
                         </div>
-                        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
-                            รับ API Key ฟรีที่ Google AI Studio →
-                        </a>
+                        <button type="button" onclick="useLocalGroundedOnly()" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 hover:border-emerald-500 transition cursor-pointer">
+                            <i class="fa-solid fa-shield-halved mr-1"></i> ใช้ AI อ่านในเครื่องเท่านั้น
+                        </button>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                        <input
-                            type="password"
-                            id="gemini-api-key-input"
-                            placeholder="วาง Gemini API Key (AIza...) — เว้นว่างได้ถ้าใช้ AI อ่านในเครื่อง"
-                            class="sm:col-span-6 px-3 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border focus:border-indigo-500 focus:outline-none text-xs text-google-text dark:text-white font-mono"
-                        >
-                        <select id="gemini-model-select" class="sm:col-span-3 px-2.5 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text dark:text-white">
-                            <option value="gemini-3.8-flash">gemini-3.8-flash (แนะนำ)</option>
-                            <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (ไวมาก)</option>
-                            <option value="gemini-3.6-flash">gemini-3.6-flash</option>
-                            <option value="gemini-2.5-flash">gemini-2.5-flash</option>
-                        </select>
-                        <div class="sm:col-span-3 flex items-center gap-1.5">
-                            <button type="button" onclick="saveGeminiConfig()" class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-heading font-bold text-xs cursor-pointer transition">
-                                บันทึก
-                            </button>
-                            <button type="button" onclick="clearGeminiConfig()" class="py-2 px-2.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-rose-600 hover:bg-rose-50 font-heading font-semibold text-xs cursor-pointer transition">
-                                ล้าง
-                            </button>
+
+                    <!-- Engine Tabs -->
+                    <div class="flex flex-wrap items-center gap-1.5 border-b border-indigo-200/80 dark:border-indigo-900/60 pb-2.5">
+                        <button type="button" id="settings-tab-webgpu" onclick="switchSettingsTab('webgpu')" class="px-3 py-1.5 rounded-xl font-heading font-semibold text-xs border transition cursor-pointer bg-indigo-600 text-white border-indigo-600 shadow-xs">
+                            <i class="fa-solid fa-bolt mr-1"></i> WebGPU AI ฟรีไม่จำกัด (ในเบราว์เซอร์)
+                        </button>
+                        <button type="button" id="settings-tab-openai_compat" onclick="switchSettingsTab('openai_compat')" class="px-3 py-1.5 rounded-xl font-heading font-semibold text-xs border transition cursor-pointer bg-white dark:bg-google-dark-surface text-google-text-body dark:text-google-dark-text-body border-google-border dark:border-google-dark-border">
+                            <i class="fa-solid fa-server mr-1 text-sky-500"></i> Ollama / Custom OpenAI API
+                        </button>
+                        <button type="button" id="settings-tab-gemini" onclick="switchSettingsTab('gemini')" class="px-3 py-1.5 rounded-xl font-heading font-semibold text-xs border transition cursor-pointer bg-white dark:bg-google-dark-surface text-google-text-body dark:text-google-dark-text-body border-google-border dark:border-google-dark-border">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1 text-indigo-500"></i> Google Gemini API (BYOK)
+                        </button>
+                    </div>
+
+                    <!-- Tab 1: WebGPU Unlimited Local LLM (@mlc-ai/web-llm) -->
+                    <div id="settings-pane-webgpu" class="space-y-2.5">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-[11px] text-google-text-body dark:text-google-dark-text-body">
+                                ดาวน์โหลดโมเดล LLM จริงลง Browser Cache ครั้งเดียว <strong>ถามตอบไม่จำกัด 0 บาท ไม่มีโควตา</strong> ใช้งานได้แม้ไม่มี API Key
+                            </span>
+                            <span id="webgpu-support-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-[11px] font-semibold text-google-text-muted">
+                                กำลังตรวจสอบ WebGPU...
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                            <select id="webllm-model-select" class="sm:col-span-6 px-2.5 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text dark:text-white">
+                                <option value="Qwen2.5-1.5B-Instruct-q4f16_1-MLC">Qwen2.5-1.5B-Instruct (แนะนำ ~1GB • สมดุลไทย/อังกฤษ)</option>
+                                <option value="Qwen2.5-0.5B-Instruct-q4f16_1-MLC">Qwen2.5-0.5B-Instruct (เบาสุด ~450MB • โหลดเร็ว)</option>
+                                <option value="Qwen2.5-3B-Instruct-q4f16_1-MLC">Qwen2.5-3B-Instruct (~2GB • แม่นยำสูง ใช้ VRAM มาก)</option>
+                            </select>
+                            <div class="sm:col-span-6 flex items-center gap-1.5">
+                                <button type="button" id="btn-load-webllm" onclick="loadWebLLMEngine()" class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-heading font-bold text-xs cursor-pointer transition flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-download"></i> โหลด & เปิดใช้งาน WebGPU LLM
+                                </button>
+                                <button type="button" id="btn-unload-webllm" onclick="unloadWebLLMEngine()" class="hidden py-2 px-2.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-rose-600 hover:bg-rose-50 font-heading font-semibold text-xs cursor-pointer transition" title="คืนหน่วยความจำ GPU (VRAM)">
+                                    <i class="fa-solid fa-power-off mr-1"></i> ปิดโมเดล
+                                </button>
+                            </div>
+                        </div>
+                        <div id="webllm-progress-wrap" class="hidden space-y-1.5 bg-white/80 dark:bg-google-dark-surface/80 p-2.5 rounded-xl border border-indigo-200 dark:border-indigo-900/60">
+                            <div class="w-full h-2 rounded-full bg-indigo-100 dark:bg-indigo-950 overflow-hidden">
+                                <div id="webllm-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-sky-500 transition-all duration-200" style="width: 0%"></div>
+                            </div>
+                            <div id="webllm-progress-text" class="text-[11px] text-indigo-800 dark:text-indigo-200 font-mono truncate">
+                                กำลังเตรียมดาวน์โหลดน้ำหนักโมเดล...
+                            </div>
                         </div>
                     </div>
-                    <div class="flex flex-wrap items-center justify-between gap-2 text-[11px]">
+
+                    <!-- Tab 2: Custom OpenAI-Compatible API (Ollama / LM Studio / Groq / OpenRouter) -->
+                    <div id="settings-pane-openai_compat" class="hidden space-y-2.5">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <span class="text-[11px] font-semibold text-indigo-900 dark:text-indigo-200 mr-1">พรีเซ็ตด่วน:</span>
+                                <button type="button" onclick="applyCustomPreset('ollama')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-indigo-500 text-[11px] font-semibold text-google-text dark:text-white cursor-pointer transition">
+                                    Ollama (ในเครื่อง)
+                                </button>
+                                <button type="button" onclick="applyCustomPreset('lmstudio')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-indigo-500 text-[11px] font-semibold text-google-text dark:text-white cursor-pointer transition">
+                                    LM Studio (ในเครื่อง)
+                                </button>
+                                <button type="button" onclick="applyCustomPreset('groq')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-indigo-500 text-[11px] font-semibold text-google-text dark:text-white cursor-pointer transition">
+                                    Groq Cloud (ฟรีเร็ว)
+                                </button>
+                                <button type="button" onclick="applyCustomPreset('openrouter')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-indigo-500 text-[11px] font-semibold text-google-text dark:text-white cursor-pointer transition">
+                                    OpenRouter
+                                </button>
+                            </div>
+                        </div>
+                        <p id="custom-preset-hint" class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
+                            รองรับ OpenAI Chat Completions API ทุกตัว (เช่น Ollama ในเครื่องฟรีไม่จำกัด, LM Studio, Groq, OpenRouter, vLLM)
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                            <input
+                                type="url"
+                                id="custom-api-url"
+                                placeholder="Base URL เช่น http://localhost:11434/v1 หรือ .../chat/completions"
+                                class="sm:col-span-5 px-3 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border focus:border-indigo-500 focus:outline-none text-xs text-google-text dark:text-white font-mono"
+                            >
+                            <input
+                                type="text"
+                                id="custom-api-model"
+                                placeholder="ชื่อโมเดล เช่น qwen2.5:7b หรือ llama-3.3-70b-versatile"
+                                class="sm:col-span-4 px-3 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border focus:border-indigo-500 focus:outline-none text-xs text-google-text dark:text-white font-mono"
+                            >
+                            <input
+                                type="password"
+                                id="custom-api-key"
+                                placeholder="API Key (เว้นว่างสำหรับ Ollama ในเครื่อง)"
+                                class="sm:col-span-3 px-3 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border focus:border-indigo-500 focus:outline-none text-xs text-google-text dark:text-white font-mono"
+                            >
+                        </div>
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span id="custom-api-test-status" class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted font-medium">
+                                เคล็ดลับ Ollama: ตั้งค่า OLLAMA_ORIGINS=* หากเรียกจากเบราว์เซอร์แล้วติด CORS
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="testCustomApiConnection()" class="py-1.5 px-3 rounded-xl bg-white dark:bg-google-dark-surface border border-sky-400 text-sky-700 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-950/40 font-heading font-semibold text-xs cursor-pointer transition">
+                                    <i class="fa-solid fa-plug-circle-check mr-1"></i> ทดสอบการเชื่อมต่อ
+                                </button>
+                                <button type="button" onclick="saveCustomApiConfig()" class="py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-heading font-bold text-xs cursor-pointer transition">
+                                    บันทึก & เปิดใช้งาน
+                                </button>
+                                <button type="button" onclick="clearCustomApiConfig()" class="py-1.5 px-2.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-rose-600 hover:bg-rose-50 font-heading font-semibold text-xs cursor-pointer transition">
+                                    ล้าง
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Google Gemini API (BYOK) -->
+                    <div id="settings-pane-gemini" class="hidden space-y-2.5">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-[11px] text-indigo-800 dark:text-indigo-200 font-semibold">
+                                เชื่อมต่อ Google Gemini API จริง (BYOK • เก็บคีย์ไว้ในเบราว์เซอร์ของคุณเท่านั้น)
+                            </span>
+                            <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                                รับ API Key ฟรีที่ Google AI Studio →
+                            </a>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                            <input
+                                type="password"
+                                id="gemini-api-key-input"
+                                placeholder="วาง Gemini API Key (AIza...) — เว้นว่างได้ถ้าใช้ AI อ่านในเครื่อง"
+                                class="sm:col-span-6 px-3 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border focus:border-indigo-500 focus:outline-none text-xs text-google-text dark:text-white font-mono"
+                            >
+                            <select id="gemini-model-select" class="sm:col-span-3 px-2.5 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text dark:text-white">
+                                <option value="gemini-3.8-flash">gemini-3.8-flash (แนะนำ)</option>
+                                <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (ไวมาก)</option>
+                                <option value="gemini-3.6-flash">gemini-3.6-flash</option>
+                                <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                            </select>
+                            <div class="sm:col-span-3 flex items-center gap-1.5">
+                                <button type="button" onclick="saveGeminiConfig()" class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-heading font-bold text-xs cursor-pointer transition">
+                                    บันทึก
+                                </button>
+                                <button type="button" onclick="clearGeminiConfig()" class="py-2 px-2.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-rose-600 hover:bg-rose-50 font-heading font-semibold text-xs cursor-pointer transition">
+                                    ล้าง
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shared Drawer Footer -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] pt-1 border-t border-indigo-200/70 dark:border-indigo-900/50">
                         <label class="inline-flex items-center gap-1.5 cursor-pointer text-google-text-body dark:text-google-dark-text-body">
                             <input type="checkbox" id="gemini-strict-grounding" checked class="accent-indigo-600 rounded">
-                            <span>Strict Grounding: ให้ Gemini ตอบโดยยึดข้อมูลจากเอกสาร/หน้าเว็บเป็นหลัก และบอกตรงๆ หากไม่มีข้อมูล</span>
+                            <span>Strict Grounding: ยึดตามเอกสาร/หน้าเว็บที่วางเป็นหลัก และบอกตรงๆ หากไม่มีข้อมูล</span>
                         </label>
                         <button type="button" onclick="toggleGeminiSettings(false)" class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline cursor-pointer">ซ่อนแถบตั้งค่า ▲</button>
                     </div>
@@ -1728,9 +1850,88 @@ void loop() {
             return { html: answerHtml, plain: plainSummary, topic: nextTopic };
         }
 
-        // ==================== OPTIONAL GOOGLE GEMINI API INTEGRATION (BYOK) ====================
+        // ==================== UNIFIED MULTI-PROVIDER LLM ENGINE (WEBGPU + OLLAMA/CUSTOM + GEMINI) ====================
+        const STORAGE_PROVIDER = 'feel_ai_provider';
         const STORAGE_GEMINI_KEY = 'feel_gemini_api_key';
         const STORAGE_GEMINI_MODEL = 'feel_gemini_model';
+        const STORAGE_CUSTOM_URL = 'feel_custom_api_url';
+        const STORAGE_CUSTOM_KEY = 'feel_custom_api_key';
+        const STORAGE_CUSTOM_MODEL = 'feel_custom_api_model';
+        const STORAGE_WEBLLM_MODEL = 'feel_webllm_model';
+
+        let webllmEngine = null;
+        let webllmLoadedModel = '';
+        let webllmLoading = false;
+
+        const CUSTOM_PRESETS = {
+            ollama: {
+                label: 'Ollama (Localhost ไม่จำกัด)',
+                url: 'http://localhost:11434/v1/chat/completions',
+                model: 'qwen2.5:7b',
+                note: 'ฟรี ไม่จำกัด! ต้องเปิดโปรแกรม Ollama ในเครื่อง (หากติด CORS ให้รันด้วย OLLAMA_ORIGINS=* ollama serve)'
+            },
+            lmstudio: {
+                label: 'LM Studio (Localhost ไม่จำกัด)',
+                url: 'http://127.0.0.1:1234/v1/chat/completions',
+                model: 'local-model',
+                note: 'เปิด Local Server ในโปรแกรม LM Studio (เปิด CORS ใน settings ของ LM Studio ด้วย)'
+            },
+            groq: {
+                label: 'Groq Cloud (LPU ความเร็วสูง)',
+                url: 'https://api.groq.com/openai/v1/chat/completions',
+                model: 'llama-3.3-70b-versatile',
+                note: 'รับ API Key ได้ฟรีที่ console.groq.com (มี Free Tier ความเร็วสูงมาก)'
+            },
+            openrouter: {
+                label: 'OpenRouter (รวมหลายโมเดล)',
+                url: 'https://openrouter.ai/api/v1/chat/completions',
+                model: 'meta-llama/llama-3.3-70b-instruct:free',
+                note: 'รับ API Key ได้ที่ openrouter.ai รองรับโมเดลลงท้าย :free หลากหลายรุ่น'
+            }
+        };
+
+        function getActiveProvider() {
+            const saved = localStorage.getItem(STORAGE_PROVIDER);
+            if (saved === 'webgpu') {
+                return webllmEngine ? 'webgpu' : (savedFallbackProvider());
+            }
+            if (saved === 'openai_compat') {
+                return (localStorage.getItem(STORAGE_CUSTOM_URL) || '').trim() ? 'openai_compat' : 'local_nlp';
+            }
+            if (saved === 'gemini') {
+                return (localStorage.getItem(STORAGE_GEMINI_KEY) || '').trim() ? 'gemini' : 'local_nlp';
+            }
+            if (saved === 'local_nlp') return 'local_nlp';
+            return savedFallbackProvider();
+        }
+
+        function savedFallbackProvider() {
+            if (webllmEngine) return 'webgpu';
+            if ((localStorage.getItem(STORAGE_CUSTOM_URL) || '').trim()) return 'openai_compat';
+            if ((localStorage.getItem(STORAGE_GEMINI_KEY) || '').trim()) return 'gemini';
+            return 'local_nlp';
+        }
+
+        function setActiveProvider(provider) {
+            localStorage.setItem(STORAGE_PROVIDER, provider);
+            updateEngineBadge();
+        }
+
+        function switchSettingsTab(tab) {
+            ['webgpu', 'openai_compat', 'gemini'].forEach(t => {
+                const pane = document.getElementById(`settings-pane-${t}`);
+                const btn = document.getElementById(`settings-tab-${t}`);
+                if (!pane || !btn) return;
+                if (t === tab) {
+                    pane.classList.remove('hidden');
+                    btn.className = 'px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-heading font-bold text-xs shadow-xs cursor-pointer transition';
+                } else {
+                    pane.classList.add('hidden');
+                    btn.className = 'px-3 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-muted hover:text-indigo-600 font-heading font-semibold text-xs cursor-pointer transition';
+                }
+            });
+            if (tab === 'webgpu') checkWebGPUSupport();
+        }
 
         function toggleGeminiSettings(forceState) {
             const drawer = document.getElementById('gemini-settings-drawer');
@@ -1738,55 +1939,59 @@ void loop() {
             const shouldOpen = typeof forceState === 'boolean' ? forceState : drawer.classList.contains('hidden');
             drawer.classList.toggle('hidden', !shouldOpen);
             if (shouldOpen) {
-                const key = localStorage.getItem(STORAGE_GEMINI_KEY) || '';
-                const model = localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.8-flash';
-                document.getElementById('gemini-api-key-input').value = key;
-                const sel = document.getElementById('gemini-model-select');
-                if ([...sel.options].some(o => o.value === model)) sel.value = model;
+                document.getElementById('gemini-api-key-input').value = localStorage.getItem(STORAGE_GEMINI_KEY) || '';
+                const gSel = document.getElementById('gemini-model-select');
+                const gModel = localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.8-flash';
+                if (gSel && [...gSel.options].some(o => o.value === gModel)) gSel.value = gModel;
+
+                const cUrlEl = document.getElementById('custom-api-url');
+                const cKeyEl = document.getElementById('custom-api-key');
+                const cModelEl = document.getElementById('custom-api-model');
+                if (cUrlEl) cUrlEl.value = localStorage.getItem(STORAGE_CUSTOM_URL) || '';
+                if (cKeyEl) cKeyEl.value = localStorage.getItem(STORAGE_CUSTOM_KEY) || '';
+                if (cModelEl) cModelEl.value = localStorage.getItem(STORAGE_CUSTOM_MODEL) || '';
+
+                const wSel = document.getElementById('webllm-model-select');
+                const wModel = localStorage.getItem(STORAGE_WEBLLM_MODEL) || 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
+                if (wSel && [...wSel.options].some(o => o.value === wModel)) wSel.value = wModel;
+
+                const cur = getActiveProvider();
+                switchSettingsTab(cur === 'openai_compat' ? 'openai_compat' : (cur === 'gemini' ? 'gemini' : 'webgpu'));
             }
         }
 
         function updateEngineBadge() {
             const badge = document.getElementById('ai-engine-badge');
             if (!badge) return;
-            const key = (localStorage.getItem(STORAGE_GEMINI_KEY) || '').trim();
-            const model = localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.8-flash';
-            if (key) {
+            const provider = getActiveProvider();
+            if (provider === 'webgpu' && webllmEngine) {
+                const shortName = webllmLoadedModel.replace(/-Instruct.*$/, '').replace(/-MLC$/, '');
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping"></span> WebGPU ไม่จำกัด (${escapeHtml(shortName)})`;
+                badge.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold';
+            } else if (provider === 'openai_compat') {
+                const model = (localStorage.getItem(STORAGE_CUSTOM_MODEL) || 'Custom LLM').trim();
+                const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)/i.test(localStorage.getItem(STORAGE_CUSTOM_URL) || '');
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> ${isLocal ? 'Local API ไม่จำกัด' : 'Custom API'} (${escapeHtml(model)})`;
+                badge.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-bold';
+            } else if (provider === 'gemini') {
+                const model = localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.8-flash';
                 badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping"></span> Gemini Live (${escapeHtml(model)})`;
                 badge.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-bold';
             } else {
-                badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Grounded Reading AI (ออฟไลน์)';
+                badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Grounded Reading AI (ในเครื่อง)';
                 badge.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold';
             }
         }
 
-        function saveGeminiConfig() {
-            const key = document.getElementById('gemini-api-key-input').value.trim();
-            const model = document.getElementById('gemini-model-select').value;
-            if (key) {
-                localStorage.setItem(STORAGE_GEMINI_KEY, key);
-                localStorage.setItem(STORAGE_GEMINI_MODEL, model);
-                showToast(`เชื่อมต่อ Gemini Model: ${model} เรียบร้อยแล้ว!`);
-            } else {
-                localStorage.removeItem(STORAGE_GEMINI_KEY);
-                showToast('ใช้โหมด Grounded Reading AI ในเครื่อง (ไม่ต้องใช้คีย์)');
-            }
-            updateEngineBadge();
+        function useLocalGroundedOnly() {
+            setActiveProvider('local_nlp');
             toggleGeminiSettings(false);
+            showToast('สลับเป็นโหมด Grounded Reading AI ในเครื่อง (ตอบทันที ไม่จำกัดครั้ง)');
         }
 
-        function clearGeminiConfig() {
-            localStorage.removeItem(STORAGE_GEMINI_KEY);
-            document.getElementById('gemini-api-key-input').value = '';
-            updateEngineBadge();
-            showToast('ลบ Gemini API Key ออกจากเบราว์เซอร์แล้ว');
-        }
-
-        async function callGeminiGrounded(query) {
-            const apiKey = (localStorage.getItem(STORAGE_GEMINI_KEY) || '').trim();
-            const model = localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.8-flash';
+        // -------------------- SHARED PROMPT & MESSAGE BUILDERS --------------------
+        function buildGroundedSystemPrompt(query) {
             const strictMode = document.getElementById('gemini-strict-grounding')?.checked ?? true;
-
             const userDoc = (document.getElementById('ai-context-input')?.value || '').trim().slice(0, 18000);
             const intent = analyzeQuestionIntent(query);
             const { hits } = retrieveRelevantChunks(query, intent);
@@ -1803,6 +2008,51 @@ void loop() {
                 userDoc ? `\n[เอกสารที่ผู้ใช้วางให้อ่านโดยตรง]:\n${userDoc}` : '',
                 contextPassages ? `\n[ข้อมูลที่ค้นพบจากเว็บไซต์และฐานความรู้]:\n${contextPassages}` : ''
             ].filter(Boolean).join('\n');
+
+            return { systemPrompt, strictMode };
+        }
+
+        function buildOpenAIMessages(systemPrompt, query) {
+            const msgs = [{ role: 'system', content: systemPrompt }];
+            for (const turn of chatHistory.slice(-8)) {
+                msgs.push({
+                    role: turn.role === 'model' ? 'assistant' : 'user',
+                    content: turn.text
+                });
+            }
+            msgs.push({ role: 'user', content: query });
+            return msgs;
+        }
+
+        // -------------------- 1. GOOGLE GEMINI CONFIG & CALLER --------------------
+        function saveGeminiConfig() {
+            const key = document.getElementById('gemini-api-key-input').value.trim();
+            const model = document.getElementById('gemini-model-select').value;
+            if (key) {
+                localStorage.setItem(STORAGE_GEMINI_KEY, key);
+                localStorage.setItem(STORAGE_GEMINI_MODEL, model);
+                setActiveProvider('gemini');
+                showToast(`เชื่อมต่อ Gemini Model: ${model} เรียบร้อยแล้ว!`);
+            } else {
+                localStorage.removeItem(STORAGE_GEMINI_KEY);
+                setActiveProvider('local_nlp');
+                showToast('ใช้โหมด Grounded Reading AI ในเครื่อง (ไม่ต้องใช้คีย์)');
+            }
+            toggleGeminiSettings(false);
+        }
+
+        function clearGeminiConfig() {
+            localStorage.removeItem(STORAGE_GEMINI_KEY);
+            document.getElementById('gemini-api-key-input').value = '';
+            if (getActiveProvider() === 'gemini') setActiveProvider('local_nlp');
+            updateEngineBadge();
+            showToast('ลบ Gemini API Key ออกจากเบราว์เซอร์แล้ว');
+        }
+
+        async function callGeminiGrounded(query) {
+            const apiKey = (localStorage.getItem(STORAGE_GEMINI_KEY) || '').trim();
+            const model = localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.8-flash';
+            const { systemPrompt, strictMode } = buildGroundedSystemPrompt(query);
 
             const contents = chatHistory.slice(-8).map(turn => ({
                 role: turn.role === 'model' ? 'model' : 'user',
@@ -1837,7 +2087,307 @@ void loop() {
             if (!replyText.trim()) {
                 throw new Error('Gemini ไม่ได้ส่งข้อความตอบกลับมา');
             }
-            return { model, text: replyText };
+            return { providerLabel: model, text: replyText };
+        }
+
+        // -------------------- 2. CUSTOM OPENAI-COMPATIBLE API (OLLAMA / GROQ / OPENROUTER) --------------------
+        function normalizeCustomEndpointUrl(rawUrl) {
+            const clean = String(rawUrl || '').trim();
+            if (!clean) return '';
+            let parsed;
+            try {
+                parsed = new URL(clean);
+            } catch (_) {
+                throw new Error('รูปแบบ Endpoint URL ไม่ถูกต้อง (ต้องขึ้นต้นด้วย http:// หรือ https://)');
+            }
+            if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+                throw new Error('อนุญาตเฉพาะโปรโตคอล http:// หรือ https:// เท่านั้น');
+            }
+            let normalized = parsed.toString().replace(/\/+$/, '');
+            if (normalized.endsWith('/chat/completions')) return normalized;
+            if (normalized.endsWith('/v1')) return `${normalized}/chat/completions`;
+            return `${normalized}/v1/chat/completions`;
+        }
+
+        function applyCustomPreset(presetKey) {
+            const p = CUSTOM_PRESETS[presetKey];
+            if (!p) return;
+            document.getElementById('custom-api-url').value = p.url;
+            document.getElementById('custom-api-model').value = p.model;
+            const hint = document.getElementById('custom-preset-hint');
+            if (hint) hint.textContent = p.note;
+            showToast(`ใส่ค่าเริ่มต้นสำหรับ ${p.label} แล้ว`);
+        }
+
+        function saveCustomApiConfig() {
+            const rawUrl = document.getElementById('custom-api-url').value.trim();
+            const model = document.getElementById('custom-api-model').value.trim();
+            const key = document.getElementById('custom-api-key').value.trim();
+
+            if (!rawUrl || !model) {
+                showToast('กรุณาระบุ Endpoint URL และชื่อ Model ให้ครบครับ');
+                return;
+            }
+            let normalizedUrl;
+            try {
+                normalizedUrl = normalizeCustomEndpointUrl(rawUrl);
+            } catch (err) {
+                showToast(err.message);
+                return;
+            }
+
+            document.getElementById('custom-api-url').value = normalizedUrl;
+            localStorage.setItem(STORAGE_CUSTOM_URL, normalizedUrl);
+            localStorage.setItem(STORAGE_CUSTOM_MODEL, model);
+            if (key) localStorage.setItem(STORAGE_CUSTOM_KEY, key);
+            else localStorage.removeItem(STORAGE_CUSTOM_KEY);
+
+            setActiveProvider('openai_compat');
+            toggleGeminiSettings(false);
+            showToast(`เปิดใช้งาน API: ${model} เรียบร้อยแล้ว!`);
+        }
+
+        function clearCustomApiConfig() {
+            localStorage.removeItem(STORAGE_CUSTOM_URL);
+            localStorage.removeItem(STORAGE_CUSTOM_KEY);
+            localStorage.removeItem(STORAGE_CUSTOM_MODEL);
+            document.getElementById('custom-api-url').value = '';
+            document.getElementById('custom-api-key').value = '';
+            document.getElementById('custom-api-model').value = '';
+            const statusEl = document.getElementById('custom-api-test-status');
+            if (statusEl) statusEl.textContent = '';
+            if (getActiveProvider() === 'openai_compat') setActiveProvider('local_nlp');
+            updateEngineBadge();
+            showToast('ล้างค่า Custom / Ollama API แล้ว');
+        }
+
+        async function testCustomApiConnection() {
+            const statusEl = document.getElementById('custom-api-test-status');
+            const rawUrl = document.getElementById('custom-api-url').value.trim();
+            const model = document.getElementById('custom-api-model').value.trim();
+            const key = document.getElementById('custom-api-key').value.trim();
+
+            let url;
+            try {
+                url = normalizeCustomEndpointUrl(rawUrl);
+            } catch (err) {
+                if (statusEl) statusEl.innerHTML = `<span class="text-rose-600 font-semibold">${escapeHtml(err.message)}</span>`;
+                return;
+            }
+            if (!model) {
+                if (statusEl) statusEl.innerHTML = '<span class="text-rose-600 font-semibold">กรุณาระบุชื่อ Model</span>';
+                return;
+            }
+            if (statusEl) statusEl.innerHTML = '<span class="text-indigo-600"><i class="fa-solid fa-spinner fa-spin mr-1"></i>กำลังทดสอบเชื่อมต่อ...</span>';
+
+            const headers = { 'Content-Type': 'application/json' };
+            if (key) headers['Authorization'] = `Bearer ${key}`;
+
+            const t0 = performance.now();
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({
+                        model,
+                        messages: [{ role: 'user', content: 'Say OK' }],
+                        max_tokens: 16,
+                        temperature: 0
+                    })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    throw new Error(data?.error?.message || `HTTP ${res.status}`);
+                }
+                const ms = Math.round(performance.now() - t0);
+                if (statusEl) statusEl.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-semibold">✅ เชื่อมต่อสำเร็จ (${ms} ms) — กด "บันทึก & ใช้งาน" ได้เลย</span>`;
+            } catch (err) {
+                const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)/i.test(url);
+                const corsTip = isLocal && /fetch|network/i.test(err.message)
+                    ? ' (หากใช้ Ollama กรุณารันด้วย OLLAMA_ORIGINS=* ollama serve)'
+                    : '';
+                if (statusEl) statusEl.innerHTML = `<span class="text-rose-600 font-semibold">❌ ไม่สำเร็จ: ${escapeHtml(err.message + corsTip)}</span>`;
+            }
+        }
+
+        async function callOpenAICompatible(query) {
+            const url = (localStorage.getItem(STORAGE_CUSTOM_URL) || '').trim();
+            const model = (localStorage.getItem(STORAGE_CUSTOM_MODEL) || '').trim();
+            const key = (localStorage.getItem(STORAGE_CUSTOM_KEY) || '').trim();
+            if (!url || !model) {
+                throw new Error('ยังไม่ได้ตั้งค่า Endpoint URL หรือ Model');
+            }
+
+            const { systemPrompt, strictMode } = buildGroundedSystemPrompt(query);
+            const messages = buildOpenAIMessages(systemPrompt, query);
+
+            const headers = { 'Content-Type': 'application/json' };
+            if (key) headers['Authorization'] = `Bearer ${key}`;
+
+            let response;
+            try {
+                response = await fetch(url, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({
+                        model,
+                        messages,
+                        temperature: strictMode ? 0.2 : 0.45,
+                        max_tokens: 1600
+                    })
+                });
+            } catch (err) {
+                const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)/i.test(url);
+                throw new Error(isLocal ? `เชื่อมต่อ localhost ไม่ได้ (${err.message}) — ตรวจสอบว่าเปิดเซิร์ฟเวอร์และอนุญาต CORS (OLLAMA_ORIGINS=*) แล้ว` : err.message);
+            }
+
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                const msg = data?.error?.message || `HTTP ${response.status}`;
+                throw new Error(msg);
+            }
+
+            const rawContent = data?.choices?.[0]?.message?.content;
+            const replyText = Array.isArray(rawContent)
+                ? rawContent.map(p => p?.text || '').join('')
+                : String(rawContent || '');
+            if (!replyText.trim()) {
+                throw new Error('Endpoint ไม่ได้ส่งข้อความตอบกลับมา');
+            }
+            return { providerLabel: model, text: replyText };
+        }
+
+        // -------------------- 3. WEBGPU UNLIMITED IN-BROWSER LLM (@mlc-ai/web-llm) --------------------
+        async function checkWebGPUSupport() {
+            const badge = document.getElementById('webgpu-support-badge');
+            if (!badge) return false;
+            if (!('gpu' in navigator)) {
+                badge.textContent = '⚠️ เบราว์เซอร์นี้ยังไม่รองรับ WebGPU (แนะนำ Chrome / Edge รุ่นใหม่ หรือใช้ Custom API / Grounded AI แทน)';
+                badge.className = 'text-[11px] font-semibold text-amber-700 dark:text-amber-300';
+                return false;
+            }
+            try {
+                const adapter = await navigator.gpu.requestAdapter();
+                if (!adapter) {
+                    badge.textContent = '⚠️ ไม่พบ GPU Adapter ที่รองรับ WebGPU บนอุปกรณ์นี้';
+                    badge.className = 'text-[11px] font-semibold text-amber-700 dark:text-amber-300';
+                    return false;
+                }
+                badge.textContent = webllmEngine
+                    ? `✅ พร้อมใช้งานไม่จำกัด (${webllmLoadedModel})`
+                    : '✅ อุปกรณ์รองรับ WebGPU — โหลดครั้งเดียว ใช้ได้ฟรีไม่จำกัดครั้ง!';
+                badge.className = 'text-[11px] font-semibold text-emerald-700 dark:text-emerald-300';
+                return true;
+            } catch (_) {
+                badge.textContent = '⚠️ ไม่สามารถตรวจสอบ WebGPU Adapter ได้';
+                badge.className = 'text-[11px] font-semibold text-amber-700 dark:text-amber-300';
+                return false;
+            }
+        }
+
+        async function loadWebLLMEngine() {
+            if (webllmLoading) return;
+            const supported = await checkWebGPUSupport();
+            if (!supported) {
+                showToast('อุปกรณ์นี้ไม่รองรับ WebGPU แนะนำใช้โหมดในเครื่อง หรือ Ollama/Gemini API ครับ');
+                return;
+            }
+
+            const modelId = document.getElementById('webllm-model-select').value;
+            const btnLoad = document.getElementById('btn-load-webllm');
+            const btnUnload = document.getElementById('btn-unload-webllm');
+            const progWrap = document.getElementById('webllm-progress-wrap');
+            const progBar = document.getElementById('webllm-progress-bar');
+            const progText = document.getElementById('webllm-progress-text');
+
+            webllmLoading = true;
+            if (btnLoad) {
+                btnLoad.disabled = true;
+                btnLoad.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> กำลังโหลดโมเดล...';
+            }
+            progWrap?.classList.remove('hidden');
+
+            try {
+                let webllmMod;
+                try {
+                    webllmMod = await import('https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.87/+esm');
+                } catch (_) {
+                    webllmMod = await import('https://esm.run/@mlc-ai/web-llm');
+                }
+
+                if (webllmEngine && typeof webllmEngine.unload === 'function') {
+                    await webllmEngine.unload();
+                    webllmEngine = null;
+                }
+
+                const initProgressCallback = (report) => {
+                    const pct = Math.max(0, Math.min(100, Math.round((report.progress || 0) * 100)));
+                    if (progBar) progBar.style.width = `${pct}%`;
+                    if (progText) progText.textContent = report.text || `กำลังโหลด ${pct}%`;
+                };
+
+                webllmEngine = await webllmMod.CreateMLCEngine(modelId, { initProgressCallback });
+                webllmLoadedModel = modelId;
+                localStorage.setItem(STORAGE_WEBLLM_MODEL, modelId);
+                setActiveProvider('webgpu');
+                if (btnUnload) btnUnload.classList.remove('hidden');
+                if (progText) progText.textContent = `โหลด ${modelId} สำเร็จ! พร้อมใช้งานฟรีไม่จำกัดครั้งแล้วครับ`;
+                await checkWebGPUSupport();
+                showToast(`โหลด WebGPU LLM (${modelId}) สำเร็จ!`);
+            } catch (err) {
+                webllmEngine = null;
+                webllmLoadedModel = '';
+                if (progText) progText.textContent = `เกิดข้อผิดพลาด: ${err.message}`;
+                showToast(`โหลด WebGPU ไม่สำเร็จ: ${err.message}`);
+            } finally {
+                webllmLoading = false;
+                if (btnLoad) {
+                    btnLoad.disabled = false;
+                    btnLoad.innerHTML = '<i class="fa-solid fa-download mr-1"></i> ดาวน์โหลด &amp; เปิดใช้โมเดลนี้';
+                }
+            }
+        }
+
+        async function unloadWebLLMEngine() {
+            if (webllmEngine && typeof webllmEngine.unload === 'function') {
+                await webllmEngine.unload();
+            }
+            webllmEngine = null;
+            webllmLoadedModel = '';
+            if (getActiveProvider() === 'webgpu') setActiveProvider('local_nlp');
+            updateEngineBadge();
+            document.getElementById('btn-unload-webllm')?.classList.add('hidden');
+            document.getElementById('webllm-progress-wrap')?.classList.add('hidden');
+            await checkWebGPUSupport();
+            showToast('ปิดโมเดล WebGPU และคืนหน่วยความจำการ์ดจอแล้ว');
+        }
+
+        async function callWebGPULLM(query, onTokenStream) {
+            if (!webllmEngine) {
+                throw new Error('ยังไม่ได้โหลดโมเดล WebGPU');
+            }
+            const { systemPrompt, strictMode } = buildGroundedSystemPrompt(query);
+            const messages = buildOpenAIMessages(systemPrompt, query);
+
+            const chunks = await webllmEngine.chat.completions.create({
+                messages,
+                temperature: strictMode ? 0.25 : 0.5,
+                max_tokens: 1024,
+                stream: true
+            });
+
+            let fullText = '';
+            for await (const chunk of chunks) {
+                const delta = chunk?.choices?.[0]?.delta?.content || '';
+                if (delta) {
+                    fullText += delta;
+                    if (onTokenStream) onTokenStream(fullText);
+                }
+            }
+            if (!fullText.trim()) {
+                throw new Error('โมเดล WebGPU ไม่ได้สร้างคำตอบออกมา');
+            }
+            return { providerLabel: webllmLoadedModel.replace(/-MLC$/, ''), text: fullText };
         }
 
         // ==================== MODE SWITCHER ====================
@@ -1869,7 +2419,7 @@ void loop() {
                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-google-blue text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-xs">
                         <i class="fa-solid fa-robot"></i>
                     </div>
-                    <div class="max-w-[88%] sm:max-w-[82%] p-3.5 sm:p-4 rounded-2xl rounded-tl-sm bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed shadow-xs">
+                    <div class="ai-bubble-body max-w-[88%] sm:max-w-[82%] p-3.5 sm:p-4 rounded-2xl rounded-tl-sm bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed shadow-xs">
                         ${htmlContent}
                     </div>
                 `;
@@ -1897,7 +2447,7 @@ void loop() {
                         👋 สวัสดีครับ! ผมคือ Feel AI Assistant (Grounded Reading AI)
                     </div>
                     <p class="leading-relaxed">
-                        ผมออกแบบมาให้ <strong>อ่านข้อมูลจริงก่อนตอบเสมอ</strong> ทั้งจากหน้าเว็บไซต์นี้และจากเอกสาร/ข้อความที่คุณวางในช่อง <strong>"บริบท &amp; เอกสารให้ AI อ่าน"</strong> ทางด้านซ้าย — ถามเจาะจง ถามต่อเนื่อง หรือกดหัวข้อด่วนได้เลยครับ:
+                        ผมออกแบบมาให้ <strong>อ่านข้อมูลจริงก่อนตอบเสมอ</strong> ทั้งจากหน้าเว็บไซต์นี้และจากเอกสาร/ข้อความที่คุณวางในช่อง <strong>"บริบท &amp; เอกสารให้ AI อ่าน"</strong> ทางด้านซ้าย และสามารถเปิดใช้ <strong>WebGPU LLM ในเบราว์เซอร์ (ฟรีไม่จำกัด) / Ollama / Gemini</strong> ได้ที่ปุ่มตั้งค่าด้านบนครับ:
                     </p>
                     <div class="flex flex-wrap gap-1.5 pt-0.5">
                         <button type="button" onclick="askPresetQuestion('summary_profile')" class="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-xs font-semibold hover:bg-indigo-100 cursor-pointer">🎓 สรุปประวัติภคพล</button>
@@ -1932,40 +2482,71 @@ void loop() {
 
             appendChatMessage('user', escapeHtml(text));
 
-            const hasGeminiKey = !!(localStorage.getItem(STORAGE_GEMINI_KEY) || '').trim();
-            if (hasGeminiKey) {
+            const provider = getActiveProvider();
+            if (provider !== 'local_nlp') {
                 const loadingId = 'ai-loading-' + Date.now();
-                appendChatMessage('ai', '<div class="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-300"><i class="fa-solid fa-circle-notch fa-spin"></i> <span>Gemini กำลังอ่านบริบทและวิเคราะห์คำตอบ...</span></div>', loadingId);
+                const statusText = provider === 'webgpu'
+                    ? 'WebGPU LLM ในเครื่องกำลังสร้างคำตอบแบบไม่จำกัด...'
+                    : (provider === 'openai_compat' ? 'API ภายนอก/Ollama กำลังประมวลผลคำตอบ...' : 'Gemini กำลังอ่านบริบทและวิเคราะห์คำตอบ...');
+                const msgEl = appendChatMessage('ai', `<div class="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-300"><i class="fa-solid fa-circle-notch fa-spin"></i> <span>${statusText}</span></div>`, loadingId);
+                const bubbleBody = msgEl.querySelector('.ai-bubble-body');
                 if (submitBtn) submitBtn.disabled = true;
+
                 try {
-                    const gRes = await callGeminiGrounded(text);
-                    document.getElementById(loadingId)?.remove();
+                    let result;
+                    if (provider === 'webgpu') {
+                        result = await callWebGPULLM(text, (partial) => {
+                            if (bubbleBody) {
+                                bubbleBody.innerHTML = `
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between gap-2 pb-1 border-b border-google-border/50 dark:border-google-dark-border/50">
+                                            <span class="text-[11px] font-heading font-bold text-purple-600 dark:text-purple-400"><i class="fa-solid fa-microchip mr-1"></i> ตอบโดย WebGPU (${escapeHtml(webllmLoadedModel.replace(/-MLC$/, ''))}) • กำลังพิมพ์...</span>
+                                        </div>
+                                        <div class="text-google-text-body dark:text-google-dark-text-body">${renderSafeMarkdown(partial)}</div>
+                                    </div>
+                                `;
+                                const container = document.getElementById('chat-messages');
+                                if (container) container.scrollTop = container.scrollHeight;
+                            }
+                        });
+                    } else if (provider === 'openai_compat') {
+                        result = await callOpenAICompatible(text);
+                    } else {
+                        result = await callGeminiGrounded(text);
+                    }
+
+                    const badgeColor = provider === 'webgpu'
+                        ? 'text-purple-600 dark:text-purple-400'
+                        : (provider === 'openai_compat' ? 'text-amber-600 dark:text-amber-400' : 'text-sky-600 dark:text-sky-400');
+
                     const formattedHtml = `
                         <div class="space-y-2">
                             <div class="flex items-center justify-between gap-2 pb-1 border-b border-google-border/50 dark:border-google-dark-border/50">
-                                <span class="text-[11px] font-heading font-bold text-sky-600 dark:text-sky-400"><i class="fa-solid fa-sparkles mr-1"></i> ตอบโดย ${escapeHtml(gRes.model)}</span>
+                                <span class="text-[11px] font-heading font-bold ${badgeColor}"><i class="fa-solid fa-sparkles mr-1"></i> ตอบโดย ${escapeHtml(result.providerLabel)}</span>
                             </div>
-                            <div class="text-google-text-body dark:text-google-dark-text-body">${renderSafeMarkdown(gRes.text)}</div>
+                            <div class="text-google-text-body dark:text-google-dark-text-body">${renderSafeMarkdown(result.text)}</div>
                         </div>
                     `;
-                    appendChatMessage('ai', formattedHtml);
+                    if (bubbleBody) bubbleBody.innerHTML = formattedHtml;
+                    const container = document.getElementById('chat-messages');
+                    if (container) container.scrollTop = container.scrollHeight;
+
                     chatHistory.push({ role: 'user', text });
-                    chatHistory.push({ role: 'model', text: gRes.text });
-                    lastSpokenPlainText = gRes.text.replace(/[#*`]/g, '');
+                    chatHistory.push({ role: 'model', text: result.text });
+                    lastSpokenPlainText = result.text.replace(/[#*`]/g, '');
                     lastActiveTopic = tokenizeQueryAndDoc(text, false).slice(0, 5).join(' ') || lastActiveTopic;
                     return;
                 } catch (err) {
-                    document.getElementById(loadingId)?.remove();
                     const localFallback = answerWithLocalGroundedAI(text);
                     const noticeHtml = `
                         <div class="space-y-2.5">
                             <div class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-[11px] text-rose-700 dark:text-rose-300">
-                                <strong>⚠️ เชื่อมต่อ Gemini API ไม่สำเร็จ:</strong> ${escapeHtml(err.message)} — ระบบจึงใช้ AI อ่านบริบทในเครื่องตอบแทนให้ด้านล่างครับ
+                                <strong>⚠️ เชื่อมต่อเครื่องยนต์ AI (${escapeHtml(provider)}) ไม่สำเร็จ:</strong> ${escapeHtml(err.message)} — ระบบจึงสลับใช้ Grounded Reading AI ในเครื่องตอบแทนให้ด้านล่างครับ
                             </div>
                             ${localFallback.html}
                         </div>
                     `;
-                    appendChatMessage('ai', noticeHtml);
+                    if (bubbleBody) bubbleBody.innerHTML = noticeHtml;
                     chatHistory.push({ role: 'user', text });
                     chatHistory.push({ role: 'model', text: localFallback.plain });
                     lastSpokenPlainText = localFallback.plain;
@@ -1976,7 +2557,7 @@ void loop() {
                 }
             }
 
-            // Local Grounded Reading AI (zero API key required, fast & deterministic)
+            // Local Grounded Reading AI (zero API key required, instant & deterministic)
             const reply = answerWithLocalGroundedAI(text);
             chatHistory.push({ role: 'user', text });
             chatHistory.push({ role: 'model', text: reply.plain });

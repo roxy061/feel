@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://feel-ochre.vercel.app/sitemap.xml

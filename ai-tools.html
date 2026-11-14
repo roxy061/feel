@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>คลังรวบรวม 130 เว็บไซต์ AI แยกตามความถนัด (AI Directory Hub) | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="ศูนย์รวม 130 เว็บไซต์ AI ยอดนิยมที่เปิดใช้งานผ่านเบราว์เซอร์ได้ทันที แยกตาม 8 หมวดความถนัด พร้อมรายละเอียดจุดเด่น รูปแบบการใช้งานฟรี ค้นหาไว กรองง่าย และปักหมุดรายการโปรด">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.25rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.12), 0 1px 3px 1px rgba(60,64,67,0.08);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26, 115, 232, 0.12);
+            border-color: #93c5fd;
+        }
+        .dark .tool-card:hover {
+            border-color: #38bdf8;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-google-blue selection:text-white">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-md pointer-events-none"></div>
+
+    <!-- Scroll-to-Top Floating Button -->
+    <button id="scroll-top-btn" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="hidden fixed bottom-6 left-6 z-40 px-3.5 py-2.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-heading font-bold text-google-text dark:text-white shadow-lg hover:border-google-blue transition cursor-pointer items-center gap-1.5" title="กลับขึ้นด้านบน">
+        <i class="fa-solid fa-arrow-up text-google-blue"></i> ขึ้นบน
+    </button>
+
+    <!-- ========================================== -->
+    <!-- TOP NAVIGATION BAR                         -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-4 sm:px-6 flex items-center justify-between gap-3">
+        <!-- Left: Back Button & Branding -->
+        <div class="flex items-center gap-2.5 min-w-0">
+            <a href="index.html" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก Portfolio</span>
+            </a>
+
+            <div class="h-5 w-[1px] bg-google-border dark:bg-google-dark-border mx-0.5 hidden sm:block"></div>
+
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 via-google-blue to-indigo-600 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-xs sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            คลังเว็บไซต์ AI 130+ แอป (AI Directory Hub)
+                        </h1>
+                        <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 text-[10px] font-bold">
+                            8 หมวดความถนัด • เปิดเว็บใช้ได้ทันที
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        รวบรวมรายชื่อหลัก 1–100 + แนะนำเพิ่มเติม 30 เว็บ • นายภคพล สมัยแก้ว (ฟีล)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Unified 9-App Switcher & Theme Toggle -->
+        <div class="flex items-center gap-2 shrink-0">
+            <nav class="hidden 2xl:flex items-center gap-1 bg-google-subtle dark:bg-google-dark-subtle p-1 rounded-full border border-google-border dark:border-google-dark-border text-xs">
+                <a href="wheel.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">1. วงล้อ 3D</a>
+                <a href="southern-food.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">2. ร้านอาหาร</a>
+                <a href="cctv.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">3. CCTV</a>
+                <a href="weather.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">4. เรดาร์</a>
+                <a href="rubik.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">5. รูบิค</a>
+                <a href="ai-assistant.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">6. ผู้ช่วย AI</a>
+                <a href="vault.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">7. ตู้เซฟ</a>
+                <a href="photo-studio.html" class="px-2 py-1 rounded-full font-medium text-google-text-muted hover:text-google-text transition">8. แต่งรูป</a>
+                <a href="ai-tools.html" class="px-2.5 py-1 rounded-full font-bold bg-sky-600 text-white shadow-xs">9. คลังเว็บ AI</a>
+            </nav>
+
+            <a href="ai-assistant.html" class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs font-semibold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 transition">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>ผู้ช่วย AI ของเว็บ</span>
+            </a>
+
+            <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle transition-all shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN CONTENT                               -->
+    <!-- ========================================== -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6">
+
+        <!-- 1. Hero & Overview Banner -->
+        <section class="g-card p-5 sm:p-6 bg-gradient-to-br from-sky-500/10 via-indigo-500/5 to-emerald-500/5 border-sky-200/80 dark:border-sky-900/50 space-y-5">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div class="space-y-2 max-w-4xl">
+                    <div class="inline-flex flex-wrap items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-600 text-white">เว็บแอปที่ 9 • ศูนย์รวม AI บนเบราว์เซอร์ (ไม่ต้องลงโปรแกรม)</span>
+                        <span id="total-count-pill" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300">รวม 130 เว็บไซต์ (หลัก 1–100 + เสริม 30)</span>
+                    </div>
+                    <h2 class="text-lg sm:text-2xl font-extrabold text-google-text dark:text-google-dark-text font-heading leading-snug">
+                        รวม 130 เว็บไซต์ AI แยกตามความถนัด — หาไว อ่านง่าย กดใช้ได้ทันที
+                    </h2>
+                    <p class="text-xs sm:text-sm text-google-text-body dark:text-google-dark-text-body leading-relaxed">
+                        จัดระเบียบรายชื่อ <strong>100 เว็บ AI หลักครบทุกตัว</strong> พร้อมคัด <strong>30 เว็บเสริมสายเฉพาะทาง</strong> (เช่น Google AI Studio, Qwen Chat, Kimi, Firebase Studio, Napkin AI, Fish Audio, Wolfram|Alpha) แบ่งชัดเจน 8 หมวดความถนัด ระบุจุดเด่น งานที่เหมาะ และเงื่อนไขการใช้งานฟรี
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                    <button type="button" onclick="pickRandomSpotlight()" class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-heading font-bold text-xs shadow-sm flex items-center gap-2 cursor-pointer transition">
+                        <i class="fa-solid fa-shuffle"></i>
+                        <span>สุ่มแนะนำ AI น่าลอง</span>
+                    </button>
+                    <button type="button" onclick="scrollToSection('builtin-tools-card')" class="px-3.5 py-2.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-indigo-500 text-xs font-heading font-semibold text-google-text dark:text-white flex items-center gap-1.5 cursor-pointer transition">
+                        <i class="fa-solid fa-house-laptop text-indigo-500"></i>
+                        <span>เครื่องมือฟรีในเว็บเรา</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick-Start Task Shortcuts -->
+            <div class="pt-3 border-t border-google-border/70 dark:border-google-dark-border/70 space-y-2">
+                <div class="text-[11px] font-heading font-bold uppercase tracking-wider text-google-text-muted dark:text-google-dark-text-muted flex items-center gap-1.5">
+                    <i class="fa-solid fa-bullseye text-sky-500"></i>
+                    <span>อยากทำงานอะไร? เลือกทางลัดตรงความถนัดได้เลย:</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="applyQuickTask('chat', 'ค้นหา')" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-sky-500 hover:text-sky-600 text-xs font-semibold transition cursor-pointer">
+                        🔍 ค้นหาข้อมูล + แหล่งอ้างอิงจริง
+                    </button>
+                    <button type="button" onclick="applyQuickTask('code', 'เว็บ')" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-emerald-500 hover:text-emerald-600 text-xs font-semibold transition cursor-pointer">
+                        💻 สร้างหน้าเว็บ / เขียนโค้ด
+                    </button>
+                    <button type="button" onclick="applyQuickTask('image', 'พื้นหลัง')" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-violet-500 hover:text-violet-600 text-xs font-semibold transition cursor-pointer">
+                        ✂️ ลบพื้นหลัง / แต่งภาพขายของ
+                    </button>
+                    <button type="button" onclick="applyQuickTask('video', 'คลิป')" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-rose-500 hover:text-rose-600 text-xs font-semibold transition cursor-pointer">
+                        🎬 ทำคลิปสั้น / ตัดต่ออัตโนมัติ
+                    </button>
+                    <button type="button" onclick="applyQuickTask('audio', 'เพลง')" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-amber-500 hover:text-amber-600 text-xs font-semibold transition cursor-pointer">
+                        🎵 แต่งเพลง / พากย์เสียงไทย
+                    </button>
+                    <button type="button" onclick="applyQuickTask('docs', 'สไลด์')" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-indigo-500 hover:text-indigo-600 text-xs font-semibold transition cursor-pointer">
+                        📊 ทำสไลด์พรีเซนต์ / Infographic
+                    </button>
+                    <button type="button" onclick="applyQuickTask('docs', 'PDF')" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-teal-500 hover:text-teal-600 text-xs font-semibold transition cursor-pointer">
+                        📄 อ่านสรุป PDF &amp; เปเปอร์วิจัย
+                    </button>
+                    <button type="button" onclick="applyQuickTask('learn', '')" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-blue-500 hover:text-blue-600 text-xs font-semibold transition cursor-pointer">
+                        🎓 ติวคณิต &amp; ฝึกออกเสียงอังกฤษ
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Spotlight Banner (Shown on Random Pick) -->
+        <section id="spotlight-banner" class="hidden g-card p-4 sm:p-5 border-l-4 border-l-amber-500 bg-amber-50/70 dark:bg-amber-950/30">
+            <!-- Populated by JS -->
+        </section>
+
+        <!-- 2. Sticky Filter, Search & Category Control Panel -->
+        <section class="g-card p-4 sm:p-5 sticky top-[68px] z-30 shadow-md space-y-3.5">
+            <!-- Row 1: Search + View Mode + Reset -->
+            <div class="flex flex-col md:flex-row gap-2.5 items-stretch md:items-center">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-google-text-muted text-xs"></i>
+                    <input
+                        type="text"
+                        id="ai-search-input"
+                        oninput="renderDirectory()"
+                        placeholder="ค้นหาชื่อเว็บ, โดเมน, ความถนัด เช่น chatgpt, ทำสไลด์, พากย์เสียง, 3D, อ่านวิจัย... (กด / เพื่อค้นหา)"
+                        class="w-full pl-9 pr-9 py-2.5 rounded-xl bg-google-subtle dark:bg-google-dark-subtle border border-google-border dark:border-google-dark-border focus:border-sky-500 focus:bg-white dark:focus:bg-google-dark-surface focus:outline-none text-xs sm:text-sm text-google-text dark:text-white"
+                    >
+                    <button type="button" id="btn-clear-search" onclick="clearSearchInput()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-google-text-muted hover:text-rose-500 cursor-pointer" title="ล้างคำค้น">
+                        <i class="fa-solid fa-circle-xmark text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- View Toggle & Result Counter -->
+                <div class="flex flex-wrap items-center justify-between md:justify-end gap-2 shrink-0">
+                    <span id="result-counter" class="text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted px-2">
+                        แสดง 130 / 130 เว็บ
+                    </span>
+
+                    <div class="inline-flex rounded-xl bg-google-subtle dark:bg-google-dark-subtle p-1 border border-google-border dark:border-google-dark-border text-xs">
+                        <button type="button" id="view-btn-grid" onclick="setViewMode('grid')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface font-bold text-google-text dark:text-white shadow-xs cursor-pointer transition">
+                            <i class="fa-solid fa-grip mr-1"></i> การ์ด
+                        </button>
+                        <button type="button" id="view-btn-table" onclick="setViewMode('table')" class="px-2.5 py-1 rounded-lg font-medium text-google-text-muted hover:text-google-text cursor-pointer transition">
+                            <i class="fa-solid fa-table-list mr-1"></i> ตารางย่อ
+                        </button>
+                    </div>
+
+                    <button type="button" id="btn-reset-filters" onclick="resetAllFilters()" class="hidden px-2.5 py-1.5 rounded-xl border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 text-xs font-semibold cursor-pointer hover:bg-rose-100 transition">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> ล้างตัวกรอง
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row 2: Category Tabs -->
+            <div id="category-tabs" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Row 3: Scope & Pricing Filter Pills -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-google-border/70 dark:border-google-dark-border/70">
+                <div id="attribute-filters" class="flex flex-wrap items-center gap-1.5 text-[11px]">
+                    <button type="button" data-filter="all" onclick="setAttrFilter('all')" class="attr-btn px-2.5 py-1 rounded-lg font-bold bg-sky-600 text-white cursor-pointer transition">
+                        ทั้งหมด
+                    </button>
+                    <button type="button" data-filter="core" onclick="setAttrFilter('core')" class="attr-btn px-2.5 py-1 rounded-lg font-semibold bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body hover:bg-sky-100 cursor-pointer transition">
+                        ชุดหลัก 1–100
+                    </button>
+                    <button type="button" data-filter="extra" onclick="setAttrFilter('extra')" class="attr-btn px-2.5 py-1 rounded-lg font-semibold bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body hover:bg-indigo-100 cursor-pointer transition">
+                        ✨ เพิ่มเติมใหม่ (+30)
+                    </button>
+                    <button type="button" data-filter="has_free" onclick="setAttrFilter('has_free')" class="attr-btn px-2.5 py-1 rounded-lg font-semibold bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body hover:bg-emerald-100 cursor-pointer transition">
+                        ✅ ใช้ฟรีได้ / มี Free Tier
+                    </button>
+                    <button type="button" data-filter="thai" onclick="setAttrFilter('thai')" class="attr-btn px-2.5 py-1 rounded-lg font-semibold bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body hover:bg-teal-100 cursor-pointer transition">
+                        🇹🇭 เด่นด้านภาษาไทย
+                    </button>
+                    <button type="button" data-filter="favorites" onclick="setAttrFilter('favorites')" class="attr-btn px-2.5 py-1 rounded-lg font-semibold bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body hover:bg-amber-100 cursor-pointer transition">
+                        ⭐ ที่ปักหมุดไว้ (<span id="fav-count-badge">0</span>)
+                    </button>
+                </div>
+
+                <div class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden sm:block">
+                    เคล็ดลับ: กด <i class="fa-regular fa-star text-amber-500"></i> เพื่อปักหมุดเว็บที่ใช้บ่อยไว้บนเครื่องของคุณเอง
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Directory Content Container (Cards grouped by category OR Compact Table) -->
+        <div id="directory-container" class="space-y-8">
+            <!-- Populated by JS -->
+        </div>
+
+        <!-- 4. Built-In Free Portfolio Tools Callout -->
+        <section id="builtin-tools-card" class="g-card p-5 sm:p-6 bg-gradient-to-r from-indigo-500/10 via-violet-500/5 to-teal-500/10 border-indigo-200 dark:border-indigo-900/50 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-600 text-white">ใช้งานฟรีในเว็บนี้ทันที (ไม่จำกัดรอบ • ไม่ต้องสมัครสมาชิก)</span>
+                    <h3 class="text-base sm:text-lg font-extrabold font-heading text-google-text dark:text-white mt-1.5">
+                        เครื่องมือ AI และระบบช่วยทำงานที่มีพร้อมใช้ในโปรเจกต์ Portfolio นี้
+                    </h3>
+                </div>
+                <a href="index.html#live-services" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline shrink-0">
+                    ดูครบทั้งหมด 9 เว็บแอป →
+                </a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                <a href="ai-assistant.html" class="p-4 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-indigo-500 transition flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <div class="space-y-1 min-w-0">
+                        <div class="font-heading font-bold text-sm text-google-text dark:text-white">ผู้ช่วย AI อ่านเอกสาร &amp; WebGPU</div>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">วางเอกสารให้ AI อ่านตอบตรงประเด็น รัน WebGPU ฟรีในเครื่อง หรือเชื่อม Ollama / Gemini API</p>
+                    </div>
+                </a>
+                <a href="photo-studio.html" class="p-4 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-violet-500 transition flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-950 text-violet-600 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-scissors"></i>
+                    </div>
+                    <div class="space-y-1 min-w-0">
+                        <div class="font-heading font-bold text-sm text-google-text dark:text-white">สตูดิโอลบพื้นหลัง &amp; รูปติดบัตร</div>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">ไดคัทพื้นหลังโปร่งใส PNG เปลี่ยนฉากหลังน้ำเงิน/ขาว ครอปและแต่งสีได้ฟรีไม่ติดลายน้ำ</p>
+                    </div>
+                </a>
+                <a href="vault.html" class="p-4 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-teal-500 transition flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-950 text-teal-600 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-vault"></i>
+                    </div>
+                    <div class="space-y-1 min-w-0">
+                        <div class="font-heading font-bold text-sm text-google-text dark:text-white">ตู้เซฟ SafeBox แชร์ด้วย PIN 6 หลัก</div>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">ฝากไฟล์ รูปภาพความชัด 100% ลิงก์ และข้อความแชร์ข้ามเครื่องด้วย PIN 6 หลัก (รีทุก 10 นาที)</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-8 border-t border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface py-5 px-4 sm:px-6 text-xs text-google-text-muted dark:text-google-dark-text-muted">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="index.html" class="hover:text-google-blue font-semibold">หน้าหลัก Portfolio</a>
+                <span>•</span>
+                <a href="wheel.html" class="hover:text-google-blue">1. วงล้อผลงาน 3D</a>
+                <span>•</span>
+                <a href="southern-food.html" class="hover:text-google-blue">2. สุ่มร้านอาหารนครฯ</a>
+                <span>•</span>
+                <a href="cctv.html" class="hover:text-google-blue">3. กล้อง CCTV สด</a>
+                <span>•</span>
+                <a href="weather.html" class="hover:text-google-blue">4. เรดาร์อากาศสด</a>
+                <span>•</span>
+                <a href="rubik.html" class="hover:text-google-blue">5. รูบิค 3x3</a>
+                <span>•</span>
+                <a href="ai-assistant.html" class="hover:text-google-blue">6. ผู้ช่วย AI</a>
+                <span>•</span>
+                <a href="vault.html" class="hover:text-google-blue">7. ตู้เซฟฝากไฟล์</a>
+                <span>•</span>
+                <a href="photo-studio.html" class="hover:text-google-blue">8. ลบพื้นหลัง/แต่งรูป</a>
+                <span>•</span>
+                <a href="ai-tools.html" class="hover:text-google-blue font-semibold text-sky-600 dark:text-sky-400">9. คลังเว็บ AI</a>
+            </div>
+            <div>
+                พัฒนาโดย <strong class="text-google-text dark:text-white">นายภคพล สมัยแก้ว (ฟีล)</strong> • วิทยาลัยอาชีวศึกษานครศรีธรรมราช
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== SANITIZATION HELPERS ====================
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function sanitizeExternalUrl(rawUrl) {
+            try {
+                const u = new URL(String(rawUrl || '').trim());
+                if (u.protocol === 'https:' || u.protocol === 'http:') {
+                    return u.toString();
+                }
+            } catch (_) {}
+            return '#';
+        }
+
+        // ==================== CATEGORY DEFINITIONS ====================
+        const CATEGORIES = [
+            {
+                id: 'chat',
+                num: '1',
+                name: 'สายแชทบอท & คิดวิเคราะห์',
+                shortName: 'แชทบอท & วิเคราะห์',
+                icon: 'fa-comments',
+                color: 'sky',
+                borderClass: 'border-l-sky-500',
+                badgeBg: 'bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300',
+                desc: 'ผู้ช่วยสนทนา ถาม-ตอบ ค้นหาข้อมูลแบบเรียลไทม์ วิเคราะห์ไฟล์เอกสาร และคิดเชิงตรรกะ'
+            },
+            {
+                id: 'code',
+                num: '2',
+                name: 'สายเขียนโค้ด & สร้างเว็บไซต์',
+                shortName: 'โค้ด & เว็บไซต์',
+                icon: 'fa-code',
+                color: 'emerald',
+                borderClass: 'border-l-emerald-500',
+                badgeBg: 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300',
+                desc: 'สร้างหน้า UI, แอป Full-stack บนเบราว์เซอร์, ตรวจสอบโค้ด (Code Review) และเขียน SQL/Regex'
+            },
+            {
+                id: 'image',
+                num: '3',
+                name: 'สายสร้างและแต่งรูปภาพ',
+                shortName: 'รูปภาพ & กราฟิก',
+                icon: 'fa-image',
+                color: 'violet',
+                borderClass: 'border-l-violet-500',
+                badgeBg: 'bg-violet-100 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300',
+                desc: 'สร้างภาพศิลปะ โลโก้ ภาพสินค้า เวกเตอร์ ลบพื้นหลัง ลบวัตถุ และเพิ่มความคมชัด (Upscale)'
+            },
+            {
+                id: 'video',
+                num: '4',
+                name: 'สายสร้างวิดีโอ & แอนิเมชัน',
+                shortName: 'วิดีโอ & แอนิเมชัน',
+                icon: 'fa-film',
+                color: 'rose',
+                borderClass: 'border-l-rose-500',
+                badgeBg: 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300',
+                desc: 'สร้างคลิปวิดีโอจากข้อความ/ภาพ ทำอวตารพูดได้ ตัดคลิปสั้นอัตโนมัติ และใส่ซับไตเติล'
+            },
+            {
+                id: 'audio',
+                num: '5',
+                name: 'สายเสียง ดนตรี & ถอดเสียง',
+                shortName: 'เสียง & ดนตรี',
+                icon: 'fa-music',
+                color: 'amber',
+                borderClass: 'border-l-amber-500',
+                badgeBg: 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300',
+                desc: 'สังเคราะห์เสียงพากย์ โคลนเสียง แต่งเพลงครบวงจร แยกแทร็กดนตรี และถอดเสียงประชุม'
+            },
+            {
+                id: 'docs',
+                num: '6',
+                name: 'สายเอกสาร พรีเซนเทชัน & งานวิจัย',
+                shortName: 'เอกสาร & สไลด์',
+                icon: 'fa-file-lines',
+                color: 'indigo',
+                borderClass: 'border-l-indigo-500',
+                badgeBg: 'bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300',
+                desc: 'ทำสไลด์อัตโนมัติ สรุป PDF อ่านงานวิจัย แผนผัง Mind Map แปลภาษา และเขียนคอนเทนต์'
+            },
+            {
+                id: 'auto3d',
+                num: '7',
+                name: 'สาย 3D ระบบอัตโนมัติ & เครื่องมือเฉพาะทาง',
+                shortName: '3D & Automation',
+                icon: 'fa-cubes',
+                color: 'teal',
+                borderClass: 'border-l-teal-500',
+                badgeBg: 'bg-teal-100 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300',
+                desc: 'ปั้นโมเดล 3D จากภาพ/ข้อความ เชื่อมต่อ API/Workflow อัตโนมัติ และแพลตฟอร์มรันโมเดลเปิด'
+            },
+            {
+                id: 'learn',
+                num: '8',
+                name: 'สายการเรียนรู้ ติวคณิต & ฝึกภาษา (หมวดเสริม)',
+                shortName: 'เรียนรู้ & ติวเตอร์',
+                icon: 'fa-graduation-cap',
+                color: 'blue',
+                borderClass: 'border-l-blue-600',
+                badgeBg: 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300',
+                desc: 'ตัวช่วยคำนวณคณิต-วิทย์แสดงวิธีทำละเอียด ติวเตอร์สอนทีละขั้น และฝึกพูดภาษาอังกฤษ'
+            }
+        ];
+
+        const CATEGORY_MAP = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
+
+        // ==================== FULL 130 AI WEB APPS DATASET ====================
+        // Items 1..100 match user's curated list 100%, 101..130 are verified specialty additions.
+        // pricing: 'free' | 'freemium' | 'credit' | 'paid'
+        const AI_TOOLS = [
+            // --- 1. CHATBOTS & REASONING (1-15 + 101-105) ---
+            { id: 1, cat: 'chat', name: 'ChatGPT', domain: 'chatgpt.com', url: 'https://chatgpt.com', pricing: 'freemium', thai: true, summary: 'แชทบอทอัจฉริยะรอบด้าน คิดวิเคราะห์ อ่านไฟล์ ค้นเว็บ และเขียนงานได้ทุกแนว', bestFor: 'เขียนบทความ, แก้โค้ด, วิเคราะห์รูป/ตาราง, สั่งงานด้วยเสียง', tip: 'ใช้ได้ฟรีโดยมีโควตาโมเดลล่าสุดในแต่ละช่วงเวลา' },
+            { id: 2, cat: 'chat', name: 'Claude', domain: 'claude.ai', url: 'https://claude.ai', pricing: 'freemium', thai: true, summary: 'เขียนภาษาธรรมชาติลื่นไหล อ่านเอกสารยาว และเขียนโค้ดได้อย่างแม่นยำ', bestFor: 'เขียนบทความภาษาไทยสละสลวย, สร้างเว็บ/พรีวิวจริงผ่าน Artifacts', tip: 'โหมด Artifacts แสดงหน้าเว็บ/แผนภาพตัวอย่างให้เห็นคู่กับแชทได้ทันที' },
+            { id: 3, cat: 'chat', name: 'Gemini', domain: 'gemini.google.com', url: 'https://gemini.google.com', pricing: 'freemium', thai: true, summary: 'เชื่อมต่อระบบนิเวศ Google อ่านไฟล์ขนาดใหญ่ สรุป YouTube และวิดีโอได้', bestFor: 'ทำงานร่วมกับ Docs/Drive/Gmail, วิเคราะห์วิดีโอและเอกสารยาว', tip: 'พิมพ์คำสั่งเรียกสรุปหรือจัดทำตารางส่งออกเป็น Google Sheets ได้เลย' },
+            { id: 4, cat: 'chat', name: 'Perplexity AI', domain: 'perplexity.ai', url: 'https://perplexity.ai', pricing: 'freemium', thai: true, summary: 'เครื่องมือค้นหาข้อมูลเรียลไทม์พร้อมแนบลิงก์แหล่งอ้างอิงทุกประโยค', bestFor: 'สืบค้นข้อมูลล่าสุด, เช็กข่าว/ตัวเลขจริง, หาเปเปอร์หรือแหล่งที่มาอ้างอิง', tip: 'เหมาะกว่า Google Search เวลาต้องการคำตอบสรุปครบพร้อมลิงก์ต้นทาง' },
+            { id: 5, cat: 'chat', name: 'Microsoft Copilot', domain: 'copilot.microsoft.com', url: 'https://copilot.microsoft.com', pricing: 'freemium', thai: true, summary: 'แชทบอทที่เชื่อมกับ Bing Search และรองรับการทำงานร่วมกับชุด Office', bestFor: 'ค้นหาข้อมูลเว็บปัจจุบันและสร้างภาพประกอบพื้นฐานฟรี', tip: 'เข้าใช้งานฟรีด้วยบัญชี Microsoft หรือทดสอบได้ทันทีผ่าน Edge' },
+            { id: 6, cat: 'chat', name: 'Grok', domain: 'grok.com', url: 'https://grok.com', pricing: 'freemium', thai: true, summary: 'ดึงข้อมูลและกระแสเรียลไทม์จากแพลตฟอร์ม X พร้อมคิดวิเคราะห์เชิงลึก', bestFor: 'ตามเทรนด์โซเชียล X ล่าสุด, วิเคราะห์โค้ดและสร้างภาพไม่ติดกรอบเกินจำเป็น', tip: 'เปิดโหมด DeepSearch เมื่อต้องการค้นหาและเรียบเรียงข้อมูลเชิงลึกหลายแหล่ง' },
+            { id: 7, cat: 'chat', name: 'DeepSeek', domain: 'chat.deepseek.com', url: 'https://chat.deepseek.com', pricing: 'free', thai: true, summary: 'โมเดลคิดวิเคราะห์เชิงตรรกะ คณิตศาสตร์ และเขียนโค้ดที่ฉลาดและใช้งานฟรีคุ้มค่า', bestFor: 'โจทย์ตรรกะซับซ้อน, คณิตศาสตร์, อัลกอริทึมโปรแกรมมิง', tip: 'กดเปิดโหมด DeepThink (R1) เพื่อดูลำดับความคิดทีละขั้นก่อนสรุปคำตอบ' },
+            { id: 8, cat: 'chat', name: 'Poe', domain: 'poe.com', url: 'https://poe.com', pricing: 'freemium', thai: true, summary: 'ศูนย์รวมโมเดล AI หลายค่าย (Claude, GPT, Gemini, Llama) ไว้ในหน้าเดียว', bestFor: 'เปรียบเทียบคำตอบจากหลายโมเดลพร้อมกัน หรือสร้างบอทเฉพาะทาง', tip: 'มีระบบพอยต์ฟรีให้สลับลองคุยกับหลายโมเดลได้ทุกวัน' },
+            { id: 9, cat: 'chat', name: 'You.com', domain: 'you.com', url: 'https://you.com', pricing: 'freemium', thai: false, summary: 'เครื่องมือค้นหาและผู้ช่วยวิจัยที่สลับเลือกโมเดล AI ได้ตามงาน', bestFor: 'โหมด Research เปรียบเทียบข้อมูลหลายมุมและสลับโมเดลในการค้นหาเดียว', tip: 'เลือก Custom Agent สำหรับเขียนโปรแกรมหรือสรุปบทความเฉพาะทางได้' },
+            { id: 10, cat: 'chat', name: 'Mistral Le Chat', domain: 'chat.mistral.ai', url: 'https://chat.mistral.ai', pricing: 'freemium', thai: false, summary: 'แชทบอทความเร็วสูงจากค่ายยุโรป ตอบไว รองรับ Flash Answers และ Canvas', bestFor: 'ถาม-ตอบโค้ดภาษาอังกฤษ, อ่านไฟล์ และร่างเอกสารอย่างรวดเร็ว', tip: 'สร้างคำตอบได้เร็วมาก เหมาะกับการระดมไอเดียต่อเนื่อง' },
+            { id: 11, cat: 'chat', name: 'Cohere Coral', domain: 'coral.cohere.com', url: 'https://coral.cohere.com', pricing: 'freemium', thai: false, summary: 'แชทบอทระดับองค์กร (Command R) เน้นสรุปเอกสารและเชื่อมข้อมูล RAG แม่นยำ', bestFor: 'สรุปเอกสารธุรกิจ, ตอบคำถามแบบอ้างอิงตำแหน่งข้อความจริงในไฟล์', tip: 'เด่นด้านลดอาการแต่งเรื่อง (Hallucination) เมื่อให้อ้างอิงจากเอกสารที่แนบ' },
+            { id: 12, cat: 'chat', name: 'HuggingChat', domain: 'huggingface.co/chat', url: 'https://huggingface.co/chat', pricing: 'free', thai: true, summary: 'แชทบอทโอเพนซอร์สฟรีที่รวมโมเดลเปิดชื่อดัง (Qwen, Llama, DeepSeek) ให้ทดลอง', bestFor: 'ทดลองคุยกับโมเดล Open Source รุ่นใหม่ล่าสุดแบบฟรีไม่เสียเงิน', tip: 'สามารถเลือกเปิด Search Web และสลับโมเดลเปิดได้หลายสิบรุ่น' },
+            { id: 13, cat: 'chat', name: 'Pi AI', domain: 'pi.ai', url: 'https://pi.ai', pricing: 'free', thai: false, summary: 'AI ที่ออกแบบมาเพื่อการสนทนาให้คำปรึกษาและรับฟังอย่างเป็นกันเอง', bestFor: 'คุยระดมความคิด, ซ้อมพูดภาษาอังกฤษด้วยเสียงที่เป็นธรรมชาติ', tip: 'น้ำเสียงการคุยจะนุ่มนวลและโต้ตอบเหมือนเพื่อนคุยมากกว่าบอททำงาน' },
+            { id: 14, cat: 'chat', name: 'Character.ai', domain: 'character.ai', url: 'https://character.ai', pricing: 'freemium', thai: true, summary: 'แชทสวมบทบาทกับตัวละคร บุคคลจำลอง และติวเตอร์ที่ผู้ใช้สร้างขึ้น', bestFor: 'ฝึกภาษาผ่านการสมมติสถานการณ์, แต่งนิยายโต้ตอบ, คุยคลายเครียด', tip: 'มีตัวละครฝึกภาษาและสัมภาษณ์งานให้เลือกเล่นฟรีหลายแสนตัว' },
+            { id: 15, cat: 'chat', name: 'Phind', domain: 'phind.com', url: 'https://phind.com', pricing: 'freemium', thai: false, summary: 'เครื่องมือค้นหาและตอบคำถามเชิงเทคนิคโดยเฉพาะสำหรับโปรแกรมเมอร์', bestFor: 'หา Error Stack Overflow, เอกสาร Library และตัวอย่างโค้ดปัจจุบัน', tip: 'แสดงขั้นตอนคำอธิบายควบคู่บล็อกโค้ดพร้อมลิงก์อ้างอิงเอกสารทางการ' },
+
+            // Extra Category 1 (101-105)
+            { id: 101, isExtra: true, cat: 'chat', name: 'Qwen Chat', domain: 'chat.qwen.ai', url: 'https://chat.qwen.ai', pricing: 'free', thai: true, summary: 'เว็บแชทอย่างเป็นทางการของโมเดลตระกูล Qwen (Alibaba) ใช้ฟรีความสามารถสูง', bestFor: 'เขียนโค้ด, คิดเลข, สั่งงานภาษาไทย, สร้างเว็บพรีวิว (Artifacts) และรันโค้ดฟรี', tip: 'เก่งทั้งภาษาไทย อังกฤษ จีน และให้โควตาใช้งานฟรีที่กว้างมาก' },
+            { id: 102, isExtra: true, cat: 'chat', name: 'Google AI Studio', domain: 'aistudio.google.com', url: 'https://aistudio.google.com', pricing: 'free', thai: true, summary: 'หน้าเว็บนักพัฒนาจาก Google สำหรับทดลองใช้โมเดล Gemini เต็มความสามารถและสร้าง API Key', bestFor: 'วางไฟล์โค้ด/PDF/วิดีโอยาวมาก (1M+ tokens), ปรับ System Prompt และสร้าง API Key', tip: 'เหมาะนำ API Key ไปเชื่อมต่อกับหน้าผู้ช่วย AI ของเว็บนี้ได้ทันที' },
+            { id: 103, isExtra: true, cat: 'chat', name: 'Kimi AI', domain: 'kimi.com', url: 'https://www.kimi.com', pricing: 'free', thai: true, summary: 'AI ผู้เชี่ยวชาญการอ่านไฟล์ยาวหลักแสนตัวอักษรและค้นหาข้อมูลลึกหลายแหล่ง', bestFor: 'อัปโหลดเอกสารขนาดยาว, สรุปรายงานหลายสิบหน้า และค้นข้อมูลเชิงลึก', tip: 'ใส่ไฟล์หลายไฟล์พร้อมกันเพื่อให้เปรียบเทียบข้อมูลข้ามไฟล์ได้' },
+            { id: 104, isExtra: true, cat: 'chat', name: 'Meta AI', domain: 'meta.ai', url: 'https://www.meta.ai', pricing: 'free', thai: true, summary: 'แชทบอทโมเดล Llama จาก Meta เปิดใช้ฟรี ค้นเว็บและสร้างรูป/GIF ในหน้าเดียว', bestFor: 'ถาม-ตอบรวดเร็ว, เจนภาพประกอบไอเดียเบื้องต้นแบบไม่มีค่าใช้จ่าย', tip: 'รองรับการแก้ไขและปรับแอนิเมชันภาพจากการพิมพ์แชทต่อเนื่อง' },
+            { id: 105, isExtra: true, cat: 'chat', name: 'Duck.ai', domain: 'duck.ai', url: 'https://duck.ai', pricing: 'free', thai: true, summary: 'บริการแชท AI แบบไม่ระบุตัวตนโดย DuckDuckGo ไม่เก็บประวัติลงเซิร์ฟเวอร์', bestFor: 'ใช้งาน GPT / Claude / Llama / Mistral ฟรีโดยเน้นความเป็นส่วนตัวสูงสุด', tip: 'ไม่ต้องสมัครบัญชีหรือผูกอีเมล ก็เปิดหน้าเว็บคุยได้ทันที' },
+
+            // --- 2. CODING & WEBSITE BUILDERS (16-30 + 106-110) ---
+            { id: 16, cat: 'code', name: 'v0 by Vercel', domain: 'v0.dev', url: 'https://v0.dev', pricing: 'freemium', thai: true, summary: 'สร้างหน้าตาเว็บไซต์ (UI) และโค้ด React / Tailwind / HTML จากข้อความหรือภาพอ้างอิง', bestFor: 'ออกแบบ Landing Page, Dashboard, Component สวยพร้อมก๊อปโค้ดไปใช้ต่อ', tip: 'แนบภาพสเก็ตช์หรือแคปหน้าจอตัวอย่างเพื่อให้แปลงเป็นโค้ดจริงได้ตรงสไตล์' },
+            { id: 17, cat: 'code', name: 'Bolt.new', domain: 'bolt.new', url: 'https://bolt.new', pricing: 'credit', thai: true, summary: 'สร้าง แก้ไข ติดตั้งแพ็กเกจ และรันเว็บแอปแบบ Full-stack ในเบราว์เซอร์ทันที', bestFor: 'ปั้นต้นแบบเว็บแอปที่มีทั้งหน้าบ้าน+หลังบ้านและทดสอบรันสดได้โดยไม่ต้องลง VS Code', tip: 'สามารถแก้ Error จาก Console อัตโนมัติและกด Deploy ขึ้นเว็บได้เลย' },
+            { id: 18, cat: 'code', name: 'Lovable', domain: 'lovable.dev', url: 'https://lovable.dev', pricing: 'credit', thai: true, summary: 'สร้างเว็บแอปจากภาษาไทย/อังกฤษ พร้อมเชื่อมต่อฐานข้อมูล Supabase และระบบล็อกอิน', bestFor: 'สร้างเว็บระบบสมาชิก ระบบร้านค้า หรือแดชบอร์ดพร้อมฐานข้อมูลจริง', tip: 'สั่งแก้ไขทีละส่วนด้วยการพิมพ์บอก หรือคลิกเลือกจุดบนหน้าจอที่จะปรับ' },
+            { id: 19, cat: 'code', name: 'Replit', domain: 'replit.com', url: 'https://replit.com', pricing: 'freemium', thai: false, summary: 'เขียนโค้ด รันเซิร์ฟเวอร์หลากหลายภาษาบนคลาวด์ พร้อม Replit Agent สร้างโปรเจกต์อัตโนมัติ', bestFor: 'เขียนบอท Python/Node.js, เว็บ Backend และงานทดลองโค้ดที่มี Terminal ออนไลน์', tip: 'รองรับแทบทุกภาษาโปรแกรมโดยไม่ต้องตั้งค่าเครื่องคอมพิวเตอร์' },
+            { id: 20, cat: 'code', name: 'Codeium (Windsurf Web)', domain: 'codeium.com', url: 'https://codeium.com', pricing: 'freemium', thai: false, summary: 'แพลตฟอร์มผู้ช่วยเขียนโค้ด AI ที่มีทั้ง Search/Chat และปลั๊กอินช่วยเติมโค้ดฟรี', bestFor: 'นักพัฒนาที่อยากได้ Autocomplete และแชทอธิบายโค้ดฟรีสำหรับใช้งานส่วนตัว', tip: 'มีแพ็กเกจ Individual Free ให้ใช้งานฟีเจอร์เติมโค้ดพื้นฐานได้ต่อเนื่อง' },
+            { id: 21, cat: 'code', name: 'Blackbox AI', domain: 'blackbox.ai', url: 'https://www.blackbox.ai', pricing: 'freemium', thai: true, summary: 'ค้นหาโค้ด แปลงภาพหน้าจอ UI เป็นโค้ด และช่วยดีบักปัญหาบนเบราว์เซอร์', bestFor: 'นักเรียน/นักพัฒนาที่ต้องการก๊อปตัวอย่างโค้ดจากคลิปหรือภาพมาปรับแต่ง', tip: 'เปิดใช้งานแชทถามตอบโค้ดได้ทันทีโดยไม่ต้องติดตั้งโปรแกรม' },
+            { id: 22, cat: 'code', name: 'Framer AI', domain: 'framer.com', url: 'https://www.framer.com', pricing: 'freemium', thai: false, summary: 'ออกแบบและเผยแพร่เว็บไซต์ระดับมืออาชีพที่มีแอนิเมชันลื่นไหลด้วยเครื่องมือ AI', bestFor: 'ทำเว็บ Portfolio, หน้าแนะนำสินค้า Startup ที่ต้องการดีไซน์สวยทันสมัย', tip: 'สร้างและแก้ไขดีไซน์ฟรี ก่อนจ่ายเงินเฉพาะตอนผูกโดเมนส่วนตัว' },
+            { id: 23, cat: 'code', name: '10Web', domain: '10web.io', url: 'https://10web.io', pricing: 'credit', thai: false, summary: 'สร้างเว็บไซต์ WordPress และร้านค้า WooCommerce อัตโนมัติจากคำอธิบายธุรกิจ', bestFor: 'คนทำเว็บ WordPress ที่อยากได้โครงหน้า Elementor เสร็จไวในไม่กี่นาที', tip: 'รองรับการกรอกข้อมูลธุรกิจแล้วสร้างทั้งโครงร่างและรูปประกอบอัตโนมัติ' },
+            { id: 24, cat: 'code', name: 'Durable', domain: 'durable.co', url: 'https://durable.co', pricing: 'credit', thai: false, summary: 'เครื่องมือสร้างเว็บไซต์ธุรกิจขนาดเล็กครบชุดพร้อมระบบ CRM และสร้างใบแจ้งหนี้ใน 30 วิ', bestFor: 'ร้านบริการฟรีแลนซ์ ร้านช่าง หรือธุรกิจท้องถิ่นที่อยากมีหน้าเว็บเร็วที่สุด', tip: 'มีตัวช่วยคิดชื่อแบรนด์และข้อความการตลาดติดมาให้ในตัว' },
+            { id: 25, cat: 'code', name: 'Dora AI', domain: 'dora.run', url: 'https://www.dora.run', pricing: 'credit', thai: false, summary: 'สร้างเว็บไซต์แบบ 3D และแอนิเมชัน Scroll สุดอลังการจากคำสั่งข้อความ', bestFor: 'เว็บโชว์ผลิตภัณฑ์ที่ต้องการโมเดล 3 มิติหมุนตามการเลื่อนหน้าจอ', tip: 'เหมาะมากสำหรับงานออกแบบเชิงสร้างสรรค์ที่ไม่ต้องเขียน Three.js เอง' },
+            { id: 26, cat: 'code', name: 'Wegic', domain: 'wegic.ai', url: 'https://wegic.ai', pricing: 'freemium', thai: true, summary: 'ออกแบบ ปรับแต่งสี ฟอนต์ และเลย์เอาต์หน้าเว็บผ่านการแชทคุยกับ AI เหมือนคุยกับทีมงาน', bestFor: 'ผู้เริ่มต้นที่ไม่ถนัดจัดเลย์เอาต์เอง แต่อยากสั่งแก้เว็บเป็นภาษาคน', tip: 'มีหน้าเว็บสำเร็จรูปเริ่มต้นฟรี พร้อมปรับข้อความเป็นภาษาไทยได้' },
+            { id: 27, cat: 'code', name: 'CodeRabbit', domain: 'coderabbit.ai', url: 'https://www.coderabbit.ai', pricing: 'freemium', thai: false, summary: 'บอท AI ตรวจสอบโค้ด (Code Review) วิเคราะห์ Bug และความปลอดภัยบน GitHub/GitLab', bestFor: 'โปรเจกต์ทีมบน GitHub ที่ต้องการผู้ช่วยตรวจ Pull Request อัตโนมัติ', tip: 'ใช้งานฟรีสำหรับ Open Source Repositories สาธารณะ' },
+            { id: 28, cat: 'code', name: 'Snyk', domain: 'snyk.io', url: 'https://snyk.io', pricing: 'freemium', thai: false, summary: 'สแกนหาช่องโหว่ความปลอดภัยในโค้ด แพ็กเกจ npm/pip และแนะนำแพตช์แก้ด้วย AI', bestFor: 'ตรวจสอบความปลอดภัยเว็บ/แอป ก่อนส่งงานหรือนำขึ้นใช้งานจริง', tip: 'เชื่อมต่อกับ GitHub ฟรีเพื่อแจ้งเตือน Library ที่มีความเสี่ยง' },
+            { id: 29, cat: 'code', name: 'SQLAI', domain: 'sqlai.ai', url: 'https://www.sqlai.ai', pricing: 'credit', thai: false, summary: 'เขียน อธิบาย และปรับจูนคำสั่งฐานข้อมูล SQL / NoSQL จากประโยคภาษาพูด', bestFor: 'นักศึกษาและนักพัฒนาที่ต้องเขียน Query ซับซ้อนเชื่อมหลายตาราง (JOIN)', tip: 'สามารถวางโครงสร้างตาราง (Schema) เพื่อให้ออกคำสั่ง SQL ที่ตรงตารางจริง' },
+            { id: 30, cat: 'code', name: 'Regex101 / AutoRegex', domain: 'autoregex.xyz', url: 'https://www.autoregex.xyz', pricing: 'free', thai: false, summary: 'แปลงข้อความอธิบายเป็นรูปแบบ Regular Expression และช่วยอธิบายความหมายของแพตเทิร์น', bestFor: 'สร้างสูตรตรวจรูปแบบเบอร์โทร, อีเมล, รหัสผ่าน หรือดึงคำจากข้อความ', tip: 'แนะนำใช้คู่กับ regex101.com เพื่อทดสอบจับคู่ข้อความแบบสดๆ' },
+
+            // Extra Category 2 (106-110)
+            { id: 106, isExtra: true, cat: 'code', name: 'Firebase Studio', domain: 'firebase.studio', url: 'https://firebase.studio', pricing: 'free', thai: true, summary: 'IDE บนเบราว์เซอร์จาก Google (เดิม Project IDX) พร้อม Gemini ช่วยเขียนและรันแอปทันที', bestFor: 'สร้างเว็บ React, Next.js, Flutter, Node.js หรือ PHP โดยไม่ต้องติดตั้งเครื่องมือในคอม', tip: 'มีเทมเพลตให้เริ่มโปรเจกต์และพรีวิวหน้าจอบนคลาวด์ได้ฟรี' },
+            { id: 107, isExtra: true, cat: 'code', name: 'GitHub Copilot Web', domain: 'github.com/features/copilot', url: 'https://github.com/features/copilot', pricing: 'freemium', thai: true, summary: 'เปิดใช้ผู้ช่วยเขียนและอ่านโค้ด Copilot บนหน้าเว็บ GitHub โดยตรง (มีแผนฟรีแล้ว)', bestFor: 'ถามคำถามข้ามไฟล์ใน Repository, อธิบาย Commit และสร้าง Pull Request', tip: 'บัญชี GitHub ฟรีสามารถใช้ GitHub Copilot Free ได้ตามโควตารายเดือน' },
+            { id: 108, isExtra: true, cat: 'code', name: 'Devv AI', domain: 'devv.ai', url: 'https://devv.ai', pricing: 'freemium', thai: false, summary: 'AI Search Engine ออกแบบมาเฉพาะสำหรับนักพัฒนา อ้างอิงเอกสาร API และ Repo จริง', bestFor: 'ค้นหาวิธีใช้ Framework ใหม่ๆ และแก้ปัญหา Error โดยไม่ปนคำตอบมั่วรุ่นเก่า', tip: 'โหมด GitHub Search ช่วยเจาะหาโค้ดตัวอย่างจริงในโปรเจกต์โอเพนซอร์ส' },
+            { id: 109, isExtra: true, cat: 'code', name: 'Uizard', domain: 'uizard.io', url: 'https://uizard.io', pricing: 'freemium', thai: false, summary: 'เครื่องมือออกแบบ UI ที่มี Autodesigner เปลี่ยนคำบรรยายหรือภาพวาดมือเป็นหน้าจอแอป', bestFor: 'ขึ้น Mockup แอปมือถือและเว็บโปรเจกต์ก่อนลงมือเขียนโค้ดจริง', tip: 'ถ่ายรูปภาพสเก็ตช์บนกระดาษอัปโหลดเข้าเว็บเพื่อแปลงเป็น UI ดิจิทัลได้' },
+            { id: 110, isExtra: true, cat: 'code', name: 'Relume', domain: 'relume.ai', url: 'https://www.relume.ai', pricing: 'freemium', thai: false, summary: 'สร้าง Sitemap แผนผังเว็บไซต์และ Wireframe ครบทุกหน้าภายในไม่กี่นาทีด้วย AI', bestFor: 'นักออกแบบเว็บและทีมโปรเจกต์ที่ต้องการวางโครงหน้าเว็บส่งลูกค้าไวๆ', tip: 'ส่งออกโครงสร้างไปทำต่อใน Figma หรือ Webflow ได้อย่างรวดเร็ว' },
+
+            // --- 3. IMAGE GENERATION & PHOTO EDITING (31-48 + 111-113) ---
+            { id: 31, cat: 'image', name: 'Midjourney', domain: 'midjourney.com', url: 'https://www.midjourney.com', pricing: 'paid', thai: false, summary: 'สร้างภาพศิลปะ ภาพประกอบ และภาพถ่ายสมจริงคุณภาพสูงผ่านเว็บ (ไม่ต้องพึ่ง Discord แล้ว)', bestFor: 'งานอาร์ตระดับโปร, โปสเตอร์, ภาพสินค้าแฟชั่น และภาพสมจริงจัดแสงสวย', tip: 'บนหน้าเว็บควบคุม Moodboard, Style Reference และแก้เฉพาะจุดได้ง่ายกว่าในแชท' },
+            { id: 32, cat: 'image', name: 'Ideogram', domain: 'ideogram.ai', url: 'https://ideogram.ai', pricing: 'freemium', thai: false, summary: 'สร้างภาพกราฟิก โปสเตอร์ และโลโก้ที่มีตัวอักษรภาษาอังกฤษฝังในภาพได้แม่นยำมาก', bestFor: 'ทำโปสเตอร์กิจกรรม, เสื้อยืด, หน้าปกคลิป และโลโก้ที่มีคำข้อความชัดเจน', tip: 'มีเครดิตฟรีรายสัปดาห์ให้ทดลองสร้างและเรนเดอร์ซ้ำได้หลายสไตล์' },
+            { id: 33, cat: 'image', name: 'Leonardo.ai', domain: 'leonardo.ai', url: 'https://leonardo.ai', pricing: 'freemium', thai: false, summary: 'สร้างภาพประกอบ งานเกม ไอคอน 3D และฝึกโมเดลสไตล์เฉพาะตัว พร้อมเครดิตฟรีทุกวัน', bestFor: 'ภาพตัวละครเกม, สินทรัพย์กราฟิก 3D, งานภาพสไตล์สม่ำเสมอ', tip: 'มีโทเคนรีเซ็ตให้ทดลองใช้ฟรีทุกวัน เหมาะสำหรับผู้เริ่มหัดสร้างภาพ AI' },
+            { id: 34, cat: 'image', name: 'Adobe Firefly', domain: 'firefly.adobe.com', url: 'https://firefly.adobe.com', pricing: 'freemium', thai: true, summary: 'สร้างภาพ เติมฉาก ลบวัตถุ (Generative Fill) โดยอ้างอิงชุดข้อมูลที่ถูกลิขสิทธิ์เชิงพาณิชย์ 100%', bestFor: 'งานเชิงพาณิชย์ งานส่งลูกค้า/องค์กรที่ต้องการความสบายใจเรื่องลิขสิทธิ์', tip: 'ป้อนคำสั่งสร้างภาพและใช้เครื่องมือระบายส่วนที่จะเพิ่มหรือลบได้ในเว็บ' },
+            { id: 35, cat: 'image', name: 'Playground AI', domain: 'playground.com', url: 'https://playground.com', pricing: 'freemium', thai: false, summary: 'สร้างและดัดแปลงภาพกราฟิก โปสเตอร์ สติกเกอร์ โลโก้ และรูปโซเชียลมีเดียสำเร็จรูป', bestFor: 'ออกแบบเทมเพลตป้ายขายของ โปสเตอร์ และการ์ดเชิญอย่างรวดเร็ว', tip: 'มีเทมเพลตให้คลิกเปลี่ยนข้อความ สี และรูปภาพประกอบได้ง่าย' },
+            { id: 36, cat: 'image', name: 'Recraft', domain: 'recraft.ai', url: 'https://www.recraft.ai', pricing: 'freemium', thai: false, summary: 'สร้างภาพเวกเตอร์ (SVG) แท้ ชุดไอคอน และภาพประกอบที่คุมโทนสี-ลายเส้นเหมือนกันได้ทั้งชุด', bestFor: 'ออกแบบไอคอนเว็บไซต์, กราฟิก SVG ยืดขยายไม่แตก, มาสคอตคุมสไตล์', tip: 'ส่งออกเป็นไฟล์ SVG แก้ต่อใน Illustrator / Figma ได้ทันที' },
+            { id: 37, cat: 'image', name: 'Clipdrop', domain: 'clipdrop.co', url: 'https://clipdrop.co', pricing: 'freemium', thai: false, summary: 'ชุดเครื่องมือแต่งภาพ AI บนเว็บ: ลบพื้นหลัง ลบวัตถุ ขยายขอบภาพ และจัดแสงใหม่ (Relight)', bestFor: 'ปรับแต่งรูปถ่ายสินค้า เพิ่มแสงเงา หรือขยายสัดส่วนภาพที่ไม่พอดีเฟรม', tip: 'เครื่องมือ Relight ช่วยยิงไฟเสมือนใส่ภาพคนหรือสินค้าให้ดูมีมิติขึ้นมาก' },
+            { id: 38, cat: 'image', name: 'Remove.bg', domain: 'remove.bg', url: 'https://www.remove.bg', pricing: 'freemium', thai: true, summary: 'ตัดพื้นหลังรูปคน สินค้า และสัตว์เลี้ยงออกอัตโนมัติภายในไม่กี่วินาที', bestFor: 'ไดคัทภาพติดบัตร, ตัดภาพสินค้าทำแบนเนอร์อย่างรวดเร็ว', tip: 'หากต้องการรูป PNG ความละเอียดเต็ม 100% ฟรี ใช้สตูดิโอ photo-studio.html ในเว็บเราได้ด้วย' },
+            { id: 39, cat: 'image', name: 'Photoroom', domain: 'photoroom.com', url: 'https://www.photoroom.com', pricing: 'freemium', thai: true, summary: 'ตัดต่อภาพสินค้าและสร้างฉากหลังสตูดิโอพร้อมเงาอัตโนมัติสำหรับแม่ค้าออนไลน์', bestFor: 'ภาพขายสินค้า Shopee/Lazada/TikTok ให้ดูเหมือนถ่ายในสตูดิโอจริง', tip: 'จัดวางสัดส่วน Marketplace และเปลี่ยนฉากพื้นขาวสะอาดได้ในคลิกเดียว' },
+            { id: 40, cat: 'image', name: 'Krea AI', domain: 'krea.ai', url: 'https://www.krea.ai', pricing: 'freemium', thai: false, summary: 'วาดภาพแล้วให้ AI เจนภาพตามแบบเรียลไทม์ พร้อมระบบเพิ่มความคมชัด (Enhancer) ชื่อดัง', bestFor: 'เปลี่ยนภาพเบลอ/ภาพ AI เก่าให้คมชัดสมจริง และขยับจัดองค์ประกอบสดบนแคนวาส', tip: 'ใช้ Real-time Canvas วางรูปทรงหยาบๆ ให้ AI แปลงเป็นภาพสมจริงทันที' },
+            { id: 41, cat: 'image', name: 'Magnific AI', domain: 'magnific.ai', url: 'https://magnific.ai', pricing: 'paid', thai: false, summary: 'เพิ่มความละเอียดและเติมพื้นผิวรายละเอียดเล็กๆ (เช่น ผิวหนัง เสื้อผ้า ธรรมชาติ) ให้สมจริงสุดๆ', bestFor: 'งานกราฟิก/โฆษณาระดับไฮเอนด์ที่ต้องการขยายภาพและเติมดีเทลคมระดับ 4K/8K', tip: 'ปรับค่า Creativity เพื่อเลือกว่าจะคงรูปเดิมหรือเติมรายละเอียดใหม่มากน้อยแค่ไหน' },
+            { id: 42, cat: 'image', name: 'NightCafe', domain: 'creator.nightcafe.studio', url: 'https://creator.nightcafe.studio', pricing: 'freemium', thai: false, summary: 'ชุมชนและสตูดิโอสร้างภาพศิลปะ AI หลายโมเดล พร้อมเครดิตฟรีและการแข่งขันประจำวัน', bestFor: 'สร้างภาพศิลปะหลายแนวและแลกเปลี่ยน Prompt กับชุมชน', tip: 'แจกเครดิตฟรีรายวันและการทำภารกิจเล็กๆ ในเว็บ' },
+            { id: 43, cat: 'image', name: 'SeaArt AI', domain: 'seaart.ai', url: 'https://www.seaart.ai', pricing: 'freemium', thai: true, summary: 'สร้างภาพสไตล์อนิเมะ 2D/3D และภาพบุคคลเสมือนจริง พร้อมฟิลเตอร์และเวิร์กโฟลว์สำเร็จรูป', bestFor: 'ภาพอนิเมะ, คาแรกเตอร์แฟนตาซี, เปลี่ยนสไตล์ภาพถ่ายด้วยโมเดลชุมชน', tip: 'รองรับเมนูภาษาไทยและมีเครดิตประจำวันให้เล่นฟรี' },
+            { id: 44, cat: 'image', name: 'Pixlr', domain: 'pixlr.com', url: 'https://pixlr.com', pricing: 'freemium', thai: true, summary: 'โปรแกรมแต่งภาพเลเยอร์ออนไลน์สไตล์ Photoshop ที่มีเครื่องมือ AI เติมวัตถุและลบพื้นหลัง', bestFor: 'ตกแต่งภาพเป็นเลเยอร์ ใส่ตัวอักษรไทย และปรับแสงสีฟรีบนเว็บ', tip: 'มี Pixlr Express (ใช้งานไว) และ Pixlr Editor (ละเอียดแบบมีเลเยอร์)' },
+            { id: 45, cat: 'image', name: 'Canva Magic Studio', domain: 'canva.com', url: 'https://www.canva.com', pricing: 'freemium', thai: true, summary: 'ออกแบบกราฟิก ใบงาน พรีเซนเทชัน ลบพื้นหลัง แต่งภาพ และเจนภาพในแพลตฟอร์มเดียว', bestFor: 'นักเรียน นักศึกษา และคนทำคอนเทนต์ที่ต้องทำสื่อภาษาไทยครบวงจร', tip: 'ฟอนต์ภาษาไทยสวยๆ เยอะมาก และมีเทมเพลตไทยสำเร็จรูปเพียบ' },
+            { id: 46, cat: 'image', name: 'Looka', domain: 'looka.com', url: 'https://looka.com', pricing: 'credit', thai: false, summary: 'ออกแบบโลโก้ร้านค้า ช่อง และชุดอัตลักษณ์แบรนด์ (Brand Kit: นามบัตร ป้าย สีแบรนด์)', bestFor: 'ขึ้นไอเดียโลโก้แบรนด์ โทนสี และฟอนต์ที่เข้ากันสำหรับธุรกิจใหม่', tip: 'ทดลองเจนและปรับแก้ไขรูปแบบโลโก้ดูตัวอย่างได้ฟรีก่อนดาวน์โหลดชุดเต็ม' },
+            { id: 47, cat: 'image', name: 'Cleanup.pictures', domain: 'cleanup.pictures', url: 'https://cleanup.pictures', pricing: 'freemium', thai: false, summary: 'ระบายนิ้ว/เมาส์เพื่อลบคนเดินผ่าน เสาไฟ สายไฟ หรือรอยตำหนิออกจากภาพอย่างแนบเนียน', bestFor: 'แก้ภาพถ่ายท่องเที่ยวหรือภาพสถานที่ให้สะอาดเรียบร้อยในไม่กี่วินาที', tip: 'ความละเอียด 720px ดาวน์โหลดฟรีได้ทันทีโดยไม่ต้องสมัครบัญชี' },
+            { id: 48, cat: 'image', name: "Upscayl Cloud / Let's Enhance", domain: 'letsenhance.io', url: 'https://letsenhance.io', pricing: 'credit', thai: false, summary: 'ขยายขนาดภาพให้ใหญ่ขึ้น 2x–16x พร้อมลด Noise และแก้ไขภาพแตกก่อนนำไปพิมพ์', bestFor: 'เตรียมไฟล์ภาพสินค้า/เอกสารเก่าให้คมพอสำหรับส่งโรงพิมพ์หรือขึ้นป้าย', tip: 'เลือก Preset สำหรับ E-commerce หรือ Printing เพื่อรักษาสีและความคม' },
+
+            // Extra Category 3 (111-113)
+            { id: 111, isExtra: true, cat: 'image', name: 'Microsoft Designer', domain: 'designer.microsoft.com', url: 'https://designer.microsoft.com', pricing: 'free', thai: true, summary: 'สร้างภาพ AI เจนสติกเกอร์ วอลเปเปอร์ ลบพื้นหลัง และออกแบบการ์ดฟรีด้วยบัญชี Microsoft', bestFor: 'สร้างภาพประกอบคุณภาพดีและดีไซน์โพสต์โซเชียลฟรีไม่ติดลายน้ำ', tip: 'รองรับการอธิบายคำสั่งและลบวัตถุที่ไม่ต้องการในภาพฟรี' },
+            { id: 112, isExtra: true, cat: 'image', name: 'Tensor.Art', domain: 'tensor.art', url: 'https://tensor.art', pricing: 'freemium', thai: true, summary: 'รันโมเดล Flux และ Stable Diffusion ออนไลน์พร้อมเลือก LoRA และ ControlNet นับหมื่นตัว', bestFor: 'ควบคุมท่าทาง/โครงสร้างภาพเป๊ะๆ ด้วยโมเดลสายลึกโดยไม่ต้องซื้อการ์ดจอแพง', tip: 'แจกเครดิตฟรีทุกวันสำหรับการเจนภาพความละเอียดสูง' },
+            { id: 113, isExtra: true, cat: 'image', name: 'Vectorizer.AI', domain: 'vectorizer.ai', url: 'https://vectorizer.ai', pricing: 'paid', thai: false, summary: 'แปลงภาพบิตแมป (PNG/JPG) ให้เป็นลายเส้น Vector (SVG/EPS/PDF) คมกริบอัตโนมัติ', bestFor: 'งานกราฟิก/งานสกรีน/โลโก้ที่ได้ภาพต้นฉบับขนาดเล็กแล้วต้องขยายใหญ่ไม่จำกัด', tip: 'เก็บความโค้งเรขาคณิตและสีได้สะอาดกว่าการ Trace ทั่วไปมาก' },
+
+            // --- 4. VIDEO & ANIMATION (49-64 + 114-116) ---
+            { id: 49, cat: 'video', name: 'Runway', domain: 'runwayml.com', url: 'https://runwayml.com', pricing: 'freemium', thai: false, summary: 'สร้างวิดีโอระดับภาพยนตร์ ควบคุมทิศทางมุมกล้อง (Act-One, Gen-3/4) และตัดต่อพื้นหลังคลิป', bestFor: 'งานโฆษณา ภาพยนตร์สั้น และฟุตเทจคุมมุมกล้องแพน-ซูมมืออาชีพ', tip: 'ฟีเจอร์ Act-One ใช้คลิปหน้าคนจริงสั่งการสีหน้าตัวละคร AI ในคลิปได้' },
+            { id: 50, cat: 'video', name: 'Kling AI', domain: 'klingai.com', url: 'https://klingai.com', pricing: 'freemium', thai: false, summary: 'สร้างวิดีโอจากภาพ/ข้อความที่คนเคลื่อนไหวสมจริง ฟิสิกส์เป็นธรรมชาติ และลากคลิปได้ยาว', bestFor: 'คลิปคนทำกิจกรรม กีฬา แฟชั่น หรือใช้เฟรมเริ่มต้น+เฟรมจบเชื่อมภาพ', tip: 'มีเครดิตฟรีแจกเป็นรอบให้ทดลองสร้างคลิปความยาว 5–10 วินาที' },
+            { id: 51, cat: 'video', name: 'Hailuo AI (MiniMax)', domain: 'hailuoai.video', url: 'https://hailuoai.video', pricing: 'freemium', thai: false, summary: 'สร้างวิดีโอจากข้อความและภาพนิ่งโดยคงรายละเอียดสีหน้าและการขยับตัวเป็นธรรมชาติมาก', bestFor: 'คลิปเล่าเรื่องสไตล์ภาพยนตร์ แสงเงาละมุน และการแสดงอารมณ์ทางสีหน้า', tip: 'ภาพแนว Portrait ขยับเป็นวิดีโอได้เนียน ไม่ค่อยบิดเบี้ยว' },
+            { id: 52, cat: 'video', name: 'Luma Dream Machine', domain: 'lumalabs.ai/dream-machine', url: 'https://lumalabs.ai/dream-machine', pricing: 'freemium', thai: false, summary: 'สร้างวิดีโอไหลลื่นต่อเนื่อง ควบคุม Keyframe เริ่ม-จบ และเปลี่ยนมุมกล้อง 3D สวยงาม', bestFor: 'คลิป Transition ลื่นไหลระหว่างสองภาพ หรือถ่ายโฉบสถานที่ 3 มิติ', tip: 'แนบทั้ง Keyframe แรกและสุดท้ายเพื่อให้ AI เชื่อมฉากระหว่างกลางได้ตรงใจ' },
+            { id: 53, cat: 'video', name: 'Pika', domain: 'pika.art', url: 'https://pika.art', pricing: 'freemium', thai: false, summary: 'สร้างวิดีโอและใส่เอฟเฟกต์ลูกเล่นพิเศษ (Pikaffects: บีบ เค้ก ระเบิด เปลี่ยนวัตถุ) สุดไวรัล', bestFor: 'คลิปสั้นโซเชียลแนวสร้างสรรค์สนุกๆ และเพิ่ม/ลบวัตถุในคลิปที่ถ่ายไว้แล้ว', tip: 'โหมด Modify Region ให้เปลี่ยนเฉพาะของในคลิปโดยไม่กระทบฉากรอบข้าง' },
+            { id: 54, cat: 'video', name: 'HeyGen', domain: 'heygen.com', url: 'https://www.heygen.com', pricing: 'credit', thai: true, summary: 'สร้างวิดีโออวตารพูดได้ พร้อมระบบแปลคลิปพูดข้ามภาษาและขยับปาก (Lip-sync) ตรงเสียงจริง', bestFor: 'วิดีโอนำเสนองาน สื่อการสอน และแปลคลิปพูดจากอังกฤษเป็นไทย/กลับกัน', tip: 'ใช้เพียงเสียงพูดและรูปภาพนิ่ง/วิดีโอตัวเองสั้นๆ สร้างตัวแทนพูดข่าวได้เลย' },
+            { id: 55, cat: 'video', name: 'Synthesia', domain: 'synthesia.io', url: 'https://www.synthesia.io', pricing: 'credit', thai: true, summary: 'แพลตฟอร์มทำวิดีโอพรีเซนเทชันและอบรมองค์กรด้วยพิธีกร AI หลายเชื้อชาติ', bestFor: 'วิดีโอเทรนนิ่ง คู่มือพนักงาน และสื่อแนะนำบริษัทที่พิมพ์แก้บทได้ทันที', tip: 'รองรับเสียงพากย์หลายภาษา เพียงพิมพ์สคริปต์แล้วเลือกสไลด์ประกอบ' },
+            { id: 56, cat: 'video', name: 'CapCut Web', domain: 'capcut.com', url: 'https://www.capcut.com', pricing: 'freemium', thai: true, summary: 'ตัดต่อวิดีโอบนเบราว์เซอร์ ใส่ซับไตเติลอัตโนมัติภาษาไทยแม่นมาก และลบพื้นหลังคลิป', bestFor: 'ทำคลิป TikTok / Reels / YouTube พร้อมซับเด้งภาษาไทยอย่างรวดเร็ว', tip: 'เปิดใช้งาน Auto Captions ภาษาไทยเพื่อลดเวลาพิมพ์ซับไปได้กว่า 90%' },
+            { id: 57, cat: 'video', name: 'Descript', domain: 'descript.com', url: 'https://www.descript.com', pricing: 'freemium', thai: false, summary: 'ตัดต่อวิดีโอและพอดแคสต์เหมือนแก้ไฟล์ Word เพียงลบข้อความที่ถอดเสียง วิดีโอก็ถูกตัดตาม', bestFor: 'คลิปสัมภาษณ์ พอดแคสต์ และคอนเทนต์พูดคุยที่ต้องตัดคำฟุ่มเฟือยออก', tip: 'มี Eye Contact AI ช่วยแก้สายตาคนที่อ่านสคริปต์ให้ดูเหมือนมองกล้องตลอดเวลา' },
+            { id: 58, cat: 'video', name: 'OpusClip', domain: 'opus.pro', url: 'https://www.opus.pro', pricing: 'freemium', thai: false, summary: 'ตัดคลิปรายการ/ไลฟ์ยาวย่อยเป็นคลิปสั้นแนวตั้ง (Shorts/Reels) พร้อมจัดกรอบหน้าคนพูดอัตโนมัติ', bestFor: 'ยูทูบเบอร์/ครูผู้สอนที่อยากแปลงคลิปสอนยาว 1 ชั่วโมงเป็นคลิปสั้นไฮไลต์ 10 คลิป', tip: 'มีคะแนน Virality Score ให้ช่วยเลือกท่อนที่น่าสนใจที่สุดไปลงโซเชียล' },
+            { id: 59, cat: 'video', name: 'InVideo AI', domain: 'invideo.io', url: 'https://invideo.io', pricing: 'freemium', thai: false, summary: 'พิมพ์แค่หัวข้อเดียว ได้ทั้งสคริปต์ เสียงบรรยาย ซับ และภาพฟุตเทจประกอบครบจบเป็นวิดีโอ', bestFor: 'ทำคลิปสารคดี/ความรู้ YouTube แบบไม่เห็นหน้า (Faceless Video)', tip: 'พิมพ์คำสั่งแก้ไขวิดีโอเป็นข้อความได้ เช่น เปลี่ยนเสียงพากย์หรือย่อให้เหลือ 60 วิ' },
+            { id: 60, cat: 'video', name: 'Fliki', domain: 'fliki.ai', url: 'https://fliki.ai', pricing: 'freemium', thai: true, summary: 'แปลงบทความ บล็อก หรือโพสต์ข้อความให้เป็นวิดีโอสไลด์พร้อมเสียงพากย์ภาษาไทย/อังกฤษ', bestFor: 'เปลี่ยนบทความความรู้และข่าวสารให้เป็นคลิปวิดีโอลงเพจไวๆ', tip: 'รองรับเสียงพากย์ AI ภาษาไทยที่ฟังชัดเจนพร้อมจัดฟุตเทจตามแต่ละย่อหน้า' },
+            { id: 61, cat: 'video', name: 'Viggle AI', domain: 'viggle.ai', url: 'https://viggle.ai', pricing: 'freemium', thai: false, summary: 'นำตัวละครในภาพนิ่ง (คน/อนิเมะ) มาขยับเต้นหรือทำท่าทางตามคลิปต้นแบบอย่างเป๊ะๆ', bestFor: 'ทำมีม เต้นคัฟเวอร์ และใส่ตัวละครใหม่เข้าไปในท่วงท่าของคลิปที่มีอยู่', tip: 'เลือกเทมเพลตท่าเต้นยอดฮิตในเว็บแล้ววางรูปเดียวก็ใช้งานได้ทันที' },
+            { id: 62, cat: 'video', name: 'Hedra', domain: 'hedra.com', url: 'https://www.hedra.com', pricing: 'freemium', thai: true, summary: 'สร้างภาพตัวละครพูด เล่าเรื่อง หรือร้องเพลงตามไฟล์เสียงที่อัปโหลดด้วยอารมณ์สมจริง', bestFor: 'สร้างอนิเมชัน/การ์ตูนพูดขยับปากตรงไฟล์เสียงพากย์ทุกจังหวะ', tip: 'ทำงานได้ทั้งกับภาพคนจริง ภาพการ์ตูน และสัตว์พูดได้' },
+            { id: 63, cat: 'video', name: 'Veed.io', domain: 'veed.io', url: 'https://www.veed.io', pricing: 'freemium', thai: true, summary: 'ตัดต่อวิดีโอออนไลน์ ใส่ซับไตเติล แปลซับและเสียงพากย์ ตัดเสียงรบกวนในเว็บเดียว', bestFor: 'ทำคลิปสั้นสื่อสารองค์กรหรือการเรียนที่มีซับไตเติลหลายภาษา', tip: 'ลบพื้นหลังและปรับเสียงพูดให้ใสขึ้นได้โดยไม่ต้องลงโปรแกรมตัดต่อ' },
+            { id: 64, cat: 'video', name: 'D-ID', domain: 'd-id.com', url: 'https://www.d-id.com', pricing: 'credit', thai: true, summary: 'ทำให้ภาพถ่ายหน้าตรงของบุคคลขยับศีรษะ กะพริบตา และพูดตามข้อความที่พิมพ์', bestFor: 'นำภาพประวัติศาสตร์ บุคคลสำคัญ หรือภาพมาสคอตมาเล่าเรื่องประกอบบทเรียน', tip: 'รองรับเสียงอ่านภาษาไทยและเชื่อมต่อแชทตอบโต้แบบ AI Agent ได้' },
+
+            // Extra Category 4 (114-116)
+            { id: 114, isExtra: true, cat: 'video', name: 'Sora', domain: 'sora.com', url: 'https://sora.com', pricing: 'paid', thai: false, summary: 'แพลตฟอร์มสร้างและตัดต่อวิดีโอของ OpenAI รองรับ Storyboard เรียงฉากและการรีมิกซ์คลิป', bestFor: 'งานสร้างวิดีโอเล่าเรื่องเป็นฉากๆ และแก้ไขบางช่วงเวลาด้วย Storyboard', tip: 'มีชุมชนให้ดูคลิปพร้อมคำสั่ง Prompt เพื่อศึกษาการจัดวางซีน' },
+            { id: 115, isExtra: true, cat: 'video', name: 'PixVerse', domain: 'app.pixverse.ai', url: 'https://app.pixverse.ai', pricing: 'freemium', thai: true, summary: 'สร้างวิดีโอสั้นคุณภาพสูง แปลงภาพนิ่งเป็นภาพเคลื่อนไหว และมีเอฟเฟกต์ AI ยอดนิยมฟรีรายวัน', bestFor: 'ทำคลิปโซเชียลมีเดีย แปลงภาพถ่าย/อนิเมะเป็นคลิปสั้นอย่างรวดเร็ว', tip: 'แจกเครดิตฟรีให้ทดลองเรนเดอร์คลิปเล่นบนเบราว์เซอร์ได้เรื่อยๆ' },
+            { id: 116, isExtra: true, cat: 'video', name: 'Vidu AI', domain: 'vidu.com', url: 'https://www.vidu.com', pricing: 'freemium', thai: false, summary: 'เด่นมากเรื่อง Reference-to-Video (ส่งภาพตัวละครหลายใบเพื่อให้อยู่ในคลิปเดียวกันได้หน้าไม่เพี้ยน)', bestFor: 'สร้างคลิปเล่าเรื่องต่อเนื่องที่มีตัวละครเดิม วัตถุเดิม และฉากหลังเดิมทุกช็อต', tip: 'สามารถผสมรูปคน+สิ่งของ+ฉากหลัง 3–7 รูปลงในคำสั่งเดียวได้เลย' },
+
+            // --- 5. AUDIO, MUSIC & TRANSCRIPTION (65-76 + 117-119) ---
+            { id: 65, cat: 'audio', name: 'ElevenLabs', domain: 'elevenlabs.io', url: 'https://elevenlabs.io', pricing: 'freemium', thai: true, summary: 'สังเคราะห์เสียงพากย์สมจริงระดับมนุษย์ โคลนเสียง ทำเอฟเฟกต์เสียง และ Dubbing คลิปข้ามภาษา', bestFor: 'ลงเสียงพากย์คลิป หนังสือเสียง เกม และเอฟเฟกต์เสียงประกอบฉาก', tip: 'โมเดล Multilingual v2 รองรับการอ่านไทย-อังกฤษปนกันได้ดีมาก (มีโควตาฟรี 10,000 อักษร/เดือน)' },
+            { id: 66, cat: 'audio', name: 'Suno AI', domain: 'suno.com', url: 'https://suno.com', pricing: 'freemium', thai: true, summary: 'แต่งเพลงครบวงจรทั้งทำนอง เรียบเรียงดนตรี และเสียงร้องจากข้อความไม่กี่บรรทัด', bestFor: 'ทำเพลงธีมโปรเจกต์ เพลงประกอบคลิป เพลงสื่อการสอน และแต่งเพลงภาษาไทย', tip: 'ใส่เนื้อร้องไทยพร้อมแท็ก [Verse], [Chorus], [Guitar Solo] เพื่อควบคุมท่อนเพลงได้แม่น' },
+            { id: 67, cat: 'audio', name: 'Udio', domain: 'udio.com', url: 'https://udio.com', pricing: 'freemium', thai: true, summary: 'สร้างเพลงคุณภาพเสียงระดับห้องอัดและต่อท่อนเพลง/รีมิกซ์อินแพนท์เฉพาะท่อนได้ละเอียด', bestFor: 'นักทำเพลงที่อยากต่อเพลงทีละ 32 วินาทีและคุมแนวเพลงเฉพาะทางลึกๆ', tip: 'แก้ไขเฉพาะท่อนเนื้อร้องที่เพี้ยน (Inpaint) โดยไม่ต้องเจนใหม่ทั้งเพลง' },
+            { id: 68, cat: 'audio', name: 'Murf AI', domain: 'murf.ai', url: 'https://murf.ai', pricing: 'freemium', thai: false, summary: 'สร้างเสียงพากย์สำหรับงานพรีเซนเทชัน โฆษณา และสื่อการเรียนพร้อมจับเวลาเข้าจังหวะสไลด์', bestFor: 'เสียงบรรยายสไลด์องค์กร คลิปแนะนำสินค้า และเสียงระบบตอบรับ (IVR)', tip: 'ปรับความเร็ว เว้นจังหวะ และการเน้นคำเฉพาะจุดได้ในไทม์ไลน์เดียว' },
+            { id: 69, cat: 'audio', name: 'Speechify', domain: 'speechify.com', url: 'https://speechify.com', pricing: 'freemium', thai: true, summary: 'แปลงไฟล์ PDF บทความเว็บ และ E-book ให้เป็นเสียงอ่านความเร็วสูงเพื่อฟังระหว่างเดินทาง', bestFor: 'ผู้ที่ชอบฟังเอกสารหรืออ่านหนังสือเร็วขึ้นด้วยการฟังควบคู่ข้อความไฮไลต์', tip: 'ปรับสปีดการอ่านได้ถึง 2x–4x โดยเสียงยังฟังเป็นธรรมชาติ' },
+            { id: 70, cat: 'audio', name: 'Lalal.ai', domain: 'lalal.ai', url: 'https://www.lalal.ai', pricing: 'credit', thai: false, summary: 'แยกเสียงร้องและเครื่องดนตรี (กลอง เบส กีตาร์ เปียโน แซกโซโฟน) ออกจากไฟล์เพลงอย่างสะอาด', bestFor: 'ทำดนตรีคาราโอเกะ แกะซาวด์เพลง และแยกแทร็กเสียงรบกวนในคลิป', tip: 'เลือกแยกได้ถึงระดับแต่ละชิ้นเครื่องดนตรีไม่เฉพาะแค่ร้องกับดนตรี' },
+            { id: 71, cat: 'audio', name: 'Moises', domain: 'moises.ai', url: 'https://moises.ai', pricing: 'freemium', thai: false, summary: 'แยกแทร็กเครื่องดนตรี จับคอร์ดอัตโนมัติ เปลี่ยนคีย์ และปรับความเร็วเพลงสำหรับนักดนตรี', bestFor: 'นักดนตรี/นักร้องที่ต้องการซ้อมเล่นเพลง โปรแกรมโชว์คอร์ดสดๆ ตามเพลง', tip: 'สามารถปิดเสียงเฉพาะกีตาร์หรือเสียงกลองเพื่อซ้อมเล่นแทรกเข้าไปแทนได้เลย' },
+            { id: 72, cat: 'audio', name: 'Adobe Podcast (Enhance Speech)', domain: 'podcast.adobe.com', url: 'https://podcast.adobe.com', pricing: 'freemium', thai: true, summary: 'ล้างเสียงลม เสียงแอร์ เสียงก้องห้อง และอัปเกรดเสียงอัดมือถือธรรมดาให้คมชัดเหมือนไมค์สตูดิโอ', bestFor: 'กู้ไฟล์เสียงสัมภาษณ์ เสียงคลิปที่อัดในห้องเสียงดังให้ฟังชัดทันที', tip: 'ฟีเจอร์ Enhance Speech อัปโหลดไฟล์ฟรีใช้งานง่ายมากในคลิกเดียว' },
+            { id: 73, cat: 'audio', name: 'Krisp', domain: 'krisp.ai', url: 'https://krisp.ai', pricing: 'freemium', thai: false, summary: 'ตัดเสียงรบกวนรอบข้างระหว่างประชุมออนไลน์ พร้อมบันทึกเสียงและสรุปประเด็นการประชุม', bestFor: 'คนทำงาน/เรียนออนไลน์ในที่เสียงดัง และต้องการบันทึกสรุปการประชุมอัตโนมัติ', tip: 'จัดการถอดเทปโดยไม่ส่งเสียงออกไปกวนคู่สนทนา' },
+            { id: 74, cat: 'audio', name: 'Otter.ai', domain: 'otter.ai', url: 'https://otter.ai', pricing: 'freemium', thai: false, summary: 'บันทึกเสียงและถอดเทปการประชุมภาษาอังกฤษเป็นข้อความแบบเรียลไทม์พร้อมแยกผู้พูด', bestFor: 'เลกเชอร์ภาษาอังกฤษ การสัมภาษณ์ และประชุมทีมออนไลน์ Zoom/Meet', tip: 'มีนาทีฟรีรายเดือนและสามารถแชทถามสรุปจากเทปประชุมย้อนหลังได้' },
+            { id: 75, cat: 'audio', name: 'Fireflies.ai', domain: 'fireflies.ai', url: 'https://fireflies.ai', pricing: 'freemium', thai: true, summary: 'ผู้ช่วย AI เข้าร่วมประชุมออนไลน์เพื่ออัดเสียง ถอดเทป และส่งสรุป Action Items หลังจบ', bestFor: 'ทีมโปรเจกต์ที่ประชุมบ่อยและไม่อยากจดบันทึกเองทั้งหมด (รองรับหลายภาษารวมไทย)', tip: 'เชื่อมปฏิทินเพื่อส่งผู้ช่วยเข้าจดบันทึกประชุมให้อัตโนมัติ' },
+            { id: 76, cat: 'audio', name: 'AIVA', domain: 'aiva.ai', url: 'https://www.aiva.ai', pricing: 'freemium', thai: false, summary: 'แต่งเพลงบรรเลงคลาสสิก ออร์เคสตรา และดนตรีประกอบเกม/ภาพยนตร์ตามสไตล์ที่กำหนด', bestFor: 'ต้องการดนตรีบรรเลง (BGM) ประกอบวิดีโอพรีเซนเทชันหรือเกมโดยไม่ซ้ำใคร', tip: 'ดาวน์โหลดไฟล์ MIDI ออกมาปรับแต่งโน้ตต่อในโปรแกรมทำเพลงได้' },
+
+            // Extra Category 5 (117-119)
+            { id: 117, isExtra: true, cat: 'audio', name: 'Fish Audio', domain: 'fish.audio', url: 'https://fish.audio', pricing: 'freemium', thai: true, summary: 'แพลตฟอร์มสังเคราะห์เสียงพูดและโคลนเสียงจากคลังชุมชน รองรับภาษาไทยชัดเจนเป็นธรรมชาติมาก', bestFor: 'พากย์เสียงคลิปสั้น หนังสือเสียง และสร้างเสียงคาแรกเตอร์ไทย-อังกฤษ', tip: 'มีโมเดลเสียงภาษาไทยที่ผู้ใช้สร้างแชร์ไว้ให้ทดลองใช้เยอะมาก' },
+            { id: 118, isExtra: true, cat: 'audio', name: 'MiniMax Audio', domain: 'minimax.io/audio', url: 'https://www.minimax.io/audio', pricing: 'freemium', thai: true, summary: 'สังเคราะห์เสียงพูดสมจริงสูง (Speech-02) ปรับอารมณ์ ความเร็ว โทนเสียง และโคลนเสียงแม่นยำ', bestFor: 'สร้างเสียงพากย์บทสนทนาที่มีอารมณ์สุข เศร้า ตื่นเต้น และรองรับเสียงไทยดีเยี่ยม', tip: 'ปรับความเข้มอารมณ์และจังหวะหายใจได้ละเอียดกว่า TTS ทั่วไป' },
+            { id: 119, isExtra: true, cat: 'audio', name: 'Kits.AI', domain: 'kits.ai', url: 'https://www.kits.ai', pricing: 'freemium', thai: false, summary: 'เปลี่ยนเสียงร้องไกด์เป็นเสียงนักร้อง AI และแปลงเสียงฮัมปากให้เป็นเสียงเครื่องดนตรีจริง', bestFor: 'นักทำเดโมเพลงที่อยากทดลองเสียงร้องหญิง/ชาย หรือสร้างเสียงเบส/เชลโลจากเสียงฮัม', tip: 'ใช้โมเดลเสียงลิขสิทธิ์สะอาด (Royalty-free voices) ที่มีในระบบฟรีได้' },
+
+            // --- 6. DOCS, SLIDES, WORKSPACE & RESEARCH (77-92 + 120-122) ---
+            { id: 77, cat: 'docs', name: 'NotebookLM', domain: 'notebooklm.google.com', url: 'https://notebooklm.google.com', pricing: 'free', thai: true, summary: 'อัปโหลด PDF, Docs, YouTube, เว็บลิงก์ แล้วให้ AI อ่านสรุป ตอบตรงแหล่ง และสร้างรายการพอดแคสต์คุยโต้ตอบ', bestFor: 'อ่านหนังสือสอบ สรุปคู่มือยาวๆ ทำวิจัย และสร้าง Mind Map/Audio Overview ภาษาไทย', tip: 'ตอบโดยยึดเฉพาะเอกสารที่คุณอัปโหลดพร้อมระบุเลขหน้าอ้างอิง ลดการแต่งมั่วได้ดีมาก' },
+            { id: 78, cat: 'docs', name: 'Gamma', domain: 'gamma.app', url: 'https://gamma.app', pricing: 'freemium', thai: true, summary: 'สร้างสไลด์พรีเซนเทชัน เว็บเพจ และเอกสารการ์ดสวยงามพร้อมภาพประกอบภายใน 1 นาที', bestFor: 'ทำสไลด์นำเสนอโปรเจกต์/งานวิชาการภาษาไทย โดยไม่ต้องจัดกล่องข้อความเอง', tip: 'ส่งออกเป็นไฟล์ PowerPoint (.pptx) หรือ PDF ได้ทันที' },
+            { id: 79, cat: 'docs', name: 'Tome', domain: 'tome.app', url: 'https://tome.app', pricing: 'freemium', thai: false, summary: 'เครื่องมือเล่าเรื่องและงานนำเสนอเชิงธุรกิจ/การขายพร้อมระบบรวบรวมข้อมูลและภาพประกอบ', bestFor: 'เตรียม Pitch Deck นำเสนอไอเดียธุรกิจหรือสรุปโครงงานสมัยใหม่', tip: 'เน้นเล่าเรื่องเป็นลำดับสไลด์กระชับพร้อมแทรกสื่อฝังจากเว็บอื่นได้' },
+            { id: 80, cat: 'docs', name: 'Beautiful.ai', domain: 'beautiful.ai', url: 'https://www.beautiful.ai', pricing: 'paid', thai: false, summary: 'ออกแบบสไลด์พรีเซนเทชันที่จัดสัดส่วนกราฟ ตาราง และภาพอัตโนมัติทุกครั้งที่เติมข้อมูลเพิ่ม', bestFor: 'สไลด์รายงานผู้บริหาร กราฟเปรียบเทียบตัวเลข ที่ต้องการความเป๊ะระดับมืออาชีพ', tip: 'มี Smart Templates ทำให้วางข้อความแล้วกราฟิกไม่ล้นขอบ' },
+            { id: 81, cat: 'docs', name: 'SlidesAI', domain: 'slidesai.io', url: 'https://www.slidesai.io', pricing: 'freemium', thai: true, summary: 'แปลงเนื้อหาบทความยาวๆ หรือบันทึกย่อให้เป็นสไลด์นำเสนอใน Google Slides / PowerPoint', bestFor: 'ครูและนักศึกษาที่มีเนื้อหาเอกสารอยู่แล้ว แต่อยากแปลงเป็นสไลด์สอนทันที', tip: 'มีแพ็กเกจฟรีให้ลองสร้างสไลด์หลายชุดต่อเดือนและรองรับภาษาไทย' },
+            { id: 82, cat: 'docs', name: 'Notion AI', domain: 'notion.so', url: 'https://www.notion.so', pricing: 'freemium', thai: true, summary: 'ผู้ช่วยในพื้นที่จดบันทึก Notion สำหรับสรุปเนื้อหา แปลภาษา ตั้ง Action Items และค้นฐานข้อมูล', bestFor: 'คนเก็บเลกเชอร์ จัดการโปรเจกต์ และสร้าง Wiki องค์กรบน Notion', tip: 'สามารถถาม Q&A ค้นหาข้อมูลข้ามหน้าเอกสารทั้งหมดใน Workspace ตัวเองได้' },
+            { id: 83, cat: 'docs', name: 'QuillBot', domain: 'quillbot.com', url: 'https://quillbot.com', pricing: 'freemium', thai: false, summary: 'เรียบเรียงประโยคภาษาอังกฤษใหม่ (Paraphrase), ตรวจไวยากรณ์, ย่อความ และเช็ก Citation', bestFor: 'เขียนเปเปอร์/บทความภาษาอังกฤษเพื่อหลีกเลี่ยงสำนวนซ้ำและปรับภาษาให้ทางการ', tip: 'ใช้โหมด Academic / Formal ได้ฟรีในส่วนตรวจเบื้องต้น' },
+            { id: 84, cat: 'docs', name: 'Grammarly', domain: 'grammarly.com', url: 'https://www.grammarly.com', pricing: 'freemium', thai: false, summary: 'ตรวจคำผิด ไวยากรณ์ เครื่องหมายวรรคตอน และแนะนำโทนการเขียนภาษาอังกฤษแบบเรียลไทม์', bestFor: 'เขียนอีเมลสมัครงาน เรซูเม่ และเอกสารราชการภาษาอังกฤษให้ดูน่าเชื่อถือ', tip: 'คัดลอกข้อความไปวางแก้บนหน้าเว็บ app.grammarly.com ได้ทันที' },
+            { id: 85, cat: 'docs', name: 'DeepL', domain: 'deepl.com', url: 'https://www.deepl.com', pricing: 'freemium', thai: true, summary: 'แปลภาษาที่สละสลวยและเข้าใจบริบทเป็นธรรมชาติ พร้อม DeepL Write ช่วยเกลาสำนวน', bestFor: 'แปลเอกสารวิชาการ ข่าวต่างประเทศ และอีเมลธุรกิจให้สละสลวยกว่าแปลตรงคำ', tip: 'อัปโหลดไฟล์ Word/PDF เพื่อแปลทั้งไฟล์ได้พร้อมคงรูปแบบจัดหน้าเดิม' },
+            { id: 86, cat: 'docs', name: 'Jasper', domain: 'jasper.ai', url: 'https://www.jasper.ai', pricing: 'paid', thai: true, summary: 'แพลตฟอร์มเขียนคอนเทนต์การตลาด โฆษณา และบทความ SEO โดยคุมโทนเสียงแบรนด์ (Brand Voice)', bestFor: 'ทีมการตลาดและเอเจนซีที่ผลิตคอนเทนต์โฆษณาหลายช่องทางจำนวนมาก', tip: 'ป้อนข้อมูลสินค้าและกลุ่มเป้าหมายเพื่อสร้างชุดข้อความโปรโมตทั้งแคมเปญ' },
+            { id: 87, cat: 'docs', name: 'Copy.ai', domain: 'copy.ai', url: 'https://www.copy.ai', pricing: 'freemium', thai: true, summary: 'สร้างข้อความขายสินค้า แคปชันโซเชียล อีเมลติดตามลูกค้า และเวิร์กโฟลว์การตลาด GTM', bestFor: 'พ่อค้าแม่ค้าออนไลน์และฝ่ายขายที่ต้องการร่างแคปชันหรือสคริปต์ขายสินค้า', tip: 'มี Workflow สำเร็จรูปสำหรับสร้างคำบรรยายสินค้าหลายรายการพร้อมกัน' },
+            { id: 88, cat: 'docs', name: 'Consensus', domain: 'consensus.app', url: 'https://consensus.app', pricing: 'freemium', thai: false, summary: 'ค้นหาและสรุปคำตอบจากบทความวิจัยทางวิทยาศาสตร์ที่ผ่านการตีพิมพ์ (Peer-reviewed) โดยตรง', bestFor: 'ทำรายงาน/โครงงานวิทยาศาสตร์ที่ต้องมีงานวิจัยรองรับว่า “เห็นด้วย/ไม่เห็นด้วย” กี่เปอร์เซ็นต์', tip: 'Consensus Meter จะสรุปสัดส่วนผลวิจัย Yes/No/Possibly จากหลายเปเปอร์ให้เห็นชัด' },
+            { id: 89, cat: 'docs', name: 'Elicit', domain: 'elicit.com', url: 'https://elicit.com', pricing: 'freemium', thai: false, summary: 'ผู้ช่วยทำ Literature Review สกัดสรุปวิธีทดลอง กลุ่มตัวอย่าง และผลลัพธ์เป็นตารางอัตโนมัติ', bestFor: 'นิสิตนักศึกษาและนักวิจัยที่ต้องเปรียบเทียบเปเปอร์จำนวนมากในบทที่ 2', tip: 'ดึงข้อมูลจากไฟล์ PDF งานวิจัยหลายสิบฉบับมาเรียงเป็นตารางเปรียบเทียบได้ทันที' },
+            { id: 90, cat: 'docs', name: 'SciSpace', domain: 'typeset.io', url: 'https://typeset.io', pricing: 'freemium', thai: true, summary: 'ช่วยอ่านไฟล์ PDF งานวิจัย ไฮไลต์สูตรสมการหรือศัพท์เฉพาะแล้วให้ AI อธิบายเป็นภาษาไทยเข้าใจง่าย', bestFor: 'อ่านเปเปอร์ภาษาอังกฤษยากๆ พร้อมให้ผู้ช่วยแปลและสรุปทีละย่อหน้า', tip: 'ครอบลากคลุมเฉพาะตารางหรือสมการคณิตศาสตร์ใน PDF เพื่อขอคำอธิบายได้เลย' },
+            { id: 91, cat: 'docs', name: 'ChatPDF', domain: 'chatpdf.com', url: 'https://www.chatpdf.com', pricing: 'freemium', thai: true, summary: 'โยนไฟล์ PDF คู่มือ หนังสือ หรือเอกสารราชการ แล้วแชทถามตอบเนื้อหาข้างในได้ทันที', bestFor: 'หาคำตอบด่วนจากเอกสาร PDF ยาวๆ เช่น ระเบียบการสอบ หรือคู่มืออุปกรณ์', tip: 'คลิกที่หมายเลขหน้าในคำตอบเพื่อกระโดดไปดูจุดจริงบนไฟล์ PDF ทันที' },
+            { id: 92, cat: 'docs', name: 'Mapify', domain: 'mapify.so', url: 'https://mapify.so', pricing: 'freemium', thai: true, summary: 'แปลงคลิป YouTube เอกสาร PDF หน้าเว็บ หรือข้อความยาว ให้เป็นแผนผังความคิด (Mind Map)', bestFor: 'สรุปเลกเชอร์และเนื้อหาซับซ้อนให้เห็นภาพรวมแบบแผนภาพแตกแขนง', tip: 'ส่งออกเป็นไฟล์ภาพ PNG, SVG หรือ Markdown เพื่อไปใช้ทำพรีเซนต์ต่อได้' },
+
+            // Extra Category 6 (120-122)
+            { id: 120, isExtra: true, cat: 'docs', name: 'Napkin AI', domain: 'napkin.ai', url: 'https://www.napkin.ai', pricing: 'freemium', thai: true, summary: 'วางข้อความหรือสรุปบทความแล้ว AI เสกเป็นภาพ Infographic / แผนภาพ Flowchart แก้ไขได้ทันที', bestFor: 'ทำแผนภาพประกอบสไลด์ บทความ รายงานโครงงานให้ดูอ่านง่ายแบบมืออาชีพ', tip: 'ปรับสี ฟอนต์ ไอคอน และส่งออกเป็น PNG/SVG/PDF ความชัดสูงได้ฟรี' },
+            { id: 121, isExtra: true, cat: 'docs', name: 'Humata AI', domain: 'humata.ai', url: 'https://www.humata.ai', pricing: 'freemium', thai: true, summary: 'ผู้ช่วยอ่านและถาม-ตอบข้ามไฟล์ PDF หลายฉบับพร้อมกันพร้อมไฮไลต์ประโยคอ้างอิงต้นทาง', bestFor: 'เอกสารสัญญา, รายงานเทคนิค, เอกสารวิจัยที่มีหลายไฟล์ต้องเทียบข้อมูล', tip: 'ลดอาการแต่งคำตอบเพราะคลิกดูตำแหน่งต้นฉบับในไฟล์ PDF ได้ทุกคำตอบ' },
+            { id: 122, isExtra: true, cat: 'docs', name: 'Connected Papers', domain: 'connectedpapers.com', url: 'https://www.connectedpapers.com', pricing: 'freemium', thai: false, summary: 'ป้อนชื่องานวิจัย 1 ชิ้นเพื่อสร้างกราฟเครือข่ายแสดงเปเปอร์ต้นน้ำและงานที่ต่อยอดล่าสุด', bestFor: 'การเริ่มต้นหาหัวข้อโครงงาน/วิจัย และไม่พลาดเปเปอร์สำคัญในสาขานั้น', tip: 'แสดงปีที่ตีพิมพ์และขนาดวงกลมตามจำนวนการอ้างอิง ดูเข้าใจง่ายมาก' },
+
+            // --- 7. 3D, AUTOMATION & SPECIALIZED PLATFORMS (93-100 + 123-125) ---
+            { id: 93, cat: 'auto3d', name: 'Meshy', domain: 'meshy.ai', url: 'https://www.meshy.ai', pricing: 'freemium', thai: false, summary: 'สร้างโมเดล 3 มิติพร้อมพื้นผิว (Texture) จากคำสั่งข้อความหรือรูปภาพ และใส่กระดูกขยับได้', bestFor: 'งานพัฒนาเกม Unity/Unreal, พิมพ์โมเดล 3D และแอนิเมชันเบื้องต้น', tip: 'ส่งออกได้หลายฟอร์แมตทั้ง GLB, FBX, OBJ และ STL สำหรับเครื่องพิมพ์ 3 มิติ' },
+            { id: 94, cat: 'auto3d', name: 'Tripo AI', domain: 'tripo3d.ai', url: 'https://www.tripo3d.ai', pricing: 'freemium', thai: false, summary: 'แปลงภาพถ่ายหรือข้อความให้กลายเป็นโมเดล 3D เรียบร้อยพร้อม PBR Texture ภายในไม่กี่วินาที', bestFor: 'ขึ้นรูปวัตถุ/ตัวละคร 3D อย่างไวเพื่อนำไปเรนเดอร์ต่อใน Blender', tip: 'มีเครื่องมือช่วย Auto-Rigging ใส่โครงกระดูกเดิน/วิ่งให้โมเดลอัตโนมัติ' },
+            { id: 95, cat: 'auto3d', name: 'Spline AI', domain: 'spline.design', url: 'https://spline.design', pricing: 'freemium', thai: false, summary: 'ออกแบบวัตถุ ฉาก 3D และแอนิเมชันอินเทอร์แอคทีฟบนเบราว์เซอร์แล้วฝังขึ้นเว็บไซต์ได้ทันที', bestFor: 'สร้างกราฟิก 3 มิติหมุนเล่นบนหน้าเว็บ Portfolio หรือ Landing Page', tip: 'สามารถก๊อป Embed Code / Web Viewer ไปใส่ในหน้า HTML ได้เลย' },
+            { id: 96, cat: 'auto3d', name: 'Zapier Central', domain: 'zapier.com', url: 'https://zapier.com', pricing: 'freemium', thai: true, summary: 'สร้าง AI Agent เชื่อมต่อแอปกว่า 7,000+ บริการ (Gmail, Sheets, LINE, Slack) ให้ทำงานอัตโนมัติ', bestFor: 'สั่งบอทอ่านอีเมลแล้วบันทึกลง Google Sheets หรือส่งแจ้งเตือนอัตโนมัติ', tip: 'มี Free Plan ให้เริ่มต้นสร้างระบบอัตโนมัติง่ายๆ ได้โดยไม่ต้องเขียนโค้ด' },
+            { id: 97, cat: 'auto3d', name: 'Make', domain: 'make.com', url: 'https://www.make.com', pricing: 'freemium', thai: true, summary: 'ออกแบบระบบ Automation ต่อสายภาพแบบลากวางเชื่อม API, LINE OA, Telegram และ LLM ได้ละเอียด', bestFor: 'สร้างบอทรับข้อมูลจากฟอร์มส่งไปให้ AI สรุปแล้วแจ้งเตือนเข้าแชททันที', tip: 'เห็นขั้นตอนข้อมูลวิ่งผ่านแต่ละโมดูลชัดเจนและประหยัดค่าใช้งาน' },
+            { id: 98, cat: 'auto3d', name: 'n8n Cloud', domain: 'n8n.io', url: 'https://n8n.io', pricing: 'freemium', thai: true, summary: 'สร้าง AI Agent และ Workflow เชื่อมต่อโหนด (Node-based) พร้อมแทรกโค้ด JS/Python ได้เต็มที่', bestFor: 'นักพัฒนาและสายเทคนิคที่ต้องการสร้าง AI Workflow แบบควบคุมเงื่อนไขซับซ้อน', tip: 'มีเวอร์ชัน Open Source ที่นำไปติดตั้งรันเองบนเครื่อง/เซิร์ฟเวอร์ส่วนตัวได้ด้วย' },
+            { id: 99, cat: 'auto3d', name: 'Dify', domain: 'dify.ai', url: 'https://dify.ai', pricing: 'freemium', thai: true, summary: 'แพลตฟอร์มสร้างแอปพลิเคชัน AI และแชทบอทส่วนตัวพร้อมเชื่อมฐานความรู้ (Knowledge Base RAG)', bestFor: 'สร้างแชทบอทตอบคำถามข้อมูลเฉพาะของร้าน/โรงเรียนแล้วฝัง Widget บนเว็บตัวเอง', tip: 'รองรับโมเดลทั้ง OpenAI, Gemini, DeepSeek และ Ollama' },
+            { id: 100, cat: 'auto3d', name: 'Hugging Face', domain: 'huggingface.co', url: 'https://huggingface.co', pricing: 'free', thai: true, summary: 'คลังรวมโมเดล AI โอเพนซอร์ส ชุดข้อมูล และหน้าเว็บ Spaces ให้เข้าไปลองเล่นเดโม AI นับแสนตัวฟรี', bestFor: 'ลองเครื่องมือ AI แปลกใหม่ล่าสุด (ลบเสียง ลบฉาก ภาพ เสียง) ฟรีบนเบราว์เซอร์', tip: 'เข้าเมนู Spaces เพื่อเปิดใช้งานเว็บแอป AI ที่ชุมชนทั่วโลกสร้างไว้ให้ลองฟรี' },
+
+            // Extra Category 7 (123-125)
+            { id: 123, isExtra: true, cat: 'auto3d', name: 'Hyper3D Rodin', domain: 'hyper3d.ai', url: 'https://hyper3d.ai', pricing: 'credit', thai: false, summary: 'เครื่องมือสร้างโมเดล 3D ความละเอียดสูงระดับโปรดักชันที่มี Mesh สวยและแยกชิ้นส่วนได้', bestFor: 'โมเดลตัวละครและพร็อพคุณภาพสูงสำหรับงานแอนิเมชันและเรนเดอร์', tip: 'รองรับโหมดปรับสมดุล Topology เพื่อนำไปใช้ในเอนจินเกมได้ลื่น' },
+            { id: 124, isExtra: true, cat: 'auto3d', name: 'Pipedream', domain: 'pipedream.com', url: 'https://pipedream.com', pricing: 'freemium', thai: false, summary: 'แพลตฟอร์ม Automation สำหรับนักพัฒนา เชื่อม Webhook/API พร้อมเขียน Node/Python ได้ในโหนดเดียว', bestFor: 'สร้างสคริปต์ดักเหตุการณ์และส่งต่อเข้า OpenAI/Gemini API แบบ Serverless', tip: 'มี Free Tier ให้รันเวิร์กโฟลว์ส่วนตัวได้ทุกวันโดยไม่ต้องเช่าเซิร์ฟเวอร์' },
+            { id: 125, isExtra: true, cat: 'auto3d', name: 'Replicate', domain: 'replicate.com', url: 'https://replicate.com', pricing: 'credit', thai: false, summary: 'รันโมเดล AI โอเพนซอร์สยอดนิยม (ภาพ วิดีโอ เสียง Upscale) ผ่านหน้าเว็บ Playground หรือ API ในคลิกเดียว', bestFor: 'ทดสอบโมเดลใหม่ล่าสุดทันทีโดยไม่ต้องซื้อ GPU เอง และเรียก API ต่อเข้าเว็บแอป', tip: 'กดเข้าแท็บ Explore เพื่อทดลองรันโมเดลยอดนิยมจากหน้าเบราว์เซอร์' },
+
+            // --- 8. LEARNING, MATH & LANGUAGES (126-130 NEW CATEGORY) ---
+            { id: 126, isExtra: true, cat: 'learn', name: 'Wolfram|Alpha', domain: 'wolframalpha.com', url: 'https://www.wolframalpha.com', pricing: 'freemium', thai: false, summary: 'ระบบคำนวณเชิงสัญลักษณ์ทางคณิตศาสตร์ ฟิสิกส์ เคมี สถิติ และพล็อตกราฟที่แม่นยำระดับวิศวกรรม', bestFor: 'ตรวจคำตอบสมการ แคลคูลัส เมทริกซ์ วงจรไฟฟ้า โดยไม่เดามั่วเหมือน LLM ทั่วไป', tip: 'ใช้คำนวณตัวเลขและสมการให้ชัวร์ก่อนนำไปใช้ประกอบโครงงาน/รายงาน' },
+            { id: 127, isExtra: true, cat: 'learn', name: 'Symbolab', domain: 'symbolab.com', url: 'https://www.symbolab.com', pricing: 'freemium', thai: false, summary: 'เครื่องคิดเลขแก้สมการคณิตศาสตร์ อสมการ ลิมิต อินทิเกรต พร้อมแสดงวิธีทำทีละบรรทัด', bestFor: 'นักเรียน นักศึกษาที่อยากเข้าใจขั้นตอนการแก้โจทย์คณิตทีละสเต็ป', tip: 'มีปุ่มพิมพ์สัญลักษณ์เศษส่วน ราก และอินทิกรัลบนหน้าเว็บใช้ง่ายมาก' },
+            { id: 128, isExtra: true, cat: 'learn', name: 'Khanmigo', domain: 'khanmigo.ai', url: 'https://www.khanmigo.ai', pricing: 'freemium', thai: false, summary: 'ผู้ช่วยติวเตอร์ AI จาก Khan Academy สอนแบบถามนำให้ผู้เรียนคิดแก้ปัญหาด้วยตัวเอง', bestFor: 'ฝึกคิดวิเคราะห์โจทย์คณิต วิทย์ และการเขียนโค้ดโดยไม่เฉลยแบบมักง่าย', tip: 'เน้นฝึกกระบวนการคิดให้เข้าใจแก่นวิชาจริงๆ' },
+            { id: 129, isExtra: true, cat: 'learn', name: 'ELSA Speak', domain: 'elsaspeak.com', url: 'https://elsaspeak.com', pricing: 'freemium', thai: true, summary: 'ระบบ AI ฝึกออกเสียงภาษาอังกฤษ วิเคราะห์หน่วยเสียงที่ผิดเพี้ยนและจำลองบทสนทนาจริง', bestFor: 'ฝึกพูดภาษาอังกฤษเตรียมสัมภาษณ์งาน/เรียนต่อ และเช็กการออกเสียงคำศัพท์', tip: 'รองรับการทดสอบระดับเสียงพูดและการสนทนาโต้ตอบบทบาทสมมติ' },
+            { id: 130, isExtra: true, cat: 'learn', name: 'Scite AI', domain: 'scite.ai', url: 'https://scite.ai', pricing: 'credit', thai: false, summary: 'ค้นหางานวิจัยพร้อมระบบ Smart Citations บอกว่าเอกสารอื่นอ้างถึงแบบ “สนับสนุน” หรือ “โต้แย้ง”', bestFor: 'การตรวจความน่าเชื่อถือของงานวิจัยและอ้างอิงเอกสารวิชาการอย่างรอบด้าน', tip: 'ช่วยหลีกเลี่ยงการเผลอไปอ้างงานวิจัยที่ถูกค้นพบภายหลังว่าผิดพลาดหรือถูกโต้แย้ง' }
+        ];
+
+        // ==================== STATE MANAGEMENT ====================
+        const STORAGE_FAVS = 'feel_ai_tools_favs_v1';
+        let activeCategory = 'all';
+        let activeAttrFilter = 'all';
+        let viewMode = 'grid';
+        function loadFavorites() {
+            try {
+                const parsed = JSON.parse(localStorage.getItem(STORAGE_FAVS) || '[]');
+                return Array.isArray(parsed) ? new Set(parsed.map(Number).filter(Number.isInteger)) : new Set();
+            } catch (_) {
+                return new Set();
+            }
+        }
+        let favoriteIds = loadFavorites();
+
+        function saveFavorites() {
+            localStorage.setItem(STORAGE_FAVS, JSON.stringify([...favoriteIds]));
+            const badge = document.getElementById('fav-count-badge');
+            if (badge) badge.textContent = String(favoriteIds.size);
+        }
+
+        function toggleFavorite(id) {
+            if (favoriteIds.has(id)) {
+                favoriteIds.delete(id);
+                showToast(`นำ #${id} ออกจากรายการโปรดแล้ว`);
+            } else {
+                favoriteIds.add(id);
+                showToast(`ปักหมุด #${id} เป็นรายการโปรดแล้ว ⭐`);
+            }
+            saveFavorites();
+            renderDirectory();
+        }
+
+        async function copyToolUrl(url, name) {
+            try {
+                await navigator.clipboard.writeText(url);
+                showToast(`คัดลอกลิงก์ ${name} (${url}) แล้ว`);
+            } catch (_) {
+                showToast(`ลิงก์: ${url}`);
+            }
+        }
+
+        // ==================== FILTERS & CONTROLS ====================
+        function setCategory(catId) {
+            activeCategory = catId;
+            renderCategoryTabs();
+            renderDirectory();
+        }
+
+        function setAttrFilter(attr) {
+            activeAttrFilter = attr;
+            document.querySelectorAll('.attr-btn').forEach(btn => {
+                const isSelected = btn.getAttribute('data-filter') === attr;
+                btn.className = isSelected
+                    ? 'attr-btn px-2.5 py-1 rounded-lg font-bold bg-sky-600 text-white cursor-pointer transition'
+                    : 'attr-btn px-2.5 py-1 rounded-lg font-semibold bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body hover:bg-sky-100 cursor-pointer transition';
+            });
+            renderDirectory();
+        }
+
+        function setViewMode(mode) {
+            viewMode = mode;
+            const gridBtn = document.getElementById('view-btn-grid');
+            const tableBtn = document.getElementById('view-btn-table');
+            if (mode === 'grid') {
+                gridBtn.className = 'px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface font-bold text-google-text dark:text-white shadow-xs cursor-pointer transition';
+                tableBtn.className = 'px-2.5 py-1 rounded-lg font-medium text-google-text-muted hover:text-google-text cursor-pointer transition';
+            } else {
+                tableBtn.className = 'px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface font-bold text-google-text dark:text-white shadow-xs cursor-pointer transition';
+                gridBtn.className = 'px-2.5 py-1 rounded-lg font-medium text-google-text-muted hover:text-google-text cursor-pointer transition';
+            }
+            renderDirectory();
+        }
+
+        function applyQuickTask(catId, keyword) {
+            activeCategory = catId;
+            activeAttrFilter = 'all';
+            setAttrFilter('all');
+            const inp = document.getElementById('ai-search-input');
+            if (inp) inp.value = keyword || '';
+            renderCategoryTabs();
+            renderDirectory();
+            const container = document.getElementById('directory-container');
+            if (container) container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function clearSearchInput() {
+            const inp = document.getElementById('ai-search-input');
+            if (inp) inp.value = '';
+            renderDirectory();
+        }
+
+        function resetAllFilters() {
+            activeCategory = 'all';
+            activeAttrFilter = 'all';
+            const inp = document.getElementById('ai-search-input');
+            if (inp) inp.value = '';
+            setAttrFilter('all');
+            renderCategoryTabs();
+            renderDirectory();
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function getFilteredTools() {
+            const q = (document.getElementById('ai-search-input')?.value || '').trim().toLowerCase();
+            return AI_TOOLS.filter(tool => {
+                if (activeCategory !== 'all' && tool.cat !== activeCategory) return false;
+                if (activeAttrFilter === 'core' && tool.isExtra) return false;
+                if (activeAttrFilter === 'extra' && !tool.isExtra) return false;
+                if (activeAttrFilter === 'has_free' && tool.pricing === 'paid') return false;
+                if (activeAttrFilter === 'thai' && !tool.thai) return false;
+                if (activeAttrFilter === 'favorites' && !favoriteIds.has(tool.id)) return false;
+
+                if (q) {
+                    const catName = CATEGORY_MAP[tool.cat]?.name || '';
+                    const hay = `${tool.id} ${tool.name} ${tool.domain} ${tool.summary} ${tool.bestFor} ${tool.tip} ${catName}`.toLowerCase();
+                    const terms = q.split(/\s+/).filter(Boolean);
+                    if (!terms.every(t => hay.includes(t))) return false;
+                }
+                return true;
+            });
+        }
+
+        function renderCategoryTabs() {
+            const el = document.getElementById('category-tabs');
+            if (!el) return;
+
+            const counts = {};
+            AI_TOOLS.forEach(t => { counts[t.cat] = (counts[t.cat] || 0) + 1; });
+
+            const tabs = [
+                {
+                    id: 'all',
+                    label: `ทั้งหมด (${AI_TOOLS.length})`,
+                    icon: 'fa-layer-group'
+                },
+                ...CATEGORIES.map(c => ({
+                    id: c.id,
+                    label: `${c.num}. ${c.shortName} (${counts[c.id] || 0})`,
+                    icon: c.icon
+                }))
+            ];
+
+            el.innerHTML = tabs.map(t => {
+                const active = activeCategory === t.id;
+                const cls = active
+                    ? 'bg-google-blue text-white border-google-blue shadow-xs'
+                    : 'bg-white dark:bg-google-dark-surface text-google-text-body dark:text-google-dark-text-body border-google-border dark:border-google-dark-border hover:border-sky-400';
+                return `
+                    <button type="button" data-cat="${escapeHtml(t.id)}" onclick="setCategory(this.dataset.cat)" class="shrink-0 px-3 py-1.5 rounded-full text-xs font-heading font-semibold border transition cursor-pointer flex items-center gap-1.5 ${cls}">
+                        <i class="fa-solid ${escapeHtml(t.icon)} text-[11px]"></i>
+                        <span>${escapeHtml(t.label)}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function getPricingBadgeHtml(pricing) {
+            if (pricing === 'free') {
+                return '<span class="px-2 py-0.5 rounded-md bg-teal-100 dark:bg-teal-950/70 text-teal-800 dark:text-teal-300 text-[10px] font-bold">ฟรีหลัก / Open</span>';
+            }
+            if (pricing === 'freemium') {
+                return '<span class="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">ใช้ฟรี + อัปเกรดได้</span>';
+            }
+            if (pricing === 'credit') {
+                return '<span class="px-2 py-0.5 rounded-md bg-sky-100 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 text-[10px] font-bold">ทดลองฟรี / เครดิต</span>';
+            }
+            return '<span class="px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 text-[10px] font-bold">เสียเงินเป็นหลัก</span>';
+        }
+
+        function renderToolCard(tool) {
+            const cat = CATEGORY_MAP[tool.cat];
+            const safeUrl = sanitizeExternalUrl(tool.url);
+            const isFav = favoriteIds.has(tool.id);
+            const cleanDomain = escapeHtml(tool.domain);
+            const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(tool.domain.split('/')[0])}&sz=64`;
+            const extraBadge = tool.isExtra
+                ? '<span class="px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold">✨ แนะนำเพิ่ม</span>'
+                : '';
+            const thaiBadge = tool.thai
+                ? '<span class="px-2 py-0.5 rounded-md bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body text-[10px] font-semibold">🇹🇭 ไทยดี</span>'
+                : '';
+
+            return `
+                <article class="g-card tool-card p-4 sm:p-5 flex flex-col justify-between border-l-4 ${cat.borderClass}">
+                    <div class="space-y-3">
+                        <!-- Top Row: Icon, Name, Rank & Actions -->
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-10 h-10 rounded-xl bg-google-subtle dark:bg-google-dark-subtle border border-google-border/70 dark:border-google-dark-border flex items-center justify-center shrink-0 overflow-hidden">
+                                    <img src="${faviconUrl}" alt="${escapeHtml(tool.name)}" loading="lazy" class="w-6 h-6 object-contain" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                                    <span class="hidden text-xs font-bold text-google-blue">${escapeHtml(tool.name.slice(0, 2).toUpperCase())}</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[11px] font-mono font-bold text-google-text-muted dark:text-google-dark-text-muted">#${tool.id}</span>
+                                        <h4 class="font-heading font-bold text-sm sm:text-base text-google-text dark:text-white truncate">${escapeHtml(tool.name)}</h4>
+                                    </div>
+                                    <span class="text-[11px] font-mono text-sky-700 dark:text-sky-400 truncate block">${cleanDomain}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button type="button" onclick="toggleFavorite(${tool.id})" class="w-7 h-7 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/50 flex items-center justify-center cursor-pointer transition ${isFav ? 'text-amber-500' : 'text-google-text-muted'}" title="${isFav ? 'นำออกจากรายการโปรด' : 'ปักหมุดรายการโปรด'}">
+                                    <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-star text-xs"></i>
+                                </button>
+                                <button type="button" data-url="${escapeHtml(safeUrl)}" data-name="${escapeHtml(tool.name)}" onclick="copyToolUrl(this.dataset.url, this.dataset.name)" class="w-7 h-7 rounded-lg hover:bg-google-subtle dark:hover:bg-google-dark-subtle flex items-center justify-center text-google-text-muted hover:text-google-blue cursor-pointer transition" title="คัดลอกลิงก์เว็บไซต์">
+                                    <i class="fa-regular fa-copy text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Badges Row -->
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            ${getPricingBadgeHtml(tool.pricing)}
+                            ${extraBadge}
+                            ${thaiBadge}
+                        </div>
+
+                        <!-- Description & Structured Details -->
+                        <div class="space-y-2 text-xs leading-relaxed">
+                            <p class="text-google-text dark:text-google-dark-text font-medium">${escapeHtml(tool.summary)}</p>
+                            <div class="p-2.5 rounded-xl bg-google-subtle/75 dark:bg-google-dark-subtle/70 space-y-1 text-[11.5px]">
+                                <div class="text-google-text-body dark:text-google-dark-text-body">
+                                    <strong class="text-sky-700 dark:text-sky-300">เหมาะกับ:</strong> ${escapeHtml(tool.bestFor)}
+                                </div>
+                                <div class="text-google-text-muted dark:text-google-dark-text-muted">
+                                    <strong class="text-emerald-700 dark:text-emerald-300">จุดเด่น/ทริค:</strong> ${escapeHtml(tool.tip)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Button -->
+                    <div class="pt-3 mt-3 border-t border-google-border/70 dark:border-google-dark-border/70">
+                        <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2 px-3 rounded-xl bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white dark:hover:bg-google-blue text-google-text dark:text-white font-heading font-semibold text-xs flex items-center justify-between transition">
+                            <span>เปิดใช้งานบนเบราว์เซอร์</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
+                        </a>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderCompactTable(tools) {
+            const rows = tools.map(tool => {
+                const cat = CATEGORY_MAP[tool.cat];
+                const safeUrl = sanitizeExternalUrl(tool.url);
+                const isFav = favoriteIds.has(tool.id);
+                return `
+                    <tr class="border-b border-google-border/70 dark:border-google-dark-border/70 hover:bg-sky-50/50 dark:hover:bg-sky-950/20 transition">
+                        <td class="py-2.5 px-3 font-mono text-xs text-google-text-muted whitespace-nowrap">
+                            <button type="button" onclick="toggleFavorite(${tool.id})" class="mr-1.5 cursor-pointer ${isFav ? 'text-amber-500' : 'text-google-text-muted'}">
+                                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-star"></i>
+                            </button>
+                            #${tool.id}
+                        </td>
+                        <td class="py-2.5 px-3">
+                            <div class="font-heading font-bold text-xs sm:text-sm text-google-text dark:text-white">${escapeHtml(tool.name)} ${tool.isExtra ? '<span class="ml-1 text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">(+เสริม)</span>' : ''}</div>
+                            <div class="text-[11px] font-mono text-sky-700 dark:text-sky-400">${escapeHtml(tool.domain)}</div>
+                        </td>
+                        <td class="py-2.5 px-3 hidden lg:table-cell">
+                            <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold ${cat.badgeBg}">${escapeHtml(cat.num + '. ' + cat.shortName)}</span>
+                        </td>
+                        <td class="py-2.5 px-3 text-xs text-google-text-body dark:text-google-dark-text-body">
+                            <div>${escapeHtml(tool.summary)}</div>
+                            <div class="text-[11px] text-google-text-muted mt-0.5"><strong>เหมาะกับ:</strong> ${escapeHtml(tool.bestFor)}</div>
+                        </td>
+                        <td class="py-2.5 px-3 hidden sm:table-cell whitespace-nowrap">${getPricingBadgeHtml(tool.pricing)}</td>
+                        <td class="py-2.5 px-3 text-right whitespace-nowrap">
+                            <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-google-blue hover:bg-sky-700 text-white text-[11px] font-heading font-bold transition">
+                                เปิด <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            return `
+                <section class="g-card overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-google-border dark:border-google-dark-border bg-google-subtle/80 dark:bg-google-dark-subtle text-[11px] font-heading font-bold text-google-text-muted uppercase">
+                                    <th class="py-2.5 px-3">#</th>
+                                    <th class="py-2.5 px-3">เว็บไซต์ / โดเมน</th>
+                                    <th class="py-2.5 px-3 hidden lg:table-cell">หมวดความถนัด</th>
+                                    <th class="py-2.5 px-3">ความสามารถ &amp; งานที่เหมาะ</th>
+                                    <th class="py-2.5 px-3 hidden sm:table-cell">บริการ</th>
+                                    <th class="py-2.5 px-3 text-right">ลิงก์</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderDirectory() {
+            const container = document.getElementById('directory-container');
+            const counter = document.getElementById('result-counter');
+            const clearBtn = document.getElementById('btn-clear-search');
+            const resetBtn = document.getElementById('btn-reset-filters');
+            const q = (document.getElementById('ai-search-input')?.value || '').trim();
+
+            if (clearBtn) clearBtn.classList.toggle('hidden', !q);
+            const hasAnyFilter = Boolean(q) || activeCategory !== 'all' || activeAttrFilter !== 'all';
+            if (resetBtn) resetBtn.classList.toggle('hidden', !hasAnyFilter);
+
+            const filtered = getFilteredTools();
+            if (counter) counter.textContent = `แสดง ${filtered.length} / ${AI_TOOLS.length} เว็บ`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="g-card p-10 text-center space-y-3">
+                        <div class="w-12 h-12 rounded-2xl bg-sky-100 dark:bg-sky-950 text-sky-600 flex items-center justify-center text-xl mx-auto">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-base text-google-text dark:text-white">ไม่พบเว็บไซต์ AI ที่ตรงกับเงื่อนไข</h3>
+                        <p class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted">ลองเปลี่ยนคำค้น หรือกด "ล้างตัวกรอง" เพื่อแสดงครบทั้ง 130 เว็บไซต์อีกครั้งครับ</p>
+                        <button type="button" onclick="resetAllFilters()" class="px-4 py-2 rounded-xl bg-google-blue text-white font-heading font-bold text-xs cursor-pointer">
+                            แสดงทั้งหมด 130 เว็บ
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            if (viewMode === 'table') {
+                container.innerHTML = renderCompactTable(filtered);
+                return;
+            }
+
+            // Group cards cleanly under Category Headers
+            const groupsHtml = CATEGORIES.map(cat => {
+                const items = filtered.filter(t => t.cat === cat.id);
+                if (items.length === 0) return '';
+                return `
+                    <section id="cat-section-${cat.id}" class="space-y-4 scroll-mt-36">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-google-border dark:border-google-dark-border">
+                            <div class="flex items-start sm:items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl ${cat.badgeBg} flex items-center justify-center text-base shrink-0">
+                                    <i class="fa-solid ${cat.icon}"></i>
+                                </div>
+                                <div>
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <h3 class="font-heading font-extrabold text-base sm:text-lg text-google-text dark:text-white">
+                                            ${escapeHtml(cat.num)}. ${escapeHtml(cat.name)}
+                                        </h3>
+                                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${cat.badgeBg}">
+                                            ${items.length} เว็บ
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">${escapeHtml(cat.desc)}</p>
+                                </div>
+                            </div>
+                            ${activeCategory === 'all' ? `
+                                <button type="button" data-cat="${escapeHtml(cat.id)}" onclick="setCategory(this.dataset.cat)" class="self-start sm:self-center text-xs font-heading font-semibold text-google-blue dark:text-sky-400 hover:underline cursor-pointer shrink-0">
+                                    โฟกัสเฉพาะหมวดนี้ →
+                                </button>
+                            ` : ''}
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            ${items.map(renderToolCard).join('')}
+                        </div>
+                    </section>
+                `;
+            }).join('');
+
+            container.innerHTML = groupsHtml;
+        }
+
+        function pickRandomSpotlight() {
+            const pool = getFilteredTools();
+            const source = pool.length > 0 ? pool : AI_TOOLS;
+            const pick = source[Math.floor(Math.random() * source.length)];
+            const cat = CATEGORY_MAP[pick.cat];
+            const safeUrl = sanitizeExternalUrl(pick.url);
+            const banner = document.getElementById('spotlight-banner');
+            if (!banner) return;
+
+            banner.classList.remove('hidden');
+            banner.innerHTML = `
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div class="space-y-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-md bg-amber-500 text-white text-[10px] font-bold">🎲 แนะนำสุ่มน่าลอง #${pick.id}</span>
+                            <span class="px-2 py-0.5 rounded-md ${cat.badgeBg} text-[10px] font-bold">${escapeHtml(cat.name)}</span>
+                            ${getPricingBadgeHtml(pick.pricing)}
+                        </div>
+                        <div class="font-heading font-bold text-base text-google-text dark:text-white">
+                            ${escapeHtml(pick.name)} <span class="text-xs font-mono text-sky-700 dark:text-sky-400">(${escapeHtml(pick.domain)})</span>
+                        </div>
+                        <p class="text-xs text-google-text-body dark:text-google-dark-text-body">
+                            ${escapeHtml(pick.summary)} — <strong>เหมาะกับ:</strong> ${escapeHtml(pick.bestFor)}
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-google-blue hover:bg-sky-700 text-white font-heading font-bold text-xs flex items-center gap-1.5 transition">
+                            <span>เปิดลองใช้งาน</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
+                        </a>
+                        <button type="button" onclick="document.getElementById('spotlight-banner').classList.add('hidden')" class="px-2.5 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs text-google-text-muted hover:text-rose-500 cursor-pointer">
+                            ปิด
+                        </button>
+                    </div>
+                </div>
+            `;
+            banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // ==================== THEME & TOAST ====================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('feel_theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(savedTheme);
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 transition-all duration-300';
+            const icon = document.createElement('i');
+            icon.className = 'fa-solid fa-compass text-sky-400';
+            const span = document.createElement('span');
+            span.textContent = String(message ?? '');
+            toast.appendChild(icon);
+            toast.appendChild(span);
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 2400);
+        }
+
+        // Keyboard shortcuts (/ to search, Esc to clear)
+        document.addEventListener('keydown', (e) => {
+            const inp = document.getElementById('ai-search-input');
+            if (!inp) return;
+            if (e.key === '/' && document.activeElement !== inp && document.activeElement?.tagName !== 'INPUT') {
+                e.preventDefault();
+                inp.focus();
+            } else if (e.key === 'Escape' && document.activeElement === inp) {
+                clearSearchInput();
+                inp.blur();
+            }
+        });
+
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('scroll-top-btn');
+            if (!btn) return;
+            if (window.scrollY > 420) {
+                btn.classList.remove('hidden');
+                btn.classList.add('inline-flex');
+            } else {
+                btn.classList.add('hidden');
+                btn.classList.remove('inline-flex');
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            saveFavorites();
+            renderCategoryTabs();
+            renderDirectory();
+        });
+    </script>
+</body>
+</html>

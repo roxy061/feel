@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP &amp; Subnet Calculator — คำนวณเครือข่าย LAN/VLAN &amp; Netplan | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="เครื่องคำนวณ IPv4 &amp; CIDR Subnet ออฟไลน์ 100% ไร้โฆษณา: คำนวณ Network, Broadcast, Usable Host Range, Wildcard Mask, Binary 32-bit, แบ่งวง LAN/VLAN (FLSM &amp; VLSM) และสร้างไฟล์ Static IP Ubuntu Netplan ทันที">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.15rem;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.10), 0 1px 3px 1px rgba(60, 64, 67, 0.06);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        .net-bit { color: #1a73e8; font-weight: 700; }
+        .host-bit { color: #d97706; font-weight: 600; }
+        .dark .net-bit { color: #60a5fa; }
+        .dark .host-bit { color: #fbbf24; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-google-blue selection:text-white">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Centered Bottom Toast Notification -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 w-[92vw] max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- UNIFIED SINGLE-ROW NAVIGATION HEADER       -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก</span>
+            </a>
+
+            <div class="flex items-center gap-2.5 sm:border-l border-google-border dark:border-google-dark-border sm:pl-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            IP &amp; Subnet Calculator
+                        </h1>
+                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 text-[10px] font-bold whitespace-nowrap shrink-0">
+                            CIDR • VLAN • Netplan
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        คำนวณ IPv4 / Wildcard / Host Range / แบ่งวง LAN-VLAN &amp; Ubuntu Static IP
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <a href="dev-tools.html" class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition whitespace-nowrap">
+                <i class="fa-solid fa-terminal"></i>
+                <span>Dev Utilities</span>
+            </a>
+
+            <!-- Unified Clean 11-Apps Switcher Dropdown -->
+            <div class="relative shrink-0">
+                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (11 ระบบ)">
+                    <i class="fa-solid fa-layer-group text-blue-600 dark:text-sky-400"></i>
+                    <span class="hidden sm:inline">สลับเว็บแอป</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-[10px] font-bold leading-none">11</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                </button>
+                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
+                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
+                        </div>
+                    </a>
+                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
+                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (11 ระบบ)</div>
+                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
+                        </div>
+                    </a>
+                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
+                        </div>
+                    </a>
+                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
+                        </div>
+                    </a>
+                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ &amp; พายุ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
+                        </div>
+                    </a>
+                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble &amp; สูตร CFOP</div>
+                        </div>
+                    </a>
+                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง &amp; ถาม-ตอบ</div>
+                        </div>
+                    </a>
+                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ &amp; แชร์ PIN 6 หลัก</div>
+                        </div>
+                    </a>
+                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง &amp; รูปติดบัตร</div>
+                        </div>
+                    </a>
+                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI &amp; โฮสต์ฟรี</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI &amp; รันไฟล์</div>
+                        </div>
+                    </a>
+                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON • JWT • Base64 • Timestamp</div>
+                        </div>
+                    </a>
+                    <a href="subnet.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-300 dark:border-blue-700 transition">
+                        <div class="w-8 h-8 rounded-lg text-blue-600 bg-blue-100 dark:bg-blue-950 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-network-wired"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">11. IP &amp; Subnet Calculator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CIDR • Host Range • VLAN • Netplan</div>
+                        </div>
+                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-blue-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Theme Switcher -->
+            <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN WORKSPACE                             -->
+    <!-- ========================================== -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
+
+        <!-- Compact Mode Bar -->
+        <div class="g-card p-2 sm:p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div role="tablist" aria-label="โหมดคำนวณเครือข่าย" class="grid grid-cols-1 sm:flex sm:items-center gap-1.5">
+                <button type="button" role="tab" id="tab-btn-calc" onclick="switchSubnetMode('calc')" class="shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-bold flex items-center justify-center sm:justify-start gap-2 bg-google-blue text-white shadow-xs transition cursor-pointer">
+                    <i class="fa-solid fa-calculator"></i>
+                    <span>คำนวณ IP &amp; Subnet + Ubuntu Netplan</span>
+                </button>
+                <button type="button" role="tab" id="tab-btn-split" onclick="switchSubnetMode('split')" class="shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-semibold flex items-center justify-center sm:justify-start gap-2 text-google-text-body dark:text-google-dark-text-body hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition cursor-pointer">
+                    <i class="fa-solid fa-sitemap text-indigo-500"></i>
+                    <span>แบ่งวง LAN / VLAN (FLSM &amp; VLSM)</span>
+                </button>
+            </div>
+            <div class="hidden lg:flex items-center gap-1.5 px-3 text-[11px] text-google-text-muted dark:text-google-dark-text-muted shrink-0">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>คำนวณ IPv4 แม่นยำในเครื่อง • รองรับ /0–/32 &amp; RFC 3021</span>
+            </div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- VIEW 1: IP & SUBNET CALCULATOR + UBUNTU NETPLAN         -->
+        <!-- ======================================================= -->
+        <section id="view-calc" class="space-y-4">
+            <!-- Input Bar Card -->
+            <div class="g-card p-4 space-y-3">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                    <div class="md:col-span-5">
+                        <label for="ip-input" class="text-xs font-heading font-bold flex items-center justify-between mb-1.5">
+                            <span>IPv4 Address (พิมพ์พร้อม /CIDR ได้เลย เช่น <code class="font-mono text-google-blue">192.168.10.50/24</code>)</span>
+                        </label>
+                        <input id="ip-input" type="text" value="192.168.10.50" spellcheck="false" oninput="handleIpInput()" placeholder="192.168.10.50 หรือ 10.0.0.1/16" class="w-full px-3.5 py-2.5 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border font-mono text-sm sm:text-base font-bold outline-none focus:border-google-blue text-google-text dark:text-white">
+                    </div>
+
+                    <div class="md:col-span-3">
+                        <label for="cidr-select" class="text-xs font-heading font-bold flex items-center justify-between mb-1.5">
+                            <span>CIDR Prefix</span>
+                            <span id="cidr-badge-live" class="font-mono text-google-blue font-bold">/24</span>
+                        </label>
+                        <select id="cidr-select" onchange="handleCidrSelect()" class="w-full px-3 py-2.5 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-mono text-sm font-semibold outline-none focus:border-google-blue cursor-pointer"></select>
+                    </div>
+
+                    <div class="md:col-span-4">
+                        <label for="mask-input" class="text-xs font-heading font-bold block mb-1.5">Subnet Mask (หรือแก้ Mask โดยตรง)</label>
+                        <input id="mask-input" type="text" value="255.255.255.0" spellcheck="false" oninput="handleMaskInput()" class="w-full px-3.5 py-2.5 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border font-mono text-sm font-semibold outline-none focus:border-google-blue text-google-text dark:text-white">
+                    </div>
+                </div>
+
+                <!-- CIDR Slider + Quick Presets -->
+                <div class="pt-1 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 flex-1">
+                        <span class="text-[11px] font-mono text-google-text-muted shrink-0">/0</span>
+                        <input id="cidr-slider" type="range" min="0" max="32" value="24" oninput="handleSliderInput(this.value)" class="w-full accent-google-blue cursor-pointer">
+                        <span class="text-[11px] font-mono text-google-text-muted shrink-0">/32</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5 text-[11px]">
+                        <span class="text-google-text-muted font-semibold mr-1">ตัวอย่างวงยอดนิยม:</span>
+                        <button type="button" onclick="applyPreset('192.168.1.10', 24)" class="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-google-blue dark:text-sky-300 font-mono font-bold hover:bg-blue-100 cursor-pointer">LAN /24</button>
+                        <button type="button" onclick="applyPreset('10.10.0.5', 16)" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-mono font-bold hover:bg-indigo-100 cursor-pointer">10.x /16</button>
+                        <button type="button" onclick="applyPreset('172.16.20.14', 26)" class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-mono font-bold hover:bg-emerald-100 cursor-pointer">VLAN /26 (62 IP)</button>
+                        <button type="button" onclick="applyPreset('192.168.100.1', 28)" class="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-mono font-bold hover:bg-amber-100 cursor-pointer">Server /28 (14 IP)</button>
+                        <button type="button" onclick="applyPreset('10.255.0.1', 30)" class="px-2.5 py-1 rounded-lg bg-violet-50 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 font-mono font-bold hover:bg-violet-100 cursor-pointer">P2P /30 (2 IP)</button>
+                    </div>
+                </div>
+
+                <!-- Error Banner -->
+                <div id="subnet-error" class="hidden p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs font-semibold text-rose-700 dark:text-rose-300 flex items-center gap-2"></div>
+            </div>
+
+            <!-- Main Results Grid -->
+            <div id="calc-results-area" class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <!-- Left 7 cols: Core Subnet Metrics & Binary View -->
+                <div class="lg:col-span-7 space-y-4">
+                    <!-- Highlight KPI Strip -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="g-card p-3.5 border-l-4 border-l-blue-600">
+                            <span class="text-[11px] font-bold text-google-text-muted dark:text-google-dark-text-muted block">Network Address</span>
+                            <button type="button" id="kpi-network" onclick="copyTextFromEl('kpi-network', 'Network Address')" class="font-mono text-sm sm:text-base font-extrabold text-google-blue dark:text-sky-400 mt-0.5 text-left hover:underline cursor-pointer break-all">-</button>
+                        </div>
+                        <div class="g-card p-3.5 border-l-4 border-l-rose-500">
+                            <span class="text-[11px] font-bold text-google-text-muted dark:text-google-dark-text-muted block">Broadcast Address</span>
+                            <button type="button" id="kpi-broadcast" onclick="copyTextFromEl('kpi-broadcast', 'Broadcast Address')" class="font-mono text-sm sm:text-base font-extrabold text-rose-600 dark:text-rose-400 mt-0.5 text-left hover:underline cursor-pointer break-all">-</button>
+                        </div>
+                        <div class="g-card p-3.5 border-l-4 border-l-emerald-500">
+                            <span class="text-[11px] font-bold text-google-text-muted dark:text-google-dark-text-muted block">Usable Hosts</span>
+                            <div id="kpi-usable" class="font-mono text-sm sm:text-base font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5">-</div>
+                        </div>
+                        <div class="g-card p-3.5 border-l-4 border-l-amber-500">
+                            <span class="text-[11px] font-bold text-google-text-muted dark:text-google-dark-text-muted block">Wildcard Mask</span>
+                            <button type="button" id="kpi-wildcard" onclick="copyTextFromEl('kpi-wildcard', 'Wildcard Mask')" class="font-mono text-sm sm:text-base font-extrabold text-amber-600 dark:text-amber-400 mt-0.5 text-left hover:underline cursor-pointer break-all">-</button>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Breakdown Table -->
+                    <div class="g-card overflow-hidden">
+                        <div class="px-4 py-2.5 border-b border-google-border dark:border-google-dark-border flex items-center justify-between bg-google-bg dark:bg-google-dark-bg/60">
+                            <span class="text-xs sm:text-sm font-heading font-bold">รายละเอียดโครงสร้างเครือข่าย (คลิก "คัดลอก" ได้ทุกแถว)</span>
+                            <span id="ip-scope-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">-</span>
+                        </div>
+                        <div id="subnet-details-list" class="divide-y divide-google-border/70 dark:divide-google-dark-border text-xs sm:text-[13px]"></div>
+                    </div>
+
+                    <!-- Binary 32-Bit Visualizer -->
+                    <div class="g-card p-4 space-y-2.5">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <h2 class="text-xs sm:text-sm font-heading font-bold">โครงสร้าง Binary 32-Bit (แยกส่วน Network vs Host)</h2>
+                            <div class="flex items-center gap-3 text-[11px]">
+                                <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-google-blue inline-block"></span> Network (<span id="bin-net-bits">24</span> bit)</span>
+                                <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block"></span> Host (<span id="bin-host-bits">8</span> bit)</span>
+                            </div>
+                        </div>
+                        <div id="binary-rows" class="space-y-1.5 font-mono text-[11px] sm:text-xs overflow-x-auto"></div>
+                    </div>
+                </div>
+
+                <!-- Right 5 cols: Ubuntu Static IP / Netplan / VLAN / UFW Generator -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="g-card p-4 space-y-3 border-t-4 border-t-orange-500">
+                        <div class="flex items-center justify-between gap-2">
+                            <h2 class="text-sm font-heading font-bold flex items-center gap-2">
+                                <i class="fa-brands fa-ubuntu text-orange-500 text-base"></i> ตั้งค่า Static IP บน Ubuntu Server
+                            </h2>
+                            <button type="button" onclick="copyNetplanConfig()" class="px-3 py-1 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold cursor-pointer">
+                                <i class="fa-regular fa-copy mr-1"></i> คัดลอก Config
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <label class="text-[11px] font-bold text-google-text-muted block mb-1">Interface (เช่น ens33 / eth0)</label>
+                                <input id="cfg-iface" type="text" value="ens33" oninput="renderUbuntuConfig()" class="w-full px-2.5 py-1.5 rounded-lg bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border font-mono text-xs outline-none">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-google-text-muted block mb-1">Gateway (อัตโนมัติ = IP แรก)</label>
+                                <input id="cfg-gateway" type="text" oninput="renderUbuntuConfig()" placeholder="Auto" class="w-full px-2.5 py-1.5 rounded-lg bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border font-mono text-xs outline-none">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-google-text-muted block mb-1">DNS Servers</label>
+                                <input id="cfg-dns" type="text" value="1.1.1.1, 8.8.8.8" oninput="renderUbuntuConfig()" class="w-full px-2.5 py-1.5 rounded-lg bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border font-mono text-xs outline-none">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-google-text-muted block mb-1">VLAN ID (ไม่บังคับ เช่น 10)</label>
+                                <input id="cfg-vlan" type="number" min="1" max="4094" placeholder="ไม่มี VLAN" oninput="renderUbuntuConfig()" class="w-full px-2.5 py-1.5 rounded-lg bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border font-mono text-xs outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Format Switch -->
+                        <div class="inline-flex rounded-lg bg-google-subtle dark:bg-google-dark-subtle p-0.5 text-[11px] font-semibold">
+                            <button type="button" id="ubuntu-mode-netplan" onclick="setUbuntuMode('netplan')" class="px-2.5 py-1 rounded-md bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer">Netplan YAML</button>
+                            <button type="button" id="ubuntu-mode-cli" onclick="setUbuntuMode('cli')" class="px-2.5 py-1 rounded-md text-google-text-muted dark:text-google-dark-text-muted cursor-pointer">ip / ufw CLI</button>
+                        </div>
+
+                        <pre id="ubuntu-config-out" class="p-3.5 rounded-xl bg-slate-900 text-slate-100 font-mono text-[11px] sm:text-xs leading-relaxed overflow-x-auto"></pre>
+
+                        <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
+                            นำไปวางใน <code class="font-mono">/etc/netplan/00-installer-config.yaml</code> แล้วรัน <code class="font-mono font-semibold text-orange-600 dark:text-orange-400">sudo netplan try</code>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- VIEW 2: SUBNET SPLITTER (FLSM & VLSM FOR LAN / VLAN)    -->
+        <!-- ======================================================= -->
+        <section id="view-split" class="hidden space-y-4">
+            <div class="g-card p-4 space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h2 class="text-sm sm:text-base font-heading font-bold">วางแผนแบ่งวง LAN / VLAN จากเครือข่ายหลัก</h2>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">ใช้วง <code id="split-parent-label" class="font-mono font-bold text-google-blue">192.168.10.0/24</code> จากเครื่องคำนวณ หรือสลับโหมด FLSM (แบ่งเท่ากัน) และ VLSM (จัดสรรตามจำนวนเครื่องจริงไม่ให้ IP ชน)</p>
+                    </div>
+                    <div class="inline-flex rounded-xl bg-google-subtle dark:bg-google-dark-subtle p-1 text-xs font-semibold shrink-0">
+                        <button type="button" id="split-kind-flsm" onclick="setSplitKind('flsm')" class="px-3 py-1 rounded-lg bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer">แบ่งเท่ากัน (FLSM)</button>
+                        <button type="button" id="split-kind-vlsm" onclick="setSplitKind('vlsm')" class="px-3 py-1 rounded-lg text-google-text-muted dark:text-google-dark-text-muted cursor-pointer">ตามจำนวนเครื่อง (VLSM)</button>
+                    </div>
+                </div>
+
+                <!-- FLSM Controls -->
+                <div id="flsm-controls" class="flex flex-wrap items-center gap-3 pt-1">
+                    <div class="flex items-center gap-2 text-xs">
+                        <label for="flsm-target-cidr" class="font-bold">แบ่งเป็นขนาด Subnet ใหม่:</label>
+                        <select id="flsm-target-cidr" onchange="renderFlsmTable()" class="px-3 py-1.5 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-mono font-semibold text-xs cursor-pointer"></select>
+                    </div>
+                    <span id="flsm-summary" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400"></span>
+                </div>
+
+                <!-- VLSM Controls -->
+                <div id="vlsm-controls" class="hidden space-y-3 pt-1">
+                    <div id="vlsm-rows" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5"></div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="addVlsmRow('', 10)" class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold cursor-pointer">+ เพิ่มแผนก / VLAN</button>
+                        <button type="button" onclick="resetVlsmSample()" class="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-semibold cursor-pointer">ตัวอย่างแบ่งวง Server + Office + IoT</button>
+                    </div>
+                    <div id="vlsm-error" class="hidden p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-300 text-xs font-semibold"></div>
+                </div>
+            </div>
+
+            <!-- Split Results Table -->
+            <div class="g-card overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs sm:text-[13px]">
+                        <thead class="bg-google-subtle dark:bg-google-dark-subtle text-google-text-muted dark:text-google-dark-text-muted font-heading">
+                            <tr>
+                                <th class="px-3.5 py-2.5">วง / VLAN</th>
+                                <th class="px-3.5 py-2.5">Network / CIDR</th>
+                                <th class="px-3.5 py-2.5">Subnet Mask</th>
+                                <th class="px-3.5 py-2.5">ช่วง IP ใช้งานได้ (Usable Range)</th>
+                                <th class="px-3.5 py-2.5">Broadcast</th>
+                                <th class="px-3.5 py-2.5 text-right">จำนวนเครื่อง</th>
+                                <th class="px-3 py-2.5 text-center">นำไปใช้</th>
+                            </tr>
+                        </thead>
+                        <tbody id="split-tbody" class="divide-y divide-google-border dark:divide-google-dark-border font-mono"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- CORE IP & SUBNET LOGIC                     -->
+    <!-- ========================================== -->
+    <script>
+        let currentIpStr = '192.168.10.50';
+        let currentCidr = 24;
+        let currentUbuntuMode = 'netplan';
+        let currentSplitKind = 'flsm';
+        let vlsmList = [
+            { name: 'VLAN 10 • Office WiFi', hosts: 100 },
+            { name: 'VLAN 20 • Ubuntu Servers', hosts: 40 },
+            { name: 'VLAN 30 • CCTV & ESP32 IoT', hosts: 25 },
+            { name: 'VLAN 99 • Management P2P', hosts: 2 }
+        ];
+
+        // ==================== HELPERS ====================
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function showToast(message, isError = false) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto cursor-pointer px-4 py-2.5 rounded-full shadow-xl border border-white/10 dark:border-slate-200 text-xs font-semibold flex items-center gap-2 bg-slate-900/95 text-white dark:bg-white/95 dark:text-slate-900 backdrop-blur-md max-w-full';
+            toast.innerHTML = `<i class="${isError ? 'fa-solid fa-circle-exclamation text-rose-400' : 'fa-solid fa-circle-check text-emerald-400'} shrink-0"></i><span class="truncate">${escapeHtml(message)}</span>`;
+            toast.onclick = () => toast.remove();
+            container.appendChild(toast);
+            setTimeout(() => { if (toast.isConnected) toast.remove(); }, 2400);
+        }
+
+        async function copyTextValue(text, label = 'ข้อมูล') {
+            const val = String(text ?? '').trim();
+            if (!val) return showToast('ไม่มีข้อมูลสำหรับคัดลอก', true);
+            try {
+                await navigator.clipboard.writeText(val);
+                showToast(`คัดลอก ${label} เรียบร้อย!`);
+            } catch (_) {
+                const ta = document.createElement('textarea');
+                ta.value = val;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                let ok = false;
+                try { ok = document.execCommand('copy'); } catch (_e) {}
+                ta.remove();
+                showToast(ok ? `คัดลอก ${label} เรียบร้อย!` : 'ไม่สามารถคัดลอกได้', !ok);
+            }
+        }
+
+        function copyTextFromEl(elId, label) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            copyTextValue(el.textContent, label);
+        }
+
+        // Strict IPv4 Parser & Unsigned 32-Bit Math
+        function parseIpv4(ipStr) {
+            const clean = String(ipStr ?? '').trim();
+            const parts = clean.split('.');
+            if (parts.length !== 4) return null;
+            let num = 0;
+            for (const p of parts) {
+                if (!/^\d{1,3}$/.test(p)) return null;
+                if (p.length > 1 && p.startsWith('0')) return null; // avoid octal ambiguity like 010
+                const oct = Number(p);
+                if (oct < 0 || oct > 255) return null;
+                num = ((num << 8) | oct) >>> 0;
+            }
+            return num >>> 0;
+        }
+
+        function intToIpv4(num) {
+            const u = num >>> 0;
+            return [
+                (u >>> 24) & 255,
+                (u >>> 16) & 255,
+                (u >>> 8) & 255,
+                u & 255
+            ].join('.');
+        }
+
+        function intToBinaryDotted(num) {
+            const bin = (num >>> 0).toString(2).padStart(32, '0');
+            return `${bin.slice(0, 8)}.${bin.slice(8, 16)}.${bin.slice(16, 24)}.${bin.slice(24, 32)}`;
+        }
+
+        function cidrToMaskInt(cidr) {
+            if (cidr <= 0) return 0;
+            if (cidr >= 32) return 0xffffffff;
+            return (0xffffffff << (32 - cidr)) >>> 0;
+        }
+
+        function maskIntToCidr(maskInt) {
+            const u = maskInt >>> 0;
+            const bin = u.toString(2).padStart(32, '0');
+            if (!/^1*0*$/.test(bin)) return null; // Non-contiguous subnet mask invalid
+            return bin.indexOf('0') === -1 ? 32 : bin.indexOf('0');
+        }
+
+        function classifyIpv4(ipInt) {
+            const o1 = (ipInt >>> 24) & 255;
+            const o2 = (ipInt >>> 16) & 255;
+            let ipClass = 'Class E (Experimental)';
+            if (o1 < 128) ipClass = 'Class A';
+            else if (o1 < 192) ipClass = 'Class B';
+            else if (o1 < 224) ipClass = 'Class C';
+            else if (o1 < 240) ipClass = 'Class D (Multicast)';
+
+            let scope = 'Public IP (ออกอินเทอร์เน็ตได้)';
+            let scopeColor = 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300';
+            if (o1 === 10 || (o1 === 172 && o2 >= 16 && o2 <= 31) || (o1 === 192 && o2 === 168)) {
+                scope = 'Private LAN (RFC 1918)';
+                scopeColor = 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
+            } else if (o1 === 100 && o2 >= 64 && o2 <= 127) {
+                scope = 'CGNAT Shared (RFC 6598)';
+                scopeColor = 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300';
+            } else if (o1 === 127) {
+                scope = 'Loopback (127.0.0.0/8)';
+                scopeColor = 'bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300';
+            } else if (o1 === 169 && o2 === 254) {
+                scope = 'Link-Local APIPA (No DHCP)';
+                scopeColor = 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300';
+            } else if (o1 >= 224 && o1 <= 239) {
+                scope = 'Multicast (224.0.0.0/4)';
+                scopeColor = 'bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-slate-200';
+            } else if (o1 === 0) {
+                scope = 'Unspecified / Default Route';
+                scopeColor = 'bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-slate-200';
+            }
+            return { ipClass, scope, scopeColor };
+        }
+
+        function calculateSubnet(ipInt, cidr) {
+            const mask = cidrToMaskInt(cidr);
+            const wildcard = (~mask) >>> 0;
+            const network = (ipInt & mask) >>> 0;
+            const broadcast = (network | wildcard) >>> 0;
+            const total = 2 ** (32 - cidr);
+
+            let usableHosts, firstHost, lastHost, rangeLabel, broadcastDisplay;
+            if (cidr === 32) {
+                usableHosts = 1;
+                firstHost = ipInt;
+                lastHost = ipInt;
+                rangeLabel = `${intToIpv4(ipInt)} (Host Route /32)`;
+                broadcastDisplay = 'ไม่มี (/32)';
+            } else if (cidr === 31) {
+                usableHosts = 2;
+                firstHost = network;
+                lastHost = broadcast;
+                rangeLabel = `${intToIpv4(network)} - ${intToIpv4(broadcast)} (RFC 3021 P2P)`;
+                broadcastDisplay = `ไม่มี P2P (${intToIpv4(broadcast)})`;
+            } else {
+                usableHosts = total - 2;
+                firstHost = (network + 1) >>> 0;
+                lastHost = (broadcast - 1) >>> 0;
+                rangeLabel = `${intToIpv4(firstHost)} - ${intToIpv4(lastHost)}`;
+                broadcastDisplay = intToIpv4(broadcast);
+            }
+
+            return {
+                ip: intToIpv4(ipInt),
+                ipInt,
+                cidr,
+                mask,
+                maskStr: intToIpv4(mask),
+                wildcard,
+                wildcardStr: intToIpv4(wildcard),
+                network,
+                networkStr: intToIpv4(network),
+                broadcast,
+                broadcastStr: intToIpv4(broadcast),
+                broadcastDisplay,
+                firstHost,
+                firstHostStr: intToIpv4(firstHost),
+                lastHost,
+                lastHostStr: intToIpv4(lastHost),
+                rangeLabel,
+                total,
+                usableHosts
+            };
+        }
+
+        // ==================== UI UPDATE & SYNC ====================
+        function populateCidrSelect() {
+            const sel = document.getElementById('cidr-select');
+            sel.innerHTML = '';
+            for (let c = 32; c >= 0; c--) {
+                const total = 2 ** (32 - c);
+                const usable = c === 32 ? 1 : (c === 31 ? 2 : total - 2);
+                const opt = document.createElement('option');
+                opt.value = String(c);
+                opt.textContent = `/${c} (${intToIpv4(cidrToMaskInt(c))} • ${usable.toLocaleString()} IP)`;
+                sel.appendChild(opt);
+            }
+            sel.value = '24';
+        }
+
+        function formatColoredBinary32(num, cidr) {
+            const bin = (num >>> 0).toString(2).padStart(32, '0');
+            let html = '';
+            for (let i = 0; i < 32; i++) {
+                if (i > 0 && i % 8 === 0) html += '<span class="text-slate-400 mx-0.5">.</span>';
+                const cls = i < cidr ? 'net-bit' : 'host-bit';
+                html += `<span class="${cls}">${bin[i]}</span>`;
+            }
+            return html;
+        }
+
+        function recomputeAll(syncMaskBox = true) {
+            const errBox = document.getElementById('subnet-error');
+            const ipInt = parseIpv4(currentIpStr);
+            if (ipInt === null) {
+                errBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> รูปแบบ IPv4 ไม่ถูกต้อง (ต้องเป็นตัวเลข 0–255 คั่นด้วยจุด 4 ชุด เช่น 192.168.10.50)`;
+                errBox.classList.remove('hidden');
+                return;
+            }
+            errBox.classList.add('hidden');
+
+            document.getElementById('cidr-select').value = String(currentCidr);
+            document.getElementById('cidr-slider').value = String(currentCidr);
+            document.getElementById('cidr-badge-live').textContent = `/${currentCidr}`;
+
+            const res = calculateSubnet(ipInt, currentCidr);
+            if (syncMaskBox) {
+                document.getElementById('mask-input').value = res.maskStr;
+            }
+
+            // KPI Cards
+            document.getElementById('kpi-network').textContent = res.networkStr;
+            document.getElementById('kpi-broadcast').textContent = res.broadcastDisplay;
+            document.getElementById('kpi-usable').textContent = res.usableHosts.toLocaleString();
+            document.getElementById('kpi-wildcard').textContent = res.wildcardStr;
+
+            const cls = classifyIpv4(ipInt);
+            const scopeEl = document.getElementById('ip-scope-badge');
+            scopeEl.className = `px-2.5 py-0.5 rounded-full text-[11px] font-bold ${cls.scopeColor}`;
+            scopeEl.textContent = `${cls.ipClass} • ${cls.scope}`;
+
+            // Detailed Rows
+            const rows = [
+                ['CIDR Notation (วงเครือข่ายเต็ม)', `${res.networkStr}/${res.cidr}`],
+                ['Subnet Mask (ตัวกั้นเครือข่าย)', res.maskStr],
+                ['Wildcard Mask (Cisco / ACL Mask)', res.wildcardStr],
+                ['Usable Host Range (IP ที่แจกให้เครื่องใช้ได้)', res.rangeLabel],
+                ['First Host (นิยมตั้งเป็น Default Gateway)', res.firstHostStr],
+                ['Last Usable Host (IP สุดท้ายในวง)', res.lastHostStr],
+                ['จำนวน IP ทั้งหมด / ใช้งานได้จริง', `${res.total.toLocaleString()} total / ${res.usableHosts.toLocaleString()} usable`],
+                ['Hexadecimal IP', `0x${res.ipInt.toString(16).toUpperCase().padStart(8, '0')}`]
+            ];
+            const listEl = document.getElementById('subnet-details-list');
+            listEl.innerHTML = '';
+            for (const [label, val] of rows) {
+                const row = document.createElement('div');
+                row.className = 'px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 hover:bg-google-subtle/40 dark:hover:bg-google-dark-subtle/40 transition';
+                row.innerHTML = `<span class="text-google-text-muted dark:text-google-dark-text-muted font-medium">${escapeHtml(label)}</span><div class="flex items-center justify-between sm:justify-end gap-2 min-w-0"><code class="font-mono font-bold text-google-text dark:text-white text-left sm:text-right break-words"></code><button type="button" class="px-2 py-0.5 rounded border border-google-border dark:border-google-dark-border text-[11px] font-semibold hover:border-google-blue shrink-0 cursor-pointer">คัดลอก</button></div>`;
+                row.querySelector('code').textContent = String(val);
+                row.querySelector('button').onclick = () => copyTextValue(val, label);
+                listEl.appendChild(row);
+            }
+
+            // Binary 32-bit Rows
+            document.getElementById('bin-net-bits').textContent = String(currentCidr);
+            document.getElementById('bin-host-bits').textContent = String(32 - currentCidr);
+            const binRows = [
+                ['IP Input', res.ipInt],
+                ['Subnet Mask', res.mask],
+                ['Network', res.network],
+                ['Broadcast', res.broadcast],
+                ['Wildcard', res.wildcard]
+            ];
+            document.getElementById('binary-rows').innerHTML = binRows.map(([name, val]) => `
+                <div class="flex items-center justify-between gap-3 py-1 border-b border-google-border/50 dark:border-google-dark-border/50 last:border-b-0 whitespace-nowrap">
+                    <span class="text-google-text-muted w-24 shrink-0 font-sans font-semibold">${name}</span>
+                    <div>${formatColoredBinary32(val, currentCidr)}</div>
+                </div>
+            `).join('');
+
+            // Ubuntu Netplan & Splitter Sync
+            renderUbuntuConfig(res);
+            document.getElementById('split-parent-label').textContent = `${res.networkStr}/${res.cidr}`;
+            populateFlsmSelect();
+            renderSplitActiveView();
+        }
+
+        function handleIpInput() {
+            let val = document.getElementById('ip-input').value.trim();
+            const slashMatch = val.match(/^([^\s/]+)\s*\/\s*(\d{1,2})$/);
+            if (slashMatch) {
+                const c = parseInt(slashMatch[2], 10);
+                if (c >= 0 && c <= 32) {
+                    currentCidr = c;
+                    currentIpStr = slashMatch[1];
+                } else {
+                    currentIpStr = slashMatch[1];
+                }
+            } else {
+                currentIpStr = val;
+            }
+            recomputeAll();
+        }
+
+        function handleCidrSelect() {
+            currentCidr = parseInt(document.getElementById('cidr-select').value, 10);
+            recomputeAll();
+        }
+
+        function handleSliderInput(val) {
+            currentCidr = parseInt(val, 10);
+            recomputeAll();
+        }
+
+        function handleMaskInput() {
+            const rawMask = document.getElementById('mask-input').value.trim();
+            const mInt = parseIpv4(rawMask);
+            const errBox = document.getElementById('subnet-error');
+            if (mInt === null) {
+                errBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Subnet Mask ไม่ถูกต้อง (เช่น 255.255.255.0)`;
+                errBox.classList.remove('hidden');
+                return;
+            }
+            const cidr = maskIntToCidr(mInt);
+            if (cidr === null) {
+                errBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Subnet Mask ต้องเรียงบิต 1 ต่อเนื่องกันจากซ้ายไปขวา`;
+                errBox.classList.remove('hidden');
+                return;
+            }
+            currentCidr = cidr;
+            recomputeAll(false);
+        }
+
+        function applyPreset(ip, cidr) {
+            currentIpStr = ip;
+            currentCidr = cidr;
+            document.getElementById('ip-input').value = ip;
+            recomputeAll();
+        }
+
+        // ==================== UBUNTU NETPLAN & CLI GENERATOR ====================
+        function setUbuntuMode(mode) {
+            currentUbuntuMode = mode;
+            document.getElementById('ubuntu-mode-netplan').className = mode === 'netplan'
+                ? 'px-2.5 py-1 rounded-md bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer'
+                : 'px-2.5 py-1 rounded-md text-google-text-muted dark:text-google-dark-text-muted cursor-pointer';
+            document.getElementById('ubuntu-mode-cli').className = mode === 'cli'
+                ? 'px-2.5 py-1 rounded-md bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer'
+                : 'px-2.5 py-1 rounded-md text-google-text-muted dark:text-google-dark-text-muted cursor-pointer';
+            renderUbuntuConfig();
+        }
+
+        function renderUbuntuConfig(cachedRes = null) {
+            const ipInt = parseIpv4(currentIpStr);
+            if (ipInt === null) return;
+            const res = cachedRes || calculateSubnet(ipInt, currentCidr);
+            const iface = (document.getElementById('cfg-iface').value.trim() || 'ens33').replace(/[^a-zA-Z0-9._-]/g, '');
+            const hostIp = res.ip === res.networkStr && res.cidr <= 30 ? intToIpv4((res.network + 2) >>> 0) : res.ip;
+            const gwInput = document.getElementById('cfg-gateway').value.trim();
+            const gw = parseIpv4(gwInput) !== null ? gwInput : res.firstHostStr;
+            const dnsRaw = document.getElementById('cfg-dns').value.trim() || '1.1.1.1, 8.8.8.8';
+            const dnsList = dnsRaw.split(/[\s,]+/).filter(Boolean).join(', ');
+            const vlanRaw = document.getElementById('cfg-vlan').value.trim();
+            const vlanId = vlanRaw && parseInt(vlanRaw, 10) >= 1 && parseInt(vlanRaw, 10) <= 4094 ? parseInt(vlanRaw, 10) : null;
+
+            let text = '';
+            if (currentUbuntuMode === 'netplan') {
+                if (vlanId) {
+                    text = `network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ${iface}:
+      dhcp4: false
+  vlans:
+    vlan.${vlanId}:
+      id: ${vlanId}
+      link: ${iface}
+      addresses:
+        - ${hostIp}/${res.cidr}
+      routes:
+        - to: default
+          via: ${gw}
+      nameservers:
+        addresses: [${dnsList}]`;
+                } else {
+                    text = `network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ${iface}:
+      dhcp4: false
+      addresses:
+        - ${hostIp}/${res.cidr}
+      routes:
+        - to: default
+          via: ${gw}
+      nameservers:
+        addresses: [${dnsList}]`;
+                }
+            } else {
+                const targetIface = vlanId ? `${iface}.${vlanId}` : iface;
+                text = `# 1. กำหนด IP ชั่วคราว (iproute2)
+sudo ip addr add ${hostIp}/${res.cidr} dev ${targetIface}
+sudo ip link set ${targetIface} up
+sudo ip route add default via ${gw} dev ${targetIface}
+
+# 2. เปิด Firewall UFW เฉพาะวง LAN นี้
+sudo ufw allow from ${res.networkStr}/${res.cidr} comment "Allow Local Subnet"`;
+            }
+            document.getElementById('ubuntu-config-out').textContent = text;
+        }
+
+        function copyNetplanConfig() {
+            copyTextFromEl('ubuntu-config-out', currentUbuntuMode === 'netplan' ? 'Ubuntu Netplan YAML' : 'Ubuntu CLI Commands');
+        }
+
+        // ==================== SUBNET SPLITTER (FLSM & VLSM) ====================
+        function switchSubnetMode(mode) {
+            const isSplit = mode === 'split';
+            document.getElementById('view-calc').classList.toggle('hidden', isSplit);
+            document.getElementById('view-split').classList.toggle('hidden', !isSplit);
+            document.getElementById('tab-btn-calc').className = !isSplit
+                ? 'shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-bold flex items-center justify-center sm:justify-start gap-2 bg-google-blue text-white shadow-xs transition cursor-pointer'
+                : 'shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-semibold flex items-center justify-center sm:justify-start gap-2 text-google-text-body dark:text-google-dark-text-body hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition cursor-pointer';
+            document.getElementById('tab-btn-split').className = isSplit
+                ? 'shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-bold flex items-center justify-center sm:justify-start gap-2 bg-google-blue text-white shadow-xs transition cursor-pointer'
+                : 'shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-semibold flex items-center justify-center sm:justify-start gap-2 text-google-text-body dark:text-google-dark-text-body hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition cursor-pointer';
+            if (isSplit) renderSplitActiveView();
+        }
+
+        function setSplitKind(kind) {
+            currentSplitKind = kind;
+            const isVlsm = kind === 'vlsm';
+            document.getElementById('flsm-controls').classList.toggle('hidden', isVlsm);
+            document.getElementById('vlsm-controls').classList.toggle('hidden', !isVlsm);
+            document.getElementById('split-kind-flsm').className = !isVlsm
+                ? 'px-3 py-1 rounded-lg bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer'
+                : 'px-3 py-1 rounded-lg text-google-text-muted dark:text-google-dark-text-muted cursor-pointer';
+            document.getElementById('split-kind-vlsm').className = isVlsm
+                ? 'px-3 py-1 rounded-lg bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer'
+                : 'px-3 py-1 rounded-lg text-google-text-muted dark:text-google-dark-text-muted cursor-pointer';
+            renderSplitActiveView();
+        }
+
+        function populateFlsmSelect() {
+            const sel = document.getElementById('flsm-target-cidr');
+            const prev = parseInt(sel.value, 10);
+            sel.innerHTML = '';
+            const maxTarget = Math.min(31, currentCidr + 8);
+            if (currentCidr >= 31) {
+                const opt = document.createElement('option');
+                opt.value = String(currentCidr);
+                opt.textContent = `/${currentCidr} (ไม่สามารถแบ่งย่อยได้อีก)`;
+                sel.appendChild(opt);
+                return;
+            }
+            for (let c = currentCidr + 1; c <= maxTarget; c++) {
+                const count = 2 ** (c - currentCidr);
+                const usable = c === 31 ? 2 : (2 ** (32 - c)) - 2;
+                const opt = document.createElement('option');
+                opt.value = String(c);
+                opt.textContent = `/${c} → แบ่งได้ ${count} วง (วงละ ${usable.toLocaleString()} เครื่อง)`;
+                sel.appendChild(opt);
+            }
+            const desired = prev > currentCidr && prev <= maxTarget ? prev : Math.min(maxTarget, currentCidr + 2);
+            sel.value = String(desired);
+        }
+
+        function renderSplitRows(items) {
+            const tbody = document.getElementById('split-tbody');
+            tbody.innerHTML = '';
+            if (!items.length) {
+                tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-center text-google-text-muted font-sans">ไม่มีรายการ Subnet ที่แสดงได้</td></tr>';
+                return;
+            }
+            for (const item of items) {
+                const s = item.sub;
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-google-subtle/50 dark:hover:bg-google-dark-subtle/40 transition';
+                tr.innerHTML = `
+                    <td class="px-3.5 py-2.5 font-sans font-bold text-google-text dark:text-white">${escapeHtml(item.label)}</td>
+                    <td class="px-3.5 py-2.5 font-bold text-google-blue dark:text-sky-400">${escapeHtml(s.networkStr)}/${s.cidr}</td>
+                    <td class="px-3.5 py-2.5 text-google-text-body dark:text-google-dark-text-body">${escapeHtml(s.maskStr)}</td>
+                    <td class="px-3.5 py-2.5">${escapeHtml(s.firstHostStr)} – ${escapeHtml(s.lastHostStr)}</td>
+                    <td class="px-3.5 py-2.5 text-rose-600 dark:text-rose-400">${escapeHtml(s.broadcastDisplay)}</td>
+                    <td class="px-3.5 py-2.5 text-right font-bold text-emerald-600 dark:text-emerald-400">${s.usableHosts.toLocaleString()}</td>
+                    <td class="px-3.5 py-2.5 text-center">
+                        <button type="button" class="px-2.5 py-1 rounded-lg bg-google-blue hover:opacity-90 text-white text-[11px] font-sans font-semibold cursor-pointer">ใช้ตั้งค่า</button>
+                    </td>
+                `;
+                tr.querySelector('button').onclick = () => {
+                    applyPreset(s.firstHostStr, s.cidr);
+                    switchSubnetMode('calc');
+                    showToast(`โหลดวง ${s.networkStr}/${s.cidr} เข้าเครื่องคำนวณแล้ว!`);
+                };
+                tbody.appendChild(tr);
+            }
+        }
+
+        function renderFlsmTable() {
+            const ipInt = parseIpv4(currentIpStr);
+            if (ipInt === null) return;
+            const parent = calculateSubnet(ipInt, currentCidr);
+            const targetCidr = parseInt(document.getElementById('flsm-target-cidr').value, 10) || currentCidr;
+            if (targetCidr <= currentCidr) {
+                document.getElementById('flsm-summary').textContent = 'วงนี้มีขนาดเล็กสุดแล้ว';
+                renderSplitRows([{ label: 'วงหลัก', sub: parent }]);
+                return;
+            }
+            const count = 2 ** (targetCidr - currentCidr);
+            const step = 2 ** (32 - targetCidr);
+            const items = [];
+            for (let i = 0; i < Math.min(count, 256); i++) {
+                const subNet = (parent.network + i * step) >>> 0;
+                items.push({
+                    label: `วง #${i + 1}`,
+                    sub: calculateSubnet(subNet, targetCidr)
+                });
+            }
+            document.getElementById('flsm-summary').textContent = `รวม ${count} วงย่อย (${items[0]?.sub.usableHosts.toLocaleString() || 0} เครื่อง/วง)`;
+            renderSplitRows(items);
+        }
+
+        function renderVlsmControls() {
+            const wrap = document.getElementById('vlsm-rows');
+            wrap.innerHTML = '';
+            vlsmList.forEach((entry, idx) => {
+                const card = document.createElement('div');
+                card.className = 'p-2.5 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border space-y-1.5 text-xs';
+                card.innerHTML = `
+                    <div class="flex items-center gap-1.5">
+                        <input type="text" value="${escapeHtml(entry.name)}" placeholder="ชื่อ VLAN" class="flex-1 min-w-0 px-2 py-1 rounded bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-semibold text-xs outline-none">
+                        <button type="button" class="text-rose-500 hover:text-rose-700 p-1 cursor-pointer" title="ลบวงนี้"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-[11px] text-google-text-muted shrink-0">จำนวนเครื่อง:</span>
+                        <input type="number" min="1" max="16777214" value="${entry.hosts}" class="w-full px-2 py-1 rounded bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-mono font-bold text-xs outline-none">
+                    </div>
+                `;
+                const [nameIn, hostsIn] = card.querySelectorAll('input');
+                nameIn.oninput = () => { vlsmList[idx].name = nameIn.value; renderVlsmTable(); };
+                hostsIn.oninput = () => { vlsmList[idx].hosts = Math.max(1, parseInt(hostsIn.value, 10) || 1); renderVlsmTable(); };
+                card.querySelector('button').onclick = () => {
+                    vlsmList.splice(idx, 1);
+                    renderVlsmControls();
+                    renderVlsmTable();
+                };
+                wrap.appendChild(card);
+            });
+        }
+
+        function addVlsmRow(name = '', hosts = 10) {
+            vlsmList.push({ name: name || `VLAN ${(vlsmList.length + 1) * 10}`, hosts });
+            renderVlsmControls();
+            renderVlsmTable();
+        }
+
+        function resetVlsmSample() {
+            vlsmList = [
+                { name: 'VLAN 10 • Office WiFi', hosts: 100 },
+                { name: 'VLAN 20 • Ubuntu Servers', hosts: 40 },
+                { name: 'VLAN 30 • CCTV & ESP32 IoT', hosts: 25 },
+                { name: 'VLAN 99 • Management P2P', hosts: 2 }
+            ];
+            renderVlsmControls();
+            renderVlsmTable();
+        }
+
+        function renderVlsmTable() {
+            const ipInt = parseIpv4(currentIpStr);
+            if (ipInt === null) return;
+            const parent = calculateSubnet(ipInt, currentCidr);
+            const errEl = document.getElementById('vlsm-error');
+
+            // VLSM requires largest subnets allocated first
+            const sorted = vlsmList.map((item, idx) => {
+                const req = Math.max(1, item.hosts);
+                let hostBits = 2; // min /30 (2 usable hosts + net + bcast)
+                while ((2 ** hostBits) - 2 < req && hostBits < 32) hostBits++;
+                return {
+                    label: item.name || `Subnet ${idx + 1}`,
+                    reqHosts: req,
+                    cidr: 32 - hostBits,
+                    blockSize: 2 ** hostBits
+                };
+            }).sort((a, b) => b.blockSize - a.blockSize);
+
+            let cursor = parent.network;
+            const items = [];
+            let overflowed = false;
+            for (const req of sorted) {
+                if (req.cidr < currentCidr || cursor + req.blockSize - 1 > parent.broadcast) {
+                    overflowed = true;
+                    break;
+                }
+                const sub = calculateSubnet(cursor >>> 0, req.cidr);
+                items.push({ label: `${req.label} (ขอ ${req.reqHosts})`, sub });
+                cursor = (cursor + req.blockSize) >>> 0;
+            }
+
+            if (overflowed) {
+                errEl.textContent = `⚠️ ขนาด IP รวมที่ต้องการเกินขอบเขตของวงแม่ ${parent.networkStr}/${parent.cidr} (${parent.usableHosts.toLocaleString()} usable IPs) — กรุณาขยาย Prefix วงหลักให้เล็กลง (เช่น /22 หรือ /16) หรือลดจำนวนโฮสต์`;
+                errEl.classList.remove('hidden');
+            } else {
+                errEl.classList.add('hidden');
+            }
+            renderSplitRows(items);
+        }
+
+        function renderSplitActiveView() {
+            if (currentSplitKind === 'flsm') renderFlsmTable();
+            else renderVlsmTable();
+        }
+
+        // ==================== THEME & APP SWITCHER ====================
+        function initTheme() {
+            const saved = localStorage.getItem('feel_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        function toggleSubAppSwitcher(forceState) {
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu) return;
+            const willOpen = typeof forceState === 'boolean' ? forceState : menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !willOpen);
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('app-switcher-btn');
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu || menu.classList.contains('hidden')) return;
+            if ((!btn || !btn.contains(e.target)) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleSubAppSwitcher(false);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            populateCidrSelect();
+            renderVlsmControls();
+            recomputeAll();
+        });
+    </script>
+</body>
+</html>

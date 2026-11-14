@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Image Compressor &amp; Converter — แปลง JPG PNG WebP &amp; ย่อขนาดเป็นชุด | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="เครื่องมือแปลงไฟล์รูปภาพระหว่าง JPG, PNG, WebP และย่อขนาดรูปภาพเป็นชุด (Batch) ในเบราว์เซอร์ 100% ปรับความกว้างสูงสุด ระดับคุณภาพ เปรียบเทียบ Before/After และดาวน์โหลดเป็น .ZIP">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.15rem;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.10), 0 1px 3px 1px rgba(60, 64, 67, 0.06);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+        .checkerboard-bg {
+            background-color: #f1f5f9;
+            background-image:
+                linear-gradient(45deg, #cbd5e1 25%, transparent 25%),
+                linear-gradient(-45deg, #cbd5e1 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #cbd5e1 75%),
+                linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+        }
+        .dark .checkerboard-bg {
+            background-color: #1f2226;
+            background-image:
+                linear-gradient(45deg, #333840 25%, transparent 25%),
+                linear-gradient(-45deg, #333840 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #333840 75%),
+                linear-gradient(-45deg, transparent 75%, #333840 75%);
+        }
+        .img-dropzone-active {
+            border-color: #0d9488 !important;
+            background-color: rgba(13, 148, 136, 0.08) !important;
+        }
+        .dark .img-dropzone-active {
+            background-color: rgba(13, 148, 136, 0.16) !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-teal-600 selection:text-white">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Centered Bottom Toast Notification -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 w-[92vw] max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- UNIFIED SINGLE-ROW NAVIGATION HEADER       -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก</span>
+            </a>
+
+            <div class="flex items-center gap-2.5 sm:border-l border-google-border dark:border-google-dark-border sm:pl-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-600 via-cyan-600 to-emerald-500 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-images"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            Smart Image Compressor
+                        </h1>
+                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-100 dark:bg-teal-950/70 text-teal-700 dark:text-teal-300 text-[10px] font-bold whitespace-nowrap shrink-0">
+                            JPG • PNG • WebP • Batch ZIP
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        แปลงไฟล์รูปภาพ ปรับความกว้างสูงสุด ลดขนาดเป็นชุด และดาวน์โหลด ZIP ในเบราว์เซอร์ 100%
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <a href="photo-studio.html" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-50 dark:bg-violet-950/60 border border-violet-200 dark:border-violet-800 text-xs font-semibold text-violet-700 dark:text-violet-300 hover:bg-violet-100 transition whitespace-nowrap">
+                <i class="fa-solid fa-scissors"></i>
+                <span>ลบพื้นหลัง</span>
+            </a>
+
+            <!-- App Switcher Dropdown (16 Apps) -->
+            <div class="relative shrink-0">
+                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (16 ระบบ)">
+                    <i class="fa-solid fa-layer-group text-teal-600 dark:text-teal-400"></i>
+                    <span class="hidden sm:inline">สลับเว็บแอป</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-700 dark:text-teal-300 text-[10px] font-bold leading-none">16</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                </button>
+                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
+                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
+                        </div>
+                    </a>
+                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
+                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (16 ระบบ)</div>
+                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
+                        </div>
+                    </a>
+                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
+                        </div>
+                    </a>
+                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
+                        </div>
+                    </a>
+                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ &amp; พายุ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
+                        </div>
+                    </a>
+                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble &amp; สูตร CFOP</div>
+                        </div>
+                    </a>
+                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง &amp; ถาม-ตอบ</div>
+                        </div>
+                    </a>
+                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ &amp; แชร์ PIN 6 หลัก</div>
+                        </div>
+                    </a>
+                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง &amp; รูปติดบัตร</div>
+                        </div>
+                    </a>
+                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI &amp; โฮสต์ฟรี</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI &amp; รันไฟล์</div>
+                        </div>
+                    </a>
+                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON • JWT • Base64 • Timestamp</div>
+                        </div>
+                    </a>
+                    <a href="subnet.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-blue-600 bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-network-wired"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">11. IP &amp; Subnet Calculator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CIDR • Host Range • VLAN • Netplan</div>
+                        </div>
+                    </a>
+                    <a href="regex.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-fuchsia-600 bg-fuchsia-50 dark:bg-fuchsia-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">12. Regex Tester &amp; Cheatsheet</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Live Match • Presets • Replace</div>
+                        </div>
+                    </a>
+                    <a href="diff.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code-compare"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">13. Diff Checker &amp; Code Compare</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Side-by-Side • Patch • Word Diff</div>
+                        </div>
+                    </a>
+                    <a href="keygen.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-rose-600 bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">14. Password &amp; Key Generator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CSPRNG • API Key • UUID • Hash</div>
+                        </div>
+                    </a>
+                    <a href="pdf-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-red-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">15. PDF Merge &amp; Split</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวมไฟล์ • แยกหน้า • หมุน &amp; ลบหน้า</div>
+                        </div>
+                    </a>
+                    <a href="image-converter.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-teal-50 dark:bg-teal-950/60 border border-teal-300 dark:border-teal-700 transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-100 dark:bg-teal-950 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-images"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">16. Image Compressor &amp; Converter</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JPG • PNG • WebP • Batch ZIP</div>
+                        </div>
+                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-teal-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Theme Switcher -->
+            <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN WORKSPACE                             -->
+    <!-- ========================================== -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
+
+        <!-- Summary & Privacy Strip -->
+        <section class="g-card p-3.5 sm:p-4 flex flex-col xl:flex-row xl:items-center justify-between gap-3 border-l-4 border-l-teal-600">
+            <div class="flex items-start sm:items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 flex items-center justify-center text-base shrink-0">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h2 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading">
+                            แปลงไฟล์และย่อขนาดรูปภาพเป็นชุดเพื่อเว็บโหลดเร็ว
+                        </h2>
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
+                            HTML5 Canvas • 100% ในเครื่อง
+                        </span>
+                    </div>
+                    <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted mt-0.5 leading-relaxed">
+                        รองรับแปลงข้าม JPG / PNG / WebP กำหนดความกว้างสูงสุด ระดับคุณภาพ ลบข้อมูล EXIF อัตโนมัติ เปรียบเทียบ Before/After และโหลดรวมเป็น .ZIP
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <div class="flex flex-wrap items-center gap-2 px-3 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs">
+                    <span>รูป: <strong id="stat-count" class="font-mono text-google-text dark:text-white">0</strong></span>
+                    <span class="text-google-border dark:text-google-dark-border">|</span>
+                    <span>เดิม: <strong id="stat-orig-total" class="font-mono text-slate-600 dark:text-slate-300">0 KB</strong></span>
+                    <span class="text-google-border dark:text-google-dark-border">|</span>
+                    <span>ใหม่: <strong id="stat-out-total" class="font-mono text-teal-600 dark:text-teal-400">0 KB</strong></span>
+                    <span class="text-google-border dark:text-google-dark-border">|</span>
+                    <span id="stat-saved-pct" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0%</span>
+                </div>
+                <button type="button" id="btn-load-sample" onclick="loadSampleImages()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-xs transition cursor-pointer whitespace-nowrap">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>สร้างรูปตัวอย่างทดสอบ</span>
+                </button>
+                <button type="button" id="btn-clear-all" onclick="clearAllImages()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-slate-100 dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs font-semibold text-google-text-body dark:text-google-dark-text-body transition cursor-pointer whitespace-nowrap">
+                    <i class="fa-solid fa-trash-can text-google-text-muted"></i>
+                    <span>ล้างทั้งหมด</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 2-Column Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+            <!-- LEFT COLUMN: Dropzone + Batch Settings -->
+            <div class="lg:col-span-4 space-y-4">
+
+                <!-- 1. Dropzone -->
+                <div class="g-card p-4 space-y-3">
+                    <h3 class="text-sm font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-teal-600"></i>
+                        <span>1. เลือกรูปภาพเป็นชุด (Batch)</span>
+                    </h3>
+
+                    <div id="img-dropzone" tabindex="0" class="rounded-2xl border-2 border-dashed border-google-border dark:border-google-dark-border bg-google-bg/80 dark:bg-google-dark-bg/70 hover:border-teal-500 p-4 text-center transition cursor-pointer" onclick="document.getElementById('img-file-input').click()">
+                        <input id="img-file-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/bmp,.jpg,.jpeg,.png,.webp" multiple class="hidden">
+                        <div class="w-11 h-11 mx-auto rounded-2xl bg-teal-100 dark:bg-teal-950/70 text-teal-600 flex items-center justify-center text-lg mb-2">
+                            <i class="fa-solid fa-photo-film"></i>
+                        </div>
+                        <p class="text-xs sm:text-sm font-bold text-google-text dark:text-google-dark-text">
+                            ลากรูปภาพหลายรูปมาวาง หรือคลิกเลือกไฟล์
+                        </p>
+                        <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-1">
+                            รองรับ JPG, PNG, WebP, GIF, BMP • ประมวลผลบนอุปกรณ์ผู้ใช้
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 2. Optimization Settings -->
+                <div class="g-card p-4 space-y-3.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="text-sm font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-teal-600"></i>
+                            <span>2. ตั้งค่าการแปลง &amp; บีบอัด</span>
+                        </h3>
+                    </div>
+
+                    <!-- Quick Web Presets -->
+                    <div class="space-y-1.5">
+                        <span class="text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">พรีเซ็ตสำหรับงานเว็บ (กดใช้ทันที):</span>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <button type="button" onclick="applyWebPreset('web-webp')" class="px-2.5 py-1.5 rounded-xl bg-teal-50 dark:bg-teal-950/50 hover:bg-teal-100 border border-teal-200 dark:border-teal-800 text-[11px] font-bold text-teal-800 dark:text-teal-300 text-left cursor-pointer">
+                                🌐 เว็บ / สินค้า (WebP 1200)
+                            </button>
+                            <button type="button" onclick="applyWebPreset('portfolio')" class="px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 border border-blue-200 dark:border-blue-800 text-[11px] font-bold text-blue-800 dark:text-blue-300 text-left cursor-pointer">
+                                🖼️ ผลงาน HD (WebP 1600)
+                            </button>
+                            <button type="button" onclick="applyWebPreset('jpg-compat')" class="px-2.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 border border-amber-200 dark:border-amber-800 text-[11px] font-bold text-amber-800 dark:text-amber-300 text-left cursor-pointer">
+                                📷 ทั่วไปประหยัด (JPG 1280)
+                            </button>
+                            <button type="button" onclick="applyWebPreset('png-icon')" class="px-2.5 py-1.5 rounded-xl bg-violet-50 dark:bg-violet-950/50 hover:bg-violet-100 border border-violet-200 dark:border-violet-800 text-[11px] font-bold text-violet-800 dark:text-violet-300 text-left cursor-pointer">
+                                ✨ โปร่งใส / โลโก้ (PNG 512)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Output Format Selector -->
+                    <div class="space-y-1.5">
+                        <label class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">รูปแบบไฟล์ปลายทาง (Output Format)</label>
+                        <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-google-subtle dark:bg-google-dark-bg border border-google-border/80 dark:border-google-dark-border">
+                            <button type="button" id="fmt-btn-webp" onclick="setOutputFormat('image/webp')" class="py-1.5 px-2 rounded-lg text-xs font-bold bg-white dark:bg-google-dark-surface text-teal-600 dark:text-teal-400 shadow-xs transition cursor-pointer">
+                                WebP
+                            </button>
+                            <button type="button" id="fmt-btn-jpeg" onclick="setOutputFormat('image/jpeg')" class="py-1.5 px-2 rounded-lg text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer">
+                                JPG
+                            </button>
+                            <button type="button" id="fmt-btn-png" onclick="setOutputFormat('image/png')" class="py-1.5 px-2 rounded-lg text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer">
+                                PNG
+                            </button>
+                        </div>
+                        <p id="format-hint" class="text-[11px] text-teal-700 dark:text-teal-300">
+                            WebP รองรับความโปร่งใสและขนาดเล็กกว่า JPG/PNG มาก เหมาะสำหรับเว็บไซต์ยุคใหม่
+                        </p>
+                    </div>
+
+                    <!-- Quality Slider -->
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between text-xs">
+                            <label for="quality-range" class="font-semibold text-google-text dark:text-google-dark-text">ระดับคุณภาพ (Quality)</label>
+                            <span id="quality-label" class="px-2 py-0.5 rounded-md bg-teal-100 dark:bg-teal-950/70 text-teal-700 dark:text-teal-300 font-mono font-bold">82%</span>
+                        </div>
+                        <input id="quality-range" type="range" min="10" max="100" step="1" value="82" oninput="onQualityChange()" class="w-full accent-teal-600 cursor-pointer">
+                        <div class="flex justify-between text-[10px] text-google-text-muted dark:text-google-dark-text-muted font-mono">
+                            <span>10% เล็กสุด</span>
+                            <span>80–85% แนะนำ</span>
+                            <span>100% ชัดสุด</span>
+                        </div>
+                    </div>
+
+                    <!-- Max Width Setting -->
+                    <div class="space-y-1.5">
+                        <label for="max-width-input" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">ความกว้างสูงสุด (Max Width px • 0 = ขนาดเดิม)</label>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="max-width-input" min="0" max="10000" step="10" value="1200" onchange="scheduleBatchProcess()" class="w-28 px-3 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono font-bold text-google-text dark:text-white focus:outline-none focus:border-teal-500">
+                            <div class="flex flex-wrap gap-1 flex-1">
+                                <button type="button" onclick="setMaxWidth(0)" class="px-2 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-[10px] font-mono font-bold cursor-pointer">เดิม</button>
+                                <button type="button" onclick="setMaxWidth(1920)" class="px-2 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-[10px] font-mono font-bold cursor-pointer">1920</button>
+                                <button type="button" onclick="setMaxWidth(1200)" class="px-2 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-[10px] font-mono font-bold cursor-pointer">1200</button>
+                                <button type="button" onclick="setMaxWidth(800)" class="px-2 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-[10px] font-mono font-bold cursor-pointer">800</button>
+                                <button type="button" onclick="setMaxWidth(512)" class="px-2 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-[10px] font-mono font-bold cursor-pointer">512</button>
+                            </div>
+                        </div>
+                        <label class="flex items-center gap-2 pt-1 cursor-pointer text-xs">
+                            <input type="checkbox" id="chk-no-upscale" checked onchange="scheduleBatchProcess()" class="w-4 h-4 accent-teal-600 rounded">
+                            <span class="text-google-text-body dark:text-google-dark-text-body">ไม่ขยายรูปที่เล็กกว่าค่าที่กำหนด</span>
+                        </label>
+                    </div>
+
+                    <!-- Transparent -> JPG Matte & Suffix -->
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <div>
+                            <label for="matte-color" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">พื้นหลังเมื่อแปลงเป็น JPG</label>
+                            <div class="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border">
+                                <input type="color" id="matte-color" value="#ffffff" onchange="scheduleBatchProcess()" class="w-6 h-6 rounded border-0 bg-transparent cursor-pointer">
+                                <span id="matte-hex" class="text-xs font-mono text-google-text dark:text-white">#ffffff</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="suffix-input" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">ต่อท้ายชื่อไฟล์</label>
+                            <input type="text" id="suffix-input" value="-opt" oninput="scheduleBatchProcess()" placeholder="เช่น -opt" class="w-full px-2.5 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono text-google-text dark:text-white focus:outline-none focus:border-teal-500">
+                        </div>
+                    </div>
+
+                    <!-- Batch Action CTAs -->
+                    <div class="space-y-2 pt-1">
+                        <button type="button" id="btn-process-all" onclick="processAllImages(true)" class="w-full py-2.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                            <span>แปลงและบีบอัดทั้งหมดตอนนี้</span>
+                        </button>
+                        <button type="button" id="btn-download-zip" onclick="downloadAllAsZip()" class="w-full py-2.5 px-4 rounded-xl bg-slate-900 dark:bg-zinc-700 hover:bg-slate-800 dark:hover:bg-zinc-600 text-white text-xs sm:text-sm font-bold shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-file-zipper text-amber-400"></i>
+                            <span>ดาวน์โหลดทั้งหมดเป็นไฟล์ .ZIP</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Visual Before/After + Batch Queue -->
+            <div class="lg:col-span-8 space-y-4">
+
+                <!-- Visual Before / After Split Slider Card -->
+                <div id="compare-card" class="g-card p-4 space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <h3 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                                <i class="fa-solid fa-table-columns text-teal-600"></i>
+                                <span>เปรียบเทียบ Before / After แบบสไลด์</span>
+                            </h3>
+                            <p id="compare-caption" class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
+                                คลิกที่การ์ดรูปใดก็ได้ด้านล่างเพื่อเปรียบเทียบความคมชัดกับขนาดไฟล์จริง
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">เลื่อนดูผลต่าง:</span>
+                            <span id="compare-pct-badge" class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-xs font-mono font-bold">50%</span>
+                        </div>
+                    </div>
+
+                    <!-- Stage -->
+                    <div id="compare-stage" class="hidden relative w-full h-64 sm:h-72 rounded-2xl border border-google-border dark:border-google-dark-border checkerboard-bg overflow-hidden select-none">
+                        <!-- Left Original (underlay or clipped overlay) -->
+                        <img id="compare-img-after" src="" alt="Converted After" class="absolute inset-0 w-full h-full object-contain pointer-events-none">
+                        <div id="compare-before-clip" class="absolute inset-0 overflow-hidden pointer-events-none" style="clip-path: inset(0 50% 0 0);">
+                            <img id="compare-img-before" src="" alt="Original Before" class="w-full h-full object-contain">
+                        </div>
+                        <!-- Divider Line -->
+                        <div id="compare-divider" class="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_8px_rgba(0,0,0,0.65)] pointer-events-none" style="left: 50%;">
+                            <div class="w-7 h-7 -ml-3.5 rounded-full bg-teal-600 text-white border-2 border-white shadow-md flex items-center justify-center text-[10px] absolute top-1/2 -translate-y-1/2">
+                                <i class="fa-solid fa-left-right"></i>
+                            </div>
+                        </div>
+                        <!-- Badges -->
+                        <div id="compare-badge-before" class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg bg-slate-900/80 text-white text-[11px] font-mono backdrop-blur-xs pointer-events-none"></div>
+                        <div id="compare-badge-after" class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-teal-700/90 text-white text-[11px] font-mono backdrop-blur-xs pointer-events-none"></div>
+                        <!-- Transparent range input spanning full stage for instant drag/keyboard -->
+                        <input id="compare-slider" type="range" min="0" max="100" value="50" oninput="updateCompareSplit(this.value)" aria-label="เปรียบเทียบภาพก่อนและหลัง" class="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-10">
+                    </div>
+
+                    <div id="compare-empty" class="h-36 rounded-2xl border-2 border-dashed border-google-border/80 dark:border-google-dark-border bg-google-bg/50 dark:bg-google-dark-bg/40 flex flex-col items-center justify-center text-center p-4">
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">
+                            ยังไม่มีรูปในคิว — กดปุ่ม <strong>"สร้างรูปตัวอย่างทดสอบ"</strong> หรืออัปโหลดรูปด้านซ้าย เพื่อดูตัวเทียบ Before/After และผลลัพธ์ทันที
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Batch Result Queue Card -->
+                <div class="g-card p-4 space-y-3">
+                    <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-google-border dark:border-google-dark-border">
+                        <h3 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-teal-600"></i>
+                            <span>รายการรูปภาพในชุด (Batch Queue)</span>
+                        </h3>
+                        <span id="batch-format-badge" class="px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-[11px] font-mono font-bold">
+                            WEBP • Q82% • Max 1200px
+                        </span>
+                    </div>
+
+                    <div id="image-list" class="space-y-2.5">
+                        <div class="py-10 text-center text-xs text-google-text-muted dark:text-google-dark-text-muted border border-dashed border-google-border/70 dark:border-google-dark-border rounded-2xl">
+                            ยังไม่มีไฟล์รูปภาพในคิว
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Compact Footer -->
+    <footer class="mt-auto py-4 px-4 text-center text-xs text-google-text-muted dark:text-google-dark-text-muted border-t border-google-border/70 dark:border-google-dark-border">
+        <span>Smart Image Compressor &amp; Converter (100% Client-Side HTML5 Canvas + Zero-Dependency ZIP) — </span>
+        <a href="index.html" class="font-semibold text-google-blue dark:text-sky-400 hover:underline">กลับหน้า Portfolio</a>
+    </footer>
+
+    <script>
+        // ==================== FORMAT & APP STATE ====================
+        const FORMAT_META = {
+            'image/webp': { ext: 'webp', label: 'WebP', hint: 'WebP รองรับความโปร่งใสและขนาดเล็กกว่า JPG/PNG มาก เหมาะสำหรับเว็บไซต์ยุคใหม่' },
+            'image/jpeg': { ext: 'jpg', label: 'JPG', hint: 'JPG เหมาะสำหรับรูปถ่ายทั่วไป ไม่รองรับความโปร่งใส (ระบบเติมสีพื้นหลังให้โดยอัตโนมัติ)' },
+            'image/png': { ext: 'png', label: 'PNG', hint: 'PNG เป็น Lossless รักษาความโปร่งใสและความคมขอบสูง (ลดขนาดผ่านความกว้างสูงสุดได้)' }
+        };
+
+        const imgState = {
+            items: [], // [{ id, origName, origSize, origType, origUrl, origWidth, origHeight, outName, outBlob, outUrl, outSize, outWidth, outHeight, durationMs, error }]
+            nextId: 1,
+            targetFormat: 'image/webp',
+            selectedCompareId: null,
+            lastZipUrl: null,
+            debounceTimer: null
+        };
+
+        // ==================== UTILITIES ====================
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes || bytes < 1024) return (bytes || 0) + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        function buildOutputFilename(origName, suffix, ext) {
+            const cleanOrig = String(origName || 'image').replace(/[<>:"/\\|?*]+/g, '-');
+            const dotIdx = cleanOrig.lastIndexOf('.');
+            const base = dotIdx > 0 ? cleanOrig.slice(0, dotIdx) : cleanOrig;
+            const cleanSuffix = String(suffix || '').replace(/[<>:"/\\|?*]+/g, '');
+            return `${base}${cleanSuffix}.${ext}`;
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const el = document.createElement('div');
+            const bg = type === 'error'
+                ? 'bg-rose-600 text-white'
+                : 'bg-slate-900 dark:bg-zinc-800 text-white border border-slate-700';
+            const icon = type === 'error'
+                ? 'fa-circle-exclamation'
+                : 'fa-circle-check text-emerald-400';
+            el.className = `pointer-events-auto px-4 py-2 rounded-full shadow-lg text-xs font-semibold flex items-center gap-2 ${bg}`;
+            el.innerHTML = `<i class="fa-solid ${icon}"></i><span></span>`;
+            el.querySelector('span').textContent = message;
+            container.appendChild(el);
+            clearTimeout(showToast._timer);
+            showToast._timer = setTimeout(() => {
+                if (el.parentNode) el.remove();
+            }, 3200);
+        }
+
+        function calcTargetDimensions(origW, origH, maxWidth, noUpscale) {
+            if (!origW || !origH) return { width: origW, height: origH };
+            if (!maxWidth || maxWidth <= 0) return { width: origW, height: origH };
+            if (noUpscale && origW <= maxWidth) return { width: origW, height: origH };
+            const ratio = origH / origW;
+            return {
+                width: Math.max(1, Math.round(maxWidth)),
+                height: Math.max(1, Math.round(maxWidth * ratio))
+            };
+        }
+
+        // ==================== CORE IMAGE PROCESSING ENGINE ====================
+        function decodeImageElement(blob) {
+            return new Promise((resolve, reject) => {
+                const url = URL.createObjectURL(blob);
+                const img = new Image();
+                img.onload = () => resolve({ img, url });
+                img.onerror = () => {
+                    URL.revokeObjectURL(url);
+                    reject(new Error('ไม่สามารถถอดรหัสไฟล์รูปภาพได้'));
+                };
+                img.src = url;
+            });
+        }
+
+        function canvasToBlobAsync(canvas, mime, quality) {
+            return new Promise((resolve, reject) => {
+                canvas.toBlob((blob) => {
+                    if (!blob) reject(new Error('ไม่สามารถสร้างไฟล์ ' + mime + ' ได้'));
+                    else resolve(blob);
+                }, mime, quality);
+            });
+        }
+
+        async function processSingleItem(item) {
+            const fmt = imgState.targetFormat;
+            const meta = FORMAT_META[fmt] || FORMAT_META['image/webp'];
+            const quality = Math.min(1, Math.max(0.1, Number(document.getElementById('quality-range').value || 82) / 100));
+            const maxWidth = Math.max(0, parseInt(document.getElementById('max-width-input').value || '0', 10) || 0);
+            const noUpscale = document.getElementById('chk-no-upscale').checked;
+            const matte = document.getElementById('matte-color').value || '#ffffff';
+            const suffix = document.getElementById('suffix-input').value;
+
+            const t0 = performance.now();
+            const { img, url: tmpUrl } = await decodeImageElement(item.origBlob);
+            let dims;
+            let outBlob;
+            try {
+                item.origWidth = img.naturalWidth || img.width;
+                item.origHeight = img.naturalHeight || img.height;
+
+                dims = calcTargetDimensions(item.origWidth, item.origHeight, maxWidth, noUpscale);
+                const canvas = document.createElement('canvas');
+                canvas.width = dims.width;
+                canvas.height = dims.height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) throw new Error('Canvas 2D Context ไม่พร้อมใช้งาน');
+
+                if (fmt === 'image/jpeg') {
+                    ctx.fillStyle = matte;
+                    ctx.fillRect(0, 0, dims.width, dims.height);
+                } else {
+                    ctx.clearRect(0, 0, dims.width, dims.height);
+                }
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(img, 0, 0, dims.width, dims.height);
+
+                outBlob = await canvasToBlobAsync(canvas, fmt, quality);
+            } finally {
+                URL.revokeObjectURL(tmpUrl);
+            }
+            if (item.outUrl) URL.revokeObjectURL(item.outUrl);
+            item.outBlob = outBlob;
+            item.outUrl = URL.createObjectURL(outBlob);
+            item.outSize = outBlob.size;
+            item.outWidth = dims.width;
+            item.outHeight = dims.height;
+            item.outMime = outBlob.type || fmt;
+            item.outName = buildOutputFilename(item.origName, suffix, meta.ext);
+            item.durationMs = Math.max(1, Math.round(performance.now() - t0));
+            item.error = null;
+        }
+
+        async function processAllImages(notify = false) {
+            updateFormatBadge();
+            if (imgState.items.length === 0) {
+                renderAll();
+                if (notify) showToast('ยังไม่มีรูปภาพในคิว กรุณาเพิ่มรูปก่อน', 'error');
+                return;
+            }
+            for (const item of imgState.items) {
+                try {
+                    await processSingleItem(item);
+                } catch (err) {
+                    item.error = err.message || 'แปลงไฟล์ไม่สำเร็จ';
+                }
+            }
+            if (!imgState.selectedCompareId || !imgState.items.some(i => i.id === imgState.selectedCompareId)) {
+                imgState.selectedCompareId = imgState.items[0].id;
+            }
+            renderAll();
+            if (notify) showToast(`ประมวลผลแล้ว ${imgState.items.length} รูป (${FORMAT_META[imgState.targetFormat].label})`);
+        }
+
+        function scheduleBatchProcess() {
+            const hex = document.getElementById('matte-color')?.value;
+            if (hex) document.getElementById('matte-hex').textContent = hex;
+            updateFormatBadge();
+            clearTimeout(imgState.debounceTimer);
+            imgState.debounceTimer = setTimeout(() => {
+                processAllImages(false);
+            }, 140);
+        }
+
+        // ==================== ADDING FILES & BUILT-IN SAMPLES ====================
+        async function addImageBlobs(entries) {
+            let added = 0;
+            let skipped = 0;
+            for (const entry of entries) {
+                const blob = entry.blob;
+                const name = entry.name || `image-${imgState.nextId}.png`;
+                const isImg = (blob.type && blob.type.startsWith('image/')) || /\.(jpe?g|png|webp|gif|bmp|avif)$/i.test(name);
+                if (!isImg) {
+                    skipped++;
+                    continue;
+                }
+                const origUrl = URL.createObjectURL(blob);
+                imgState.items.push({
+                    id: imgState.nextId++,
+                    origName: name,
+                    origSize: blob.size,
+                    origType: blob.type || 'image/*',
+                    origBlob: blob,
+                    origUrl,
+                    origWidth: 0,
+                    origHeight: 0,
+                    outName: '',
+                    outBlob: null,
+                    outUrl: '',
+                    outSize: 0,
+                    outWidth: 0,
+                    outHeight: 0,
+                    outMime: imgState.targetFormat,
+                    durationMs: 0,
+                    error: null
+                });
+                added++;
+            }
+
+            if (added === 0) {
+                showToast('ไม่พบไฟล์รูปภาพที่รองรับ (JPG, PNG, WebP, GIF, BMP)', 'error');
+                return;
+            }
+
+            await processAllImages(false);
+            const msg = skipped > 0
+                ? `เพิ่มแล้ว ${added} รูป (ข้าม ${skipped} ไฟล์ที่ไม่ใช่รูปภาพ)`
+                : `เพิ่มและประมวลผลแล้ว ${added} รูป ในเบราว์เซอร์ 100%`;
+            showToast(msg);
+        }
+
+        async function handleSelectedImageFiles(fileList) {
+            const entries = Array.from(fileList || []).map(file => ({ name: file.name, blob: file }));
+            if (entries.length === 0) return;
+            await addImageBlobs(entries);
+        }
+
+        async function makeSyntheticCanvasBlob(width, height, drawFn, mime = 'image/png', quality = 0.92) {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            drawFn(ctx, width, height);
+            return await canvasToBlobAsync(canvas, mime, quality);
+        }
+
+        async function loadSampleImages() {
+            // 1. Portfolio Banner Graphic (1600x1000 PNG)
+            const blob1 = await makeSyntheticCanvasBlob(1600, 1000, (ctx, w, h) => {
+                const grad = ctx.createLinearGradient(0, 0, w, h);
+                grad.addColorStop(0, '#0f766e');
+                grad.addColorStop(0.5, '#0284c7');
+                grad.addColorStop(1, '#1d4ed8');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+                ctx.fillStyle = 'rgba(255,255,255,0.16)';
+                for (let x = 0; x < w; x += 64) {
+                    ctx.fillRect(x, 0, 2, h);
+                }
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 72px sans-serif';
+                ctx.fillText('Portfolio Web Banner', 120, 460);
+                ctx.font = '38px sans-serif';
+                ctx.fillText('1600 x 1000 PNG Sample -> Optimize for Fast Loading', 120, 540);
+            }, 'image/png');
+
+            // 2. Product Showcase Texture (2400x1600 noisy canvas PNG -> compresses dramatically as WebP!)
+            const blob2 = await makeSyntheticCanvasBlob(2400, 1600, (ctx, w, h) => {
+                const grad = ctx.createRadialGradient(w * 0.4, h * 0.4, 80, w * 0.5, h * 0.5, w * 0.7);
+                grad.addColorStop(0, '#f59e0b');
+                grad.addColorStop(0.5, '#ef4444');
+                grad.addColorStop(1, '#7c3aed');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+                for (let i = 0; i < 400; i++) {
+                    ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+                    ctx.beginPath();
+                    ctx.arc((i * 197) % w, (i * 313) % h, 24 + (i % 50), 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 88px sans-serif';
+                ctx.fillText('Product Photo 2400px', 180, 820);
+            }, 'image/png');
+
+            // 3. Transparent Logo Badge (1200x1200 PNG with Alpha Transparency)
+            const blob3 = await makeSyntheticCanvasBlob(1200, 1200, (ctx, w, h) => {
+                ctx.clearRect(0, 0, w, h);
+                ctx.fillStyle = '#0d9488';
+                ctx.beginPath();
+                ctx.arc(w / 2, h / 2, 460, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 28;
+                ctx.stroke();
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 140px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('FEEL', w / 2, h / 2 - 40);
+                ctx.font = 'bold 58px sans-serif';
+                ctx.fillText('TRANSPARENT PNG', w / 2, h / 2 + 100);
+            }, 'image/png');
+
+            await addImageBlobs([
+                { name: 'portfolio-banner.png', blob: blob1 },
+                { name: 'product-showcase.png', blob: blob2 },
+                { name: 'brand-badge-transparent.png', blob: blob3 }
+            ]);
+        }
+
+        // ==================== PURE CLIENT-SIDE PKZIP BUILDER (STORE METHOD) ====================
+        const CRC32_TABLE = (() => {
+            const table = new Uint32Array(256);
+            for (let n = 0; n < 256; n++) {
+                let c = n;
+                for (let k = 0; k < 8; k++) {
+                    c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+                }
+                table[n] = c >>> 0;
+            }
+            return table;
+        })();
+
+        function crc32(bytes) {
+            let crc = 0xffffffff;
+            for (let i = 0; i < bytes.length; i++) {
+                crc = CRC32_TABLE[(crc ^ bytes[i]) & 0xff] ^ (crc >>> 8);
+            }
+            return (crc ^ 0xffffffff) >>> 0;
+        }
+
+        function buildZipUint8Array(files) {
+            // files: [{ name: string, data: Uint8Array }]
+            const encoder = new TextEncoder();
+            const localChunks = [];
+            const centralChunks = [];
+            let offset = 0;
+
+            for (const f of files) {
+                const nameBytes = encoder.encode(f.name);
+                const data = f.data;
+                const crc = crc32(data);
+                const size = data.length;
+
+                // Local File Header (30 bytes + name)
+                const local = new Uint8Array(30 + nameBytes.length);
+                const lv = new DataView(local.buffer);
+                lv.setUint32(0, 0x04034b50, true);
+                lv.setUint16(4, 20, true);         // version needed
+                lv.setUint16(6, 0x0800, true);     // UTF-8 filename flag
+                lv.setUint16(8, 0, true);          // method 0 = Store
+                lv.setUint16(10, 0, true);
+                lv.setUint16(12, 0x5421, true);
+                lv.setUint32(14, crc, true);
+                lv.setUint32(18, size, true);
+                lv.setUint32(22, size, true);
+                lv.setUint16(26, nameBytes.length, true);
+                lv.setUint16(28, 0, true);
+                local.set(nameBytes, 30);
+
+                localChunks.push(local, data);
+
+                // Central Directory Header (46 bytes + name)
+                const central = new Uint8Array(46 + nameBytes.length);
+                const cv = new DataView(central.buffer);
+                cv.setUint32(0, 0x02014b50, true);
+                cv.setUint16(4, 20, true);
+                cv.setUint16(6, 20, true);
+                cv.setUint16(8, 0x0800, true);
+                cv.setUint16(10, 0, true);
+                cv.setUint16(12, 0, true);
+                cv.setUint16(14, 0x5421, true);
+                cv.setUint32(16, crc, true);
+                cv.setUint32(20, size, true);
+                cv.setUint32(24, size, true);
+                cv.setUint16(28, nameBytes.length, true);
+                cv.setUint16(30, 0, true);
+                cv.setUint16(32, 0, true);
+                cv.setUint16(34, 0, true);
+                cv.setUint16(36, 0, true);
+                cv.setUint32(38, 0, true);
+                cv.setUint32(42, offset, true);
+                central.set(nameBytes, 46);
+
+                centralChunks.push(central);
+                offset += local.length + size;
+            }
+
+            const centralSize = centralChunks.reduce((s, c) => s + c.length, 0);
+            const eocd = new Uint8Array(22);
+            const ev = new DataView(eocd.buffer);
+            ev.setUint32(0, 0x06054b50, true);
+            ev.setUint16(4, 0, true);
+            ev.setUint16(6, 0, true);
+            ev.setUint16(8, files.length, true);
+            ev.setUint16(10, files.length, true);
+            ev.setUint32(12, centralSize, true);
+            ev.setUint32(16, offset, true);
+            ev.setUint16(20, 0, true);
+
+            const totalLen = offset + centralSize + eocd.length;
+            const out = new Uint8Array(totalLen);
+            let pos = 0;
+            for (const c of localChunks) { out.set(c, pos); pos += c.length; }
+            for (const c of centralChunks) { out.set(c, pos); pos += c.length; }
+            out.set(eocd, pos);
+            return out;
+        }
+
+        async function downloadAllAsZip() {
+            const ready = imgState.items.filter(i => i.outBlob && !i.error);
+            if (ready.length === 0) {
+                showToast('ยังไม่มีรูปภาพที่แปลงเสร็จพร้อมดาวน์โหลด', 'error');
+                return;
+            }
+            const usedNames = new Map();
+            const zipEntries = [];
+            for (const item of ready) {
+                let name = item.outName || `image-${item.id}.webp`;
+                const count = usedNames.get(name) || 0;
+                usedNames.set(name, count + 1);
+                if (count > 0) {
+                    const dot = name.lastIndexOf('.');
+                    name = dot > 0
+                        ? `${name.slice(0, dot)}-(${count + 1})${name.slice(dot)}`
+                        : `${name}-(${count + 1})`;
+                }
+                const buf = await item.outBlob.arrayBuffer();
+                zipEntries.push({ name, data: new Uint8Array(buf) });
+            }
+
+            const zipBytes = buildZipUint8Array(zipEntries);
+            if (imgState.lastZipUrl) URL.revokeObjectURL(imgState.lastZipUrl);
+            const zipBlob = new Blob([zipBytes], { type: 'application/zip' });
+            const url = URL.createObjectURL(zipBlob);
+            imgState.lastZipUrl = url;
+
+            window.__lastZipExport = {
+                filename: 'optimized-images.zip',
+                fileCount: zipEntries.length,
+                byteLength: zipBytes.byteLength,
+                filenames: zipEntries.map(z => z.name),
+                bytes: zipBytes
+            };
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'optimized-images.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            showToast(`สร้างไฟล์ optimized-images.zip (${zipEntries.length} รูป • ${formatBytes(zipBytes.byteLength)}) เรียบร้อย`);
+        }
+
+        // ==================== SETTINGS & PRESETS ====================
+        function setOutputFormat(mime) {
+            imgState.targetFormat = mime;
+            for (const key of Object.keys(FORMAT_META)) {
+                const extKey = FORMAT_META[key].ext === 'jpg' ? 'jpeg' : FORMAT_META[key].ext;
+                const btn = document.getElementById(`fmt-btn-${extKey}`);
+                const active = key === mime;
+                if (btn) {
+                    btn.className = active
+                        ? 'py-1.5 px-2 rounded-lg text-xs font-bold bg-white dark:bg-google-dark-surface text-teal-600 dark:text-teal-400 shadow-xs transition cursor-pointer'
+                        : 'py-1.5 px-2 rounded-lg text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer';
+                }
+            }
+            document.getElementById('format-hint').textContent = FORMAT_META[mime].hint;
+            scheduleBatchProcess();
+        }
+
+        function onQualityChange() {
+            const val = document.getElementById('quality-range').value;
+            document.getElementById('quality-label').textContent = val + '%';
+            scheduleBatchProcess();
+        }
+
+        function setMaxWidth(px) {
+            document.getElementById('max-width-input').value = String(px);
+            scheduleBatchProcess();
+        }
+
+        function applyWebPreset(preset) {
+            if (preset === 'web-webp') {
+                setOutputFormat('image/webp');
+                document.getElementById('max-width-input').value = '1200';
+                document.getElementById('quality-range').value = '82';
+            } else if (preset === 'portfolio') {
+                setOutputFormat('image/webp');
+                document.getElementById('max-width-input').value = '1600';
+                document.getElementById('quality-range').value = '85';
+            } else if (preset === 'jpg-compat') {
+                setOutputFormat('image/jpeg');
+                document.getElementById('max-width-input').value = '1280';
+                document.getElementById('quality-range').value = '78';
+            } else if (preset === 'png-icon') {
+                setOutputFormat('image/png');
+                document.getElementById('max-width-input').value = '512';
+                document.getElementById('quality-range').value = '100';
+            }
+            document.getElementById('quality-label').textContent = document.getElementById('quality-range').value + '%';
+            clearTimeout(imgState.debounceTimer);
+            processAllImages(true);
+        }
+
+        function updateFormatBadge() {
+            const meta = FORMAT_META[imgState.targetFormat];
+            const q = document.getElementById('quality-range').value;
+            const w = parseInt(document.getElementById('max-width-input').value || '0', 10) || 0;
+            const wTxt = w > 0 ? `Max ${w}px` : 'ขนาดเดิม';
+            document.getElementById('batch-format-badge').textContent = `${meta.label.toUpperCase()} • Q${q}% • ${wTxt}`;
+        }
+
+        // ==================== ITEM ACTIONS & COMPARISON ====================
+        function selectCompareItem(id) {
+            imgState.selectedCompareId = id;
+            renderCompareStage();
+            renderImageList();
+        }
+
+        function updateCompareSplit(pct) {
+            const val = Math.min(100, Math.max(0, Number(pct) || 50));
+            const rightClip = 100 - val;
+            const clip = document.getElementById('compare-before-clip');
+            const divider = document.getElementById('compare-divider');
+            const badge = document.getElementById('compare-pct-badge');
+            if (clip) clip.style.clipPath = `inset(0 ${rightClip}% 0 0)`;
+            if (divider) divider.style.left = `${val}%`;
+            if (badge) badge.textContent = `${val}%`;
+        }
+
+        function removeImageItem(id) {
+            const idx = imgState.items.findIndex(i => i.id === id);
+            if (idx === -1) return;
+            const [removed] = imgState.items.splice(idx, 1);
+            if (removed.origUrl) URL.revokeObjectURL(removed.origUrl);
+            if (removed.outUrl) URL.revokeObjectURL(removed.outUrl);
+            if (imgState.selectedCompareId === id) {
+                imgState.selectedCompareId = imgState.items[0] ? imgState.items[0].id : null;
+            }
+            renderAll();
+            showToast('ลบรูปภาพออกจากคิวแล้ว');
+        }
+
+        function clearAllImages() {
+            for (const item of imgState.items) {
+                if (item.origUrl) URL.revokeObjectURL(item.origUrl);
+                if (item.outUrl) URL.revokeObjectURL(item.outUrl);
+            }
+            if (imgState.lastZipUrl) {
+                URL.revokeObjectURL(imgState.lastZipUrl);
+                imgState.lastZipUrl = null;
+            }
+            imgState.items = [];
+            imgState.selectedCompareId = null;
+            renderAll();
+            showToast('ล้างคิวรูปภาพทั้งหมดแล้ว');
+        }
+
+        // ==================== RENDERERS ====================
+        function renderStats() {
+            const count = imgState.items.length;
+            const origTotal = imgState.items.reduce((s, i) => s + (i.origSize || 0), 0);
+            const outTotal = imgState.items.reduce((s, i) => s + (i.outSize || 0), 0);
+            let savedTxt = '0%';
+            const savedEl = document.getElementById('stat-saved-pct');
+            if (origTotal > 0 && outTotal > 0) {
+                const diffPct = ((origTotal - outTotal) / origTotal) * 100;
+                if (diffPct >= 0) {
+                    savedTxt = `-${diffPct.toFixed(1)}%`;
+                    savedEl.className = 'font-mono font-bold text-emerald-600 dark:text-emerald-400';
+                } else {
+                    savedTxt = `+${Math.abs(diffPct).toFixed(1)}%`;
+                    savedEl.className = 'font-mono font-bold text-amber-600 dark:text-amber-400';
+                }
+            } else {
+                savedEl.className = 'font-mono font-bold text-slate-500';
+            }
+
+            document.getElementById('stat-count').textContent = count;
+            document.getElementById('stat-orig-total').textContent = formatBytes(origTotal);
+            document.getElementById('stat-out-total').textContent = formatBytes(outTotal);
+            savedEl.textContent = savedTxt;
+        }
+
+        function renderCompareStage() {
+            const stage = document.getElementById('compare-stage');
+            const empty = document.getElementById('compare-empty');
+            const caption = document.getElementById('compare-caption');
+            const item = imgState.items.find(i => i.id === imgState.selectedCompareId && !i.error && i.outUrl);
+
+            if (!item) {
+                stage.classList.add('hidden');
+                empty.classList.remove('hidden');
+                caption.textContent = 'คลิกที่การ์ดรูปใดก็ได้ด้านล่างเพื่อเปรียบเทียบความคมชัดกับขนาดไฟล์จริง';
+                return;
+            }
+
+            empty.classList.add('hidden');
+            stage.classList.remove('hidden');
+            document.getElementById('compare-img-before').src = item.origUrl;
+            document.getElementById('compare-img-after').src = item.outUrl;
+            document.getElementById('compare-badge-before').textContent = `Before • ${formatBytes(item.origSize)} (${item.origWidth}×${item.origHeight})`;
+            const outLabel = (FORMAT_META[imgState.targetFormat]?.label || 'OUT');
+            document.getElementById('compare-badge-after').textContent = `After ${outLabel} • ${formatBytes(item.outSize)} (${item.outWidth}×${item.outHeight})`;
+            caption.textContent = `กำลังเทียบ: ${item.origName} -> ${item.outName} (${item.durationMs} ms)`;
+        }
+
+        function renderImageList() {
+            const list = document.getElementById('image-list');
+            if (imgState.items.length === 0) {
+                list.innerHTML = `
+                    <div class="py-10 text-center text-xs text-google-text-muted dark:text-google-dark-text-muted border border-dashed border-google-border/70 dark:border-google-dark-border rounded-2xl">
+                        ยังไม่มีไฟล์รูปภาพในคิว — อัปโหลดรูปภาพหรือกด "สร้างรูปตัวอย่างทดสอบ" ด้านบน
+                    </div>`;
+                return;
+            }
+
+            list.innerHTML = '';
+            imgState.items.forEach((item) => {
+                const isSelected = item.id === imgState.selectedCompareId;
+                const savedRatio = item.origSize > 0 && item.outSize > 0
+                    ? ((item.origSize - item.outSize) / item.origSize) * 100
+                    : 0;
+                const badgeClass = savedRatio >= 0
+                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300'
+                    : 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300';
+                const deltaText = savedRatio >= 0
+                    ? `ลดลง ${savedRatio.toFixed(1)}%`
+                    : `เพิ่มขึ้น ${Math.abs(savedRatio).toFixed(1)}%`;
+
+                const row = document.createElement('div');
+                row.setAttribute('data-image-id', String(item.id));
+                row.className = `flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-2xl border transition ${
+                    isSelected
+                        ? 'bg-teal-50/70 dark:bg-teal-950/30 border-teal-500 ring-2 ring-teal-500/20'
+                        : 'bg-google-bg/70 dark:bg-google-dark-bg border-google-border dark:border-google-dark-border'
+                }`;
+
+                if (item.error) {
+                    row.innerHTML = `
+                        <div class="flex-1 min-w-0">
+                            <div class="text-xs font-bold text-rose-600 truncate">${escapeHtml(item.origName)}</div>
+                            <div class="text-[11px] text-rose-500">${escapeHtml(item.error)}</div>
+                        </div>
+                        <button type="button" onclick="removeImageItem(${item.id})" class="px-2.5 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 text-xs font-bold self-start sm:self-center cursor-pointer">ลบ</button>
+                    `;
+                    list.appendChild(row);
+                    return;
+                }
+
+                row.innerHTML = `
+                    <div onclick="selectCompareItem(${item.id})" class="w-full sm:w-20 h-28 sm:h-16 rounded-xl checkerboard-bg border border-google-border/70 dark:border-google-dark-border overflow-hidden shrink-0 flex items-center justify-center cursor-pointer">
+                        <img src="${item.outUrl || item.origUrl}" alt="${escapeHtml(item.origName)}" class="max-w-full max-h-full object-contain">
+                    </div>
+
+                    <div onclick="selectCompareItem(${item.id})" class="flex-1 min-w-0 cursor-pointer space-y-1">
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <span class="text-xs sm:text-sm font-bold text-google-text dark:text-white truncate max-w-full">${escapeHtml(item.outName)}</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${badgeClass}">${deltaText}</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] font-mono text-google-text-muted dark:text-google-dark-text-muted">
+                            <span>ขนาด: ${formatBytes(item.origSize)} → <strong class="text-teal-700 dark:text-teal-300">${formatBytes(item.outSize)}</strong></span>
+                            <span>มิติ: ${item.origWidth}×${item.origHeight} → ${item.outWidth}×${item.outHeight} px</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button type="button" onclick="selectCompareItem(${item.id})" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-teal-50 dark:hover:bg-teal-950/50 text-xs font-semibold text-google-text-body dark:text-google-dark-text-body cursor-pointer" title="เปรียบเทียบภาพนี้">
+                            <i class="fa-solid fa-eye mr-1 text-teal-600"></i>เทียบ
+                        </button>
+                        <a href="${item.outUrl}" download="${escapeHtml(item.outName)}" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold inline-flex items-center gap-1">
+                            <i class="fa-solid fa-download"></i>
+                            <span>โหลด</span>
+                        </a>
+                        <button type="button" onclick="removeImageItem(${item.id})" class="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-xs cursor-pointer" title="ลบออก">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function renderAll() {
+            updateFormatBadge();
+            renderStats();
+            renderCompareStage();
+            renderImageList();
+        }
+
+        // ==================== DROPZONE SETUP ====================
+        function initDropzone() {
+            const dz = document.getElementById('img-dropzone');
+            const input = document.getElementById('img-file-input');
+            if (input) {
+                input.addEventListener('change', async (e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                        await handleSelectedImageFiles(e.target.files);
+                        e.target.value = '';
+                    }
+                });
+            }
+            if (!dz) return;
+            dz.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dz.classList.add('img-dropzone-active');
+            });
+            dz.addEventListener('dragleave', () => {
+                dz.classList.remove('img-dropzone-active');
+            });
+            dz.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                dz.classList.remove('img-dropzone-active');
+                if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    await handleSelectedImageFiles(e.dataTransfer.files);
+                }
+            });
+            dz.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    input && input.click();
+                }
+            });
+        }
+
+        // ==================== THEME & APP SWITCHER ====================
+        function initTheme() {
+            const saved = localStorage.getItem('feel_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        function toggleSubAppSwitcher(forceState) {
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu) return;
+            const willOpen = typeof forceState === 'boolean' ? forceState : menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !willOpen);
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('app-switcher-btn');
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu || menu.classList.contains('hidden')) return;
+            if ((!btn || !btn.contains(e.target)) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleSubAppSwitcher(false);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initDropzone();
+            renderAll();
+        });
+    </script>
+</body>
+</html>

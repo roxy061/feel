@@ -474,30 +474,38 @@
                     <div id="settings-pane-gemini" class="hidden space-y-2.5">
                         <div class="flex flex-wrap items-center justify-between gap-2">
                             <span class="text-[11px] text-indigo-800 dark:text-indigo-200 font-semibold">
-                                เชื่อมต่อ Google Gemini API จริง (BYOK • เก็บคีย์ไว้ในเบราว์เซอร์ของคุณเท่านั้น)
+                                เชื่อมต่อ Google Gemini API จริง (รองรับ Auth Key AQ.... และ AIza... • เก็บคีย์ไว้ในเบราว์เซอร์ของคุณเท่านั้น)
                             </span>
                             <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
-                                รับ API Key ฟรีที่ Google AI Studio →
+                                รับ / จัดการ API Key ที่ Google AI Studio →
                             </a>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
                             <input
                                 type="password"
                                 id="gemini-api-key-input"
-                                placeholder="วาง Gemini API Key (AIza...) — เว้นว่างได้ถ้าใช้ AI อ่านในเครื่อง"
-                                class="sm:col-span-6 px-3 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border focus:border-indigo-500 focus:outline-none text-xs text-google-text dark:text-white font-mono"
+                                placeholder="วาง Gemini API Key (AQ.... หรือ AIza...) — เก็บในเบราว์เซอร์ของคุณเท่านั้น"
+                                class="sm:col-span-7 px-3 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border focus:border-indigo-500 focus:outline-none text-xs text-google-text dark:text-white font-mono"
                             >
-                            <select id="gemini-model-select" class="sm:col-span-3 px-2.5 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text dark:text-white">
-                                <option value="gemini-3.8-flash">gemini-3.8-flash (แนะนำ)</option>
-                                <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (ไวมาก)</option>
+                            <select id="gemini-model-select" class="sm:col-span-5 px-2.5 py-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text dark:text-white">
+                                <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (แนะนำ • ไวมาก & เสถียร)</option>
+                                <option value="gemini-3.8-flash">gemini-3.8-flash (ฉลาดสูง • มีสลับสำรองอัตโนมัติ)</option>
+                                <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite (เบา & รวดเร็ว)</option>
                                 <option value="gemini-3.6-flash">gemini-3.6-flash</option>
-                                <option value="gemini-2.5-flash">gemini-2.5-flash</option>
                             </select>
-                            <div class="sm:col-span-3 flex items-center gap-1.5">
-                                <button type="button" onclick="saveGeminiConfig()" class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-heading font-bold text-xs cursor-pointer transition">
-                                    บันทึก
+                        </div>
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span id="gemini-test-status" class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted font-medium">
+                                รองรับทั้ง Google AI Studio Auth Key (AQ....) และ AIza... — คีย์ถูกเก็บในเบราว์เซอร์ของคุณเท่านั้น
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="testGeminiConnection()" class="py-1.5 px-3 rounded-xl bg-white dark:bg-google-dark-surface border border-sky-400 text-sky-700 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-950/40 font-heading font-semibold text-xs cursor-pointer transition">
+                                    <i class="fa-solid fa-plug-circle-check mr-1"></i> ทดสอบคีย์
                                 </button>
-                                <button type="button" onclick="clearGeminiConfig()" class="py-2 px-2.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-rose-600 hover:bg-rose-50 font-heading font-semibold text-xs cursor-pointer transition">
+                                <button type="button" onclick="saveGeminiConfig()" class="py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-heading font-bold text-xs cursor-pointer transition">
+                                    บันทึก & เปิดใช้งาน
+                                </button>
+                                <button type="button" onclick="clearGeminiConfig()" class="py-1.5 px-2.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-rose-600 hover:bg-rose-50 font-heading font-semibold text-xs cursor-pointer transition">
                                     ล้าง
                                 </button>
                             </div>
@@ -1941,7 +1949,7 @@ void loop() {
             if (shouldOpen) {
                 document.getElementById('gemini-api-key-input').value = localStorage.getItem(STORAGE_GEMINI_KEY) || '';
                 const gSel = document.getElementById('gemini-model-select');
-                const gModel = localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.8-flash';
+                const gModel = normalizeGeminiModel(localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.5-flash-lite');
                 if (gSel && [...gSel.options].some(o => o.value === gModel)) gSel.value = gModel;
 
                 const cUrlEl = document.getElementById('custom-api-url');
@@ -1974,7 +1982,7 @@ void loop() {
                 badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> ${isLocal ? 'Local API ไม่จำกัด' : 'Custom API'} (${escapeHtml(model)})`;
                 badge.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-bold';
             } else if (provider === 'gemini') {
-                const model = localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.8-flash';
+                const model = normalizeGeminiModel(localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.5-flash-lite');
                 badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping"></span> Gemini Live (${escapeHtml(model)})`;
                 badge.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-bold';
             } else {
@@ -2024,10 +2032,18 @@ void loop() {
             return msgs;
         }
 
-        // -------------------- 1. GOOGLE GEMINI CONFIG & CALLER --------------------
+        // -------------------- 1. GOOGLE GEMINI CONFIG & CALLER (WITH AQ/AIza AUTH + AUTO-FAILOVER) --------------------
+        const GEMINI_FALLBACK_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-3.6-flash'];
+
+        function normalizeGeminiModel(model) {
+            const m = String(model || '').trim();
+            if (!m || /^gemini-(?:1\.|2\.[05])/i.test(m)) return 'gemini-3.8-flash';
+            return m;
+        }
+
         function saveGeminiConfig() {
             const key = document.getElementById('gemini-api-key-input').value.trim();
-            const model = document.getElementById('gemini-model-select').value;
+            const model = normalizeGeminiModel(document.getElementById('gemini-model-select').value);
             if (key) {
                 localStorage.setItem(STORAGE_GEMINI_KEY, key);
                 localStorage.setItem(STORAGE_GEMINI_MODEL, model);
@@ -2044,14 +2060,97 @@ void loop() {
         function clearGeminiConfig() {
             localStorage.removeItem(STORAGE_GEMINI_KEY);
             document.getElementById('gemini-api-key-input').value = '';
+            const statusEl = document.getElementById('gemini-test-status');
+            if (statusEl) statusEl.textContent = 'รองรับทั้ง Google AI Studio Auth Key (AQ....) และ AIza... — คีย์ถูกเก็บในเบราว์เซอร์ของคุณเท่านั้น';
             if (getActiveProvider() === 'gemini') setActiveProvider('local_nlp');
             updateEngineBadge();
             showToast('ลบ Gemini API Key ออกจากเบราว์เซอร์แล้ว');
         }
 
+        async function invokeGeminiGenerateContent(apiKey, model, payload, timeoutMs = 15000) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    signal: controller.signal,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': apiKey
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    const msg = data?.error?.message || `HTTP ${response.status}`;
+                    const err = new Error(msg);
+                    err.status = response.status;
+                    throw err;
+                }
+                const replyText = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+                if (!replyText.trim()) {
+                    const err = new Error(`โมเดล ${model} ไม่ได้ส่งข้อความตอบกลับมา`);
+                    err.status = 200;
+                    throw err;
+                }
+                return replyText;
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        async function callGeminiWithFailover(apiKey, preferredModel, payload, timeoutMs = 15000) {
+            const primary = normalizeGeminiModel(preferredModel);
+            const candidates = [...new Set([primary, ...GEMINI_FALLBACK_MODELS])];
+            let lastErr = null;
+            for (const candidate of candidates) {
+                try {
+                    const text = await invokeGeminiGenerateContent(apiKey, candidate, payload, timeoutMs);
+                    return { model: candidate, usedFallback: candidate !== primary, text };
+                } catch (err) {
+                    lastErr = err;
+                    const msg = String(err?.message || '');
+                    const isHardKeyFailure = (err?.status === 400 || err?.status === 401 || err?.status === 403)
+                        && /API_KEY|API key|leaked|PERMISSION_DENIED|blocked|invalid/i.test(msg);
+                    if (isHardKeyFailure) {
+                        throw err;
+                    }
+                }
+            }
+            throw lastErr || new Error('ไม่สามารถติดต่อ Gemini API ได้ในขณะนี้');
+        }
+
+        async function testGeminiConnection() {
+            const statusEl = document.getElementById('gemini-test-status');
+            const key = document.getElementById('gemini-api-key-input')?.value.trim();
+            const preferred = document.getElementById('gemini-model-select')?.value || 'gemini-3.5-flash-lite';
+            if (!key) {
+                if (statusEl) statusEl.innerHTML = '<span class="text-rose-600 font-semibold">กรุณาวาง Gemini API Key (AQ.... หรือ AIza...) ก่อนทดสอบครับ</span>';
+                return;
+            }
+            if (statusEl) statusEl.innerHTML = '<span class="text-indigo-600"><i class="fa-solid fa-spinner fa-spin mr-1"></i>กำลังทดสอบ Gemini Key...</span>';
+            const t0 = performance.now();
+            try {
+                const res = await callGeminiWithFailover(key, preferred, {
+                    contents: [{ role: 'user', parts: [{ text: 'Say OK' }] }],
+                    generationConfig: { maxOutputTokens: 16, temperature: 0 }
+                }, 8000);
+                const ms = Math.round(performance.now() - t0);
+                if (res.usedFallback) {
+                    const sel = document.getElementById('gemini-model-select');
+                    if (sel && [...sel.options].some(o => o.value === res.model)) sel.value = res.model;
+                }
+                const note = res.usedFallback ? ` (สลับจาก ${preferred} เป็น ${res.model} อัตโนมัติ)` : '';
+                if (statusEl) statusEl.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-semibold">✅ คีย์ใช้งานได้! ตอบผ่าน ${escapeHtml(res.model)} (${ms} ms)${escapeHtml(note)} — กด "บันทึก & เปิดใช้งาน" ได้เลย</span>`;
+            } catch (err) {
+                if (statusEl) statusEl.innerHTML = `<span class="text-rose-600 font-semibold">❌ ทดสอบไม่ผ่าน: ${escapeHtml(err.message)}</span>`;
+            }
+        }
+
         async function callGeminiGrounded(query) {
             const apiKey = (localStorage.getItem(STORAGE_GEMINI_KEY) || '').trim();
-            const model = localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.8-flash';
+            const preferredModel = normalizeGeminiModel(localStorage.getItem(STORAGE_GEMINI_MODEL) || 'gemini-3.5-flash-lite');
             const { systemPrompt, strictMode } = buildGroundedSystemPrompt(query);
 
             const contents = chatHistory.slice(-8).map(turn => ({
@@ -2060,34 +2159,19 @@ void loop() {
             }));
             contents.push({ role: 'user', parts: [{ text: query }] });
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-goog-api-key': apiKey
-                },
-                body: JSON.stringify({
-                    systemInstruction: { parts: [{ text: systemPrompt }] },
-                    contents,
-                    generationConfig: {
-                        temperature: strictMode ? 0.2 : 0.45,
-                        maxOutputTokens: 1600
-                    }
-                })
+            const result = await callGeminiWithFailover(apiKey, preferredModel, {
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                contents,
+                generationConfig: {
+                    temperature: strictMode ? 0.2 : 0.45,
+                    maxOutputTokens: 1600
+                }
             });
 
-            const data = await response.json().catch(() => ({}));
-            if (!response.ok) {
-                const msg = data?.error?.message || `HTTP ${response.status}`;
-                throw new Error(msg);
-            }
-
-            const replyText = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
-            if (!replyText.trim()) {
-                throw new Error('Gemini ไม่ได้ส่งข้อความตอบกลับมา');
-            }
-            return { providerLabel: model, text: replyText };
+            return {
+                providerLabel: result.usedFallback ? `${result.model} (สำรองอัตโนมัติ)` : result.model,
+                text: result.text
+            };
         }
 
         // -------------------- 2. CUSTOM OPENAI-COMPATIBLE API (OLLAMA / GROQ / OPENROUTER) --------------------

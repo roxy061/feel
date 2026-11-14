@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diff Checker &amp; Code Compare — เปรียบเทียบโค้ด &amp; ไฟล์ Config คู่กัน | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="เครื่องมือเปรียบเทียบความแตกต่างระหว่างโค้ด ไฟล์ Config หรือข้อความ 2 ชุดแบบวางคู่กัน (Side-by-Side) และ Unified Patch (.diff) ไฮไลต์บรรทัดที่เพิ่ม ลบ แก้ไข พร้อมไฮไลต์ระดับคำ จัดระเบียบ JSON และอัปโหลดไฟล์ได้ 100% ออฟไลน์">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.15rem;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.10), 0 1px 3px 1px rgba(60, 64, 67, 0.06);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        /* Diff coloring — crisp & easy on eyes in both Light and Dark mode */
+        .diff-del-cell {
+            background-color: #fff1f2;
+        }
+        .diff-add-cell {
+            background-color: #ecfdf5;
+        }
+        .diff-mod-left {
+            background-color: #fff1f2;
+        }
+        .diff-mod-right {
+            background-color: #ecfdf5;
+        }
+        .diff-empty-cell {
+            background-color: #f8fafc;
+            background-image: repeating-linear-gradient(-45deg, transparent, transparent 6px, rgba(148, 163, 184, 0.08) 6px, rgba(148, 163, 184, 0.08) 12px);
+        }
+        .diff-word-del {
+            background-color: #fecdd3;
+            color: #9f1239;
+            border-radius: 3px;
+            font-weight: 700;
+            text-decoration: line-through;
+            text-decoration-color: rgba(159, 18, 57, 0.45);
+        }
+        .diff-word-add {
+            background-color: #a7f3d0;
+            color: #065f46;
+            border-radius: 3px;
+            font-weight: 700;
+        }
+        .dark .diff-del-cell, .dark .diff-mod-left {
+            background-color: rgba(159, 18, 57, 0.24);
+        }
+        .dark .diff-add-cell, .dark .diff-mod-right {
+            background-color: rgba(6, 95, 70, 0.24);
+        }
+        .dark .diff-empty-cell {
+            background-color: rgba(15, 23, 42, 0.4);
+            background-image: repeating-linear-gradient(-45deg, transparent, transparent 6px, rgba(148, 163, 184, 0.06) 6px, rgba(148, 163, 184, 0.06) 12px);
+        }
+        .dark .diff-word-del {
+            background-color: rgba(244, 63, 94, 0.36);
+            color: #fecdd3;
+            text-decoration-color: rgba(254, 205, 211, 0.55);
+        }
+        .dark .diff-word-add {
+            background-color: rgba(16, 185, 129, 0.36);
+            color: #a7f3d0;
+        }
+        .diff-active-hunk {
+            outline: 2px solid #f59e0b;
+            outline-offset: -2px;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-indigo-600 selection:text-white">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Centered Bottom Toast Notification -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 w-[92vw] max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- UNIFIED SINGLE-ROW NAVIGATION HEADER       -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก</span>
+            </a>
+
+            <div class="flex items-center gap-2.5 sm:border-l border-google-border dark:border-google-dark-border sm:pl-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 via-blue-600 to-teal-500 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-code-compare"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            Diff Checker &amp; Code Compare
+                        </h1>
+                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold whitespace-nowrap shrink-0">
+                            Side-by-Side • Patch • Word Diff
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        เปรียบเทียบโค้ด &amp; ไฟล์ Config เก่า-ใหม่แบบคู่กัน ไฮไลต์บรรทัดเพิ่ม/ลบ/แก้ไขระดับคำทันที
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <a href="dev-tools.html" class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition whitespace-nowrap">
+                <i class="fa-solid fa-terminal"></i>
+                <span>Dev Utilities</span>
+            </a>
+
+            <!-- App Switcher Dropdown (13 Apps) -->
+            <div class="relative shrink-0">
+                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (13 ระบบ)">
+                    <i class="fa-solid fa-layer-group text-indigo-600 dark:text-indigo-400"></i>
+                    <span class="hidden sm:inline">สลับเว็บแอป</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold leading-none">13</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                </button>
+                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
+                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
+                        </div>
+                    </a>
+                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
+                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (13 ระบบ)</div>
+                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
+                        </div>
+                    </a>
+                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
+                        </div>
+                    </a>
+                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
+                        </div>
+                    </a>
+                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ &amp; พายุ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
+                        </div>
+                    </a>
+                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble &amp; สูตร CFOP</div>
+                        </div>
+                    </a>
+                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง &amp; ถาม-ตอบ</div>
+                        </div>
+                    </a>
+                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ &amp; แชร์ PIN 6 หลัก</div>
+                        </div>
+                    </a>
+                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง &amp; รูปติดบัตร</div>
+                        </div>
+                    </a>
+                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI &amp; โฮสต์ฟรี</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI &amp; รันไฟล์</div>
+                        </div>
+                    </a>
+                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON • JWT • Base64 • Timestamp</div>
+                        </div>
+                    </a>
+                    <a href="subnet.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-blue-600 bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-network-wired"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">11. IP &amp; Subnet Calculator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CIDR • Host Range • VLAN • Netplan</div>
+                        </div>
+                    </a>
+                    <a href="regex.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-fuchsia-600 bg-fuchsia-50 dark:bg-fuchsia-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">12. Regex Tester &amp; Cheatsheet</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Live Match • Presets • Replace</div>
+                        </div>
+                    </a>
+                    <a href="diff.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-300 dark:border-indigo-700 transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code-compare"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">13. Diff Checker &amp; Code Compare</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Side-by-Side • Patch • Word Diff</div>
+                        </div>
+                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-indigo-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Theme Switcher -->
+            <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN WORKSPACE                             -->
+    <!-- ========================================== -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
+
+        <!-- Compact Action & Options Bar -->
+        <div class="g-card p-3 space-y-2.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <!-- Samples -->
+                <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                    <span class="text-google-text-muted dark:text-google-dark-text-muted font-semibold mr-0.5">ตัวอย่างเปรียบเทียบ:</span>
+                    <button type="button" onclick="loadSample('config')" class="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 font-semibold transition cursor-pointer">Config / Nginx</button>
+                    <button type="button" onclick="loadSample('js')" class="px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 hover:bg-amber-100 font-semibold transition cursor-pointer">โค้ด JavaScript</button>
+                    <button type="button" onclick="loadSample('json')" class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 font-semibold transition cursor-pointer">JSON API Response</button>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                    <button type="button" onclick="swapSides()" class="px-2.5 py-1.5 rounded-xl border border-google-border dark:border-google-dark-border hover:border-indigo-500 font-semibold transition cursor-pointer" title="สลับข้อมูลซ้าย-ขวา">
+                        <i class="fa-solid fa-right-left mr-1 text-indigo-500"></i> สลับซ้าย ↔ ขวา
+                    </button>
+                    <button type="button" onclick="formatBothJson()" class="px-2.5 py-1.5 rounded-xl border border-google-border dark:border-google-dark-border hover:border-emerald-500 font-semibold transition cursor-pointer" title="จัดย่อหน้า JSON ทั้ง 2 ฝั่งให้เทียบ key ได้ง่ายขึ้น">
+                        <i class="fa-solid fa-brackets-curly mr-1 text-emerald-600"></i> จัดระเบียบ JSON
+                    </button>
+                    <button type="button" onclick="clearBothSides()" class="px-2.5 py-1.5 rounded-xl border border-google-border dark:border-google-dark-border hover:border-rose-400 text-google-text-muted hover:text-rose-600 font-semibold transition cursor-pointer">
+                        <i class="fa-solid fa-eraser mr-1"></i> ล้างทั้งหมด
+                    </button>
+                </div>
+            </div>
+
+            <!-- Diff Options Row -->
+            <div class="pt-2 border-t border-google-border/70 dark:border-google-dark-border flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer select-none font-medium text-google-text-body dark:text-google-dark-text-body">
+                        <input id="opt-trim" type="checkbox" onchange="runDiff()" class="accent-indigo-600 w-3.5 h-3.5 rounded cursor-pointer">
+                        <span>ไม่สนช่องว่างหัว-ท้าย (Trim Whitespace)</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer select-none font-medium text-google-text-body dark:text-google-dark-text-body">
+                        <input id="opt-ignore-case" type="checkbox" onchange="runDiff()" class="accent-indigo-600 w-3.5 h-3.5 rounded cursor-pointer">
+                        <span>ไม่สนพิมพ์เล็ก-ใหญ่ (Ignore Case)</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer select-none font-medium text-google-text-body dark:text-google-dark-text-body">
+                        <input id="opt-only-changes" type="checkbox" onchange="runDiff()" class="accent-indigo-600 w-3.5 h-3.5 rounded cursor-pointer">
+                        <span>ซ่อนบรรทัดที่เหมือนกัน (โชว์เฉพาะจุดแก้)</span>
+                    </label>
+                </div>
+                <span class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">ลากไฟล์มาวางลงในกล่องข้อความได้เลย (ทำงาน 100% ออฟไลน์)</span>
+            </div>
+        </div>
+
+        <!-- Dual Input Editors -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+            <!-- Left Editor: Original -->
+            <div class="g-card p-3.5 space-y-2 border-t-4 border-t-rose-500">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-[11px] font-bold">ต้นฉบับ (Original / เก่า)</span>
+                        <span id="meta-left" class="font-mono text-[11px] text-google-text-muted">0 บรรทัด</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <label class="px-2.5 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-rose-50 dark:hover:bg-rose-950/40 text-[11px] font-semibold cursor-pointer transition">
+                            <i class="fa-solid fa-folder-open mr-1"></i> อัปโหลดไฟล์
+                            <input id="file-left" type="file" accept=".txt,.json,.js,.ts,.py,.php,.html,.css,.yml,.yaml,.conf,.env,.md,.xml,.sql,.log" onchange="loadFileToSide(event, 'left')" class="hidden">
+                        </label>
+                        <button type="button" onclick="clearSide('left')" class="px-2 py-1 rounded-lg border border-google-border dark:border-google-dark-border text-[11px] font-semibold text-google-text-muted hover:text-rose-600 cursor-pointer">ล้าง</button>
+                    </div>
+                </div>
+                <textarea id="input-left" rows="8" spellcheck="false" oninput="runDiff()" placeholder="วางโค้ดหรือไฟล์ Config เวอร์ชันเก่าที่นี่..." class="w-full p-3 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border font-mono text-xs leading-relaxed text-google-text dark:text-white outline-none focus:border-rose-500 resize-y"></textarea>
+            </div>
+
+            <!-- Right Editor: Modified -->
+            <div class="g-card p-3.5 space-y-2 border-t-4 border-t-emerald-500">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">ฉบับแก้ไข (Modified / ใหม่)</span>
+                        <span id="meta-right" class="font-mono text-[11px] text-google-text-muted">0 บรรทัด</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <label class="px-2.5 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-[11px] font-semibold cursor-pointer transition">
+                            <i class="fa-solid fa-folder-open mr-1"></i> อัปโหลดไฟล์
+                            <input id="file-right" type="file" accept=".txt,.json,.js,.ts,.py,.php,.html,.css,.yml,.yaml,.conf,.env,.md,.xml,.sql,.log" onchange="loadFileToSide(event, 'right')" class="hidden">
+                        </label>
+                        <button type="button" onclick="clearSide('right')" class="px-2 py-1 rounded-lg border border-google-border dark:border-google-dark-border text-[11px] font-semibold text-google-text-muted hover:text-emerald-600 cursor-pointer">ล้าง</button>
+                    </div>
+                </div>
+                <textarea id="input-right" rows="8" spellcheck="false" oninput="runDiff()" placeholder="วางโค้ดหรือไฟล์ Config เวอร์ชันใหม่ที่นี่..." class="w-full p-3 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border font-mono text-xs leading-relaxed text-google-text dark:text-white outline-none focus:border-emerald-500 resize-y"></textarea>
+            </div>
+        </div>
+
+        <!-- KPI Stats Strip -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+            <div class="g-card p-3 border-l-4 border-l-emerald-500">
+                <div class="text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">+ เพิ่มใหม่ (Added)</div>
+                <div id="kpi-added" class="font-mono text-lg font-extrabold text-emerald-600 dark:text-emerald-400">0</div>
+            </div>
+            <div class="g-card p-3 border-l-4 border-l-rose-500">
+                <div class="text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">- ถูกลบ (Removed)</div>
+                <div id="kpi-removed" class="font-mono text-lg font-extrabold text-rose-600 dark:text-rose-400">0</div>
+            </div>
+            <div class="g-card p-3 border-l-4 border-l-amber-500">
+                <div class="text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">~ แก้ไข (Modified)</div>
+                <div id="kpi-modified" class="font-mono text-lg font-extrabold text-amber-600 dark:text-amber-400">0</div>
+            </div>
+            <div class="g-card p-3 border-l-4 border-l-slate-400">
+                <div class="text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">= เหมือนเดิม (Equal)</div>
+                <div id="kpi-unchanged" class="font-mono text-lg font-extrabold text-google-text dark:text-white">0</div>
+            </div>
+            <div class="col-span-2 sm:col-span-1 g-card p-3 border-l-4 border-l-indigo-600">
+                <div class="text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">ความคล้ายคลึง</div>
+                <div id="kpi-similarity" class="font-mono text-lg font-extrabold text-indigo-600 dark:text-indigo-400">100%</div>
+            </div>
+        </div>
+
+        <!-- Diff Result Viewer Card -->
+        <div class="g-card overflow-hidden">
+            <!-- Viewer Toolbar -->
+            <div class="px-3.5 py-2.5 bg-google-subtle/60 dark:bg-google-dark-subtle/60 border-b border-google-border dark:border-google-dark-border flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex items-center gap-1 bg-white dark:bg-google-dark-surface p-0.5 rounded-xl border border-google-border dark:border-google-dark-border text-xs font-bold">
+                        <button type="button" id="view-btn-split" onclick="setDiffViewMode('split')" class="px-3 py-1 rounded-lg bg-indigo-600 text-white shadow-xs cursor-pointer">Side-by-Side (วางคู่)</button>
+                        <button type="button" id="view-btn-unified" onclick="setDiffViewMode('unified')" class="px-3 py-1 rounded-lg text-google-text-muted dark:text-google-dark-text-muted cursor-pointer">Unified Patch (+/-)</button>
+                    </div>
+
+                    <div class="flex items-center gap-1 text-xs">
+                        <button type="button" onclick="jumpChange(-1)" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-amber-500 font-semibold cursor-pointer" title="ไปยังจุดเปลี่ยนก่อนหน้า">▲ ก่อนหน้า</button>
+                        <span id="change-cursor" class="px-2 font-mono text-[11px] font-bold text-google-text-muted">0 จุด</span>
+                        <button type="button" onclick="jumpChange(1)" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-amber-500 font-semibold cursor-pointer" title="ไปยังจุดเปลี่ยนถัดไป">▼ ถัดไป</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                    <button type="button" onclick="copyUnifiedPatch()" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-indigo-500 font-semibold cursor-pointer">
+                        <i class="fa-regular fa-copy mr-1"></i> คัดลอก Patch (.diff)
+                    </button>
+                    <button type="button" onclick="downloadUnifiedPatch()" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold cursor-pointer">
+                        <i class="fa-solid fa-download mr-1"></i> โหลด .diff
+                    </button>
+                </div>
+            </div>
+
+            <!-- Identical Status Notice -->
+            <div id="diff-identical-banner" class="hidden px-4 py-2.5 bg-emerald-50 dark:bg-emerald-950/40 border-b border-emerald-200 dark:border-emerald-800 text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>ไม่พบความแตกต่าง — โค้ดหรือข้อความทั้งสองชุดตรงกัน 100%</span>
+            </div>
+
+            <!-- Guard Warning Banner (for massive line fallback) -->
+            <div id="diff-guard-banner" class="hidden px-4 py-2 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800 text-xs font-semibold text-amber-800 dark:text-amber-300"></div>
+
+            <!-- Diff Table Scroll Area -->
+            <div id="diff-viewer-scroll" class="overflow-x-auto max-h-[650px] overflow-y-auto bg-white dark:bg-google-dark-surface">
+                <div id="diff-render-target" class="font-mono text-xs leading-5"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ==================== BUILT-IN SAMPLES ====================
+        const SAMPLES = {
+            config: {
+                left: `server {
+    listen 80;
+    server_name feel-portfolio.local;
+
+    root /var/www/feel/public;
+    index index.html index.php;
+
+    location /api {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_read_timeout 30s;
+    }
+    error_page 404 /404-dev.html;
+
+    error_log /var/log/nginx/feel_error.log warn;
+}`,
+                right: `server {
+    listen 443 ssl http2;
+    server_name feel-ochre.vercel.app;
+
+    root /var/www/feel/dist;
+    index index.html;
+    ssl_certificate /etc/letsencrypt/live/feel/fullchain.pem;
+
+    location /api {
+        proxy_pass http://127.0.0.1:8443;
+        proxy_read_timeout 60s;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    gzip on;
+    error_log /var/log/nginx/feel_error.log error;
+}`
+            },
+            js: {
+                left: `async function fetchSensorData(deviceId) {
+  const url = "http://localhost/api/sensor?id=" + deviceId;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (data.moisture < 40) {
+    startWaterPump(10);
+  }
+  return data;
+}`,
+                right: `async function fetchSensorData(deviceId, timeoutMs = 5000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const url = \`https://api.example.com/v2/sensor/\${encodeURIComponent(deviceId)}\`;
+  const res = await fetch(url, { signal: controller.signal });
+  clearTimeout(timer);
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  const data = await res.json();
+  if (data.moisture < 42) {
+    await startWaterPump(15);
+  }
+  return data;
+}`
+            },
+            json: {
+                left: `{
+  "service": "feel-safebox",
+  "version": "1.2.0",
+  "encryption": "AES-128-CBC",
+  "pinTtlSeconds": 300,
+  "maxFileSizeMb": 10,
+  "allowedTypes": ["image/png", "image/jpeg"]
+}`,
+                right: `{
+  "service": "feel-safebox",
+  "version": "2.0.0",
+  "encryption": "AES-256-GCM",
+  "pinTtlSeconds": 600,
+  "maxFileSizeMb": 50,
+  "allowedTypes": ["image/png", "image/jpeg", "image/webp", "application/pdf"],
+  "sha256Verify": true
+}`
+            }
+        };
+
+        // ==================== STATE ====================
+        let currentViewMode = 'split'; // 'split' | 'unified'
+        let lastDiffRows = [];
+        let lastUnifiedText = '';
+        let changeIndices = [];
+        let activeChangeCursor = -1;
+        let showExpandedUnchanged = false;
+
+        // ==================== UTILITIES ====================
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            container.innerHTML = '';
+            const toast = document.createElement('div');
+            const bg = type === 'error' ? 'bg-rose-600 text-white' : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900';
+            toast.className = `${bg} px-4 py-2 rounded-full shadow-xl text-xs font-bold flex items-center gap-2 pointer-events-auto transition-all`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check text-emerald-400 dark:text-emerald-600'}"></i><span></span>`;
+            toast.querySelector('span').textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(8px)';
+                setTimeout(() => toast.remove(), 220);
+            }, 1800);
+        }
+
+        function copyTextValue(val, label) {
+            navigator.clipboard?.writeText(String(val))
+                .then(() => showToast(`คัดลอก ${label} แล้ว`))
+                .catch(() => showToast('เบราว์เซอร์ไม่อนุญาต Clipboard อัตโนมัติ', 'error'));
+        }
+
+        // ==================== LCS LINE & WORD DIFF ENGINE ====================
+        function splitLinesNormalized(text) {
+            if (text === '') return [];
+            return text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+        }
+
+        function makeCompareKey(line, opts) {
+            let s = line;
+            if (opts.trim) s = s.trim();
+            if (opts.ignoreCase) s = s.toLowerCase();
+            return s;
+        }
+
+        function computeLineOps(linesA, linesB, opts) {
+            const keysA = linesA.map(l => makeCompareKey(l, opts));
+            const keysB = linesB.map(l => makeCompareKey(l, opts));
+
+            let start = 0;
+            while (start < keysA.length && start < keysB.length && keysA[start] === keysB[start]) {
+                start++;
+            }
+
+            let endA = keysA.length - 1;
+            let endB = keysB.length - 1;
+            while (endA >= start && endB >= start && keysA[endA] === keysB[endB]) {
+                endA--;
+                endB--;
+            }
+
+            const ops = [];
+            for (let i = 0; i < start; i++) {
+                ops.push({ type: 'equal', oldIdx: i, newIdx: i });
+            }
+
+            const midA = endA - start + 1;
+            const midB = endB - start + 1;
+            let usedFallback = false;
+
+            if (midA === 0 && midB === 0) {
+                // Only prefix/suffix equal lines
+            } else if (midA === 0) {
+                for (let j = start; j <= endB; j++) ops.push({ type: 'insert', newIdx: j });
+            } else if (midB === 0) {
+                for (let i = start; i <= endA; i++) ops.push({ type: 'delete', oldIdx: i });
+            } else if (midA * midB <= 2250000) {
+                // Exact LCS DP on inner mismatch window
+                const cols = midB + 1;
+                const dp = new Int32Array((midA + 1) * cols);
+                for (let i = midA - 1; i >= 0; i--) {
+                    const rowOff = i * cols;
+                    const nextOff = (i + 1) * cols;
+                    const ka = keysA[start + i];
+                    for (let j = midB - 1; j >= 0; j--) {
+                        if (ka === keysB[start + j]) {
+                            dp[rowOff + j] = 1 + dp[nextOff + j + 1];
+                        } else {
+                            const down = dp[nextOff + j];
+                            const right = dp[rowOff + j + 1];
+                            dp[rowOff + j] = down >= right ? down : right;
+                        }
+                    }
+                }
+                let i = 0, j = 0;
+                while (i < midA && j < midB) {
+                    if (keysA[start + i] === keysB[start + j]) {
+                        ops.push({ type: 'equal', oldIdx: start + i, newIdx: start + j });
+                        i++;
+                        j++;
+                    } else if (dp[(i + 1) * cols + j] >= dp[i * cols + (j + 1)]) {
+                        ops.push({ type: 'delete', oldIdx: start + i });
+                        i++;
+                    } else {
+                        ops.push({ type: 'insert', newIdx: start + j });
+                        j++;
+                    }
+                }
+                while (i < midA) { ops.push({ type: 'delete', oldIdx: start + i }); i++; }
+                while (j < midB) { ops.push({ type: 'insert', newIdx: start + j }); j++; }
+            } else {
+                // Safety fallback for huge inner files > ~1500x1500 mismatch lines
+                usedFallback = true;
+                for (let i = start; i <= endA; i++) ops.push({ type: 'delete', oldIdx: i });
+                for (let j = start; j <= endB; j++) ops.push({ type: 'insert', newIdx: j });
+            }
+
+            const suffixLen = linesA.length - 1 - endA;
+            for (let k = 0; k < suffixLen; k++) {
+                ops.push({ type: 'equal', oldIdx: endA + 1 + k, newIdx: endB + 1 + k });
+            }
+            return { ops, usedFallback };
+        }
+
+        function tokenizeForInline(str) {
+            return str.match(/\s+|[A-Za-z0-9_\u0E00-\u0E7F]+|[^\sA-Za-z0-9_\u0E00-\u0E7F]/g) || [];
+        }
+
+        function computeInlineHtml(oldLine, newLine) {
+            if (oldLine === newLine) {
+                return { leftHtml: escapeHtml(oldLine), rightHtml: escapeHtml(newLine) };
+            }
+            const tA = tokenizeForInline(oldLine);
+            const tB = tokenizeForInline(newLine);
+            if (tA.length > 260 || tB.length > 260) {
+                return {
+                    leftHtml: `<span class="diff-word-del">${escapeHtml(oldLine)}</span>`,
+                    rightHtml: `<span class="diff-word-add">${escapeHtml(newLine)}</span>`
+                };
+            }
+
+            let p = 0;
+            while (p < tA.length && p < tB.length && tA[p] === tB[p]) p++;
+            let sA = tA.length - 1, sB = tB.length - 1;
+            while (sA >= p && sB >= p && tA[sA] === tB[sB]) { sA--; sB--; }
+
+            const mA = sA - p + 1;
+            const mB = sB - p + 1;
+            const cols = mB + 1;
+            const dp = new Int32Array((mA + 1) * cols);
+
+            for (let i = mA - 1; i >= 0; i--) {
+                for (let j = mB - 1; j >= 0; j--) {
+                    if (tA[p + i] === tB[p + j]) dp[i * cols + j] = 1 + dp[(i + 1) * cols + j + 1];
+                    else dp[i * cols + j] = Math.max(dp[(i + 1) * cols + j], dp[i * cols + j + 1]);
+                }
+            }
+
+            let left = escapeHtml(tA.slice(0, p).join(''));
+            let right = escapeHtml(tB.slice(0, p).join(''));
+            let i = 0, j = 0;
+            let delBuf = '';
+            let addBuf = '';
+            const flushDel = () => { if (delBuf) { left += `<span class="diff-word-del">${escapeHtml(delBuf)}</span>`; delBuf = ''; } };
+            const flushAdd = () => { if (addBuf) { right += `<span class="diff-word-add">${escapeHtml(addBuf)}</span>`; addBuf = ''; } };
+
+            while (i < mA && j < mB) {
+                if (tA[p + i] === tB[p + j]) {
+                    flushDel();
+                    flushAdd();
+                    const eq = escapeHtml(tA[p + i]);
+                    left += eq;
+                    right += eq;
+                    i++;
+                    j++;
+                } else if (dp[(i + 1) * cols + j] >= dp[i * cols + (j + 1)]) {
+                    delBuf += tA[p + i++];
+                } else {
+                    addBuf += tB[p + j++];
+                }
+            }
+            while (i < mA) delBuf += tA[p + i++];
+            while (j < mB) addBuf += tB[p + j++];
+            flushDel();
+            flushAdd();
+
+            left += escapeHtml(tA.slice(sA + 1).join(''));
+            right += escapeHtml(tB.slice(sB + 1).join(''));
+            return { leftHtml: left, rightHtml: right };
+        }
+
+        function buildSideBySideRows(ops, linesA, linesB) {
+            const rows = [];
+            let idx = 0;
+            while (idx < ops.length) {
+                const op = ops[idx];
+                if (op.type === 'equal') {
+                    rows.push({
+                        kind: 'equal',
+                        oldNum: op.oldIdx + 1,
+                        newNum: op.newIdx + 1,
+                        oldText: linesA[op.oldIdx],
+                        newText: linesB[op.newIdx],
+                        leftHtml: escapeHtml(linesA[op.oldIdx]),
+                        rightHtml: escapeHtml(linesB[op.newIdx])
+                    });
+                    idx++;
+                    continue;
+                }
+
+                // Group consecutive deletes & inserts into paired modification rows when matched 1-to-1
+                const dels = [];
+                const adds = [];
+                while (idx < ops.length && (ops[idx].type === 'delete' || ops[idx].type === 'insert')) {
+                    if (ops[idx].type === 'delete') dels.push(ops[idx].oldIdx);
+                    else adds.push(ops[idx].newIdx);
+                    idx++;
+                }
+                const pairCount = Math.min(dels.length, adds.length);
+                for (let k = 0; k < pairCount; k++) {
+                    const oldText = linesA[dels[k]];
+                    const newText = linesB[adds[k]];
+                    const { leftHtml, rightHtml } = computeInlineHtml(oldText, newText);
+                    rows.push({
+                        kind: 'modified',
+                        oldNum: dels[k] + 1,
+                        newNum: adds[k] + 1,
+                        oldText,
+                        newText,
+                        leftHtml,
+                        rightHtml
+                    });
+                }
+                for (let k = pairCount; k < dels.length; k++) {
+                    const oldText = linesA[dels[k]];
+                    rows.push({
+                        kind: 'removed',
+                        oldNum: dels[k] + 1,
+                        newNum: null,
+                        oldText,
+                        newText: null,
+                        leftHtml: escapeHtml(oldText),
+                        rightHtml: ''
+                    });
+                }
+                for (let k = pairCount; k < adds.length; k++) {
+                    const newText = linesB[adds[k]];
+                    rows.push({
+                        kind: 'added',
+                        oldNum: null,
+                        newNum: adds[k] + 1,
+                        oldText: null,
+                        newText,
+                        leftHtml: '',
+                        rightHtml: escapeHtml(newText)
+                    });
+                }
+            }
+            return rows;
+        }
+
+        function buildUnifiedPatchText(ops, linesA, linesB) {
+            const lines = ['--- original.txt', '+++ modified.txt'];
+            for (const op of ops) {
+                if (op.type === 'equal') lines.push(' ' + linesA[op.oldIdx]);
+                else if (op.type === 'delete') lines.push('-' + linesA[op.oldIdx]);
+                else lines.push('+' + linesB[op.newIdx]);
+            }
+            return lines.join('\n');
+        }
+
+        // ==================== CORE DIFF RUNNER & RENDERERS ====================
+        function runDiff(preserveExpanded = false) {
+            if (!preserveExpanded) showExpandedUnchanged = false;
+            const rawLeft = document.getElementById('input-left').value;
+            const rawRight = document.getElementById('input-right').value;
+            const opts = {
+                trim: document.getElementById('opt-trim').checked,
+                ignoreCase: document.getElementById('opt-ignore-case').checked,
+                onlyChanges: document.getElementById('opt-only-changes').checked
+            };
+
+            const linesA = splitLinesNormalized(rawLeft);
+            const linesB = splitLinesNormalized(rawRight);
+            document.getElementById('meta-left').textContent = `${linesA.length.toLocaleString()} บรรทัด • ${rawLeft.length.toLocaleString()} อักษร`;
+            document.getElementById('meta-right').textContent = `${linesB.length.toLocaleString()} บรรทัด • ${rawRight.length.toLocaleString()} อักษร`;
+
+            const { ops, usedFallback } = computeLineOps(linesA, linesB, opts);
+            const rows = buildSideBySideRows(ops, linesA, linesB);
+            lastDiffRows = rows;
+            lastUnifiedText = buildUnifiedPatchText(ops, linesA, linesB);
+
+            const guardEl = document.getElementById('diff-guard-banner');
+            if (usedFallback) {
+                guardEl.textContent = 'ข้อมูลขนาดใหญ่มาก — สลับใช้โหมดเปรียบเทียบขอบเขตเร็วเพื่อป้องกันเบราว์เซอร์ค้าง';
+                guardEl.classList.remove('hidden');
+            } else {
+                guardEl.classList.add('hidden');
+            }
+
+            let added = 0, removed = 0, modified = 0, unchanged = 0;
+            changeIndices = [];
+            rows.forEach((r, idx) => {
+                if (r.kind === 'added') { added++; changeIndices.push(idx); }
+                else if (r.kind === 'removed') { removed++; changeIndices.push(idx); }
+                else if (r.kind === 'modified') { modified++; changeIndices.push(idx); }
+                else unchanged++;
+            });
+
+            const totalRows = rows.length;
+            const sim = totalRows === 0 ? 100 : Math.round((unchanged / totalRows) * 100);
+
+            document.getElementById('kpi-added').textContent = `+${added.toLocaleString()}`;
+            document.getElementById('kpi-removed').textContent = `-${removed.toLocaleString()}`;
+            document.getElementById('kpi-modified').textContent = `~${modified.toLocaleString()}`;
+            document.getElementById('kpi-unchanged').textContent = String(unchanged.toLocaleString());
+            document.getElementById('kpi-similarity').textContent = `${sim}%`;
+
+            const identBanner = document.getElementById('diff-identical-banner');
+            identBanner.classList.toggle('hidden', changeIndices.length > 0 || (linesA.length === 0 && linesB.length === 0));
+
+            activeChangeCursor = changeIndices.length ? 0 : -1;
+            updateCursorLabel();
+            renderDiffView(rows, opts);
+        }
+
+        function computeVisibleMask(rows, onlyChanges) {
+            if (!onlyChanges || showExpandedUnchanged) return rows.map(() => true);
+            const vis = new Array(rows.length).fill(false);
+            const radius = 1;
+            rows.forEach((r, idx) => {
+                if (r.kind !== 'equal') {
+                    for (let k = Math.max(0, idx - radius); k <= Math.min(rows.length - 1, idx + radius); k++) {
+                        vis[k] = true;
+                    }
+                }
+            });
+            return vis;
+        }
+
+        function renderDiffView(rows, opts) {
+            const target = document.getElementById('diff-render-target');
+            if (!rows.length) {
+                target.innerHTML = '<div class="p-8 text-center font-sans text-sm text-google-text-muted">วางข้อความหรืออัปโหลดไฟล์ทั้งสองฝั่งเพื่อดูความแตกต่างทันที</div>';
+                return;
+            }
+
+            const visibleMask = computeVisibleMask(rows, opts.onlyChanges);
+            if (currentViewMode === 'split') {
+                renderSplitTable(target, rows, visibleMask);
+            } else {
+                renderUnifiedTable(target, rows, visibleMask);
+            }
+        }
+
+        function renderSplitTable(target, rows, visibleMask) {
+            let html = `<table class="w-full min-w-[740px] border-collapse table-fixed">
+                <colgroup>
+                    <col class="w-11">
+                    <col class="w-[calc(50%-2.75rem)]">
+                    <col class="w-11">
+                    <col class="w-[calc(50%-2.75rem)]">
+                </colgroup>
+                <thead>
+                    <tr class="bg-google-subtle/80 dark:bg-google-dark-subtle/80 border-b border-google-border dark:border-google-dark-border text-[11px] font-sans font-bold text-google-text-muted dark:text-google-dark-text-muted">
+                        <th class="py-1.5 px-2 text-right border-r border-google-border dark:border-google-dark-border">#</th>
+                        <th class="py-1.5 px-3 text-left border-r border-google-border dark:border-google-dark-border text-rose-700 dark:text-rose-300">ต้นฉบับ (Original)</th>
+                        <th class="py-1.5 px-2 text-right border-r border-google-border dark:border-google-dark-border">#</th>
+                        <th class="py-1.5 px-3 text-left text-emerald-700 dark:text-emerald-300">ฉบับแก้ไข (Modified)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-google-border/40 dark:divide-google-dark-border/40">`;
+
+            let skippedCount = 0;
+            const flushSkipped = () => {
+                if (!skippedCount) return;
+                html += `<tr><td colspan="4" class="px-4 py-1.5 text-center bg-indigo-50/60 dark:bg-indigo-950/30 font-sans text-[11px] text-indigo-700 dark:text-indigo-300 cursor-pointer hover:underline" onclick="expandAllUnchanged()">··· ซ่อนบรรทัดที่เหมือนกัน ${skippedCount} บรรทัด (คลิกเพื่อดูครบ) ···</td></tr>`;
+                skippedCount = 0;
+            };
+
+            rows.forEach((r, idx) => {
+                if (!visibleMask[idx]) {
+                    skippedCount++;
+                    return;
+                }
+                flushSkipped();
+
+                const isDel = r.kind === 'removed';
+                const isAdd = r.kind === 'added';
+                const isMod = r.kind === 'modified';
+
+                const leftBg = isDel ? 'diff-del-cell' : (isMod ? 'diff-mod-left' : (isAdd ? 'diff-empty-cell' : ''));
+                const rightBg = isAdd ? 'diff-add-cell' : (isMod ? 'diff-mod-right' : (isDel ? 'diff-empty-cell' : ''));
+
+                const leftPrefix = isDel ? '<span class="text-rose-600 dark:text-rose-400 font-bold mr-1.5 select-none">-</span>'
+                    : (isMod ? '<span class="text-amber-600 dark:text-amber-400 font-bold mr-1.5 select-none">~</span>'
+                    : (isAdd ? '' : '<span class="opacity-30 mr-1.5 select-none">&nbsp;</span>'));
+                const rightPrefix = isAdd ? '<span class="text-emerald-600 dark:text-emerald-400 font-bold mr-1.5 select-none">+</span>'
+                    : (isMod ? '<span class="text-amber-600 dark:text-amber-400 font-bold mr-1.5 select-none">~</span>'
+                    : (isDel ? '' : '<span class="opacity-30 mr-1.5 select-none">&nbsp;</span>'));
+
+                html += `<tr data-row-idx="${idx}" id="diff-row-${idx}">
+                    <td class="px-2 py-1 text-right text-[11px] text-google-text-muted select-none border-r border-google-border/60 dark:border-google-dark-border/60 ${leftBg}">${r.oldNum ?? ''}</td>
+                    <td class="px-3 py-1 whitespace-pre-wrap break-all align-top border-r border-google-border dark:border-google-dark-border ${leftBg}">${leftPrefix}${r.leftHtml}</td>
+                    <td class="px-2 py-1 text-right text-[11px] text-google-text-muted select-none border-r border-google-border/60 dark:border-google-dark-border/60 ${rightBg}">${r.newNum ?? ''}</td>
+                    <td class="px-3 py-1 whitespace-pre-wrap break-all align-top ${rightBg}">${rightPrefix}${r.rightHtml}</td>
+                </tr>`;
+            });
+            flushSkipped();
+
+            html += '</tbody></table>';
+            target.innerHTML = html;
+        }
+
+        function renderUnifiedTable(target, rows, visibleMask) {
+            let html = `<table class="w-full min-w-[520px] border-collapse">
+                <tbody class="divide-y divide-google-border/40 dark:divide-google-dark-border/40">`;
+
+            let skippedCount = 0;
+            const flushSkipped = () => {
+                if (!skippedCount) return;
+                html += `<tr><td colspan="4" class="px-4 py-1.5 text-center bg-indigo-50/60 dark:bg-indigo-950/30 font-sans text-[11px] text-indigo-700 dark:text-indigo-300 cursor-pointer hover:underline" onclick="expandAllUnchanged()">··· ซ่อนบรรทัดที่เหมือนกัน ${skippedCount} บรรทัด (คลิกเพื่อดูครบ) ···</td></tr>`;
+                skippedCount = 0;
+            };
+
+            rows.forEach((r, idx) => {
+                if (!visibleMask[idx]) {
+                    skippedCount++;
+                    return;
+                }
+                flushSkipped();
+
+                if (r.kind === 'equal') {
+                    html += `<tr data-row-idx="${idx}" id="diff-row-${idx}">
+                        <td class="w-10 px-2 py-1 text-right text-[11px] text-google-text-muted select-none border-r border-google-border/40 dark:border-google-dark-border/40">${r.oldNum}</td>
+                        <td class="w-10 px-2 py-1 text-right text-[11px] text-google-text-muted select-none border-r border-google-border/60 dark:border-google-dark-border/60">${r.newNum}</td>
+                        <td class="w-6 text-center text-google-text-muted select-none opacity-40">&nbsp;</td>
+                        <td class="px-3 py-1 whitespace-pre-wrap break-all">${r.leftHtml}</td>
+                    </tr>`;
+                } else if (r.kind === 'removed') {
+                    html += `<tr data-row-idx="${idx}" id="diff-row-${idx}" class="diff-del-cell">
+                        <td class="w-10 px-2 py-1 text-right text-[11px] text-rose-700 dark:text-rose-300 select-none border-r border-google-border/40 dark:border-google-dark-border/40">${r.oldNum}</td>
+                        <td class="w-10 px-2 py-1 text-right text-[11px] select-none border-r border-google-border/60 dark:border-google-dark-border/60"></td>
+                        <td class="w-6 text-center font-bold text-rose-600 dark:text-rose-400 select-none">-</td>
+                        <td class="px-3 py-1 whitespace-pre-wrap break-all">${r.leftHtml}</td>
+                    </tr>`;
+                } else if (r.kind === 'added') {
+                    html += `<tr data-row-idx="${idx}" id="diff-row-${idx}" class="diff-add-cell">
+                        <td class="w-10 px-2 py-1 text-right text-[11px] select-none border-r border-google-border/40 dark:border-google-dark-border/40"></td>
+                        <td class="w-10 px-2 py-1 text-right text-[11px] text-emerald-700 dark:text-emerald-300 select-none border-r border-google-border/60 dark:border-google-dark-border/60">${r.newNum}</td>
+                        <td class="w-6 text-center font-bold text-emerald-600 dark:text-emerald-400 select-none">+</td>
+                        <td class="px-3 py-1 whitespace-pre-wrap break-all">${r.rightHtml}</td>
+                    </tr>`;
+                } else {
+                    html += `<tr data-row-idx="${idx}" id="diff-row-${idx}" class="diff-mod-left">
+                        <td class="w-10 px-2 py-1 text-right text-[11px] text-rose-700 dark:text-rose-300 select-none border-r border-google-border/40 dark:border-google-dark-border/40">${r.oldNum}</td>
+                        <td class="w-10 px-2 py-1 text-right text-[11px] select-none border-r border-google-border/60 dark:border-google-dark-border/60"></td>
+                        <td class="w-6 text-center font-bold text-rose-600 dark:text-rose-400 select-none">-</td>
+                        <td class="px-3 py-1 whitespace-pre-wrap break-all">${r.leftHtml}</td>
+                    </tr>
+                    <tr class="diff-mod-right">
+                        <td class="w-10 px-2 py-1 text-right text-[11px] select-none border-r border-google-border/40 dark:border-google-dark-border/40"></td>
+                        <td class="w-10 px-2 py-1 text-right text-[11px] text-emerald-700 dark:text-emerald-300 select-none border-r border-google-border/60 dark:border-google-dark-border/60">${r.newNum}</td>
+                        <td class="w-6 text-center font-bold text-emerald-600 dark:text-emerald-400 select-none">+</td>
+                        <td class="px-3 py-1 whitespace-pre-wrap break-all">${r.rightHtml}</td>
+                    </tr>`;
+                }
+            });
+            flushSkipped();
+
+            html += '</tbody></table>';
+            target.innerHTML = html;
+        }
+
+        // ==================== INTERACTIVE CONTROLS ====================
+        function setDiffViewMode(mode) {
+            currentViewMode = mode;
+            document.getElementById('view-btn-split').className = mode === 'split'
+                ? 'px-3 py-1 rounded-lg bg-indigo-600 text-white shadow-xs cursor-pointer'
+                : 'px-3 py-1 rounded-lg text-google-text-muted dark:text-google-dark-text-muted cursor-pointer';
+            document.getElementById('view-btn-unified').className = mode === 'unified'
+                ? 'px-3 py-1 rounded-lg bg-indigo-600 text-white shadow-xs cursor-pointer'
+                : 'px-3 py-1 rounded-lg text-google-text-muted dark:text-google-dark-text-muted cursor-pointer';
+            renderDiffView(lastDiffRows, { onlyChanges: document.getElementById('opt-only-changes').checked });
+        }
+
+        function expandAllUnchanged() {
+            showExpandedUnchanged = true;
+            renderDiffView(lastDiffRows, { onlyChanges: true });
+        }
+
+        function updateCursorLabel() {
+            const el = document.getElementById('change-cursor');
+            if (!changeIndices.length) {
+                el.textContent = '0 จุดเปลี่ยน';
+            } else {
+                el.textContent = `จุดที่ ${activeChangeCursor + 1}/${changeIndices.length}`;
+            }
+        }
+
+        function jumpChange(delta) {
+            if (!changeIndices.length) {
+                showToast('ไม่มีความแตกต่างให้เลื่อนดู', 'error');
+                return;
+            }
+            activeChangeCursor = (activeChangeCursor + delta + changeIndices.length) % changeIndices.length;
+            updateCursorLabel();
+            const rowIdx = changeIndices[activeChangeCursor];
+            document.querySelectorAll('.diff-active-hunk').forEach(el => el.classList.remove('diff-active-hunk'));
+            const rowEl = document.getElementById(`diff-row-${rowIdx}`);
+            if (rowEl) {
+                rowEl.classList.add('diff-active-hunk');
+                rowEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+        }
+
+        function loadSample(key) {
+            const s = SAMPLES[key];
+            if (!s) return;
+            document.getElementById('input-left').value = s.left;
+            document.getElementById('input-right').value = s.right;
+            runDiff();
+            showToast(`โหลดตัวอย่าง ${key.toUpperCase()} แล้ว`);
+        }
+
+        function swapSides() {
+            const l = document.getElementById('input-left');
+            const r = document.getElementById('input-right');
+            const tmp = l.value;
+            l.value = r.value;
+            r.value = tmp;
+            runDiff();
+            showToast('สลับข้อมูลซ้าย ↔ ขวาเรียบร้อย');
+        }
+
+        function clearSide(side) {
+            document.getElementById(`input-${side}`).value = '';
+            runDiff();
+        }
+
+        function clearBothSides() {
+            document.getElementById('input-left').value = '';
+            document.getElementById('input-right').value = '';
+            runDiff();
+            showToast('ล้างข้อมูลทั้งสองฝั่งแล้ว');
+        }
+
+        function formatBothJson() {
+            const l = document.getElementById('input-left');
+            const r = document.getElementById('input-right');
+            let formattedCount = 0;
+            for (const el of [l, r]) {
+                if (!el.value.trim()) continue;
+                try {
+                    el.value = JSON.stringify(JSON.parse(el.value), null, 2);
+                    formattedCount++;
+                } catch (err) {
+                    showToast(`จัด JSON ไม่สำเร็จ: ${err.message}`, 'error');
+                    return;
+                }
+            }
+            if (!formattedCount) {
+                showToast('กรุณาวาง JSON อย่างน้อย 1 ฝั่งก่อนจัดระเบียบ', 'error');
+                return;
+            }
+            runDiff();
+            showToast('จัดระเบียบ JSON ทั้ง 2 ฝั่งเรียบร้อย!');
+        }
+
+        function loadFileToSide(event, side) {
+            const file = event.target?.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                document.getElementById(`input-${side}`).value = String(reader.result || '');
+                runDiff();
+                showToast(`โหลดไฟล์ "${file.name}" เข้าฝั่ง${side === 'left' ? 'ซ้าย' : 'ขวา'}แล้ว`);
+            };
+            reader.readAsText(file, 'utf-8');
+        }
+
+        function setupDropZone(textareaId) {
+            const ta = document.getElementById(textareaId);
+            ta.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                ta.classList.add('ring-2', 'ring-indigo-500');
+            });
+            ta.addEventListener('dragleave', () => ta.classList.remove('ring-2', 'ring-indigo-500'));
+            ta.addEventListener('drop', (e) => {
+                e.preventDefault();
+                ta.classList.remove('ring-2', 'ring-indigo-500');
+                const f = e.dataTransfer?.files?.[0];
+                if (!f) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    ta.value = String(reader.result || '');
+                    runDiff();
+                    showToast(`วางไฟล์ "${f.name}" สำเร็จ`);
+                };
+                reader.readAsText(f, 'utf-8');
+            });
+        }
+
+        function copyUnifiedPatch() {
+            copyTextValue(lastUnifiedText, 'Unified Patch (.diff)');
+        }
+
+        function downloadUnifiedPatch() {
+            const blob = new Blob([lastUnifiedText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'changes.diff';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            showToast('ดาวน์โหลด changes.diff แล้ว');
+        }
+
+        // ==================== THEME & APP SWITCHER ====================
+        function initTheme() {
+            const saved = localStorage.getItem('feel_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        function toggleSubAppSwitcher(forceState) {
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu) return;
+            const willOpen = typeof forceState === 'boolean' ? forceState : menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !willOpen);
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('app-switcher-btn');
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu || menu.classList.contains('hidden')) return;
+            if ((!btn || !btn.contains(e.target)) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleSubAppSwitcher(false);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            setupDropZone('input-left');
+            setupDropZone('input-right');
+            document.getElementById('input-left').value = SAMPLES.config.left;
+            document.getElementById('input-right').value = SAMPLES.config.right;
+            runDiff();
+        });
+    </script>
+</body>
+</html>

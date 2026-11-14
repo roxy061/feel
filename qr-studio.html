@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom QR Code Studio — สร้าง QR ลิงก์ Wi-Fi ข้อความ &amp; PromptPay PNG/SVG | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="สตูดิโอสร้าง QR Code แบบปรับแต่งสี กรอบมุม จุดโค้งมน และใส่โลโก้ตรงกลาง สำหรับลิงก์เว็บ, Wi-Fi (สแกนเชื่อมต่อทันที), ข้อความ และ PromptPay EMVCo ดาวน์โหลด PNG 2048px และ SVG เวกเตอร์ในเบราว์เซอร์ 100%">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- QR Matrix Generator & Optional Scannability Verifier -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.15rem;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.10), 0 1px 3px 1px rgba(60, 64, 67, 0.06);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+        .checkerboard-subtle {
+            background-color: #f1f5f9;
+            background-image:
+                linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
+                linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
+                linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+        }
+        .dark .checkerboard-subtle {
+            background-color: #1f2226;
+            background-image:
+                linear-gradient(45deg, #2d3138 25%, transparent 25%),
+                linear-gradient(-45deg, #2d3138 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #2d3138 75%),
+                linear-gradient(-45deg, transparent 75%, #2d3138 75%);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-amber-500 selection:text-white">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Centered Bottom Toast Notification -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 w-[92vw] max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- UNIFIED SINGLE-ROW NAVIGATION HEADER       -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก</span>
+            </a>
+
+            <div class="flex items-center gap-2.5 sm:border-l border-google-border dark:border-google-dark-border sm:pl-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-qrcode"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            Custom QR Code Studio
+                        </h1>
+                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 text-[10px] font-bold whitespace-nowrap shrink-0">
+                            URL • Wi-Fi • PromptPay • SVG/PNG
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        สร้าง QR Code ปรับแต่งสี ใส่โลโก้ตรงกลาง และดาวน์โหลด PNG / SVG ความละเอียดสูงในเครื่อง 100%
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <a href="image-converter.html" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-xs font-semibold text-teal-700 dark:text-teal-300 hover:bg-teal-100 transition whitespace-nowrap">
+                <i class="fa-solid fa-images"></i>
+                <span>ย่อรูป/แปลงไฟล์</span>
+            </a>
+
+            <!-- App Switcher Dropdown (17 Apps) -->
+            <div class="relative shrink-0">
+                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (17 ระบบ)">
+                    <i class="fa-solid fa-layer-group text-amber-600 dark:text-amber-400"></i>
+                    <span class="hidden sm:inline">สลับเว็บแอป</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold leading-none">17</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                </button>
+                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
+                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
+                        </div>
+                    </a>
+                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
+                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (17 ระบบ)</div>
+                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
+                        </div>
+                    </a>
+                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
+                        </div>
+                    </a>
+                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
+                        </div>
+                    </a>
+                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ &amp; พายุ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
+                        </div>
+                    </a>
+                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble &amp; สูตร CFOP</div>
+                        </div>
+                    </a>
+                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง &amp; ถาม-ตอบ</div>
+                        </div>
+                    </a>
+                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ &amp; แชร์ PIN 6 หลัก</div>
+                        </div>
+                    </a>
+                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง &amp; รูปติดบัตร</div>
+                        </div>
+                    </a>
+                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI &amp; โฮสต์ฟรี</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI &amp; รันไฟล์</div>
+                        </div>
+                    </a>
+                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON • JWT • Base64 • Timestamp</div>
+                        </div>
+                    </a>
+                    <a href="subnet.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-blue-600 bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-network-wired"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">11. IP &amp; Subnet Calculator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CIDR • Host Range • VLAN • Netplan</div>
+                        </div>
+                    </a>
+                    <a href="regex.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-fuchsia-600 bg-fuchsia-50 dark:bg-fuchsia-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">12. Regex Tester &amp; Cheatsheet</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Live Match • Presets • Replace</div>
+                        </div>
+                    </a>
+                    <a href="diff.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code-compare"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">13. Diff Checker &amp; Code Compare</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Side-by-Side • Patch • Word Diff</div>
+                        </div>
+                    </a>
+                    <a href="keygen.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-rose-600 bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">14. Password &amp; Key Generator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CSPRNG • API Key • UUID • Hash</div>
+                        </div>
+                    </a>
+                    <a href="pdf-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-red-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">15. PDF Merge &amp; Split</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวมไฟล์ • แยกหน้า • หมุน &amp; ลบหน้า</div>
+                        </div>
+                    </a>
+                    <a href="image-converter.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-images"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">16. Image Compressor &amp; Converter</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JPG • PNG • WebP • Batch ZIP</div>
+                        </div>
+                    </a>
+                    <a href="qr-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-100 dark:bg-amber-950 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-qrcode"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">17. Custom QR Code Studio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">URL • Wi-Fi • PromptPay • PNG/SVG</div>
+                        </div>
+                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-amber-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Theme Switcher -->
+            <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN STUDIO WORKSPACE                      -->
+    <!-- ========================================== -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+            <!-- LEFT COLUMN: Mode Tabs + Content Form + Visual Customizer -->
+            <div class="lg:col-span-6 space-y-4">
+
+                <!-- 1. QR Content Type Card -->
+                <div class="g-card p-4 space-y-4 border-t-4 border-t-amber-500">
+                    <div class="flex items-center justify-between gap-2">
+                        <h2 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                            <i class="fa-solid fa-pen-to-square text-amber-600"></i>
+                            <span>1. เลือกประเภทข้อมูลใน QR Code</span>
+                        </h2>
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
+                            สร้างในเครื่อง 100%
+                        </span>
+                    </div>
+
+                    <!-- Type Selector Tabs -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 rounded-xl bg-google-subtle dark:bg-google-dark-bg border border-google-border/80 dark:border-google-dark-border">
+                        <button type="button" id="tab-btn-url" onclick="switchQrTab('url')" class="px-2 py-2 rounded-lg text-xs font-bold bg-white dark:bg-google-dark-surface text-amber-700 dark:text-amber-300 shadow-xs transition cursor-pointer">
+                            <i class="fa-solid fa-link mr-1"></i>ลิงก์เว็บ
+                        </button>
+                        <button type="button" id="tab-btn-wifi" onclick="switchQrTab('wifi')" class="px-2 py-2 rounded-lg text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer">
+                            <i class="fa-solid fa-wifi mr-1"></i>Wi-Fi
+                        </button>
+                        <button type="button" id="tab-btn-promptpay" onclick="switchQrTab('promptpay')" class="px-2 py-2 rounded-lg text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer">
+                            <i class="fa-solid fa-baht-sign mr-1"></i>PromptPay
+                        </button>
+                        <button type="button" id="tab-btn-text" onclick="switchQrTab('text')" class="px-2 py-2 rounded-lg text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer">
+                            <i class="fa-solid fa-align-left mr-1"></i>ข้อความ
+                        </button>
+                    </div>
+
+                    <!-- TAB 1: URL -->
+                    <div id="tab-panel-url" class="space-y-3">
+                        <div>
+                            <label for="qr-url" class="block text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">URL เว็บไซต์หรือโปรเจกต์</label>
+                            <input type="url" id="qr-url" value="https://feel-ochre.vercel.app" oninput="renderQrAll()" placeholder="https://example.com" class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-mono text-google-text dark:text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button type="button" onclick="setUrlPreset('https://feel-ochre.vercel.app', 'สแกนเข้าชม Portfolio')" class="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 text-amber-800 dark:text-amber-300 text-[11px] font-semibold cursor-pointer">Portfolio คุณฟีล</button>
+                            <button type="button" onclick="setUrlPreset('https://feel-ochre.vercel.app/vault.html', 'สแกนเปิด SafeBox แชร์ไฟล์')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-[11px] font-semibold cursor-pointer">SafeBox PIN</button>
+                            <button type="button" onclick="setUrlPreset('https://feel-ochre.vercel.app/ai-tools.html', 'สแกนเปิดคลัง 166+ เว็บ AI')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-[11px] font-semibold cursor-pointer">คลังเว็บ AI</button>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: WI-FI -->
+                    <div id="tab-panel-wifi" class="hidden space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div>
+                                <label for="wifi-ssid" class="block text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">ชื่อเครือข่าย Wi-Fi (SSID)</label>
+                                <input type="text" id="wifi-ssid" value="FeelLab-5G" oninput="renderQrAll()" placeholder="เช่น MyHome-5G" class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs sm:text-sm text-google-text dark:text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label for="wifi-enc" class="block text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">การเข้ารหัสความปลอดภัย</label>
+                                <select id="wifi-enc" onchange="onWifiEncChange()" class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs sm:text-sm text-google-text dark:text-white focus:outline-none focus:border-amber-500">
+                                    <option value="WPA" selected>WPA / WPA2 / WPA3</option>
+                                    <option value="WEP">WEP (รุ่นเก่า)</option>
+                                    <option value="nopass">ไม่มีรหัสผ่าน (Open Wi-Fi)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="wifi-pass" class="block text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">รหัสผ่าน Wi-Fi</label>
+                            <div class="relative">
+                                <input type="password" id="wifi-pass" value="FeelPass2026" oninput="renderQrAll()" placeholder="ระบุรหัสผ่าน Wi-Fi" class="w-full pl-3 pr-10 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-mono text-google-text dark:text-white focus:outline-none focus:border-amber-500">
+                                <button type="button" id="btn-toggle-wifi-pw" onclick="toggleWifiPassMask()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-google-text-muted hover:text-google-text dark:hover:text-white text-xs cursor-pointer" title="แสดง / ซ่อนรหัสผ่าน">
+                                    <i id="wifi-pw-icon" class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <label class="inline-flex items-center gap-2 text-xs cursor-pointer">
+                            <input type="checkbox" id="wifi-hidden" onchange="renderQrAll()" class="w-4 h-4 accent-amber-600 rounded">
+                            <span>เครือข่ายแบบซ่อนชื่อ (Hidden SSID)</span>
+                        </label>
+                    </div>
+
+                    <!-- TAB 3: PROMPTPAY -->
+                    <div id="tab-panel-promptpay" class="hidden space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div>
+                                <label for="pp-type" class="block text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">ประเภทบัญชีพร้อมเพย์</label>
+                                <select id="pp-type" onchange="renderQrAll()" class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs sm:text-sm text-google-text dark:text-white focus:outline-none focus:border-amber-500">
+                                    <option value="phone" selected>เบอร์มือถือ (10 หลัก)</option>
+                                    <option value="taxid">เลขบัตรประชาชน / นิติบุคคล (13 หลัก)</option>
+                                    <option value="ewallet">รหัส e-Wallet ID (15 หลัก)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="pp-target" class="block text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">หมายเลขพร้อมเพย์ผู้รับ</label>
+                                <input type="text" id="pp-target" value="0812345678" oninput="renderQrAll()" placeholder="เช่น 0812345678" class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-mono text-google-text dark:text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 items-end">
+                            <div>
+                                <label for="pp-amount" class="block text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">จำนวนเงิน (บาท — เว้นว่างได้)</label>
+                                <input type="number" id="pp-amount" min="0" step="0.01" oninput="renderQrAll()" placeholder="เช่น 150.00 (ไม่บังคับ)" class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-mono text-google-text dark:text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                            <button type="button" onclick="applyPromptPayPreset()" class="px-3 py-2 rounded-xl bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 border border-sky-200 dark:border-sky-800 text-xs font-bold text-sky-700 dark:text-sky-300 cursor-pointer">
+                                ใส่โลโก้ ฿ พร้อมเพย์ &amp; สีฟ้าทันที
+                            </button>
+                        </div>
+                        <p id="pp-validation-msg" class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+                            สร้างรหัส EMVCo Standard พร้อม CRC-16/CCITT-FALSE ในเบราว์เซอร์ 100%
+                        </p>
+                    </div>
+
+                    <!-- TAB 4: PLAIN TEXT -->
+                    <div id="tab-panel-text" class="hidden space-y-2">
+                        <label for="qr-text" class="block text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted">ข้อความอิสระ (รองรับภาษาไทย UTF-8 เต็มรูปแบบ)</label>
+                        <textarea id="qr-text" rows="3" oninput="renderQrAll()" placeholder="พิมพ์ข้อความ โค้ดส่วนลด หรือข้อมูลติดต่อ..." class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs sm:text-sm text-google-text dark:text-white focus:outline-none focus:border-amber-500">โครงงานสิ่งประดิษฐ์ตู้กดผ้าอนามัยอัตโนมัติ — นายภคพล สมัยแก้ว (ปวส.1)</textarea>
+                    </div>
+                </div>
+
+                <!-- 2. Style, Color & Center Logo Customizer Card -->
+                <div class="g-card p-4 space-y-4">
+                    <div class="flex items-center justify-between gap-2">
+                        <h2 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                            <i class="fa-solid fa-palette text-amber-600"></i>
+                            <span>2. ปรับแต่งสี รูปทรง &amp; โลโก้ตรงกลาง</span>
+                        </h2>
+                        <button type="button" onclick="resetStyleDefaults()" class="text-[11px] font-semibold text-google-blue dark:text-sky-400 hover:underline cursor-pointer">รีเซ็ตสี</button>
+                    </div>
+
+                    <!-- One-Click Theme Palettes -->
+                    <div class="flex flex-wrap gap-1.5">
+                        <button type="button" onclick="applyColorPalette('#0f172a', '#1d4ed8', '#ffffff')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-[11px] font-bold cursor-pointer">Google Blue</button>
+                        <button type="button" onclick="applyColorPalette('#111827', '#111827', '#ffffff')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-[11px] font-bold cursor-pointer">Classic Dark</button>
+                        <button type="button" onclick="applyColorPalette('#003d6b', '#0070ba', '#ffffff')" class="px-2.5 py-1 rounded-lg bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 text-sky-800 dark:text-sky-300 text-[11px] font-bold cursor-pointer">PromptPay Blue</button>
+                        <button type="button" onclick="applyColorPalette('#7c2d12', '#d97706', '#fffbeb')" class="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 text-amber-800 dark:text-amber-300 text-[11px] font-bold cursor-pointer">Warm Gold</button>
+                        <button type="button" onclick="applyColorPalette('#064e3b', '#0d9488', '#ffffff')" class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-800 dark:text-emerald-300 text-[11px] font-bold cursor-pointer">Emerald Tech</button>
+                    </div>
+
+                    <!-- Color Pickers -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label for="color-fg" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">สีจุด QR</label>
+                            <div class="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border">
+                                <input type="color" id="color-fg" value="#0f172a" oninput="renderQrAll()" class="w-6 h-6 rounded border-0 bg-transparent cursor-pointer shrink-0">
+                                <span id="hex-fg" class="text-[11px] font-mono truncate">#0f172a</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="color-eye" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">สีมุม 3 ตา</label>
+                            <div class="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border">
+                                <input type="color" id="color-eye" value="#1a73e8" oninput="renderQrAll()" class="w-6 h-6 rounded border-0 bg-transparent cursor-pointer shrink-0">
+                                <span id="hex-eye" class="text-[11px] font-mono truncate">#1a73e8</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="color-bg" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">สีพื้นหลัง</label>
+                            <div class="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border">
+                                <input type="color" id="color-bg" value="#ffffff" oninput="renderQrAll()" class="w-6 h-6 rounded border-0 bg-transparent cursor-pointer shrink-0">
+                                <span id="hex-bg" class="text-[11px] font-mono truncate">#ffffff</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dot & Eye Geometry -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label for="dot-style" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">รูปทรงจุด (Dots)</label>
+                            <select id="dot-style" onchange="renderQrAll()" class="w-full px-3 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold text-google-text dark:text-white">
+                                <option value="rounded" selected>สี่เหลี่ยมมุมมน (Rounded)</option>
+                                <option value="dots">จุดวงกลม (Dots)</option>
+                                <option value="square">สี่เหลี่ยมคลาสสิก (Square)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="eye-style" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">รูปทรงกรอบมุม (Finder Eyes)</label>
+                            <select id="eye-style" onchange="renderQrAll()" class="w-full px-3 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold text-google-text dark:text-white">
+                                <option value="rounded" selected>โค้งมน (Rounded Frame)</option>
+                                <option value="circle">วงกลม (Circle)</option>
+                                <option value="square">สี่เหลี่ยมคม (Square)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Center Logo Selector & Upload -->
+                    <div class="p-3 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border/80 dark:border-google-dark-border space-y-2.5">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-xs font-bold text-google-text dark:text-white">
+                                <i class="fa-regular fa-image text-amber-600 mr-1"></i>โลโก้ตรงกลาง (Center Logo)
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <input type="file" id="logo-file-input" accept="image/*" class="hidden">
+                                <button type="button" onclick="document.getElementById('logo-file-input').click()" class="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold cursor-pointer">
+                                    <i class="fa-solid fa-upload mr-1"></i>อัปโหลดรูปโลโก้
+                                </button>
+                                <button type="button" onclick="clearLogo()" class="px-2 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-[11px] font-semibold cursor-pointer">
+                                    ไม่มีโลโก้
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <span class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mr-1">ไอคอนพร้อมใช้:</span>
+                            <button type="button" onclick="setBuiltInLogo('star')" class="px-2 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-amber-500 text-[11px] font-semibold cursor-pointer">⭐ Portfolio</button>
+                            <button type="button" onclick="setBuiltInLogo('wifi')" class="px-2 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-amber-500 text-[11px] font-semibold cursor-pointer">📶 Wi-Fi</button>
+                            <button type="button" onclick="setBuiltInLogo('baht')" class="px-2 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-amber-500 text-[11px] font-semibold cursor-pointer">฿ PromptPay</button>
+                            <button type="button" onclick="setBuiltInLogo('code')" class="px-2 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-amber-500 text-[11px] font-semibold cursor-pointer">⚡ Project</button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1 items-center">
+                            <div>
+                                <div class="flex justify-between text-[11px] mb-0.5">
+                                    <span>ขนาดโลโก้</span>
+                                    <span id="logo-size-label" class="font-mono font-bold">22%</span>
+                                </div>
+                                <input type="range" id="logo-size" min="14" max="26" value="22" oninput="onLogoSizeChange()" class="w-full accent-amber-600 cursor-pointer">
+                            </div>
+                            <label class="inline-flex items-center gap-2 text-xs cursor-pointer">
+                                <input type="checkbox" id="chk-logo-pad" checked onchange="renderQrAll()" class="w-4 h-4 accent-amber-600 rounded">
+                                <span>ใส่กรอบรองรับสีขาวรอบโลโก้</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Poster Caption & ECL -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <div>
+                            <label for="qr-ecl" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">แก้ Error (ECL)</label>
+                            <select id="qr-ecl" onchange="renderQrAll()" class="w-full px-2.5 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono font-bold text-google-text dark:text-white">
+                                <option value="L">L (7%)</option>
+                                <option value="M">M (15%)</option>
+                                <option value="Q">Q (25%)</option>
+                                <option value="H" selected>H (30% • โลโก้)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="qr-margin" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">ขอบ Quiet Zone</label>
+                            <select id="qr-margin" onchange="renderQrAll()" class="w-full px-2.5 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono font-bold text-google-text dark:text-white">
+                                <option value="2">แคบ (2)</option>
+                                <option value="4" selected>มาตรฐาน (4)</option>
+                                <option value="6">กว้าง (6)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="poster-caption" class="block text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted mb-1">ข้อความใต้ป้าย QR</label>
+                            <input type="text" id="poster-caption" value="สแกนเข้าชม Portfolio คุณฟีล" oninput="renderQrAll()" placeholder="เว้นว่าง = ไม่ใส่ป้าย" class="w-full px-2.5 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-white">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Sticky Live Preview + Scannability + PNG/SVG Exports -->
+            <div class="lg:col-span-6 lg:sticky lg:top-20 space-y-4">
+                <div class="g-card p-4 sm:p-5 space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <h2 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                                <i class="fa-solid fa-eye text-amber-600"></i>
+                                <span>ตัวอย่าง QR Code แบบสด (Live Preview)</span>
+                            </h2>
+                            <p id="qr-meta-line" class="text-[11px] font-mono text-google-text-muted dark:text-google-dark-text-muted">
+                                Matrix • ECC H • 1024px Ready
+                            </p>
+                        </div>
+                        <span id="scan-status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-xs font-bold">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>พร้อมสแกน</span>
+                        </span>
+                    </div>
+
+                    <!-- Preview Canvas Stage -->
+                    <div class="p-4 sm:p-6 rounded-2xl checkerboard-subtle border border-google-border dark:border-google-dark-border flex items-center justify-center">
+                        <canvas id="qr-preview-canvas" width="560" height="620" class="max-w-full w-[300px] sm:w-[340px] h-auto rounded-2xl shadow-lg bg-white"></canvas>
+                    </div>
+
+                    <!-- Encoded Payload Preview -->
+                    <div class="p-3 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/80 dark:border-google-dark-border space-y-1.5">
+                        <div class="flex items-center justify-between gap-2 text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">
+                            <span>ข้อมูลที่เข้ารหัสจริงใน QR (Raw Payload)</span>
+                            <button type="button" onclick="copyRawPayload()" class="text-google-blue dark:text-sky-400 hover:underline cursor-pointer">
+                                <i class="fa-regular fa-copy mr-1"></i>คัดลอก Payload
+                            </button>
+                        </div>
+                        <code id="payload-preview" class="block font-mono text-xs text-google-text dark:text-white break-all max-h-20 overflow-y-auto"></code>
+                    </div>
+
+                    <!-- High-Res Download Controls -->
+                    <div class="space-y-2.5 pt-1">
+                        <div class="flex items-center justify-between gap-2">
+                            <label for="export-size" class="text-xs font-bold text-google-text dark:text-white">ความละเอียดไฟล์ PNG สำหรับพิมพ์โปสเตอร์:</label>
+                            <select id="export-size" class="px-3 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-mono font-bold text-google-text dark:text-white">
+                                <option value="512">512 px (เว็บ / มือถือ)</option>
+                                <option value="1024" selected>1024 px (มาตรฐานคมชัด)</option>
+                                <option value="2048">2048 px (โปสเตอร์พิมพ์ A3/300 DPI)</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <button type="button" id="btn-download-png" onclick="downloadQrPng()" class="py-2.5 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-file-image"></i>
+                                <span>โหลด PNG</span>
+                            </button>
+                            <button type="button" id="btn-download-svg" onclick="downloadQrSvg()" class="py-2.5 px-3 rounded-xl bg-slate-900 dark:bg-zinc-700 hover:bg-slate-800 dark:hover:bg-zinc-600 text-white text-xs sm:text-sm font-bold shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-bezier-curve text-amber-400"></i>
+                                <span>โหลด SVG เวกเตอร์</span>
+                            </button>
+                            <button type="button" id="btn-copy-image" onclick="copyQrPngToClipboard()" class="py-2.5 px-3 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-slate-100 dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-bold text-google-text dark:text-white transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="fa-regular fa-copy text-amber-600"></i>
+                                <span>คัดลอกภาพ</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Compact Footer -->
+    <footer class="mt-auto py-4 px-4 text-center text-xs text-google-text-muted dark:text-google-dark-text-muted border-t border-google-border/70 dark:border-google-dark-border">
+        <span>Custom QR Code Studio (URL • Wi-Fi • EMVCo PromptPay • High-Res PNG / Vector SVG) — </span>
+        <a href="index.html" class="font-semibold text-google-blue dark:text-sky-400 hover:underline">กลับหน้า Portfolio</a>
+    </footer>
+
+    <script>
+        // Enable UTF-8 Thai encoding inside qrcode-generator
+        if (window.qrcode && qrcode.stringToBytesFuncs && qrcode.stringToBytesFuncs['UTF-8']) {
+            qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
+        }
+
+        // ==================== STUDIO STATE ====================
+        const qrState = {
+            tab: 'url', // 'url' | 'wifi' | 'promptpay' | 'text'
+            logoDataUrl: '',
+            logoImg: null,
+            lastPayload: '',
+            lastSvgString: '',
+            lastDownloadUrl: null
+        };
+
+        // ==================== UTILITIES ====================
+        function escapeXml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&apos;');
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const el = document.createElement('div');
+            const bg = type === 'error'
+                ? 'bg-rose-600 text-white'
+                : 'bg-slate-900 dark:bg-zinc-800 text-white border border-slate-700';
+            const icon = type === 'error'
+                ? 'fa-circle-exclamation'
+                : 'fa-circle-check text-emerald-400';
+            el.className = `pointer-events-auto px-4 py-2 rounded-full shadow-lg text-xs font-semibold flex items-center gap-2 ${bg}`;
+            el.innerHTML = `<i class="fa-solid ${icon}"></i><span></span>`;
+            el.querySelector('span').textContent = message;
+            container.appendChild(el);
+            clearTimeout(showToast._timer);
+            showToast._timer = setTimeout(() => {
+                if (el.parentNode) el.remove();
+            }, 3200);
+        }
+
+        function hexToRgb(hex) {
+            const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
+            return m ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) } : { r: 0, g: 0, b: 0 };
+        }
+
+        function relativeLuminance(hex) {
+            const { r, g, b } = hexToRgb(hex);
+            const norm = [r, g, b].map(v => {
+                const s = v / 255;
+                return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * norm[0] + 0.7152 * norm[1] + 0.0722 * norm[2];
+        }
+
+        function contrastRatio(hex1, hex2) {
+            const l1 = relativeLuminance(hex1);
+            const l2 = relativeLuminance(hex2);
+            const hi = Math.max(l1, l2);
+            const lo = Math.min(l1, l2);
+            return (hi + 0.05) / (lo + 0.05);
+        }
+
+        // ==================== PAYLOAD BUILDERS ====================
+        function escapeWifiField(val) {
+            return String(val ?? '').replace(/([\\;,:"])/g, '\\$1');
+        }
+
+        function buildWifiPayload(ssid, password, enc, hidden) {
+            const t = enc === 'nopass' ? 'nopass' : (enc === 'WEP' ? 'WEP' : 'WPA');
+            const s = escapeWifiField(ssid || '');
+            const p = t === 'nopass' ? '' : escapeWifiField(password || '');
+            const hPart = hidden ? 'H:true;' : '';
+            return `WIFI:T:${t};S:${s};P:${p};${hPart};`;
+        }
+
+        function crc16CcittFalse(str) {
+            let crc = 0xffff;
+            for (let i = 0; i < str.length; i++) {
+                crc ^= (str.charCodeAt(i) & 0xff) << 8;
+                for (let b = 0; b < 8; b++) {
+                    if (crc & 0x8000) crc = ((crc << 1) ^ 0x1021) & 0xffff;
+                    else crc = (crc << 1) & 0xffff;
+                }
+            }
+            return crc.toString(16).toUpperCase().padStart(4, '0');
+        }
+
+        function tlv(tag, val) {
+            const len = String(val.length).padStart(2, '0');
+            return `${tag}${len}${val}`;
+        }
+
+        function buildPromptPayPayload(type, rawTarget, rawAmount) {
+            const digits = String(rawTarget || '').replace(/\D+/g, '');
+            let accountSubTag = '';
+            let valid = true;
+            let error = '';
+
+            if (type === 'phone') {
+                if (/^0\d{9}$/.test(digits)) {
+                    accountSubTag = tlv('01', '0066' + digits.slice(1));
+                } else if (/^66\d{9}$/.test(digits)) {
+                    accountSubTag = tlv('01', '00' + digits);
+                } else if (/^0066\d{9}$/.test(digits)) {
+                    accountSubTag = tlv('01', digits);
+                } else {
+                    valid = false;
+                    error = 'กรุณากรอกเบอร์มือถือไทย 10 หลัก (ขึ้นต้นด้วย 0)';
+                }
+            } else if (type === 'taxid') {
+                if (/^\d{13}$/.test(digits)) {
+                    accountSubTag = tlv('02', digits);
+                } else {
+                    valid = false;
+                    error = 'กรุณากรอกเลขบัตรประชาชน / นิติบุคคล 13 หลัก';
+                }
+            } else {
+                if (/^\d{15}$/.test(digits)) {
+                    accountSubTag = tlv('03', digits);
+                } else {
+                    valid = false;
+                    error = 'กรุณากรอกรหัส e-Wallet ID 15 หลัก';
+                }
+            }
+
+            if (!valid) {
+                return { ok: false, error, payload: '' };
+            }
+
+            const numAmt = parseFloat(rawAmount);
+            const hasAmount = !Number.isNaN(numAmt) && numAmt > 0;
+            const poiMethod = hasAmount ? '12' : '11';
+
+            const merchantInfo = tlv('00', 'A000000677010111') + accountSubTag;
+            let base = '';
+            base += tlv('00', '01');          // Payload Format Indicator
+            base += tlv('01', poiMethod);     // 11 static, 12 dynamic with fixed amount
+            base += tlv('29', merchantInfo);  // Merchant Account Information
+            base += tlv('53', '764');         // THB
+            if (hasAmount) {
+                base += tlv('54', numAmt.toFixed(2));
+            }
+            base += tlv('58', 'TH');          // Country Code
+            const withCrcPrefix = base + '6304';
+            const checksum = crc16CcittFalse(withCrcPrefix);
+            return {
+                ok: true,
+                error: '',
+                payload: withCrcPrefix + checksum
+            };
+        }
+
+        function getCurrentPayload() {
+            if (qrState.tab === 'url') {
+                const v = document.getElementById('qr-url').value.trim();
+                return { ok: Boolean(v), payload: v || 'https://feel-ochre.vercel.app', note: '' };
+            }
+            if (qrState.tab === 'wifi') {
+                const ssid = document.getElementById('wifi-ssid').value.trim();
+                const pass = document.getElementById('wifi-pass').value;
+                const enc = document.getElementById('wifi-enc').value;
+                const hidden = document.getElementById('wifi-hidden').checked;
+                if (!ssid) return { ok: false, payload: 'WIFI:T:nopass;S:Guest;;', note: 'กรุณากรอกชื่อ Wi-Fi (SSID)' };
+                return { ok: true, payload: buildWifiPayload(ssid, pass, enc, hidden), note: '' };
+            }
+            if (qrState.tab === 'promptpay') {
+                const type = document.getElementById('pp-type').value;
+                const target = document.getElementById('pp-target').value;
+                const amt = document.getElementById('pp-amount').value;
+                const res = buildPromptPayPayload(type, target, amt);
+                const msgEl = document.getElementById('pp-validation-msg');
+                if (res.ok) {
+                    msgEl.textContent = `EMVCo Ready • CRC-16 = ${res.payload.slice(-4)}`;
+                    msgEl.className = 'text-[11px] font-semibold text-emerald-700 dark:text-emerald-400';
+                    return { ok: true, payload: res.payload, note: '' };
+                } else {
+                    msgEl.textContent = res.error;
+                    msgEl.className = 'text-[11px] font-semibold text-rose-600 dark:text-rose-400';
+                    return { ok: false, payload: 'PROMPTPAY_INVALID', note: res.error };
+                }
+            }
+            const txt = document.getElementById('qr-text').value;
+            return { ok: Boolean(txt.trim()), payload: txt.trim() || 'Feel Portfolio', note: '' };
+        }
+
+        // ==================== CENTER LOGO PRESETS & UPLOAD ====================
+        function makeBuiltInLogoSvgDataUrl(kind) {
+            let bg = '#1a73e8';
+            let inner = '';
+            if (kind === 'star') {
+                bg = '#f59e0b';
+                inner = `<polygon points="50,18 59,38 81,41 65,56 69,78 50,67 31,78 35,56 19,41 41,38" fill="#ffffff"/>`;
+            } else if (kind === 'wifi') {
+                bg = '#0ea5e9';
+                inner = `
+                    <path d="M22 46 C38 30, 62 30, 78 46" stroke="#fff" stroke-width="8" stroke-linecap="round" fill="none"/>
+                    <path d="M33 58 C43 48, 57 48, 67 58" stroke="#fff" stroke-width="8" stroke-linecap="round" fill="none"/>
+                    <circle cx="50" cy="72" r="6" fill="#fff"/>`;
+            } else if (kind === 'baht') {
+                bg = '#003d6b';
+                inner = `<text x="50" y="68" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="56" fill="#ffffff">฿</text>`;
+            } else {
+                bg = '#10b981';
+                inner = `<path d="M55 16 L28 54 H49 L44 84 L73 46 H52 Z" fill="#ffffff"/>`;
+            }
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="4" y="4" width="92" height="92" rx="22" fill="${bg}"/>${inner}</svg>`;
+            return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        }
+
+        function setLogoDataUrl(dataUrl) {
+            qrState.logoDataUrl = dataUrl;
+            if (!dataUrl) {
+                qrState.logoImg = null;
+                renderQrAll();
+                return;
+            }
+            const img = new Image();
+            img.onload = () => {
+                qrState.logoImg = img;
+                // Automatically set ECC to H when logo active for maximum scannability
+                document.getElementById('qr-ecl').value = 'H';
+                renderQrAll();
+            };
+            img.src = dataUrl;
+        }
+
+        function setBuiltInLogo(kind) {
+            setLogoDataUrl(makeBuiltInLogoSvgDataUrl(kind));
+            showToast('ใส่ไอคอนโลโก้ตรงกลาง & ตั้งระดับแก้ Error H แล้ว');
+        }
+
+        function clearLogo() {
+            setLogoDataUrl('');
+            showToast('นำโลโก้ตรงกลางออกแล้ว');
+        }
+
+        // ==================== QR MATRIX & VECTOR / CANVAS RENDERING ====================
+        function isFinderModule(r, c, count) {
+            return (r < 7 && c < 7) || (r < 7 && c >= count - 7) || (r >= count - 7 && c < 7);
+        }
+
+        function buildQrMatrix(payload, ecl) {
+            if (!window.qrcode) return null;
+            if (qrcode.stringToBytesFuncs && qrcode.stringToBytesFuncs['UTF-8']) {
+                qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
+            }
+            const qr = qrcode(0, ecl || 'H');
+            qr.addData(payload);
+            qr.make();
+            return qr;
+        }
+
+        function drawRoundedRectPath(ctx, x, y, w, h, r) {
+            const rad = Math.min(r, w / 2, h / 2);
+            ctx.beginPath();
+            ctx.moveTo(x + rad, y);
+            ctx.arcTo(x + w, y, x + w, y + h, rad);
+            ctx.arcTo(x + w, y + h, x, y + h, rad);
+            ctx.arcTo(x, y + h, x, y, rad);
+            ctx.arcTo(x, y, x + w, y, rad);
+            ctx.closePath();
+        }
+
+        function renderQrToCanvas(canvas, qr, targetWidthPx) {
+            const count = qr.getModuleCount();
+            const marginModules = parseInt(document.getElementById('qr-margin').value || '4', 10);
+            const fgColor = document.getElementById('color-fg').value;
+            const eyeColor = document.getElementById('color-eye').value;
+            const bgColor = document.getElementById('color-bg').value;
+            const dotStyle = document.getElementById('dot-style').value;
+            const eyeStyle = document.getElementById('eye-style').value;
+            const caption = document.getElementById('poster-caption').value.trim();
+            const hasLogo = Boolean(qrState.logoImg);
+            const logoRatio = Number(document.getElementById('logo-size').value || 22) / 100;
+            const logoPad = document.getElementById('chk-logo-pad').checked;
+
+            const captionHeight = caption ? Math.round(targetWidthPx * 0.13) : 0;
+            canvas.width = targetWidthPx;
+            canvas.height = targetWidthPx + captionHeight;
+
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const totalModules = count + marginModules * 2;
+            const modSize = targetWidthPx / totalModules;
+            const origin = marginModules * modSize;
+
+            // Compute center logo box in QR coordinates so we skip covered data modules
+            const qrAreaPx = count * modSize;
+            const logoBoxPx = qrAreaPx * logoRatio;
+            const padPx = logoPad ? logoBoxPx * 0.16 : 0;
+            const cutoutHalf = (logoBoxPx / 2) + padPx;
+            const qrCenter = origin + qrAreaPx / 2;
+
+            // 1. Draw Data Modules
+            ctx.fillStyle = fgColor;
+            for (let r = 0; r < count; r++) {
+                for (let c = 0; c < count; c++) {
+                    if (!qr.isDark(r, c) || isFinderModule(r, c, count)) continue;
+                    const x = origin + c * modSize;
+                    const y = origin + r * modSize;
+                    const cx = x + modSize / 2;
+                    const cy = y + modSize / 2;
+                    if (hasLogo && logoPad && Math.abs(cx - qrCenter) < cutoutHalf && Math.abs(cy - qrCenter) < cutoutHalf) {
+                        continue;
+                    }
+                    if (dotStyle === 'dots') {
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, modSize * 0.43, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else if (dotStyle === 'rounded') {
+                        const inset = modSize * 0.06;
+                        drawRoundedRectPath(ctx, x + inset, y + inset, modSize - inset * 2, modSize - inset * 2, modSize * 0.28);
+                        ctx.fill();
+                    } else {
+                        ctx.fillRect(x, y, Math.ceil(modSize), Math.ceil(modSize));
+                    }
+                }
+            }
+
+            // 2. Draw 3 Corner Finder Eyes
+            const eyePositions = [
+                { r: 0, c: 0 },
+                { r: 0, c: count - 7 },
+                { r: count - 7, c: 0 }
+            ];
+            for (const pos of eyePositions) {
+                const ex = origin + pos.c * modSize;
+                const ey = origin + pos.r * modSize;
+                const es = 7 * modSize;
+                ctx.fillStyle = eyeColor;
+
+                if (eyeStyle === 'circle') {
+                    ctx.beginPath();
+                    ctx.arc(ex + es / 2, ey + es / 2, es / 2, 0, Math.PI * 2);
+                    ctx.arc(ex + es / 2, ey + es / 2, (5 * modSize) / 2, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(ex + es / 2, ey + es / 2, (3 * modSize) / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (eyeStyle === 'rounded') {
+                    drawRoundedRectPath(ctx, ex, ey, es, es, modSize * 1.7);
+                    ctx.fill();
+                    ctx.fillStyle = bgColor;
+                    drawRoundedRectPath(ctx, ex + modSize, ey + modSize, 5 * modSize, 5 * modSize, modSize * 1.1);
+                    ctx.fill();
+                    ctx.fillStyle = eyeColor;
+                    drawRoundedRectPath(ctx, ex + 2 * modSize, ey + 2 * modSize, 3 * modSize, 3 * modSize, modSize * 0.7);
+                    ctx.fill();
+                } else {
+                    ctx.fillRect(ex, ey, es, es);
+                    ctx.fillStyle = bgColor;
+                    ctx.fillRect(ex + modSize, ey + modSize, 5 * modSize, 5 * modSize);
+                    ctx.fillStyle = eyeColor;
+                    ctx.fillRect(ex + 2 * modSize, ey + 2 * modSize, 3 * modSize, 3 * modSize);
+                }
+            }
+
+            // 3. Draw Center Logo
+            if (hasLogo) {
+                const lx = qrCenter - logoBoxPx / 2;
+                const ly = qrCenter - logoBoxPx / 2;
+                if (logoPad) {
+                    ctx.fillStyle = bgColor;
+                    drawRoundedRectPath(ctx, lx - padPx, ly - padPx, logoBoxPx + padPx * 2, logoBoxPx + padPx * 2, (logoBoxPx + padPx * 2) * 0.22);
+                    ctx.fill();
+                }
+                ctx.save();
+                drawRoundedRectPath(ctx, lx, ly, logoBoxPx, logoBoxPx, logoBoxPx * 0.18);
+                ctx.clip();
+                ctx.drawImage(qrState.logoImg, lx, ly, logoBoxPx, logoBoxPx);
+                ctx.restore();
+            }
+
+            // 4. Optional Poster Caption Strip
+            if (caption) {
+                const fontSize = Math.max(14, Math.round(targetWidthPx * 0.048));
+                ctx.fillStyle = fgColor;
+                ctx.font = `700 ${fontSize}px Kanit, Sarabun, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(caption, targetWidthPx / 2, targetWidthPx + captionHeight * 0.42, targetWidthPx * 0.88);
+            }
+        }
+
+        function buildQrSvgString(qr, viewSize = 1000) {
+            const count = qr.getModuleCount();
+            const marginModules = parseInt(document.getElementById('qr-margin').value || '4', 10);
+            const fgColor = document.getElementById('color-fg').value;
+            const eyeColor = document.getElementById('color-eye').value;
+            const bgColor = document.getElementById('color-bg').value;
+            const dotStyle = document.getElementById('dot-style').value;
+            const eyeStyle = document.getElementById('eye-style').value;
+            const caption = document.getElementById('poster-caption').value.trim();
+            const hasLogo = Boolean(qrState.logoDataUrl);
+            const logoRatio = Number(document.getElementById('logo-size').value || 22) / 100;
+            const logoPad = document.getElementById('chk-logo-pad').checked;
+
+            const captionHeight = caption ? Math.round(viewSize * 0.13) : 0;
+            const totalHeight = viewSize + captionHeight;
+
+            const totalModules = count + marginModules * 2;
+            const modSize = viewSize / totalModules;
+            const origin = marginModules * modSize;
+
+            const qrAreaPx = count * modSize;
+            const logoBoxPx = qrAreaPx * logoRatio;
+            const padPx = logoPad ? logoBoxPx * 0.16 : 0;
+            const cutoutHalf = (logoBoxPx / 2) + padPx;
+            const qrCenter = origin + qrAreaPx / 2;
+
+            const parts = [];
+            parts.push(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${viewSize} ${totalHeight}" width="${viewSize}" height="${totalHeight}">`);
+            parts.push(`<rect width="${viewSize}" height="${totalHeight}" fill="${escapeXml(bgColor)}"/>`);
+
+            // Data modules group
+            parts.push(`<g fill="${escapeXml(fgColor)}">`);
+            for (let r = 0; r < count; r++) {
+                for (let c = 0; c < count; c++) {
+                    if (!qr.isDark(r, c) || isFinderModule(r, c, count)) continue;
+                    const x = origin + c * modSize;
+                    const y = origin + r * modSize;
+                    const cx = x + modSize / 2;
+                    const cy = y + modSize / 2;
+                    if (hasLogo && logoPad && Math.abs(cx - qrCenter) < cutoutHalf && Math.abs(cy - qrCenter) < cutoutHalf) {
+                        continue;
+                    }
+                    if (dotStyle === 'dots') {
+                        parts.push(`<circle cx="${cx.toFixed(2)}" cy="${cy.toFixed(2)}" r="${(modSize * 0.43).toFixed(2)}"/>`);
+                    } else if (dotStyle === 'rounded') {
+                        const inset = modSize * 0.06;
+                        const s = modSize - inset * 2;
+                        const rad = modSize * 0.28;
+                        parts.push(`<rect x="${(x + inset).toFixed(2)}" y="${(y + inset).toFixed(2)}" width="${s.toFixed(2)}" height="${s.toFixed(2)}" rx="${rad.toFixed(2)}"/>`);
+                    } else {
+                        parts.push(`<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${(modSize + 0.35).toFixed(2)}" height="${(modSize + 0.35).toFixed(2)}"/>`);
+                    }
+                }
+            }
+            parts.push('</g>');
+
+            // Corner Finder Eyes
+            const eyePositions = [
+                { r: 0, c: 0 },
+                { r: 0, c: count - 7 },
+                { r: count - 7, c: 0 }
+            ];
+            for (const pos of eyePositions) {
+                const ex = origin + pos.c * modSize;
+                const ey = origin + pos.r * modSize;
+                const es = 7 * modSize;
+                if (eyeStyle === 'circle') {
+                    const cx = (ex + es / 2).toFixed(2);
+                    const cy = (ey + es / 2).toFixed(2);
+                    parts.push(`<circle cx="${cx}" cy="${cy}" r="${(es / 2).toFixed(2)}" fill="${escapeXml(eyeColor)}"/>`);
+                    parts.push(`<circle cx="${cx}" cy="${cy}" r="${(2.5 * modSize).toFixed(2)}" fill="${escapeXml(bgColor)}"/>`);
+                    parts.push(`<circle cx="${cx}" cy="${cy}" r="${(1.5 * modSize).toFixed(2)}" fill="${escapeXml(eyeColor)}"/>`);
+                } else {
+                    const r1 = eyeStyle === 'rounded' ? (modSize * 1.7).toFixed(2) : '0';
+                    const r2 = eyeStyle === 'rounded' ? (modSize * 1.1).toFixed(2) : '0';
+                    const r3 = eyeStyle === 'rounded' ? (modSize * 0.7).toFixed(2) : '0';
+                    parts.push(`<rect x="${ex.toFixed(2)}" y="${ey.toFixed(2)}" width="${es.toFixed(2)}" height="${es.toFixed(2)}" rx="${r1}" fill="${escapeXml(eyeColor)}"/>`);
+                    parts.push(`<rect x="${(ex + modSize).toFixed(2)}" y="${(ey + modSize).toFixed(2)}" width="${(5 * modSize).toFixed(2)}" height="${(5 * modSize).toFixed(2)}" rx="${r2}" fill="${escapeXml(bgColor)}"/>`);
+                    parts.push(`<rect x="${(ex + 2 * modSize).toFixed(2)}" y="${(ey + 2 * modSize).toFixed(2)}" width="${(3 * modSize).toFixed(2)}" height="${(3 * modSize).toFixed(2)}" rx="${r3}" fill="${escapeXml(eyeColor)}"/>`);
+                }
+            }
+
+            // Center Logo in SVG
+            if (hasLogo) {
+                const lx = qrCenter - logoBoxPx / 2;
+                const ly = qrCenter - logoBoxPx / 2;
+                if (logoPad) {
+                    const bgSz = logoBoxPx + padPx * 2;
+                    parts.push(`<rect x="${(lx - padPx).toFixed(2)}" y="${(ly - padPx).toFixed(2)}" width="${bgSz.toFixed(2)}" height="${bgSz.toFixed(2)}" rx="${(bgSz * 0.22).toFixed(2)}" fill="${escapeXml(bgColor)}"/>`);
+                }
+                const clipId = 'logoClipBox';
+                parts.push(`<defs><clipPath id="${clipId}"><rect x="${lx.toFixed(2)}" y="${ly.toFixed(2)}" width="${logoBoxPx.toFixed(2)}" height="${logoBoxPx.toFixed(2)}" rx="${(logoBoxPx * 0.18).toFixed(2)}"/></clipPath></defs>`);
+                parts.push(`<image href="${escapeXml(qrState.logoDataUrl)}" x="${lx.toFixed(2)}" y="${ly.toFixed(2)}" width="${logoBoxPx.toFixed(2)}" height="${logoBoxPx.toFixed(2)}" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>`);
+            }
+
+            // Optional Caption
+            if (caption) {
+                const fontSize = Math.max(18, Math.round(viewSize * 0.048));
+                parts.push(`<text x="${viewSize / 2}" y="${viewSize + captionHeight * 0.45}" text-anchor="middle" dominant-baseline="middle" font-family="Kanit, Sarabun, sans-serif" font-weight="700" font-size="${fontSize}" fill="${escapeXml(fgColor)}">${escapeXml(caption)}</text>`);
+            }
+            parts.push('</svg>');
+            return parts.join('');
+        }
+
+        function renderQrAll() {
+            const fgColor = document.getElementById('color-fg').value;
+            const eyeColor = document.getElementById('color-eye').value;
+            const bgColor = document.getElementById('color-bg').value;
+            document.getElementById('hex-fg').textContent = fgColor;
+            document.getElementById('hex-eye').textContent = eyeColor;
+            document.getElementById('hex-bg').textContent = bgColor;
+
+            const payloadObj = getCurrentPayload();
+            qrState.lastPayload = payloadObj.payload;
+            document.getElementById('payload-preview').textContent = payloadObj.payload;
+
+            const ecl = document.getElementById('qr-ecl').value || 'H';
+            const qr = buildQrMatrix(payloadObj.payload, ecl);
+            if (!qr) return;
+
+            const previewCanvas = document.getElementById('qr-preview-canvas');
+            renderQrToCanvas(previewCanvas, qr, 560);
+            qrState.lastSvgString = buildQrSvgString(qr, 1000);
+
+            const count = qr.getModuleCount();
+            const exportPx = document.getElementById('export-size').value;
+            document.getElementById('qr-meta-line').textContent = `${count}×${count} Modules • ECC ${ecl} • ${exportPx}px Export`;
+
+            // Update scannability badge (check payload validity + contrast ratio + jsQR verification)
+            const badge = document.getElementById('scan-status-badge');
+            const cr = contrastRatio(fgColor, bgColor);
+            if (!payloadObj.ok) {
+                badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 text-xs font-bold';
+                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i><span>ตรวจสอบข้อมูลอินพุต</span>`;
+                return;
+            }
+            if (cr < 2.6) {
+                badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 text-xs font-bold';
+                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i><span>สีอ่อนไป (${cr.toFixed(1)}:1)</span>`;
+                return;
+            }
+            // Optional real decode check with jsQR if available
+            let decodedMatch = null;
+            if (typeof window.jsQR === 'function') {
+                try {
+                    const ctx = previewCanvas.getContext('2d');
+                    const imgData = ctx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
+                    const decoded = jsQR(imgData.data, imgData.width, imgData.height);
+                    decodedMatch = decoded ? decoded.data : null;
+                } catch (_) {}
+            }
+            if (decodedMatch !== null && decodedMatch === payloadObj.payload) {
+                badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-xs font-bold';
+                badge.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>สแกนติด 100% (Verified)</span>`;
+            } else {
+                badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-xs font-bold';
+                badge.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>Contrast ${cr.toFixed(1)}:1 • พร้อมสแกน</span>`;
+            }
+        }
+
+        // ==================== UI HANDLERS & EXPORTS ====================
+        function switchQrTab(tab) {
+            qrState.tab = tab;
+            const tabs = ['url', 'wifi', 'promptpay', 'text'];
+            for (const t of tabs) {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const panel = document.getElementById(`tab-panel-${t}`);
+                const active = t === tab;
+                if (panel) panel.classList.toggle('hidden', !active);
+                if (btn) {
+                    btn.className = active
+                        ? 'px-2 py-2 rounded-lg text-xs font-bold bg-white dark:bg-google-dark-surface text-amber-700 dark:text-amber-300 shadow-xs transition cursor-pointer'
+                        : 'px-2 py-2 rounded-lg text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer';
+                }
+            }
+            renderQrAll();
+        }
+
+        function setUrlPreset(url, caption) {
+            document.getElementById('qr-url').value = url;
+            document.getElementById('poster-caption').value = caption || '';
+            renderQrAll();
+        }
+
+        function onWifiEncChange() {
+            const enc = document.getElementById('wifi-enc').value;
+            const pwInput = document.getElementById('wifi-pass');
+            pwInput.disabled = enc === 'nopass';
+            pwInput.classList.toggle('opacity-50', enc === 'nopass');
+            renderQrAll();
+        }
+
+        function toggleWifiPassMask() {
+            const input = document.getElementById('wifi-pass');
+            const icon = document.getElementById('wifi-pw-icon');
+            const isMasked = input.type === 'password';
+            input.type = isMasked ? 'text' : 'password';
+            if (icon) icon.className = isMasked ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+        }
+
+        function applyPromptPayPreset() {
+            switchQrTab('promptpay');
+            applyColorPalette('#003d6b', '#0070ba', '#ffffff');
+            setBuiltInLogo('baht');
+            document.getElementById('poster-caption').value = 'สแกนจ่าย PromptPay';
+            renderQrAll();
+        }
+
+        function applyColorPalette(fg, eye, bg) {
+            document.getElementById('color-fg').value = fg;
+            document.getElementById('color-eye').value = eye;
+            document.getElementById('color-bg').value = bg;
+            renderQrAll();
+        }
+
+        function resetStyleDefaults() {
+            applyColorPalette('#0f172a', '#1a73e8', '#ffffff');
+            document.getElementById('dot-style').value = 'rounded';
+            document.getElementById('eye-style').value = 'rounded';
+            document.getElementById('qr-margin').value = '4';
+            clearLogo();
+            renderQrAll();
+        }
+
+        function onLogoSizeChange() {
+            document.getElementById('logo-size-label').textContent = document.getElementById('logo-size').value + '%';
+            renderQrAll();
+        }
+
+        function copyRawPayload() {
+            if (!qrState.lastPayload) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(qrState.lastPayload).then(
+                    () => showToast('คัดลอก Payload แล้ว'),
+                    () => showToast('คัดลอก Payload ไม่สำเร็จ', 'error')
+                );
+            } else {
+                showToast('เบราว์เซอร์ไม่รองรับ Clipboard API', 'error');
+            }
+        }
+
+        function downloadQrPng() {
+            const payloadObj = getCurrentPayload();
+            if (!payloadObj.ok) {
+                showToast(payloadObj.note || 'กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนดาวน์โหลด', 'error');
+                return;
+            }
+            const ecl = document.getElementById('qr-ecl').value || 'H';
+            const qr = buildQrMatrix(payloadObj.payload, ecl);
+            if (!qr) return;
+
+            const size = parseInt(document.getElementById('export-size').value || '1024', 10);
+            const offscreen = document.createElement('canvas');
+            renderQrToCanvas(offscreen, qr, size);
+
+            offscreen.toBlob((blob) => {
+                if (!blob) return;
+                if (qrState.lastDownloadUrl) URL.revokeObjectURL(qrState.lastDownloadUrl);
+                const url = URL.createObjectURL(blob);
+                qrState.lastDownloadUrl = url;
+                const filename = `qr-${qrState.tab}-${size}px.png`;
+                window.__lastQrExport = { type: 'png', filename, width: offscreen.width, height: offscreen.height, byteLength: blob.size };
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                showToast(`ดาวน์โหลด "${filename}" (${offscreen.width}×${offscreen.height}px) สำเร็จ`);
+            }, 'image/png');
+        }
+
+        function downloadQrSvg() {
+            const payloadObj = getCurrentPayload();
+            if (!payloadObj.ok) {
+                showToast(payloadObj.note || 'กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนดาวน์โหลด', 'error');
+                return;
+            }
+            const ecl = document.getElementById('qr-ecl').value || 'H';
+            const qr = buildQrMatrix(payloadObj.payload, ecl);
+            if (!qr) return;
+
+            const svgStr = buildQrSvgString(qr, 1000);
+            qrState.lastSvgString = svgStr;
+            const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+            if (qrState.lastDownloadUrl) URL.revokeObjectURL(qrState.lastDownloadUrl);
+            const url = URL.createObjectURL(blob);
+            qrState.lastDownloadUrl = url;
+            const filename = `qr-${qrState.tab}-vector.svg`;
+            window.__lastQrExport = { type: 'svg', filename, byteLength: blob.size, svgString: svgStr };
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            showToast(`ดาวน์โหลด "${filename}" เวกเตอร์คมชัด 100% สำเร็จ`);
+        }
+
+        async function copyQrPngToClipboard() {
+            try {
+                const canvas = document.getElementById('qr-preview-canvas');
+                const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+                if (blob && navigator.clipboard && window.ClipboardItem) {
+                    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                    showToast('คัดลอกภาพ QR ลงคลิปบอร์ดแล้ว (วางใน Word/Canva/LINE ได้ทันที)');
+                } else {
+                    showToast('เบราว์เซอร์ไม่รองรับคัดลอกรูปลงคลิปบอร์ด — กดปุ่มโหลด PNG แทนได้ครับ', 'error');
+                }
+            } catch (_) {
+                showToast('คัดลอกภาพลงคลิปบอร์ดไม่ได้ในโหมดนี้ — ใช้ปุ่มโหลด PNG แทนครับ', 'error');
+            }
+        }
+
+        function initLogoUpload() {
+            const input = document.getElementById('logo-file-input');
+            if (!input) return;
+            input.addEventListener('change', (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    if (typeof reader.result === 'string') {
+                        setLogoDataUrl(reader.result);
+                        showToast(`อัปโหลดโลโก้ "${file.name}" แล้ว`);
+                    }
+                };
+                reader.readAsDataURL(file);
+                e.target.value = '';
+            });
+        }
+
+        // ==================== THEME & APP SWITCHER ====================
+        function initTheme() {
+            const saved = localStorage.getItem('feel_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        function toggleSubAppSwitcher(forceState) {
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu) return;
+            const willOpen = typeof forceState === 'boolean' ? forceState : menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !willOpen);
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('app-switcher-btn');
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu || menu.classList.contains('hidden')) return;
+            if ((!btn || !btn.contains(e.target)) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleSubAppSwitcher(false);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initLogoUpload();
+            renderQrAll();
+        });
+    </script>
+</body>
+</html>

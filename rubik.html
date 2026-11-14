@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>จับเวลาและฝึกแก้รูบิค 3x3 (Rubik's Cube Timer & CFOP Guide) | นายภคพล สมัยแก้ว</title>
-    <meta name="description" content="เว็บแอปจับเวลาแก้รูบิค 3x3 มาตรฐาน WCA พร้อมตัวจำลองสถานะรูบิค 6 ด้าน สถิติค่าเฉลี่ย Ao5/Ao12 และบทความสรุปขั้นตอนการแก้รูบิคเชิงอัลกอริทึม โดย นายภคพล สมัยแก้ว (ฟีล)">
+    <meta name="description" content="เว็บแอปจับเวลาแก้รูบิค 3x3 มาตรฐาน WCA พร้อมตัวจำลองรูบิค 3 มิติ (3D) ทั้ง 6 ด้าน สถิติค่าเฉลี่ย Ao5/Ao12 และบทความสรุปขั้นตอนการแก้รูบิคเชิงอัลกอริทึม โดย นายภคพล สมัยแก้ว (ฟีล)">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -192,7 +192,7 @@
             </div>
         </section>
 
-        <!-- 2. Main Interactive Workspace: Left = WCA Timer & Scramble (7 cols), Right = 2D Cube Net Simulator & Stats (5 cols) -->
+        <!-- 2. Main Interactive Workspace: Left = WCA Timer & Scramble (7 cols), Right = 3D Cube Visualizer & Stats (5 cols) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
             <!-- Left Column: Scramble Bar + Speedcubing Timer + Solve History (7 cols) -->
@@ -288,60 +288,96 @@
             <!-- Right Column: Interactive Cube Simulator & Solve History (5 cols) -->
             <div class="lg:col-span-5 space-y-5">
 
-                <!-- Interactive 6-Face Rubik's Cube State Simulator -->
-                <div class="g-card p-4 sm:p-5 space-y-4">
-                    <div class="flex items-center justify-between gap-2">
+                <!-- Interactive 3D 6-Face Rubik's Cube State Simulator -->
+                <div id="cube-visualizer-card" class="g-card p-4 sm:p-5 space-y-3.5">
+                    <div class="flex items-start justify-between gap-2">
                         <div>
-                            <h3 class="text-sm sm:text-base font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
+                            <h3 class="text-sm sm:text-base font-bold font-heading text-google-text dark:text-white flex items-center gap-2 flex-wrap">
                                 <i class="fa-solid fa-cubes text-emerald-600"></i>
-                                ภาพจำลองสถานะรูบิคทั้ง 6 ด้าน (Cube Visualizer)
+                                <span>ภาพจำลองสถานะรูบิคทั้ง 6 ด้าน</span>
+                                <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 text-[10px] font-extrabold tracking-wide">3D</span>
                             </h3>
-                            <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
-                                หันหน้าสีเขียวเข้าหาตัว (F) และสีขาวไว้ด้านบน (U) ตอนสลับรูบิค
+                            <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5">
+                                ลากบนตัวรูบิคเพื่อหมุนดู 3D ครบทั้ง 6 ด้าน • หันสีเขียว (F) เข้าหาตัว และสีขาว (U) ไว้ด้านบน
                             </p>
                         </div>
-                        <button type="button" onclick="resetCubeToSolved()" class="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 text-xs font-heading font-bold transition cursor-pointer">
+                        <button type="button" onclick="resetCubeToSolved()" class="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 text-xs font-heading font-bold transition cursor-pointer shrink-0">
                             ✨ รีเซ็ตเป็นแก้สำเร็จ
                         </button>
                     </div>
 
-                    <!-- 2D Unfolded Cube Net (U, L, F, R, B, D) -->
-                    <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col items-center justify-center">
-                        <div class="grid grid-cols-4 gap-2 w-full max-w-[320px]">
-                            <!-- Row 1: empty, U, empty, empty -->
-                            <div></div>
-                            <div id="face-U" class="grid grid-cols-3 gap-1 aspect-square p-1 rounded-lg bg-slate-800/90 border border-slate-700" title="ด้านบน (Up - สีขาว)"></div>
-                            <div></div>
-                            <div></div>
+                    <!-- Interactive 3D Cube Stage (plus optional collapsible 2D Net) -->
+                    <div class="rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden relative shadow-inner">
+                        <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(circle at 50% 44%, rgba(16, 185, 129, 0.16) 0%, rgba(14, 165, 233, 0.07) 38%, rgba(2, 6, 23, 0) 72%);"></div>
 
-                            <!-- Row 2: L, F, R, B -->
-                            <div id="face-L" class="grid grid-cols-3 gap-1 aspect-square p-1 rounded-lg bg-slate-800/90 border border-slate-700" title="ด้านซ้าย (Left - สีส้ม)"></div>
-                            <div id="face-F" class="grid grid-cols-3 gap-1 aspect-square p-1 rounded-lg bg-slate-800/90 border border-emerald-500/60" title="ด้านหน้า (Front - สีเขียว)"></div>
-                            <div id="face-R" class="grid grid-cols-3 gap-1 aspect-square p-1 rounded-lg bg-slate-800/90 border border-slate-700" title="ด้านขวา (Right - สีแดง)"></div>
-                            <div id="face-B" class="grid grid-cols-3 gap-1 aspect-square p-1 rounded-lg bg-slate-800/90 border border-slate-700" title="ด้านหลัง (Back - สีน้ำเงิน)"></div>
-
-                            <!-- Row 3: empty, D, empty, empty -->
-                            <div></div>
-                            <div id="face-D" class="grid grid-cols-3 gap-1 aspect-square p-1 rounded-lg bg-slate-800/90 border border-slate-700" title="ด้านล่าง (Down - สีเหลือง)"></div>
-                            <div></div>
-                            <div></div>
+                        <div class="relative z-10 flex items-center justify-between gap-2 px-3 pt-2.5 flex-wrap">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-900/85 border border-slate-700/80 text-[11px] text-slate-300 font-medium">
+                                <i class="fa-solid fa-hand-pointer text-emerald-400"></i>
+                                <span>ลากหมุนดู 360° • ดับเบิลคลิกรีเซ็ตมุมมอง</span>
+                            </span>
+                            <button type="button" id="toggle-2d-net-btn" onclick="toggle2DNetPanel()" class="px-2.5 py-0.5 rounded-full bg-slate-900/85 hover:bg-slate-800 border border-slate-700 text-[11px] font-semibold text-slate-300 hover:text-white transition cursor-pointer" title="เปิด/ซ่อนแผนภาพกาง 6 ด้านแบบ 2D ประกอบ">
+                                <i class="fa-solid fa-table-cells mr-1 text-sky-400"></i>
+                                <span id="toggle-2d-net-label">กาง 6 ด้าน</span>
+                            </button>
                         </div>
 
-                        <div class="mt-3 flex flex-wrap items-center justify-center gap-2 text-[11px] text-slate-400">
-                            <span>⬜ U (บน)</span>
-                            <span>🟧 L (ซ้าย)</span>
-                            <span>🟩 F (หน้า)</span>
-                            <span>🟥 R (ขวา)</span>
-                            <span>🟦 B (หลัง)</span>
-                            <span>🟨 D (ล่าง)</span>
+                        <canvas id="cube-3d-canvas" class="relative z-10 w-full h-[265px] sm:h-[295px] block cursor-grab active:cursor-grabbing touch-none" aria-label="แบบจำลองรูบิค 3x3 สามมิติแบบโต้ตอบได้"></canvas>
+
+                        <div class="relative z-10 px-3 pb-3 pt-2 space-y-2 border-t border-slate-800/80 bg-slate-900/60">
+                            <div class="flex flex-wrap items-center justify-center gap-1.5">
+                                <button type="button" onclick="setCameraPreset('front')" class="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-semibold transition cursor-pointer" title="มุมมองด้านหน้า-บน-ขวา (F·U·R)">
+                                    มุมมองหน้า (F·U·R)
+                                </button>
+                                <button type="button" onclick="setCameraPreset('back')" class="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-semibold transition cursor-pointer" title="พลิกดูอีก 3 ด้านที่เหลือ (B·D·L)">
+                                    พลิกดูหลัง (B·D·L)
+                                </button>
+                                <button type="button" id="auto-orbit-btn" onclick="toggleAutoOrbit()" class="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-semibold transition cursor-pointer" title="หมุนโชว์รูบิค 360° อัตโนมัติ">
+                                    <i class="fa-solid fa-rotate mr-1 text-emerald-400"></i>หมุนโชว์ 360°
+                                </button>
+                                <button type="button" id="center-labels-btn" onclick="toggleCenterLabels()" class="px-2.5 py-1 rounded-full bg-emerald-600/25 text-emerald-300 border border-emerald-500/40 text-[11px] font-semibold transition cursor-pointer" title="แสดง/ซ่อนตัวอักษร U F R L B D บนแกนกลาง">
+                                    อักษรแกน U–D
+                                </button>
+                                <button type="button" onclick="playScrambleAnimation()" class="px-2.5 py-1 rounded-full bg-sky-600/25 hover:bg-sky-600/40 text-sky-300 border border-sky-500/40 text-[11px] font-semibold transition cursor-pointer" title="เล่นแอนิเมชัน 3D หมุนสลับตามโจทย์ Scramble ปัจจุบัน">
+                                    <i class="fa-solid fa-play mr-1"></i>หมุนตาม Scramble
+                                </button>
+                            </div>
+
+                            <!-- Optional Synchronized 2D Unfolded Cube Net (U, L, F, R, B, D) -->
+                            <div id="cube-2d-net-panel" class="hidden pt-2 border-t border-slate-800/80 flex-col items-center">
+                                <div class="grid grid-cols-4 gap-1.5 w-full max-w-[230px] mx-auto">
+                                    <div></div>
+                                    <div id="face-U" class="grid grid-cols-3 gap-0.5 aspect-square p-0.5 rounded-md bg-slate-800/90 border border-slate-700" title="ด้านบน (Up - สีขาว)"></div>
+                                    <div></div>
+                                    <div></div>
+
+                                    <div id="face-L" class="grid grid-cols-3 gap-0.5 aspect-square p-0.5 rounded-md bg-slate-800/90 border border-slate-700" title="ด้านซ้าย (Left - สีส้ม)"></div>
+                                    <div id="face-F" class="grid grid-cols-3 gap-0.5 aspect-square p-0.5 rounded-md bg-slate-800/90 border border-emerald-500/60" title="ด้านหน้า (Front - สีเขียว)"></div>
+                                    <div id="face-R" class="grid grid-cols-3 gap-0.5 aspect-square p-0.5 rounded-md bg-slate-800/90 border border-slate-700" title="ด้านขวา (Right - สีแดง)"></div>
+                                    <div id="face-B" class="grid grid-cols-3 gap-0.5 aspect-square p-0.5 rounded-md bg-slate-800/90 border border-slate-700" title="ด้านหลัง (Back - สีน้ำเงิน)"></div>
+
+                                    <div></div>
+                                    <div id="face-D" class="grid grid-cols-3 gap-0.5 aspect-square p-0.5 rounded-md bg-slate-800/90 border border-slate-700" title="ด้านล่าง (Down - สีเหลือง)"></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap items-center justify-center gap-2 text-[11px] text-slate-400">
+                                <span>⬜ U (บน)</span>
+                                <span>🟧 L (ซ้าย)</span>
+                                <span>🟩 F (หน้า)</span>
+                                <span>🟥 R (ขวา)</span>
+                                <span>🟦 B (หลัง)</span>
+                                <span>🟨 D (ล่าง)</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Interactive Manual Move Buttons (ลองกดหมุนรูบิคด้วยตัวเอง) -->
+                    <!-- Interactive Manual Move Buttons (ลองกดหมุนรูบิค 3D ด้วยตัวเอง) -->
                     <div class="space-y-2">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="font-heading font-semibold text-google-text-muted dark:text-google-dark-text-muted">ลองกดหมุนรูบิคทีละจังหวะ:</span>
-                            <button type="button" onclick="runSexyMoveDemo()" class="text-xs font-heading font-bold text-google-blue dark:text-sky-400 hover:underline cursor-pointer">
+                        <div class="flex items-center justify-between text-xs gap-2">
+                            <span class="font-heading font-semibold text-google-text-muted dark:text-google-dark-text-muted">ลองกดหมุนรูบิค 3D ทีละจังหวะ:</span>
+                            <button type="button" onclick="runSexyMoveDemo()" class="text-xs font-heading font-bold text-google-blue dark:text-sky-400 hover:underline cursor-pointer shrink-0">
                                 ▶ ลองรันสูตร Sexy Move (R U R' U')
                             </button>
                         </div>
@@ -631,7 +667,8 @@
             renderCubeVisualizer();
         }
 
-        function renderCubeVisualizer() {
+        /** Sync flat 2D unfolded face grids with cubeState */
+        function render2DCubeNet() {
             ['U', 'L', 'F', 'R', 'B', 'D'].forEach(face => {
                 const container = document.getElementById(`face-${face}`);
                 if (!container) return;
@@ -639,6 +676,506 @@
                     <div class="cube-sticker w-full h-full" style="background-color: ${FACE_COLORS[colorKey]}"></div>
                 `).join('');
             });
+        }
+
+        function renderCubeVisualizer() {
+            render2DCubeNet();
+            request3DRender();
+        }
+
+        // ==================== INTERACTIVE 3D CUBE RENDERER & ANIMATION ====================
+        // Basis vectors satisfy u x v = outward normal n; +u runs left->right, +v runs bottom->top
+        const FACE_DEFS_3D = {
+            U: { n: [0,  1, 0], u: [ 1, 0, 0], v: [0, 0, -1], axisIdx: 1, val:  1 },
+            D: { n: [0, -1, 0], u: [ 1, 0, 0], v: [0, 0,  1], axisIdx: 1, val: -1 },
+            R: { n: [ 1, 0, 0], u: [0, 0, -1], v: [0, 1,  0], axisIdx: 0, val:  1 },
+            L: { n: [-1, 0, 0], u: [0, 0,  1], v: [0, 1,  0], axisIdx: 0, val: -1 },
+            F: { n: [0, 0,  1], u: [ 1, 0, 0], v: [0, 1,  0], axisIdx: 2, val:  1 },
+            B: { n: [0, 0, -1], u: [-1, 0, 0], v: [0, 1,  0], axisIdx: 2, val: -1 }
+        };
+        const SLICE_DEFS = {
+            U: { coordIdx: 1, layer:  1, axis: [0,  1, 0] },
+            D: { coordIdx: 1, layer: -1, axis: [0, -1, 0] },
+            R: { coordIdx: 0, layer:  1, axis: [ 1, 0, 0] },
+            L: { coordIdx: 0, layer: -1, axis: [-1, 0, 0] },
+            F: { coordIdx: 2, layer:  1, axis: [0, 0,  1] },
+            B: { coordIdx: 2, layer: -1, axis: [0, 0, -1] }
+        };
+        const ALL_FACE_KEYS = ['U', 'D', 'L', 'R', 'F', 'B'];
+        const CUBIE_POSITIONS = [];
+        for (let x = -1; x <= 1; x++) {
+            for (let y = -1; y <= 1; y++) {
+                for (let z = -1; z <= 1; z++) {
+                    CUBIE_POSITIONS.push([x, y, z]);
+                }
+            }
+        }
+
+        function mulMat3(A, B) {
+            return [
+                A[0]*B[0] + A[1]*B[3] + A[2]*B[6], A[0]*B[1] + A[1]*B[4] + A[2]*B[7], A[0]*B[2] + A[1]*B[5] + A[2]*B[8],
+                A[3]*B[0] + A[4]*B[3] + A[5]*B[6], A[3]*B[1] + A[4]*B[4] + A[5]*B[7], A[3]*B[2] + A[4]*B[5] + A[5]*B[8],
+                A[6]*B[0] + A[7]*B[3] + A[8]*B[6], A[6]*B[1] + A[7]*B[4] + A[8]*B[7], A[6]*B[2] + A[7]*B[5] + A[8]*B[8]
+            ];
+        }
+
+        function transformVecMat3(m, p) {
+            return [
+                m[0]*p[0] + m[1]*p[1] + m[2]*p[2],
+                m[3]*p[0] + m[4]*p[1] + m[5]*p[2],
+                m[6]*p[0] + m[7]*p[1] + m[8]*p[2]
+            ];
+        }
+
+        function rotXMat3(rad) {
+            const c = Math.cos(rad), s = Math.sin(rad);
+            return [1, 0, 0, 0, c, -s, 0, s, c];
+        }
+
+        function rotYMat3(rad) {
+            const c = Math.cos(rad), s = Math.sin(rad);
+            return [c, 0, s, 0, 1, 0, -s, 0, c];
+        }
+
+        function orthonormalizeMat3(m) {
+            let x = [m[0], m[1], m[2]];
+            let y = [m[3], m[4], m[5]];
+            const lenX = Math.hypot(x[0], x[1], x[2]) || 1;
+            x = [x[0]/lenX, x[1]/lenX, x[2]/lenX];
+            const dotXY = x[0]*y[0] + x[1]*y[1] + x[2]*y[2];
+            y = [y[0] - dotXY*x[0], y[1] - dotXY*x[1], y[2] - dotXY*x[2]];
+            const lenY = Math.hypot(y[0], y[1], y[2]) || 1;
+            y = [y[0]/lenY, y[1]/lenY, y[2]/lenY];
+            const z = [
+                x[1]*y[2] - x[2]*y[1],
+                x[2]*y[0] - x[0]*y[2],
+                x[0]*y[1] - x[1]*y[0]
+            ];
+            return [...x, ...y, ...z];
+        }
+
+        function makePresetMat(yawDeg, pitchDeg) {
+            return mulMat3(rotXMat3(pitchDeg * Math.PI / 180), rotYMat3(yawDeg * Math.PI / 180));
+        }
+
+        function rotatePointAxis(p, axis, rad) {
+            if (!rad) return p;
+            const c = Math.cos(rad), s = Math.sin(rad), ic = 1 - c;
+            const [ax, ay, az] = axis;
+            const [x, y, z] = p;
+            const dot = ax*x + ay*y + az*z;
+            return [
+                x*c + (ay*z - az*y)*s + ax*dot*ic,
+                y*c + (az*x - ax*z)*s + ay*dot*ic,
+                z*c + (ax*y - ay*x)*s + az*dot*ic
+            ];
+        }
+
+        function shadeStickerColor(hex, dotLight) {
+            const num = parseInt(hex.slice(1), 16);
+            const r = (num >> 16) & 255;
+            const g = (num >> 8) & 255;
+            const b = num & 255;
+            const mul = Math.min(1.06, 0.75 + 0.30 * Math.max(0, dotLight));
+            return `rgb(${Math.min(255, Math.round(r * mul))}, ${Math.min(255, Math.round(g * mul))}, ${Math.min(255, Math.round(b * mul))})`;
+        }
+
+        function drawRoundedQuad(ctx, pts, cornerFrac) {
+            ctx.beginPath();
+            for (let i = 0; i < 4; i++) {
+                const prev = pts[(i + 3) % 4];
+                const curr = pts[i];
+                const next = pts[(i + 1) % 4];
+                const ax = curr[0] + (prev[0] - curr[0]) * cornerFrac;
+                const ay = curr[1] + (prev[1] - curr[1]) * cornerFrac;
+                const bx = curr[0] + (next[0] - curr[0]) * cornerFrac;
+                const by = curr[1] + (next[1] - curr[1]) * cornerFrac;
+                if (i === 0) ctx.moveTo(ax, ay);
+                else ctx.lineTo(ax, ay);
+                ctx.quadraticCurveTo(curr[0], curr[1], bx, by);
+            }
+            ctx.closePath();
+        }
+
+        function buildQuad2D(center, u, v, halfSize, projectFn) {
+            return [[-1, 1], [1, 1], [1, -1], [-1, -1]].map(([su, sv]) => projectFn(transformVecMat3(camMat, [
+                center[0] + u[0]*su*halfSize + v[0]*sv*halfSize,
+                center[1] + u[1]*su*halfSize + v[1]*sv*halfSize,
+                center[2] + u[2]*su*halfSize + v[2]*sv*halfSize
+            ])));
+        }
+
+        const CAMERA_PRESETS = {
+            front: makePresetMat(-35, 25),
+            back: makePresetMat(145, -24)
+        };
+
+        let cubeCanvas = null;
+        let cubeCtx = null;
+        let camMat = [...CAMERA_PRESETS.front];
+        let camTargetMat = null;
+        let camVel = { vx: 0, vy: 0 };
+        let isDraggingCube = false;
+        let lastPointer = { x: 0, y: 0, t: 0 };
+        let autoOrbitOn = false;
+        let showCenterLabels = true;
+        let cube3DRafId = null;
+        let lastFrameTs = 0;
+        let moveQueue = [];
+        let activeSliceAnim = null;
+
+        function clearMoveQueue() {
+            moveQueue = [];
+            activeSliceAnim = null;
+        }
+
+        function enqueueMove3D(token, beepFreq = 520) {
+            if (!token) return;
+            const base = token[0];
+            const mod = token.slice(1);
+            const def = SLICE_DEFS[base];
+            if (!def) return;
+            // Outward right-hand rule: CW turn = -90deg, prime CCW = +90deg, double = -180deg
+            const targetAngle = mod === '2' ? -Math.PI : (mod === "'" ? Math.PI / 2 : -Math.PI / 2);
+            moveQueue.push({ token, def, targetAngle, beepFreq });
+            request3DRender();
+        }
+
+        function request3DRender() {
+            if (cube3DRafId !== null) return;
+            lastFrameTs = performance.now();
+            cube3DRafId = requestAnimationFrame(stepCube3DFrame);
+        }
+
+        function stepCube3DFrame(now) {
+            cube3DRafId = null;
+            const dt = Math.min(0.05, Math.max(0.001, (now - lastFrameTs) / 1000));
+            lastFrameTs = now;
+            let keepRunning = false;
+
+            if (!activeSliceAnim && moveQueue.length > 0) {
+                const nextItem = moveQueue.shift();
+                const baseDur = moveQueue.length >= 8 ? 95 : moveQueue.length >= 2 ? 120 : 165;
+                const dur = baseDur * (Math.abs(nextItem.targetAngle) > 2 ? 1.25 : 1);
+                activeSliceAnim = { ...nextItem, startMs: now, duration: dur, curAngle: 0 };
+                if (nextItem.beepFreq) playBeep(nextItem.beepFreq, 0.04, 0.05);
+            }
+
+            if (activeSliceAnim) {
+                const progress = Math.min(1, (now - activeSliceAnim.startMs) / activeSliceAnim.duration);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                activeSliceAnim.curAngle = activeSliceAnim.targetAngle * eased;
+                if (progress >= 1) {
+                    const finished = activeSliceAnim;
+                    activeSliceAnim = null;
+                    executeMoveToken(finished.token);
+                    render2DCubeNet();
+                    if (moveQueue.length > 0) keepRunning = true;
+                } else {
+                    keepRunning = true;
+                }
+            }
+
+            if (camTargetMat) {
+                const alpha = 1 - Math.exp(-12 * dt);
+                camMat = orthonormalizeMat3(camMat.map((v, i) => v + (camTargetMat[i] - v) * alpha));
+                const diff = camMat.reduce((acc, v, i) => acc + Math.abs(v - camTargetMat[i]), 0);
+                if (diff < 0.015) {
+                    camMat = [...camTargetMat];
+                    camTargetMat = null;
+                } else {
+                    keepRunning = true;
+                }
+            } else if (!isDraggingCube) {
+                if (Math.hypot(camVel.vx, camVel.vy) > 0.002) {
+                    camMat = orthonormalizeMat3(mulMat3(rotXMat3(camVel.vy * dt), mulMat3(rotYMat3(camVel.vx * dt), camMat)));
+                    const decay = Math.exp(-7 * dt);
+                    camVel.vx *= decay;
+                    camVel.vy *= decay;
+                    keepRunning = true;
+                } else {
+                    camVel.vx = 0;
+                    camVel.vy = 0;
+                }
+                if (autoOrbitOn) {
+                    camMat = orthonormalizeMat3(mulMat3(rotYMat3(0.65 * dt), camMat));
+                    keepRunning = true;
+                }
+            }
+
+            drawCube3D();
+            if (keepRunning) {
+                cube3DRafId = requestAnimationFrame(stepCube3DFrame);
+            }
+        }
+
+        function drawCubeShadow(ctx, cx, cy, fovScale, camDist) {
+            const shadowRadius = (1.55 * fovScale) / camDist;
+            const shadowY = cy + shadowRadius * 1.03;
+            const grad = ctx.createRadialGradient(cx, shadowY, 4, cx, shadowY, shadowRadius);
+            grad.addColorStop(0, 'rgba(2, 6, 23, 0.58)');
+            grad.addColorStop(0.6, 'rgba(2, 6, 23, 0.22)');
+            grad.addColorStop(1, 'rgba(2, 6, 23, 0)');
+            ctx.save();
+            ctx.translate(cx, shadowY);
+            ctx.scale(1.15, 0.28);
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(0, 0, shadowRadius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function renderCenterLabel(ctx, stickerCenterModel, uRot, vRot, nViewZ, colorKey, fKey, projectFn) {
+            if (!showCenterLabels || nViewZ <= 0.22) return;
+            const c2 = projectFn(transformVecMat3(camMat, stickerCenterModel));
+            const r2 = projectFn(transformVecMat3(camMat, [
+                stickerCenterModel[0] + uRot[0]*0.17,
+                stickerCenterModel[1] + uRot[1]*0.17,
+                stickerCenterModel[2] + uRot[2]*0.17
+            ]));
+            const d2 = projectFn(transformVecMat3(camMat, [
+                stickerCenterModel[0] - vRot[0]*0.17,
+                stickerCenterModel[1] - vRot[1]*0.17,
+                stickerCenterModel[2] - vRot[2]*0.17
+            ]));
+            const ax = r2[0] - c2[0], ay = r2[1] - c2[1];
+            const dx = d2[0] - c2[0], dy = d2[1] - c2[1];
+            if (Math.abs(ax*dy - ay*dx) <= 1.5) return;
+
+            ctx.save();
+            ctx.transform(ax / 11, ay / 11, dx / 11, dy / 11, c2[0], c2[1]);
+            ctx.font = '800 13px "JetBrains Mono", Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = (colorKey === 'U' || colorKey === 'D') ? 'rgba(15, 23, 42, 0.58)' : 'rgba(255, 255, 255, 0.88)';
+            ctx.fillText(fKey, 0, 0.5);
+            ctx.restore();
+        }
+
+        function getSlabDrawOrder(eCoord) {
+            // Slabs occupy [-1.472,-0.528], [-0.472,+0.472], [+0.528,+1.472]; separating planes at +/-0.5 guarantee zero cycles
+            if (eCoord > 0.5) return [-1, 0, 1];
+            if (eCoord < -0.5) return [1, 0, -1];
+            return Math.abs(eCoord + 1) >= Math.abs(eCoord - 1) ? [-1, 1, 0] : [1, -1, 0];
+        }
+
+        function drawCube3D() {
+            if (!cubeCanvas || !cubeCtx) return;
+            const w = cubeCanvas.clientWidth;
+            const h = cubeCanvas.clientHeight;
+            if (!w || !h) return;
+
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const targetW = Math.round(w * dpr);
+            const targetH = Math.round(h * dpr);
+            if (cubeCanvas.width !== targetW || cubeCanvas.height !== targetH) {
+                cubeCanvas.width = targetW;
+                cubeCanvas.height = targetH;
+            }
+
+            const ctx = cubeCtx;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, w, h);
+
+            const camDist = 9.5;
+            const fovScale = Math.min(w, h) * 1.98;
+            const cx = w / 2;
+            const cy = h / 2 - 4;
+            const halfCubie = 0.472;
+            const halfSticker = 0.395;
+            const stickerLift = 0.476;
+            const lightDir = [-0.34, 0.56, 0.755];
+            const projectFn = v => {
+                const pScale = fovScale / (camDist - v[2]);
+                return [cx + v[0] * pScale, cy - v[1] * pScale];
+            };
+
+            drawCubeShadow(ctx, cx, cy, fovScale, camDist);
+
+            // Inverse of orthonormal camMat is its transpose, so eye in model space = row 2 * camDist
+            const eyeModel = [camMat[6] * camDist, camMat[7] * camDist, camMat[8] * camDist];
+            const splitCoordIdx = activeSliceAnim ? activeSliceAnim.def.coordIdx : 0;
+            const slabOrder = getSlabDrawOrder(eyeModel[splitCoordIdx]);
+
+            const slabs = { '-1': [], '0': [], '1': [] };
+            CUBIE_POSITIONS.forEach(pos => slabs[String(pos[splitCoordIdx])].push(pos));
+
+            slabOrder.forEach(slabVal => {
+                const list = slabs[String(slabVal)].map(basePos => {
+                    const inSlice = activeSliceAnim && basePos[activeSliceAnim.def.coordIdx] === activeSliceAnim.def.layer;
+                    const angle = inSlice ? activeSliceAnim.curAngle : 0;
+                    const axis = inSlice ? activeSliceAnim.def.axis : null;
+                    const centerModel = angle ? rotatePointAxis(basePos, axis, angle) : basePos;
+                    const dx = centerModel[0] - eyeModel[0];
+                    const dy = centerModel[1] - eyeModel[1];
+                    const dz = centerModel[2] - eyeModel[2];
+                    return { basePos, centerModel, angle, axis, distSq: dx*dx + dy*dy + dz*dz };
+                });
+                list.sort((a, b) => b.distSq - a.distSq);
+
+                list.forEach(({ basePos, centerModel, angle, axis }) => {
+                    ALL_FACE_KEYS.forEach(fKey => {
+                        const f = FACE_DEFS_3D[fKey];
+                        const nRot = angle ? rotatePointAxis(f.n, axis, angle) : f.n;
+                        const uRot = angle ? rotatePointAxis(f.u, axis, angle) : f.u;
+                        const vRot = angle ? rotatePointAxis(f.v, axis, angle) : f.v;
+
+                        const nView = transformVecMat3(camMat, nRot);
+                        const faceCenterModel = [
+                            centerModel[0] + nRot[0] * halfCubie,
+                            centerModel[1] + nRot[1] * halfCubie,
+                            centerModel[2] + nRot[2] * halfCubie
+                        ];
+                        const fcView = transformVecMat3(camMat, faceCenterModel);
+                        if (nView[0]*(-fcView[0]) + nView[1]*(-fcView[1]) + nView[2]*(camDist - fcView[2]) <= 0) return;
+
+                        const lightDot = Math.max(0, nView[0]*lightDir[0] + nView[1]*lightDir[1] + nView[2]*lightDir[2]);
+                        const bodyPts = buildQuad2D(faceCenterModel, uRot, vRot, halfCubie, projectFn);
+                        const shade = Math.round(18 + lightDot * 18);
+                        ctx.fillStyle = `rgb(${shade}, ${shade + 3}, ${shade + 9})`;
+                        ctx.strokeStyle = 'rgba(2, 6, 23, 0.9)';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(bodyPts[0][0], bodyPts[0][1]);
+                        ctx.lineTo(bodyPts[1][0], bodyPts[1][1]);
+                        ctx.lineTo(bodyPts[2][0], bodyPts[2][1]);
+                        ctx.lineTo(bodyPts[3][0], bodyPts[3][1]);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+
+                        if (basePos[f.axisIdx] !== f.val) return;
+                        const col = basePos[0]*f.u[0] + basePos[1]*f.u[1] + basePos[2]*f.u[2] + 1;
+                        const row = 1 - (basePos[0]*f.v[0] + basePos[1]*f.v[1] + basePos[2]*f.v[2]);
+                        const colorKey = cubeState[fKey]?.[row * 3 + col] || fKey;
+                        const stickerCenterModel = [
+                            centerModel[0] + nRot[0] * stickerLift,
+                            centerModel[1] + nRot[1] * stickerLift,
+                            centerModel[2] + nRot[2] * stickerLift
+                        ];
+
+                        const stickerPts = buildQuad2D(stickerCenterModel, uRot, vRot, halfSticker, projectFn);
+                        drawRoundedQuad(ctx, stickerPts, 0.19);
+                        ctx.fillStyle = shadeStickerColor(FACE_COLORS[colorKey], lightDot);
+                        ctx.fill();
+                        ctx.lineWidth = 0.9;
+                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+                        ctx.stroke();
+
+                        if (col === 1 && row === 1) {
+                            renderCenterLabel(ctx, stickerCenterModel, uRot, vRot, nView[2], colorKey, fKey, projectFn);
+                        }
+                    });
+                });
+            });
+        }
+
+        function setCameraPreset(presetName) {
+            const target = CAMERA_PRESETS[presetName];
+            if (!target) return;
+            autoOrbitOn = false;
+            syncAutoOrbitButton();
+            camVel.vx = 0;
+            camVel.vy = 0;
+            camTargetMat = [...target];
+            request3DRender();
+        }
+
+        function toggleAutoOrbit() {
+            autoOrbitOn = !autoOrbitOn;
+            camTargetMat = null;
+            syncAutoOrbitButton();
+            if (autoOrbitOn) request3DRender();
+        }
+
+        function syncAutoOrbitButton() {
+            const btn = document.getElementById('auto-orbit-btn');
+            if (!btn) return;
+            btn.className = autoOrbitOn
+                ? 'px-2.5 py-1 rounded-full bg-emerald-600 text-white border border-emerald-500 text-[11px] font-semibold transition cursor-pointer shadow-xs'
+                : 'px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-semibold transition cursor-pointer';
+        }
+
+        function toggleCenterLabels() {
+            showCenterLabels = !showCenterLabels;
+            const btn = document.getElementById('center-labels-btn');
+            if (btn) {
+                btn.className = showCenterLabels
+                    ? 'px-2.5 py-1 rounded-full bg-emerald-600/25 text-emerald-300 border border-emerald-500/40 text-[11px] font-semibold transition cursor-pointer'
+                    : 'px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px] font-semibold transition cursor-pointer';
+            }
+            request3DRender();
+        }
+
+        function toggle2DNetPanel() {
+            const panel = document.getElementById('cube-2d-net-panel');
+            const label = document.getElementById('toggle-2d-net-label');
+            if (!panel) return;
+            const willOpen = panel.classList.contains('hidden');
+            panel.classList.toggle('hidden', !willOpen);
+            panel.classList.toggle('flex', willOpen);
+            if (label) label.textContent = willOpen ? 'ซ่อน 2D' : 'กาง 6 ด้าน';
+        }
+
+        function playScrambleAnimation() {
+            if (!currentScramble) return;
+            clearMoveQueue();
+            initSolvedCube();
+            renderCubeVisualizer();
+            const tokens = currentScramble.trim().split(/\s+/);
+            tokens.forEach((t, idx) => enqueueMove3D(t, idx % 2 === 0 ? 500 : 560));
+            showToast('กำลังเล่นแอนิเมชัน 3D ตามโจทย์ Scramble...');
+        }
+
+        function initCube3D() {
+            cubeCanvas = document.getElementById('cube-3d-canvas');
+            if (!cubeCanvas) return;
+            cubeCtx = cubeCanvas.getContext('2d');
+
+            cubeCanvas.addEventListener('pointerdown', e => {
+                isDraggingCube = true;
+                camTargetMat = null;
+                if (autoOrbitOn) {
+                    autoOrbitOn = false;
+                    syncAutoOrbitButton();
+                }
+                camVel.vx = 0;
+                camVel.vy = 0;
+                lastPointer = { x: e.clientX, y: e.clientY, t: performance.now() };
+                cubeCanvas.setPointerCapture(e.pointerId);
+            });
+
+            cubeCanvas.addEventListener('pointermove', e => {
+                if (!isDraggingCube) return;
+                const now = performance.now();
+                const dx = e.clientX - lastPointer.x;
+                const dy = e.clientY - lastPointer.y;
+                const dt = Math.max(0.008, (now - lastPointer.t) / 1000);
+                const sens = 0.0105;
+                camMat = orthonormalizeMat3(mulMat3(rotXMat3(dy * sens), mulMat3(rotYMat3(dx * sens), camMat)));
+                camVel.vx = Math.max(-7, Math.min(7, (dx * sens) / dt));
+                camVel.vy = Math.max(-7, Math.min(7, (dy * sens) / dt));
+                lastPointer = { x: e.clientX, y: e.clientY, t: now };
+                request3DRender();
+            });
+
+            const endDrag = () => {
+                if (!isDraggingCube) return;
+                isDraggingCube = false;
+                if (Math.hypot(camVel.vx, camVel.vy) > 0.08) {
+                    request3DRender();
+                } else {
+                    camVel.vx = 0;
+                    camVel.vy = 0;
+                }
+            };
+            cubeCanvas.addEventListener('pointerup', endDrag);
+            cubeCanvas.addEventListener('pointercancel', endDrag);
+            cubeCanvas.addEventListener('dblclick', () => setCameraPreset('front'));
+
+            window.addEventListener('resize', () => request3DRender());
+            request3DRender();
         }
 
         function generateNewScramble() {
@@ -661,22 +1198,22 @@
 
             currentScramble = moves.join(' ');
             document.getElementById('scramble-text').textContent = currentScramble;
+            clearMoveQueue();
             initSolvedCube();
             applyMoveSequence(currentScramble);
             playBeep(580, 0.05, 0.05);
         }
 
         function resetCubeToSolved() {
+            clearMoveQueue();
             initSolvedCube();
             renderCubeVisualizer();
             playBeep(880, 0.08, 0.06);
-            showToast('รีเซ็ตรูบิคเป็นสถานะเรียงสีสมบูรณ์ทั้ง 6 ด้านแล้ว!');
+            showToast('รีเซ็ตรูบิค 3D เป็นสถานะเรียงสีสมบูรณ์ทั้ง 6 ด้านแล้ว!');
         }
 
         function manualMove(token) {
-            executeMoveToken(token);
-            renderCubeVisualizer();
-            playBeep(520, 0.04, 0.05);
+            enqueueMove3D(token, 520);
         }
 
         function runSexyMoveDemo() {
@@ -684,15 +1221,17 @@
         }
 
         function applyAlgorithmDemo(alg, label) {
-            const tokens = alg.split(/\s+/);
-            tokens.forEach((t, idx) => {
-                setTimeout(() => {
-                    executeMoveToken(t);
-                    renderCubeVisualizer();
-                    playBeep(480 + idx * 55, 0.04, 0.05);
-                }, idx * 140);
-            });
-            showToast(`รันสูตร: ${label}`);
+            clearMoveQueue();
+            const tokens = alg.trim().split(/\s+/);
+            tokens.forEach((t, idx) => enqueueMove3D(t, 480 + idx * 55));
+            const card = document.getElementById('cube-visualizer-card');
+            if (card) {
+                const rect = card.getBoundingClientRect();
+                if (rect.top < 0 || rect.bottom > window.innerHeight) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            showToast(`รันสูตร 3D: ${label}`);
         }
 
         function copyScramble() {
@@ -989,6 +1528,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
+            initCube3D();
             loadSolves();
             generateNewScramble();
         });

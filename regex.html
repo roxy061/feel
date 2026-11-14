@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regex Tester &amp; Cheatsheet — ทดสอบ Regular Expression แบบเรียลไทม์ | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="พื้นที่ทดสอบ Regular Expression แบบเรียลไทม์ ไฮไลต์คำที่ตรงเงื่อนไขทันที แยก Capture Groups, Find & Replace, ตัวอธิบายแพตเทิร์นภาษาไทย และรวม Regex สำเร็จรูป (อีเมล, เบอร์โทรไทย, บัตรประชาชน, รหัสผ่าน) + Cheatsheet ครบในหน้าเดียว">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.15rem;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.10), 0 1px 3px 1px rgba(60, 64, 67, 0.06);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        .rx-mark-a {
+            background-color: rgba(168, 85, 247, 0.22);
+            border-bottom: 2px solid #9333ea;
+            border-radius: 3px;
+            padding: 0 1px;
+        }
+        .rx-mark-b {
+            background-color: rgba(14, 165, 233, 0.22);
+            border-bottom: 2px solid #0284c7;
+            border-radius: 3px;
+            padding: 0 1px;
+        }
+        .dark .rx-mark-a {
+            background-color: rgba(192, 132, 252, 0.28);
+            border-bottom-color: #c084fc;
+            color: #faf5ff;
+        }
+        .dark .rx-mark-b {
+            background-color: rgba(56, 189, 248, 0.28);
+            border-bottom-color: #38bdf8;
+            color: #f0f9ff;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-fuchsia-600 selection:text-white">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Centered Bottom Toast Notification -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 w-[92vw] max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- UNIFIED SINGLE-ROW NAVIGATION HEADER       -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก</span>
+            </a>
+
+            <div class="flex items-center gap-2.5 sm:border-l border-google-border dark:border-google-dark-border sm:pl-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-fuchsia-600 via-purple-600 to-indigo-600 text-white flex items-center justify-center text-xs font-mono font-bold shadow-xs shrink-0">
+                    /.*/
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            Regex Tester &amp; Cheatsheet
+                        </h1>
+                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-fuchsia-100 dark:bg-fuchsia-950/70 text-fuchsia-700 dark:text-fuchsia-300 text-[10px] font-bold whitespace-nowrap shrink-0">
+                            Live Match • Presets • Replace
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        ทดสอบ Regular Expression สด ไฮไลต์คำตรงเงื่อนไข พร้อมแพตเทิร์นฟอร์มไทย &amp; โค้ดพร้อมใช้
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <a href="dev-tools.html" class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition whitespace-nowrap">
+                <i class="fa-solid fa-terminal"></i>
+                <span>Dev Utilities</span>
+            </a>
+
+            <!-- App Switcher Dropdown (12 Apps) -->
+            <div class="relative shrink-0">
+                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (12 ระบบ)">
+                    <i class="fa-solid fa-layer-group text-fuchsia-600 dark:text-fuchsia-400"></i>
+                    <span class="hidden sm:inline">สลับเว็บแอป</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-fuchsia-100 dark:bg-fuchsia-950 text-fuchsia-700 dark:text-fuchsia-300 text-[10px] font-bold leading-none">12</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                </button>
+                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
+                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
+                        </div>
+                    </a>
+                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
+                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (12 ระบบ)</div>
+                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
+                        </div>
+                    </a>
+                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
+                        </div>
+                    </a>
+                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
+                        </div>
+                    </a>
+                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ &amp; พายุ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
+                        </div>
+                    </a>
+                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble &amp; สูตร CFOP</div>
+                        </div>
+                    </a>
+                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง &amp; ถาม-ตอบ</div>
+                        </div>
+                    </a>
+                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ &amp; แชร์ PIN 6 หลัก</div>
+                        </div>
+                    </a>
+                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง &amp; รูปติดบัตร</div>
+                        </div>
+                    </a>
+                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI &amp; โฮสต์ฟรี</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI &amp; รันไฟล์</div>
+                        </div>
+                    </a>
+                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON • JWT • Base64 • Timestamp</div>
+                        </div>
+                    </a>
+                    <a href="subnet.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-blue-600 bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-network-wired"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">11. IP &amp; Subnet Calculator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CIDR • Host Range • VLAN • Netplan</div>
+                        </div>
+                    </a>
+                    <a href="regex.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-fuchsia-50 dark:bg-fuchsia-950/60 border border-fuchsia-300 dark:border-fuchsia-700 transition">
+                        <div class="w-8 h-8 rounded-lg text-fuchsia-600 bg-fuchsia-100 dark:bg-fuchsia-950 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">12. Regex Tester &amp; Cheatsheet</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Live Highlight • Presets • Code</div>
+                        </div>
+                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-fuchsia-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Theme Switcher -->
+            <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN WORKSPACE                             -->
+    <!-- ========================================== -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
+
+        <!-- Compact Mode Bar -->
+        <div class="g-card p-2 sm:p-2.5 flex flex-col lg:flex-row lg:items-center justify-between gap-2">
+            <div role="tablist" aria-label="โหมด Regex Workspace" class="grid grid-cols-1 sm:grid-cols-3 lg:flex lg:items-center gap-1.5">
+                <button type="button" role="tab" id="tab-btn-tester" onclick="switchRegexTab('tester')" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-bold flex items-center justify-center sm:justify-start gap-2 bg-fuchsia-600 text-white shadow-xs transition cursor-pointer">
+                    <i class="fa-solid fa-flask"></i>
+                    <span>ทดสอบ Regex สด (Live Tester)</span>
+                </button>
+                <button type="button" role="tab" id="tab-btn-presets" onclick="switchRegexTab('presets')" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-semibold flex items-center justify-center sm:justify-start gap-2 text-google-text-body dark:text-google-dark-text-body hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition cursor-pointer">
+                    <i class="fa-solid fa-wand-magic-sparkles text-fuchsia-600 dark:text-fuchsia-400"></i>
+                    <span>แพตเทิร์นสำเร็จรูป (16 สูตร)</span>
+                </button>
+                <button type="button" role="tab" id="tab-btn-cheatsheet" onclick="switchRegexTab('cheatsheet')" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-semibold flex items-center justify-center sm:justify-start gap-2 text-google-text-body dark:text-google-dark-text-body hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition cursor-pointer">
+                    <i class="fa-solid fa-book-open text-indigo-500"></i>
+                    <span>Cheatsheet &amp; คู่มือ Token</span>
+                </button>
+            </div>
+            <div class="hidden xl:flex items-center gap-1.5 px-3 text-[11px] text-google-text-muted dark:text-google-dark-text-muted shrink-0">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>ประมวลผล 100% ในเบราว์เซอร์ (JavaScript RegExp + ป้องกัน Loop ค้าง)</span>
+            </div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- VIEW 1: LIVE REGEX TESTER + REPLACE + EXPLAINER         -->
+        <!-- ======================================================= -->
+        <section id="view-tester" class="space-y-4">
+
+            <!-- Pattern Input Bar Card -->
+            <div class="g-card p-4 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <label for="regex-pattern" class="text-xs font-bold uppercase tracking-wider text-google-text-muted dark:text-google-dark-text-muted flex items-center gap-1.5">
+                        <i class="fa-solid fa-brackets-curly text-fuchsia-600"></i>
+                        Regular Expression Pattern
+                    </label>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="regex-status-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">พร้อมใช้งาน • พบ 4 รายการ</span>
+                        <button type="button" onclick="copyPatternLiteral()" class="px-2.5 py-1 rounded-lg border border-google-border dark:border-google-dark-border hover:border-fuchsia-500 text-xs font-semibold transition cursor-pointer">
+                            <i class="fa-regular fa-copy mr-1"></i> คัดลอก /Pattern/
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Literal Input Row -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <div class="flex-1 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-google-subtle/70 dark:bg-google-dark-subtle/70 border border-google-border dark:border-google-dark-border focus-within:border-fuchsia-500 transition">
+                        <span class="font-mono text-base font-bold text-fuchsia-600 dark:text-fuchsia-400 select-none">/</span>
+                        <input id="regex-pattern" type="text" spellcheck="false" autocomplete="off" oninput="evaluateRegex()" placeholder="กรอกแพตเทิร์น เช่น \b\d{13}\b หรือ ^[a-z0-9._%+-]+@..." class="w-full min-w-0 bg-transparent font-mono text-sm sm:text-base font-semibold text-google-text dark:text-white outline-none">
+                        <span class="font-mono text-base font-bold text-fuchsia-600 dark:text-fuchsia-400 select-none">/</span>
+                        <input id="regex-flags" type="text" value="gm" spellcheck="false" maxlength="7" oninput="handleFlagsInput()" title="Flags: g i m s u y d" class="w-16 shrink-0 bg-white/80 dark:bg-google-dark-surface px-2 py-0.5 rounded-md border border-google-border/70 dark:border-google-dark-border font-mono text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-300 text-center outline-none">
+                    </div>
+
+                    <!-- Interactive Flag Toggle Pills -->
+                    <div class="flex flex-wrap items-center gap-1 shrink-0" role="group" aria-label="เลือก Regex Flags">
+                        <button type="button" data-flag="g" onclick="toggleFlag('g')" title="g — Global: ค้นหาทุกจุดในข้อความ" class="flag-pill px-2.5 py-2 rounded-xl text-xs font-mono font-bold border transition cursor-pointer">g</button>
+                        <button type="button" data-flag="i" onclick="toggleFlag('i')" title="i — Ignore Case: ไม่สนตัวพิมพ์ใหญ่/เล็ก" class="flag-pill px-2.5 py-2 rounded-xl text-xs font-mono font-bold border transition cursor-pointer">i</button>
+                        <button type="button" data-flag="m" onclick="toggleFlag('m')" title="m — Multiline: ให้ ^ และ $ อิงหัว/ท้ายแต่ละบรรทัด" class="flag-pill px-2.5 py-2 rounded-xl text-xs font-mono font-bold border transition cursor-pointer">m</button>
+                        <button type="button" data-flag="s" onclick="toggleFlag('s')" title="s — DotAll: ให้ . จับตัวขึ้นบรรทัดใหม่ \n ได้" class="flag-pill px-2.5 py-2 rounded-xl text-xs font-mono font-bold border transition cursor-pointer">s</button>
+                        <button type="button" data-flag="u" onclick="toggleFlag('u')" title="u — Unicode: รองรับ Unicode เต็มรูปแบบ" class="flag-pill px-2.5 py-2 rounded-xl text-xs font-mono font-bold border transition cursor-pointer">u</button>
+                    </div>
+                </div>
+
+                <!-- Error Banner -->
+                <div id="regex-error" class="hidden p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center gap-2"></div>
+
+                <!-- Quick Presets Strip -->
+                <div class="flex flex-wrap items-center gap-1.5 pt-0.5 text-xs">
+                    <span class="text-google-text-muted dark:text-google-dark-text-muted font-medium mr-1">ลองด่วน:</span>
+                    <button type="button" onclick="loadPresetById('email_validate')" class="px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 hover:bg-blue-100 font-semibold transition cursor-pointer">เช็กอีเมล</button>
+                    <button type="button" onclick="loadPresetById('thai_phone')" class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 font-semibold transition cursor-pointer">เบอร์โทรไทย</button>
+                    <button type="button" onclick="loadPresetById('thai_id')" class="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 font-semibold transition cursor-pointer">บัตร ปชช. 13 หลัก</button>
+                    <button type="button" onclick="loadPresetById('strong_password')" class="px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 hover:bg-amber-100 font-semibold transition cursor-pointer">รหัสผ่านแข็งแรง</button>
+                    <button type="button" onclick="loadPresetById('extract_url')" class="px-2.5 py-1 rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-100 font-semibold transition cursor-pointer">ดึง URL เว็บ</button>
+                    <button type="button" onclick="loadPresetById('ipv4_strict')" class="px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 hover:bg-purple-100 font-semibold transition cursor-pointer">IPv4 Address</button>
+                    <button type="button" onclick="loadPresetById('thai_text')" class="px-2.5 py-1 rounded-full bg-pink-50 dark:bg-pink-950/60 text-pink-700 dark:text-pink-300 hover:bg-pink-100 font-semibold transition cursor-pointer">ข้อความภาษาไทย</button>
+                    <button type="button" onclick="switchRegexTab('presets')" class="px-2.5 py-1 rounded-full bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body hover:text-fuchsia-600 font-semibold transition cursor-pointer">ดูครบ 16 สูตร →</button>
+                </div>
+            </div>
+
+            <!-- Main Two-Column Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+                <!-- Left 7 cols: Test String Input, Live Highlight / Form Line-Check & Replace -->
+                <div class="lg:col-span-7 space-y-4">
+
+                    <!-- Test Input Card -->
+                    <div class="g-card p-4 space-y-2.5">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <label for="test-input" class="text-xs font-bold uppercase tracking-wider text-google-text-muted dark:text-google-dark-text-muted flex items-center gap-1.5">
+                                <i class="fa-solid fa-align-left text-google-blue"></i>
+                                Test String (ข้อความสำหรับทดสอบ)
+                            </label>
+                            <div class="flex items-center gap-2 text-xs">
+                                <span id="test-char-count" class="text-google-text-muted dark:text-google-dark-text-muted">0 ตัวอักษร</span>
+                                <button type="button" onclick="clearTestText()" class="px-2 py-0.5 rounded border border-google-border dark:border-google-dark-border hover:border-rose-400 text-[11px] font-semibold text-google-text-muted hover:text-rose-600 transition cursor-pointer">ล้างข้อความ</button>
+                            </div>
+                        </div>
+                        <textarea id="test-input" rows="5" spellcheck="false" oninput="evaluateRegex()" placeholder="วางข้อความยาวๆ หรือข้อมูลฟอร์มหลายบรรทัดที่นี่..." class="w-full p-3 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border font-mono text-xs sm:text-sm leading-relaxed text-google-text dark:text-white outline-none focus:border-fuchsia-500 resize-y"></textarea>
+                    </div>
+
+                    <!-- Highlight & Line-Validation Preview Card -->
+                    <div class="g-card overflow-hidden">
+                        <div class="px-4 py-2.5 border-b border-google-border dark:border-google-dark-border flex flex-wrap items-center justify-between gap-2">
+                            <h2 class="text-xs sm:text-sm font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                                <i class="fa-solid fa-highlighter text-fuchsia-600"></i>
+                                ผลลัพธ์แบบเรียลไทม์
+                            </h2>
+                            <div class="flex flex-wrap items-center gap-1 bg-google-subtle dark:bg-google-dark-subtle p-0.5 rounded-lg text-[11px] font-bold">
+                                <button type="button" id="hl-mode-inline" onclick="setHighlightMode('inline')" class="px-2.5 py-1 rounded-md bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer">ไฮไลต์คำตรง</button>
+                                <button type="button" id="hl-mode-lines" onclick="setHighlightMode('lines')" class="px-2.5 py-1 rounded-md text-google-text-muted dark:text-google-dark-text-muted cursor-pointer">เช็กทีละบรรทัด <span class="hidden sm:inline">(Pass/Fail)</span></button>
+                            </div>
+                        </div>
+
+                        <div id="truncation-note" class="hidden px-4 py-1.5 bg-amber-50 dark:bg-amber-950/50 border-b border-amber-200 dark:border-amber-800 text-[11px] font-semibold text-amber-800 dark:text-amber-300"></div>
+
+                        <div id="highlight-output" class="p-4 font-mono text-xs sm:text-sm leading-relaxed whitespace-pre-wrap break-words min-h-[110px] max-h-80 overflow-y-auto bg-white dark:bg-google-dark-surface"></div>
+                    </div>
+
+                    <!-- Find & Replace Card -->
+                    <div class="g-card p-4 space-y-2.5">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-right-left text-emerald-600"></i>
+                                <h2 class="text-xs sm:text-sm font-bold text-google-text dark:text-google-dark-text font-heading">ค้นหาและแทนที่ (Find &amp; Replace)</h2>
+                            </div>
+                            <button type="button" onclick="copyReplaceOutput()" class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 text-[11px] font-bold transition cursor-pointer">
+                                <i class="fa-regular fa-copy mr-1"></i> คัดลอกผลลัพธ์
+                            </button>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                            <input id="replace-input" type="text" value="[$1] (โดเมน: $2)" spellcheck="false" oninput="evaluateRegex()" placeholder="ข้อความแทนที่ รองรับ $1, $2, $&, $<name>, \n" class="flex-1 px-3 py-2 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border font-mono text-xs sm:text-sm text-google-text dark:text-white outline-none focus:border-emerald-500">
+                            <span class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted shrink-0">ใช้ <code>$1</code>, <code>$2</code>, <code>$&amp;</code>, <code>\n</code> ได้</span>
+                        </div>
+                        <pre id="replace-output" class="p-3 rounded-xl bg-slate-900 text-emerald-300 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words max-h-48 overflow-y-auto"></pre>
+                    </div>
+                </div>
+
+                <!-- Right 5 cols: KPIs, Capture Groups List, Explainer & Code Generator -->
+                <div class="lg:col-span-5 space-y-4">
+
+                    <!-- Mini KPI Strip -->
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <div class="g-card p-3 border-l-4 border-l-fuchsia-600">
+                            <div class="text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">Matches</div>
+                            <div id="kpi-matches" class="font-mono text-lg sm:text-xl font-extrabold text-fuchsia-600 dark:text-fuchsia-400">0</div>
+                        </div>
+                        <div class="g-card p-3 border-l-4 border-l-google-blue">
+                            <div class="text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">Groups / ตัวอย่าง</div>
+                            <div id="kpi-groups" class="font-mono text-lg sm:text-xl font-extrabold text-google-blue dark:text-sky-400">0</div>
+                        </div>
+                        <div class="g-card p-3 border-l-4 border-l-emerald-500">
+                            <div class="text-[11px] font-semibold text-google-text-muted dark:text-google-dark-text-muted">เวลาประมวลผล</div>
+                            <div id="kpi-time" class="font-mono text-lg sm:text-xl font-extrabold text-emerald-600 dark:text-emerald-400">0.0 ms</div>
+                        </div>
+                    </div>
+
+                    <!-- Matched Items & Capture Groups Card -->
+                    <div class="g-card overflow-hidden">
+                        <div class="px-4 py-2.5 border-b border-google-border dark:border-google-dark-border flex items-center justify-between gap-2">
+                            <h2 class="text-xs sm:text-sm font-bold text-google-text dark:text-google-dark-text font-heading">
+                                รายการที่ตรงเงื่อนไข &amp; Capture Groups
+                            </h2>
+                            <button type="button" onclick="copyMatchesJson()" class="px-2.5 py-1 rounded-lg border border-google-border dark:border-google-dark-border hover:border-fuchsia-500 text-[11px] font-semibold transition cursor-pointer">
+                                <i class="fa-solid fa-brackets-curly mr-1"></i> คัดลอก JSON
+                            </button>
+                        </div>
+                        <div id="match-list" class="p-3 space-y-2 max-h-72 overflow-y-auto text-xs"></div>
+                    </div>
+
+                    <!-- Thai Token Explainer Card -->
+                    <div class="g-card overflow-hidden">
+                        <div class="px-4 py-2.5 border-b border-google-border dark:border-google-dark-border flex items-center justify-between gap-2">
+                            <h2 class="text-xs sm:text-sm font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-1.5">
+                                <i class="fa-solid fa-magnifying-glass-chart text-indigo-500"></i>
+                                อธิบายโครงสร้างแพตเทิร์นทีละส่วน
+                            </h2>
+                        </div>
+                        <div id="pattern-explain" class="p-3 space-y-1.5 max-h-56 overflow-y-auto text-xs"></div>
+                    </div>
+
+                    <!-- Code Snippet Generator Card (JS / PHP / Python) -->
+                    <div class="g-card p-4 space-y-2.5">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <h2 class="text-xs sm:text-sm font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-1.5">
+                                <i class="fa-solid fa-code text-blue-600"></i>
+                                โค้ดพร้อมนำไปใช้งานจริง
+                            </h2>
+                            <div class="flex items-center gap-1 bg-google-subtle dark:bg-google-dark-subtle p-0.5 rounded-lg text-[11px] font-bold">
+                                <button type="button" id="code-lang-js" onclick="setCodeLang('js')" class="px-2 py-0.5 rounded bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer">JS</button>
+                                <button type="button" id="code-lang-php" onclick="setCodeLang('php')" class="px-2 py-0.5 rounded text-google-text-muted dark:text-google-dark-text-muted cursor-pointer">PHP</button>
+                                <button type="button" id="code-lang-py" onclick="setCodeLang('py')" class="px-2 py-0.5 rounded text-google-text-muted dark:text-google-dark-text-muted cursor-pointer">Python</button>
+                            </div>
+                        </div>
+                        <pre id="code-snippet-out" class="p-3 rounded-xl bg-slate-900 text-sky-300 font-mono text-[11px] sm:text-xs leading-relaxed overflow-x-auto"></pre>
+                        <div class="flex justify-end">
+                            <button type="button" onclick="copyCodeSnippet()" class="px-3 py-1.5 rounded-lg bg-google-blue hover:opacity-90 text-white text-xs font-bold transition cursor-pointer">
+                                <i class="fa-regular fa-copy mr-1"></i> คัดลอกโค้ด
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- VIEW 2: READY-TO-USE REGEX PRESET LIBRARY (16 PATTERNS) -->
+        <!-- ======================================================= -->
+        <section id="view-presets" class="hidden space-y-4">
+            <div class="g-card p-4 space-y-3">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-base sm:text-lg font-bold text-google-text dark:text-google-dark-text font-heading">คลังแพตเทิร์น Regex สำเร็จรูปที่ใช้บ่อย (16 สูตรพร้อมทดสอบ)</h2>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">กดปุ่ม <strong>"ทดลองใช้ทันที"</strong> เพื่อโหลด Pattern พร้อมตัวอย่างข้อมูลจริงเข้าสู่หน้าทดสอบได้ในคลิกเดียว</p>
+                    </div>
+                    <div class="relative w-full md:w-72">
+                        <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-xs text-google-text-muted"></i>
+                        <input id="preset-search" type="text" oninput="renderPresetLibrary()" placeholder="ค้นหา เช่น อีเมล, เบอร์โทร, บัตร, IPv4..." class="w-full pl-8 pr-3 py-2 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border text-xs sm:text-sm outline-none focus:border-fuchsia-500">
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                    <button type="button" data-pcat="all" onclick="setPresetCategory('all')" class="preset-cat-btn px-3 py-1.5 rounded-full font-bold bg-fuchsia-600 text-white cursor-pointer">ทั้งหมด (16)</button>
+                    <button type="button" data-pcat="validate" onclick="setPresetCategory('validate')" class="preset-cat-btn px-3 py-1.5 rounded-full font-semibold bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body cursor-pointer">เช็กฟอร์ม (Validate)</button>
+                    <button type="button" data-pcat="extract" onclick="setPresetCategory('extract')" class="preset-cat-btn px-3 py-1.5 rounded-full font-semibold bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body cursor-pointer">ดึงข้อมูล (Extract)</button>
+                    <button type="button" data-pcat="network" onclick="setPresetCategory('network')" class="preset-cat-btn px-3 py-1.5 rounded-full font-semibold bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body cursor-pointer">เว็บ &amp; เน็ตเวิร์ก</button>
+                    <button type="button" data-pcat="thai" onclick="setPresetCategory('thai')" class="preset-cat-btn px-3 py-1.5 rounded-full font-semibold bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body cursor-pointer">ข้อมูลประเทศไทย</button>
+                </div>
+            </div>
+
+            <div id="preset-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- VIEW 3: REGEX CHEATSHEET & INTERACTIVE TOKEN INSERTER   -->
+        <!-- ======================================================= -->
+        <section id="view-cheatsheet" class="hidden space-y-4">
+            <div class="g-card p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-google-text dark:text-google-dark-text font-heading">คู่มือ Token &amp; Regex Cheatsheet ฉบับเข้าใจไว</h2>
+                    <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">กดปุ่ม <strong>"+ แทรก"</strong> เพื่อเติม Token เข้าสู่ช่อง Pattern แล้วสลับไปทดสอบผลลัพธ์ได้ทันที</p>
+                </div>
+                <div class="relative w-full md:w-72">
+                    <i class="fa-solid fa-filter absolute left-3 top-1/2 -translate-y-1/2 text-xs text-google-text-muted"></i>
+                    <input id="cheatsheet-search" type="text" oninput="renderCheatsheet()" placeholder="กรอง Token เช่น \d, +?, lookahead..." class="w-full pl-8 pr-3 py-2 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border text-xs sm:text-sm outline-none focus:border-indigo-500">
+                </div>
+            </div>
+
+            <div id="cheatsheet-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </section>
+
+    </main>
+
+    <script>
+        // ==================== BUILT-IN PRESET LIBRARY ====================
+        const PRESETS = [
+            {
+                id: 'email_validate',
+                cat: ['validate'],
+                badge: 'Validate Email',
+                color: 'blue',
+                title: '1. ตรวจสอบรูปแบบอีเมล (Email Address)',
+                desc: 'เช็กอีเมลมาตรฐานสากล พร้อมจับแยกชื่อผู้ใช้ (Group 1) และโดเมน (Group 2) ใช้ร่วมกับโหมด "เช็กฟอร์มทีละบรรทัด" ได้ทันที',
+                pattern: '^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})$',
+                flags: 'gm',
+                sample: 'feel.pakapon@example.co.th\nadmin+system@nstvc.ac.th\ndev_user99@sub.domain.dev\ninvalid-email.com\n@missinguser.com\ntest@.bad'
+            },
+            {
+                id: 'thai_phone',
+                cat: ['validate', 'thai'],
+                badge: 'Validate เบอร์ไทย',
+                color: 'emerald',
+                title: '2. เบอร์โทรศัพท์มือถือ & บ้านในประเทศไทย',
+                desc: 'รองรับมือถือ 10 หลัก (ขึ้นต้น 06, 08, 09 แบบมีขีดหรือไม่มีขีด), รูปแบบ +66 และเบอร์บ้าน/สำนักงาน (02–07)',
+                pattern: '^(?:0[689]\\d{8}|0[689]\\d-\\d{3}-\\d{4}|0[2-7]\\d{7}|(?:\\+66|66)[689]\\d{8})$',
+                flags: 'gm',
+                sample: '0812345678\n095-123-4567\n+66891234567\n075341234\n0123456789\n0812345'
+            },
+            {
+                id: 'thai_id',
+                cat: ['validate', 'thai'],
+                badge: 'Validate บัตร ปชช.',
+                color: 'indigo',
+                title: '3. เลขบัตรประจำตัวประชาชนไทย 13 หลัก',
+                desc: 'ตรวจเลข 13 หลัก (ขึ้นต้นหมวด 1–8 ตามโครงสร้างกรมการปกครอง) รองรับทั้งติดกันและคั่นขีด X-XXXX-XXXXX-XX-X (หมายเหตุ: แนะนำตรวจเลข Checksum หลักที่ 13 ร่วมด้วยในโค้ดจริง)',
+                pattern: '^(?:[1-8]\\d{12}|[1-8]-\\d{4}-\\d{5}-\\d{2}-\\d)$',
+                flags: 'gm',
+                sample: '1100400123456\n1-8099-00123-45-8\n3800100999881\n0123456789012\n11004-00123456\n1234567890'
+            },
+            {
+                id: 'strong_password',
+                cat: ['validate'],
+                badge: 'Password Security',
+                color: 'amber',
+                title: '4. รหัสผ่านแข็งแรง (Strong Password 8+ ตัว)',
+                desc: 'บังคับอย่างน้อย 8 ตัวอักษร ต้องมี: ตัวพิมพ์ใหญ่ (A-Z), ตัวพิมพ์เล็ก (a-z), ตัวเลข (0-9) และอักขระพิเศษ (@$!%*?&#_.-)',
+                pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#_.-])[A-Za-z\\d@$!%*?&#_.-]{8,}$',
+                flags: 'gm',
+                sample: 'FeelDev@2026\nNstvc#IoT99\nweakpass\nOnlyLower123\nNoSpecialChar1\nShort@1'
+            },
+            {
+                id: 'extract_email',
+                cat: ['extract'],
+                badge: 'Extract Emails',
+                color: 'fuchsia',
+                title: '5. ดึงอีเมลทั้งหมดออกจากข้อความยาว / บทความ',
+                desc: 'ไม่ล็อก ^/$ เพื่อสแกนเก็บอีเมลทุกตัวที่ปนอยู่ในเอกสาร อีเมลลูกโซ่ หรือ Log ได้ครบและแยก Username/Domain ใน Group 1–2',
+                pattern: '([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})',
+                flags: 'g',
+                sample: 'ติดต่อฝ่ายพัฒนาได้ที่ contact@feel-dev.th หรือส่งข้อมูลสำรองมาที่ feel.pakapon@gmail.com (ภายในเวลาทำการ 09:00)\nLog error จาก bot-noreply@mail.nstvc.ac.th'
+            },
+            {
+                id: 'extract_thai_phone',
+                cat: ['extract', 'thai'],
+                badge: 'Extract เบอร์ไทย',
+                color: 'teal',
+                title: '6. สกัดเบอร์โทรศัพท์ไทยจากประกาศ / แชตลูกค้า',
+                desc: 'ดึงเบอร์มือถือและเบอร์บ้านที่แทรกอยู่ในข้อความยาว (ทั้งแบบ 081-234-5678 และ 0812345678)',
+                pattern: '(?<!\\d)(?:0[689]\\d(?:[-\\s]?\\d{3}[-\\s]?\\d{4})|0[2-7]\\d{7}|\\+66[689]\\d{8})(?!\\d)',
+                flags: 'g',
+                sample: 'ลูกค้าคุณสมชาย โทร 089-123-4567 สั่งอะไหล่ ESP32 ส่งด่วน หรือติดต่อออฟฟิศ 075341122 / ฝ่ายขาย +66812345678 เลขออเดอร์ #1234567890123 ไม่ใช่เบอร์โทร'
+            },
+            {
+                id: 'extract_url',
+                cat: ['extract', 'network'],
+                badge: 'URL / Links',
+                color: 'cyan',
+                title: '7. ค้นหาและดึงลิงก์ HTTP / HTTPS URLs',
+                desc: 'จับโปรโตคอล โดเมน พอร์ต และ Path/Query จากข้อความ (Group 1 = Protocol, Group 2 = Host/Port, Group 3 = Path)',
+                pattern: '\\b(https?):\\/\\/([a-zA-Z0-9.-]+(?::\\d{1,5})?)(\\/[^\\s<>"\']*)?',
+                flags: 'gi',
+                sample: 'พอร์ตโฟลิโอหลัก: https://feel-ochre.vercel.app/subnet.html?tab=split\nAPI ในเครื่อง: http://localhost:8080/api/v1/health\nเว็บไซต์ docs.python.org (ไม่มี https://)'
+            },
+            {
+                id: 'ipv4_strict',
+                cat: ['validate', 'network'],
+                badge: 'IPv4 Strict (0–255)',
+                color: 'purple',
+                title: '8. ตรวจจับ IPv4 Address ที่ตัวเลขถูกต้อง (0–255)',
+                desc: 'ป้องกันเลขเกิน 255 เช่น 999.10.1.1 ไม่ให้ผ่าน จับเฉพาะ 0.0.0.0 ถึง 255.255.255.255',
+                pattern: '\\b(?:(?:25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\b',
+                flags: 'g',
+                sample: 'Gateway: 192.168.10.1\nUbuntu Server: 10.0.50.254\nDNS: 1.1.1.1 และ 8.8.8.8\nIP ผิดพลาด: 999.168.1.1 หรือ 192.168.1.300'
+            },
+            {
+                id: 'thai_text',
+                cat: ['extract', 'thai'],
+                badge: 'Thai Unicode',
+                color: 'pink',
+                title: '9. จับกลุ่มข้อความภาษาไทยทั้งหมด (รวมสระ & วรรณยุกต์)',
+                desc: 'ใช้ช่วง Unicode U+0E00–U+0E7F เพื่อแยกคำ/วลีภาษาไทยออกจากภาษาอังกฤษและตัวเลข',
+                pattern: '[\\u0E00-\\u0E7F]+',
+                flags: 'g',
+                sample: 'Project ระบบ IoT เกษตรอัจฉริยะ (Smart Farm v2.0) ใช้บอร์ด ESP32 ส่งค่าขึ้น Cloud อัตโนมัติ 100% นครศรีธรรมราช'
+            },
+            {
+                id: 'date_iso_thai',
+                cat: ['extract', 'validate'],
+                badge: 'Date Format',
+                color: 'sky',
+                title: '10. วันที่มาตรฐาน ISO (YYYY-MM-DD) & ไทย (DD/MM/YYYY)',
+                desc: 'ค้นหาวันที่ทั้ง 2 รูปแบบจากรายงาน Log หรือไฟล์เอกสาร โดยจับแยก ปี/เดือน/วัน',
+                pattern: '\\b(?:(\\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])|(0[1-9]|[12]\\d|3[01])\\/(0[1-9]|1[0-2])\\/(\\d{4}))\\b',
+                flags: 'g',
+                sample: 'วันที่บันทึก ISO: 2026-11-15 และ 2026-02-28\nเอกสารราชการ: 10/12/2550 หรือ 15/11/2569\nค่าผิด: 2026-13-45 และ 99/99/2569'
+            },
+            {
+                id: 'thai_postal',
+                cat: ['validate', 'thai'],
+                badge: 'ไปรษณีย์ไทย 5 หลัก',
+                color: 'orange',
+                title: '11. รหัสไปรษณีย์ประเทศไทย 5 หลัก (10100–96220)',
+                desc: 'เช็กรหัสไปรษณีย์ 5 หลักที่ขึ้นต้นด้วยเลข 1–9 (เช่น นครศรีธรรมราช 80000, กรุงเทพฯ 10200)',
+                pattern: '^[1-9]\\d{4}$',
+                flags: 'gm',
+                sample: '80000\n80110\n10200\n01234\n8000\n800001'
+            },
+            {
+                id: 'hex_color',
+                cat: ['extract', 'network'],
+                badge: 'CSS Hex Color',
+                color: 'rose',
+                title: '12. รหัสสี CSS Hex Color (#RGB / #RRGGBB / #RRGGBBAA)',
+                desc: 'ดึงค่าสีเว็บจากไฟล์ CSS หรือธีมดีไซน์ รองรับแบบสั้น 3–4 หลัก และแบบเต็ม 6–8 หลัก',
+                pattern: '#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})\\b',
+                flags: 'g',
+                sample: 'primary: #1a73e8; danger: #d93025; accent: #F9AB00;\nbadge-alpha: #9333ea40; white: #fff;\ninvalid: #12345 #zzzzzz'
+            },
+            {
+                id: 'html_tags',
+                cat: ['extract', 'network'],
+                badge: 'HTML Tags',
+                color: 'emerald',
+                title: '13. ตรวจจับ HTML Tag พร้อมชื่อ Tag (Group 1)',
+                desc: 'จับ Tag เปิด/ปิด หรือ Self-closing ในโค้ด HTML เช่น <div>, <img src="..."> เพื่อดึงหรือ Strip Tag',
+                pattern: '<\\/?([a-zA-Z][a-zA-Z0-9-]*)\\b[^>]*>',
+                flags: 'g',
+                sample: '<div class="card"><h1>สวัสดีครับ</h1><img src="avatar.png" alt="Feel" /><p>Portfolio</p></div>'
+            },
+            {
+                id: 'hashtag_mention',
+                cat: ['extract', 'thai'],
+                badge: 'Hashtag & @Mention',
+                color: 'blue',
+                title: '14. ดึง #Hashtag และ @Mention รองรับภาษาไทย',
+                desc: 'ใช้ในระบบโซเชียล ค้นหาแท็กหรือแท็กชื่อผู้ใช้ทั้งตัวอังกฤษ ตัวเลข _ และอักขระไทย',
+                pattern: '(?<!\\S)([#@][a-zA-Z0-9_\\u0E00-\\u0E7F]+)',
+                flags: 'g',
+                sample: 'แชร์ผลงานใหม่ #พอร์ตโฟลิโอ #IoT_Thailand @feelpakapon บนเว็บ #DevTools2026 (อีเมล contact@example.com ไม่ใช่ mention)'
+            },
+            {
+                id: 'username_slug',
+                cat: ['validate'],
+                badge: 'Username / Slug',
+                color: 'slate',
+                title: '15. ชื่อผู้ใช้ (Username) หรือ URL Slug มาตรฐาน',
+                desc: 'รับเฉพาะตัวอักษรพิมพ์เล็ก/ใหญ่ ตัวเลข ขีดกลาง - และขีดล่าง _ ความยาว 3–20 ตัว เริ่มและจบด้วยอักษรหรือตัวเลข',
+                pattern: '^[a-zA-Z0-9][a-zA-Z0-9_-]{1,18}[a-zA-Z0-9]$',
+                flags: 'gm',
+                sample: 'feel_pakapon\nnstvc-2026\nAdmin01\n_badstart\nhas space\nab'
+            },
+            {
+                id: 'thai_currency',
+                cat: ['extract', 'thai'],
+                badge: 'ราคา / ตัวเลขเงิน',
+                color: 'amber',
+                title: '16. สกัดจำนวนเงินมีลูกน้ำ & ทศนิยม 2 ตำแหน่ง',
+                desc: 'ดึงราคาสินค้าจากใบเสร็จหรือข้อความ เช่น 1,250.00 หรือ ฿490 เพื่อคำนวณต่อ',
+                pattern: '(?:฿\\s*|THB\\s*)?(\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.(\\d{2}))?(?=\\s*(?:บาท|THB|\\b|$))',
+                flags: 'g',
+                sample: 'รวมค่าอุปกรณ์ ESP32 ฿1,250.50 บาท ค่าจัดส่ง 60 บาท ยอดสุทธิ 1,310.50 THB'
+            }
+        ];
+
+        const CHEATSHEET_SECTIONS = [
+            {
+                title: 'กลุ่มตัวอักษร (Character Classes)',
+                icon: 'fa-font text-fuchsia-600',
+                items: [
+                    { tok: '.', desc: 'ตัวอักษรใดก็ได้ 1 ตัว (ยกเว้นขึ้นบรรทัดใหม่ เว้นแต่ใส่ flag s)' },
+                    { tok: '\\d', desc: 'ตัวเลข 0–9 (เหมือน [0-9])' },
+                    { tok: '\\D', desc: 'ไม่ใช่ตัวเลข (เหมือน [^0-9])' },
+                    { tok: '\\w', desc: 'ตัวอักษรอังกฤษ ตัวเลข หรือขีดล่าง _ ([A-Za-z0-9_])' },
+                    { tok: '\\W', desc: 'อักขระที่ไม่ใช่ \\w (เช่น เว้นวรรค สัญลักษณ์ ภาษาไทย)' },
+                    { tok: '\\s', desc: 'ช่องว่าง, Tab, ขึ้นบรรทัดใหม่' },
+                    { tok: '[a-z]', desc: 'ชุดตัวอักษรตั้งแต่ a ถึง z' },
+                    { tok: '[^0-9]', desc: 'ตัวอะไรก็ได้ที่ "ไม่ใช่" ตัวเลข 0–9' }
+                ]
+            },
+            {
+                title: 'ระบุตำแหน่ง (Anchors & Boundaries)',
+                icon: 'fa-anchor text-blue-600',
+                items: [
+                    { tok: '^', desc: 'จุดเริ่มต้นของข้อความ (หรือต้นบรรทัดเมื่อเปิด flag m)' },
+                    { tok: '$', desc: 'จุดสิ้นสุดของข้อความ (หรือท้ายบรรทัดเมื่อเปิด flag m)' },
+                    { tok: '\\b', desc: 'ขอบเขตของคำ (Word Boundary) คั่นระหว่างคำกับช่องว่าง' },
+                    { tok: '\\B', desc: 'ตำแหน่งที่ไม่ใช่ขอบเขตคำ' }
+                ]
+            },
+            {
+                title: 'ระบุจำนวนซ้ำ (Quantifiers)',
+                icon: 'fa-repeat text-emerald-600',
+                items: [
+                    { tok: '*', desc: 'มี 0 ตัวขึ้นไป (ไม่มีก็ได้ หรือมีกี่ตัวก็ได้)' },
+                    { tok: '+', desc: 'มี 1 ตัวขึ้นไป (ต้องมีอย่างน้อย 1 ตัว)' },
+                    { tok: '?', desc: 'มี 0 หรือ 1 ตัว (จะมีหรือไม่มีก็ได้)' },
+                    { tok: '{3}', desc: 'ซ้ำพอดี 3 ตัว' },
+                    { tok: '{2,5}', desc: 'ซ้ำตั้งแต่ 2 ถึง 5 ตัว' },
+                    { tok: '{8,}', desc: 'ซ้ำอย่างน้อย 8 ตัวขึ้นไป' },
+                    { tok: '+?', desc: 'Lazy Quantifier — จับสั้นที่สุดเท่าที่ตรงเงื่อนไข' }
+                ]
+            },
+            {
+                title: 'จัดกลุ่ม & Lookaround (Groups & Assertions)',
+                icon: 'fa-object-group text-indigo-600',
+                items: [
+                    { tok: '(abc)', desc: 'Capture Group — จับกลุ่มค่าเพื่อดึงใช้หรือ $1' },
+                    { tok: '(?:abc)', desc: 'Non-Capturing Group — จัดกลุ่มโดยไม่เก็บเป็น $1' },
+                    { tok: '(?<name>abc)', desc: 'Named Group — ตั้งชื่อให้กลุ่ม (อ้างอิงด้วย $<name>)' },
+                    { tok: 'a|b', desc: 'OR — เลือกตรงกับเงื่อนไข a หรือ b อย่างใดอย่างหนึ่ง' },
+                    { tok: '(?=...)', desc: 'Positive Lookahead — ข้างหน้าต้องตามด้วย ... (ไม่กินข้อความ)' },
+                    { tok: '(?!...)', desc: 'Negative Lookahead — ข้างหน้าต้อง "ไม่" ตามด้วย ...' },
+                    { tok: '(?<=...)', desc: 'Positive Lookbehind — ข้างหลังต้องนำหน้าด้วย ...' },
+                    { tok: '(?<!...)', desc: 'Negative Lookbehind — ข้างหลังต้อง "ไม่" นำหน้าด้วย ...' }
+                ]
+            },
+            {
+                title: 'ภาษาไทย Unicode & สัญลักษณ์พิเศษ',
+                icon: 'fa-language text-pink-600',
+                items: [
+                    { tok: '[\\u0E00-\\u0E7F]+', desc: 'กลุ่มคำภาษาไทยทั้งหมด (พยัญชนะ สระ วรรณยุกต์ เลขไทย)' },
+                    { tok: '[ก-ฮ]', desc: 'เฉพาะพยัญชนะไทย ก–ฮ เท่านั้น' },
+                    { tok: '\\.', desc: 'หนีสัญลักษณ์จุด . ให้ตรงกับตัวอักษรจุดจริงๆ' },
+                    { tok: '\\/', desc: 'หนีเครื่องหมายทับ / สำหรับใช้ในโค้ด Regex Literal' }
+                ]
+            }
+        ];
+
+        // ==================== STATE ====================
+        let currentHighlightMode = 'inline';
+        let currentCodeLang = 'js';
+        let currentPresetCategory = 'all';
+        let lastMatchesData = [];
+        let lastReplaceResult = '';
+
+        // ==================== UTILITIES ====================
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            container.innerHTML = '';
+            const toast = document.createElement('div');
+            const bg = type === 'error' ? 'bg-rose-600 text-white' : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900';
+            toast.className = `${bg} px-4 py-2 rounded-full shadow-xl text-xs font-bold flex items-center gap-2 pointer-events-auto transition-all`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check text-emerald-400 dark:text-emerald-600'}"></i><span></span>`;
+            toast.querySelector('span').textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(8px)';
+                setTimeout(() => toast.remove(), 220);
+            }, 1800);
+        }
+
+        function copyTextValue(val, label) {
+            navigator.clipboard?.writeText(String(val))
+                .then(() => showToast(`คัดลอก ${label} แล้ว`))
+                .catch(() => showToast('เบราว์เซอร์ไม่อนุญาต Clipboard อัตโนมัติ', 'error'));
+        }
+
+        // ==================== FLAGS & TABS ====================
+        function normalizeFlags(raw) {
+            const valid = ['g', 'i', 'm', 's', 'u', 'y', 'd'];
+            const seen = new Set();
+            for (const ch of String(raw).toLowerCase()) {
+                if (valid.includes(ch)) seen.add(ch);
+            }
+            return valid.filter(f => seen.has(f)).join('');
+        }
+
+        function syncFlagPills() {
+            const flags = document.getElementById('regex-flags').value;
+            document.querySelectorAll('.flag-pill').forEach(btn => {
+                const f = btn.getAttribute('data-flag');
+                const active = flags.includes(f);
+                btn.className = active
+                    ? 'flag-pill px-2.5 py-2 rounded-xl text-xs font-mono font-bold border border-fuchsia-600 bg-fuchsia-600 text-white shadow-xs transition cursor-pointer'
+                    : 'flag-pill px-2.5 py-2 rounded-xl text-xs font-mono font-bold border border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface text-google-text-muted dark:text-google-dark-text-muted hover:border-fuchsia-400 transition cursor-pointer';
+            });
+        }
+
+        function handleFlagsInput() {
+            const el = document.getElementById('regex-flags');
+            el.value = normalizeFlags(el.value);
+            syncFlagPills();
+            evaluateRegex();
+        }
+
+        function toggleFlag(flag) {
+            const el = document.getElementById('regex-flags');
+            const cur = normalizeFlags(el.value);
+            const next = cur.includes(flag) ? cur.replace(flag, '') : normalizeFlags(cur + flag);
+            el.value = next;
+            syncFlagPills();
+            evaluateRegex();
+        }
+
+        function switchRegexTab(tab) {
+            ['tester', 'presets', 'cheatsheet'].forEach(name => {
+                const isTarget = name === tab;
+                document.getElementById(`view-${name}`).classList.toggle('hidden', !isTarget);
+                document.getElementById(`tab-btn-${name}`).className = isTarget
+                    ? 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-bold flex items-center justify-center sm:justify-start gap-2 bg-fuchsia-600 text-white shadow-xs transition cursor-pointer'
+                    : 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-heading font-semibold flex items-center justify-center sm:justify-start gap-2 text-google-text-body dark:text-google-dark-text-body hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition cursor-pointer';
+            });
+            if (tab === 'presets') renderPresetLibrary();
+            if (tab === 'cheatsheet') renderCheatsheet();
+        }
+
+        function setHighlightMode(mode) {
+            currentHighlightMode = mode;
+            document.getElementById('hl-mode-inline').className = mode === 'inline'
+                ? 'px-2.5 py-1 rounded-md bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer'
+                : 'px-2.5 py-1 rounded-md text-google-text-muted dark:text-google-dark-text-muted cursor-pointer';
+            document.getElementById('hl-mode-lines').className = mode === 'lines'
+                ? 'px-2.5 py-1 rounded-md bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer'
+                : 'px-2.5 py-1 rounded-md text-google-text-muted dark:text-google-dark-text-muted cursor-pointer';
+            evaluateRegex();
+        }
+
+        function setCodeLang(lang) {
+            currentCodeLang = lang;
+            ['js', 'php', 'py'].forEach(l => {
+                document.getElementById(`code-lang-${l}`).className = l === lang
+                    ? 'px-2 py-0.5 rounded bg-white dark:bg-google-dark-surface text-google-text dark:text-white shadow-xs cursor-pointer'
+                    : 'px-2 py-0.5 rounded text-google-text-muted dark:text-google-dark-text-muted cursor-pointer';
+            });
+            renderCodeSnippet();
+        }
+
+        // ==================== CORE REGEX ENGINE ====================
+        function evaluateRegex() {
+            const pattern = document.getElementById('regex-pattern').value;
+            const flags = normalizeFlags(document.getElementById('regex-flags').value);
+            const text = document.getElementById('test-input').value;
+
+            document.getElementById('test-char-count').textContent = `${text.length.toLocaleString()} ตัวอักษร`;
+            const errBox = document.getElementById('regex-error');
+            const statusBadge = document.getElementById('regex-status-badge');
+            const truncNote = document.getElementById('truncation-note');
+            truncNote.classList.add('hidden');
+
+            renderPatternExplanation(pattern, flags);
+            renderCodeSnippet();
+
+            if (!pattern) {
+                errBox.classList.add('hidden');
+                statusBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-slate-300';
+                statusBadge.textContent = 'ยังไม่ได้ระบุแพตเทิร์น';
+                lastMatchesData = [];
+                document.getElementById('kpi-matches').textContent = '0';
+                document.getElementById('kpi-groups').textContent = '0';
+                document.getElementById('kpi-time').textContent = '0.0 ms';
+                document.getElementById('highlight-output').innerHTML = `<span class="text-google-text-muted">${escapeHtml(text) || 'พิมพ์ Regex ด้านบนเพื่อเริ่มไฮไลต์ผลลัพธ์...'}</span>`;
+                document.getElementById('match-list').innerHTML = '<p class="text-center text-google-text-muted py-4">กรุณากรอกแพตเทิร์น Regex เพื่อเริ่มค้นหา</p>';
+                lastReplaceResult = text;
+                document.getElementById('replace-output').textContent = text;
+                return;
+            }
+
+            let compiled;
+            try {
+                compiled = new RegExp(pattern, flags);
+                errBox.classList.add('hidden');
+            } catch (err) {
+                errBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i><span>Regex ไม่ถูกต้อง: ${escapeHtml(err.message)}</span>`;
+                errBox.classList.remove('hidden');
+                statusBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300';
+                statusBadge.textContent = 'Syntax Error';
+                lastMatchesData = [];
+                document.getElementById('kpi-matches').textContent = '0';
+                document.getElementById('kpi-groups').textContent = '0';
+                document.getElementById('kpi-time').textContent = '—';
+                document.getElementById('highlight-output').innerHTML = `<span class="text-google-text-muted">${escapeHtml(text)}</span>`;
+                document.getElementById('match-list').innerHTML = `<p class="text-center text-rose-600 dark:text-rose-400 py-4">${escapeHtml(err.message)}</p>`;
+                lastReplaceResult = text;
+                document.getElementById('replace-output').textContent = text;
+                return;
+            }
+
+            const MAX_MATCHES = 2000;
+            const t0 = performance.now();
+            const matches = [];
+            let truncated = false;
+
+            if (flags.includes('g') || flags.includes('y')) {
+                const execRe = new RegExp(pattern, flags);
+                let m;
+                while ((m = execRe.exec(text)) !== null) {
+                    matches.push({
+                        index: m.index,
+                        end: m.index + m[0].length,
+                        value: m[0],
+                        groups: m.slice(1),
+                        namedGroups: m.groups ? { ...m.groups } : null
+                    });
+                    if (m[0].length === 0) {
+                        if (execRe.lastIndex >= text.length) break;
+                        execRe.lastIndex++;
+                    }
+                    if (matches.length >= MAX_MATCHES) {
+                        truncated = true;
+                        break;
+                    }
+                }
+            } else {
+                const m = compiled.exec(text);
+                if (m !== null) {
+                    matches.push({
+                        index: m.index,
+                        end: m.index + m[0].length,
+                        value: m[0],
+                        groups: m.slice(1),
+                        namedGroups: m.groups ? { ...m.groups } : null
+                    });
+                }
+            }
+            const elapsed = performance.now() - t0;
+
+            lastMatchesData = matches;
+            const maxGroupsCount = matches.reduce((acc, item) => Math.max(acc, item.groups.length), 0);
+
+            document.getElementById('kpi-matches').textContent = matches.length.toLocaleString() + (truncated ? '+' : '');
+            document.getElementById('kpi-groups').textContent = String(maxGroupsCount);
+            document.getElementById('kpi-time').textContent = `${elapsed.toFixed(1)} ms`;
+
+            if (matches.length > 0) {
+                statusBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300';
+                statusBadge.textContent = `Valid • พบ ${matches.length.toLocaleString()} จุด`;
+            } else {
+                statusBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300';
+                statusBadge.textContent = 'Valid • ไม่พบคำที่ตรง';
+            }
+
+            if (truncated) {
+                truncNote.textContent = `แสดงและไฮไลต์สูงสุด ${MAX_MATCHES.toLocaleString()} จุดแรกเพื่อความปลอดภัยและความเร็วของเบราว์เซอร์`;
+                truncNote.classList.remove('hidden');
+            }
+
+            // Render Highlight / Line-by-Line Validator
+            if (currentHighlightMode === 'lines') {
+                renderLineValidation(pattern, flags, text);
+            } else {
+                renderInlineHighlight(text, matches);
+            }
+
+            // Render Match List Inspector
+            renderMatchList(matches);
+
+            // Render Find & Replace Preview
+            renderReplacePreview(compiled, text);
+        }
+
+        function renderInlineHighlight(text, matches) {
+            const outEl = document.getElementById('highlight-output');
+            if (!text) {
+                outEl.innerHTML = '<span class="text-google-text-muted">ยังไม่มีข้อความทดสอบ...</span>';
+                return;
+            }
+            if (!matches.length) {
+                outEl.innerHTML = escapeHtml(text);
+                return;
+            }
+
+            let html = '';
+            let cursor = 0;
+            for (let i = 0; i < matches.length; i++) {
+                const m = matches[i];
+                if (m.index < cursor) continue;
+                html += escapeHtml(text.slice(cursor, m.index));
+                const cls = i % 2 === 0 ? 'rx-mark-a' : 'rx-mark-b';
+                const matchedText = m.value.length > 0 ? escapeHtml(m.value) : '∅';
+                html += `<mark class="${cls}" title="Match #${i + 1} [pos ${m.index}–${m.end}]">${matchedText}</mark>`;
+                cursor = m.end;
+            }
+            html += escapeHtml(text.slice(cursor));
+            outEl.innerHTML = html;
+        }
+
+        function renderLineValidation(pattern, flags, text) {
+            const outEl = document.getElementById('highlight-output');
+            const lines = text.split(/\r?\n/);
+            if (!text.trim()) {
+                outEl.innerHTML = '<span class="text-google-text-muted">กรอกข้อมูลทีละบรรทัดเพื่อทดสอบว่าผ่านหรือไม่ผ่าน...</span>';
+                return;
+            }
+            // Strip 'g' and 'y' so each independent line test has zero stateful lastIndex bugs
+            const lineFlags = flags.replace(/[gy]/g, '');
+            const lineRe = new RegExp(pattern, lineFlags);
+
+            let passCount = 0;
+            let failCount = 0;
+            const rowsHtml = lines.map((line, idx) => {
+                if (line === '') {
+                    return `<div class="py-1 px-2 text-google-text-muted opacity-50 text-[11px]">บรรทัด ${idx + 1}: (ว่าง)</div>`;
+                }
+                const ok = lineRe.test(line);
+                if (ok) passCount++; else failCount++;
+                const badgeCls = ok
+                    ? 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
+                    : 'bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-800';
+                const label = ok ? '✓ ผ่าน' : '✗ ไม่ผ่าน';
+                return `<div class="flex items-center justify-between gap-2 py-1.5 px-2.5 rounded-lg ${ok ? 'bg-emerald-50/50 dark:bg-emerald-950/20' : 'bg-rose-50/60 dark:bg-rose-950/20'} border border-google-border/50 dark:border-google-dark-border/60 mb-1.5">
+                    <span class="min-w-0 break-all text-google-text dark:text-white"><span class="text-google-text-muted mr-1.5">${idx + 1}.</span>${escapeHtml(line)}</span>
+                    <span class="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-sans font-bold border ${badgeCls}">${label}</span>
+                </div>`;
+            }).join('');
+
+            outEl.innerHTML = `<div class="mb-2.5 pb-2 border-b border-google-border dark:border-google-dark-border flex items-center gap-3 text-xs font-sans font-bold">
+                <span class="text-emerald-600 dark:text-emerald-400">✓ ผ่าน ${passCount} บรรทัด</span>
+                <span class="text-rose-600 dark:text-rose-400">✗ ไม่ผ่าน ${failCount} บรรทัด</span>
+            </div>${rowsHtml}`;
+        }
+
+        function renderMatchList(matches) {
+            const listEl = document.getElementById('match-list');
+            if (!matches.length) {
+                listEl.innerHTML = '<p class="text-center text-google-text-muted py-5">ไม่พบข้อความที่ตรงกับ Regex นี้</p>';
+                return;
+            }
+            const displayLimit = Math.min(matches.length, 150);
+            let html = '';
+            for (let i = 0; i < displayLimit; i++) {
+                const m = matches[i];
+                const badgeColor = i % 2 === 0
+                    ? 'bg-fuchsia-100 dark:bg-fuchsia-950/70 text-fuchsia-700 dark:text-fuchsia-300'
+                    : 'bg-sky-100 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300';
+
+                let groupsHtml = '';
+                if (m.groups.length) {
+                    const namedEntries = m.namedGroups ? Object.entries(m.namedGroups) : [];
+                    groupsHtml = '<div class="mt-1.5 pl-2 border-l-2 border-google-border dark:border-google-dark-border space-y-0.5">';
+                    m.groups.forEach((gVal, gi) => {
+                        const matchedNamed = namedEntries.find(([, val]) => val === gVal);
+                        const gTag = matchedNamed ? `Group ${gi + 1} (${escapeHtml(matchedNamed[0])})` : `Group ${gi + 1}`;
+                        groupsHtml += `<div class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted flex items-baseline justify-between gap-2">
+                            <span class="shrink-0 font-semibold">${gTag}:</span>
+                            <code class="font-mono text-google-text dark:text-slate-200 break-all text-right">${gVal !== undefined ? escapeHtml(gVal) : '<em>undefined</em>'}</code>
+                        </div>`;
+                    });
+                    groupsHtml += '</div>';
+                }
+
+                html += `<div class="p-2.5 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border/70 dark:border-google-dark-border">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeColor}">Match #${i + 1}</span>
+                        <span class="font-mono text-[10px] text-google-text-muted">index ${m.index}–${m.end}</span>
+                    </div>
+                    <div class="mt-1 font-mono font-bold text-google-text dark:text-white break-all">${m.value === '' ? '<em class="opacity-60">(empty match)</em>' : escapeHtml(m.value)}</div>
+                    ${groupsHtml}
+                </div>`;
+            }
+            if (matches.length > displayLimit) {
+                html += `<div class="text-center text-[11px] text-google-text-muted py-1">แสดง ${displayLimit} รายการแรกจากทั้งหมด ${matches.length.toLocaleString()} รายการ</div>`;
+            }
+            listEl.innerHTML = html;
+        }
+
+        function renderReplacePreview(compiled, text) {
+            const rawTpl = document.getElementById('replace-input').value;
+            const tpl = rawTpl.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+            try {
+                lastReplaceResult = text.replace(compiled, tpl);
+            } catch (_) {
+                lastReplaceResult = text;
+            }
+            document.getElementById('replace-output').textContent = lastReplaceResult;
+        }
+
+        // ==================== THAI TOKEN EXPLAINER ====================
+        function renderPatternExplanation(pattern, flags) {
+            const outEl = document.getElementById('pattern-explain');
+            if (!pattern) {
+                outEl.innerHTML = '<p class="text-google-text-muted py-2">พิมพ์ Regex เพื่อดูคำอธิบายส่วนประกอบ</p>';
+                return;
+            }
+
+            const tokens = [];
+            let i = 0;
+            while (i < pattern.length && tokens.length < 40) {
+                const ch = pattern[i];
+                if (ch === '\\' && i + 1 < pattern.length) {
+                    const pair = pattern.slice(i, i + 2);
+                    const escMap = {
+                        '\\d': 'ตัวเลขใดก็ได้ 0–9',
+                        '\\D': 'อักขระที่ไม่ใช่ตัวเลข',
+                        '\\w': 'ตัวอักษร A–Z, a–z, 0–9 หรือ _',
+                        '\\W': 'อักขระที่ไม่ใช่คำ (\\w)',
+                        '\\s': 'ช่องว่าง, Tab หรือขึ้นบรรทัดใหม่',
+                        '\\S': 'อักขระที่ไม่ใช่ช่องว่าง',
+                        '\\b': 'ขอบเขตของคำ (Word Boundary)',
+                        '\\n': 'ตัวขึ้นบรรทัดใหม่ (Newline)',
+                        '\\t': 'เครื่องหมาย Tab'
+                    };
+                    if (pair === '\\u' && i + 5 < pattern.length) {
+                        const hex = pattern.slice(i, i + 6);
+                        tokens.push([hex, `อักขระ Unicode รหัส ${hex}`]);
+                        i += 6;
+                        continue;
+                    }
+                    tokens.push([pair, escMap[pair] || `จับตัวอักษร "${pattern[i + 1]}" ตรงตัว`]);
+                    i += 2;
+                    continue;
+                }
+                if (ch === '[') {
+                    let j = i + 1;
+                    while (j < pattern.length && pattern[j] !== ']') {
+                        if (pattern[j] === '\\') j++;
+                        j++;
+                    }
+                    const clsStr = pattern.slice(i, Math.min(pattern.length, j + 1));
+                    const negated = clsStr.startsWith('[^');
+                    tokens.push([clsStr, negated ? `ตัวใดก็ได้ที่ "ไม่ใช่" ในชุด ${clsStr}` : `ตัวใดก็ได้ 1 ตัวภายในชุด ${clsStr}`]);
+                    i = j + 1;
+                    continue;
+                }
+                if (ch === '(') {
+                    if (pattern.startsWith('(?:', i)) { tokens.push(['(?:...)', 'กลุ่มแบบไม่จำค่า (Non-capturing Group)']); i += 3; continue; }
+                    if (pattern.startsWith('(?=', i)) { tokens.push(['(?=...)', 'Lookahead — ด้านหน้าต้องตามด้วยเงื่อนไขนี้']); i += 3; continue; }
+                    if (pattern.startsWith('(?!', i)) { tokens.push(['(?!...)', 'Negative Lookahead — ด้านหน้าต้องไม่ตามด้วยสิ่งนี้']); i += 3; continue; }
+                    if (pattern.startsWith('(?<=', i)) { tokens.push(['(?<=...)', 'Lookbehind — ด้านหลังต้องนำหน้าด้วยสิ่งนี้']); i += 4; continue; }
+                    if (pattern.startsWith('(?<!', i)) { tokens.push(['(?<!...)', 'Negative Lookbehind — ด้านหลังต้องไม่นำหน้าด้วยสิ่งนี้']); i += 4; continue; }
+                    const namedM = pattern.slice(i).match(/^\(\?<([a-zA-Z0-9_]+)>/);
+                    if (namedM) {
+                        tokens.push([namedM[0] + '...)', `Named Capture Group ชื่อ "${namedM[1]}"`]);
+                        i += namedM[0].length;
+                        continue;
+                    }
+                    tokens.push(['(', 'เริ่มกลุ่ม Capture Group สำหรับจับค่าแยกหรือกำหนดเงื่อนไขรวม']);
+                    i++;
+                    continue;
+                }
+                if (ch === ')') { tokens.push([')', 'ปิดกลุ่ม (End Group)']); i++; continue; }
+                if (ch === '{') {
+                    const qm = pattern.slice(i).match(/^\{\d+(?:,\d*)?\}\??/);
+                    if (qm) {
+                        tokens.push([qm[0], `กำหนดจำนวนซ้ำ ${qm[0].replace(/[{}?]/g, '').replace(',', ' ถึง ')} ครั้ง`]);
+                        i += qm[0].length;
+                        continue;
+                    }
+                }
+                if (ch === '^') { tokens.push(['^', flags.includes('m') ? 'จุดเริ่มบรรทัด' : 'จุดเริ่มข้อความ']); i++; continue; }
+                if (ch === '$') { tokens.push(['$', flags.includes('m') ? 'จุดสิ้นสุดบรรทัด' : 'จุดสิ้นสุดข้อความ']); i++; continue; }
+                if (ch === '.') { tokens.push(['.', flags.includes('s') ? 'ตัวอะไรก็ได้ 1 ตัว (รวมขึ้นบรรทัดใหม่)' : 'ตัวอะไรก็ได้ 1 ตัว (ยกเว้นขึ้นบรรทัดใหม่)']); i++; continue; }
+                if (ch === '+') {
+                    const lazy = pattern[i + 1] === '?';
+                    tokens.push([lazy ? '+?' : '+', lazy ? 'ซ้ำ 1 ครั้งขึ้นไป (แบบสั้นสุด)' : 'ซ้ำ 1 ครั้งขึ้นไป (ต้องมีอย่างน้อย 1 ตัว)']);
+                    i += lazy ? 2 : 1;
+                    continue;
+                }
+                if (ch === '*') {
+                    const lazy = pattern[i + 1] === '?';
+                    tokens.push([lazy ? '*?' : '*', lazy ? 'ซ้ำ 0 ครั้งขึ้นไป (แบบสั้นสุด)' : 'ซ้ำ 0 ครั้งขึ้นไป (มีหรือไม่มีก็ได้)']);
+                    i += lazy ? 2 : 1;
+                    continue;
+                }
+                if (ch === '?') { tokens.push(['?', 'มี 0 หรือ 1 ตัว (ไม่บังคับมี)']); i++; continue; }
+                if (ch === '|') { tokens.push(['|', 'หรือ (OR) — ตรงฝั่งซ้ายหรือฝั่งขวา']); i++; continue; }
+
+                // Literal run
+                let k = i + 1;
+                while (k < pattern.length && !'\\[](){}^$.+*?|'.includes(pattern[k])) k++;
+                const lit = pattern.slice(i, k);
+                tokens.push([lit, `ข้อความตรงตัว "${lit}"`]);
+                i = k;
+            }
+
+            outEl.innerHTML = tokens.map(([tok, desc]) => `
+                <div class="flex items-start gap-2 p-1.5 rounded-lg bg-google-subtle/50 dark:bg-google-dark-subtle/50">
+                    <code class="px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 font-mono font-bold text-[11px] shrink-0 break-all max-w-[140px]">${escapeHtml(tok)}</code>
+                    <span class="text-google-text-body dark:text-google-dark-text-body leading-snug">${escapeHtml(desc)}</span>
+                </div>
+            `).join('');
+        }
+
+        // ==================== CODE GENERATOR (JS / PHP / PYTHON) ====================
+        function renderCodeSnippet() {
+            const pattern = document.getElementById('regex-pattern').value || '^.+$';
+            const flags = normalizeFlags(document.getElementById('regex-flags').value);
+            const escapedSlash = pattern.replace(/(?<!\\)\//g, '\\/');
+            let code = '';
+
+            if (currentCodeLang === 'js') {
+                code = `// JavaScript Validation & Extraction
+const regex = /${escapedSlash}/${flags};
+
+// 1) เช็กว่าข้อมูลผ่านเงื่อนไขหรือไม่ (แนะนำถอด 'g' ตอนใช้ .test)
+const isValid = new RegExp(${JSON.stringify(pattern)}, "${flags.replace(/[gy]/g, '')}").test(inputText);
+
+// 2) ดึงข้อความทั้งหมดที่ตรงเงื่อนไข + Capture Groups
+const matches = [...inputText.matchAll(new RegExp(${JSON.stringify(pattern)}, "${flags.includes('g') ? flags : flags + 'g'}"))];`;
+            } else if (currentCodeLang === 'php') {
+                const phpFlags = flags.replace(/[gd]/g, '');
+                code = `<?php
+// PHP PCRE (preg_match / preg_match_all)
+$pattern = ${JSON.stringify('/' + escapedSlash + '/' + phpFlags)};
+
+// 1) ตรวจสอบข้อมูลจากฟอร์ม
+$isValid = preg_match($pattern, $inputText) === 1;
+
+// 2) ดึงข้อมูลทั้งหมดที่ตรงเงื่อนไข
+preg_match_all($pattern, $inputText, $matches);
+print_r($matches[0]);`;
+            } else {
+                const pyFlags = [];
+                if (flags.includes('i')) pyFlags.push('re.IGNORECASE');
+                if (flags.includes('m')) pyFlags.push('re.MULTILINE');
+                if (flags.includes('s')) pyFlags.push('re.DOTALL');
+                const flagArg = pyFlags.length ? `, ${pyFlags.join(' | ')}` : '';
+                const rawEscaped = pattern.replace(/"/g, '\\"');
+                code = `import re
+
+# Python Regular Expression
+pattern = re.compile(r"${rawEscaped}"${flagArg})
+
+# 1) ตรวจสอบเงื่อนไข
+is_valid = bool(pattern.search(input_text))
+
+# 2) ดึงข้อมูลทั้งหมดที่ตรงเงื่อนไข
+matches = pattern.findall(input_text)`;
+            }
+            document.getElementById('code-snippet-out').textContent = code;
+        }
+
+        // ==================== PRESETS & CHEATSHEET RENDERERS ====================
+        function loadPresetById(id) {
+            const p = PRESETS.find(item => item.id === id);
+            if (!p) return;
+            document.getElementById('regex-pattern').value = p.pattern;
+            document.getElementById('regex-flags').value = normalizeFlags(p.flags);
+            document.getElementById('test-input').value = p.sample;
+            syncFlagPills();
+
+            // Pick intuitive mode automatically based on preset
+            if (p.id === 'email_validate' || p.id === 'thai_phone' || p.id === 'thai_id' || p.id === 'strong_password' || p.id === 'thai_postal' || p.id === 'username_slug') {
+                currentHighlightMode = 'lines';
+            } else {
+                currentHighlightMode = 'inline';
+            }
+            setHighlightMode(currentHighlightMode);
+            switchRegexTab('tester');
+            showToast(`โหลดแพตเทิร์น "${p.badge}" พร้อมตัวอย่างแล้ว`);
+        }
+
+        function setPresetCategory(cat) {
+            currentPresetCategory = cat;
+            document.querySelectorAll('.preset-cat-btn').forEach(btn => {
+                const active = btn.getAttribute('data-pcat') === cat;
+                btn.className = active
+                    ? 'preset-cat-btn px-3 py-1.5 rounded-full font-bold bg-fuchsia-600 text-white cursor-pointer'
+                    : 'preset-cat-btn px-3 py-1.5 rounded-full font-semibold bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body cursor-pointer';
+            });
+            renderPresetLibrary();
+        }
+
+        function renderPresetLibrary() {
+            const q = document.getElementById('preset-search').value.trim().toLowerCase();
+            const grid = document.getElementById('preset-grid');
+            const filtered = PRESETS.filter(p => {
+                const catOk = currentPresetCategory === 'all' || p.cat.includes(currentPresetCategory);
+                const textOk = !q || `${p.title} ${p.desc} ${p.badge} ${p.pattern}`.toLowerCase().includes(q);
+                return catOk && textOk;
+            });
+
+            if (!filtered.length) {
+                grid.innerHTML = '<div class="md:col-span-2 g-card p-8 text-center text-sm text-google-text-muted">ไม่พบแพตเทิร์นที่ตรงกับคำค้นหา</div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => `
+                <article class="g-card p-4 flex flex-col justify-between gap-3">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="px-2.5 py-0.5 rounded-full bg-fuchsia-50 dark:bg-fuchsia-950/60 text-fuchsia-700 dark:text-fuchsia-300 text-[11px] font-bold">${escapeHtml(p.badge)}</span>
+                            <span class="font-mono text-[11px] font-bold text-indigo-600 dark:text-indigo-400">flags: /${escapeHtml(p.flags)}</span>
+                        </div>
+                        <h3 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading">${escapeHtml(p.title)}</h3>
+                        <p class="text-xs text-google-text-body dark:text-google-dark-text-body leading-relaxed">${escapeHtml(p.desc)}</p>
+                        <pre class="p-2.5 rounded-xl bg-slate-900 text-fuchsia-300 font-mono text-[11px] overflow-x-auto">${escapeHtml(p.pattern)}</pre>
+                    </div>
+                    <div class="flex items-center justify-between gap-2 pt-2 border-t border-google-border dark:border-google-dark-border">
+                        <button type="button" onclick="copyPresetPattern('${p.id}')" class="px-3 py-1.5 rounded-lg border border-google-border dark:border-google-dark-border hover:border-fuchsia-500 text-xs font-semibold cursor-pointer">
+                            <i class="fa-regular fa-copy mr-1"></i> คัดลอก
+                        </button>
+                        <button type="button" onclick="loadPresetById('${p.id}')" class="px-3.5 py-1.5 rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white text-xs font-bold shadow-xs cursor-pointer">
+                            <i class="fa-solid fa-play mr-1"></i> ทดลองใช้ทันที
+                        </button>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function copyPresetPattern(id) {
+            const p = PRESETS.find(x => x.id === id);
+            if (p) copyTextValue(`/${p.pattern}/${p.flags}`, p.badge);
+        }
+
+        function insertToken(tok) {
+            const input = document.getElementById('regex-pattern');
+            const start = typeof input.selectionStart === 'number' ? input.selectionStart : input.value.length;
+            const end = typeof input.selectionEnd === 'number' ? input.selectionEnd : input.value.length;
+            const before = input.value.slice(0, start);
+            const after = input.value.slice(end);
+            input.value = before + tok + after;
+            const newPos = start + tok.length;
+            input.setSelectionRange?.(newPos, newPos);
+            evaluateRegex();
+            showToast(`แทรก ${tok} เข้าช่อง Pattern แล้ว`);
+        }
+
+        function renderCheatsheet() {
+            const q = document.getElementById('cheatsheet-search').value.trim().toLowerCase();
+            const grid = document.getElementById('cheatsheet-grid');
+            const renderedCards = CHEATSHEET_SECTIONS.map(sec => {
+                const items = sec.items.filter(it => !q || `${it.tok} ${it.desc} ${sec.title}`.toLowerCase().includes(q));
+                if (!items.length) return '';
+                return `
+                    <div class="g-card overflow-hidden">
+                        <div class="px-4 py-3 bg-google-subtle/60 dark:bg-google-dark-subtle/60 border-b border-google-border dark:border-google-dark-border flex items-center gap-2">
+                            <i class="fa-solid ${sec.icon}"></i>
+                            <h3 class="text-xs sm:text-sm font-bold text-google-text dark:text-google-dark-text font-heading">${escapeHtml(sec.title)}</h3>
+                        </div>
+                        <div class="divide-y divide-google-border dark:divide-google-dark-border">
+                            ${items.map(it => `
+                                <div class="px-4 py-2.5 flex items-center justify-between gap-2.5 text-xs">
+                                    <div class="flex items-start gap-2.5 min-w-0">
+                                        <code class="px-2 py-0.5 rounded bg-fuchsia-50 dark:bg-fuchsia-950/70 text-fuchsia-700 dark:text-fuchsia-300 font-mono font-bold shrink-0">${escapeHtml(it.tok)}</code>
+                                        <span class="text-google-text-body dark:text-google-dark-text-body leading-snug">${escapeHtml(it.desc)}</span>
+                                    </div>
+                                    <button type="button" onclick="insertToken(${JSON.stringify(it.tok).replace(/"/g, '&quot;')})" class="px-2 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 text-[11px] font-bold shrink-0 cursor-pointer">+ แทรก</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).filter(Boolean).join('');
+
+            grid.innerHTML = renderedCards || '<div class="md:col-span-2 g-card p-8 text-center text-sm text-google-text-muted">ไม่พบ Token ที่ตรงกับคำค้นหา</div>';
+        }
+
+        // ==================== QUICK ACTIONS ====================
+        function clearTestText() {
+            document.getElementById('test-input').value = '';
+            evaluateRegex();
+        }
+
+        function copyPatternLiteral() {
+            const p = document.getElementById('regex-pattern').value;
+            const f = normalizeFlags(document.getElementById('regex-flags').value);
+            copyTextValue(`/${p}/${f}`, 'Pattern Literal');
+        }
+
+        function copyMatchesJson() {
+            copyTextValue(JSON.stringify(lastMatchesData, null, 2), 'ผลลัพธ์ JSON');
+        }
+
+        function copyReplaceOutput() {
+            copyTextValue(lastReplaceResult, 'ข้อความที่แทนที่แล้ว');
+        }
+
+        function copyCodeSnippet() {
+            copyTextValue(document.getElementById('code-snippet-out').textContent, `โค้ด ${currentCodeLang.toUpperCase()}`);
+        }
+
+        // ==================== THEME & APP SWITCHER ====================
+        function initTheme() {
+            const saved = localStorage.getItem('feel_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        function toggleSubAppSwitcher(forceState) {
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu) return;
+            const willOpen = typeof forceState === 'boolean' ? forceState : menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !willOpen);
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('app-switcher-btn');
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu || menu.classList.contains('hidden')) return;
+            if ((!btn || !btn.contains(e.target)) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleSubAppSwitcher(false);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            // Load starter extract emails demo with group capture + sample text
+            document.getElementById('regex-pattern').value = '([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})';
+            document.getElementById('regex-flags').value = 'g';
+            document.getElementById('test-input').value =
+`ติดต่อฝ่ายสนับสนุน: support@feel-dev.th
+อีเมลส่วนตัว: feel.pakapon@gmail.com หรือ hr@nstvc.ac.th
+เบอร์โทรสำรอง: 089-123-4567 (ไม่ใช่รูปแบบอีเมล)`;
+            syncFlagPills();
+            renderPresetLibrary();
+            renderCheatsheet();
+            evaluateRegex();
+        });
+    </script>
+</body>
+</html>

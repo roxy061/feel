@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Works Wheel | วงล้อผลงานและนวัตกรรม - นายภคพล สมัยแก้ว</title>
-    <meta name="description" content="วงล้อผลงาน 3 มิติ (3D Works Wheel) จัดแสดงผลงาน โครงงาน เกียรติบัตร และนวัตกรรม โดย นายภคพล สมัยแก้ว (ฟีล)">
+    <title>นิทรรศการหมุนชมผลงาน 3 มิติ (3D Portfolio Showcase) | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="นิทรรศการหมุนชมผลงาน โครงงานสิ่งประดิษฐ์ เกียรติบัตรวิชาการ และประสบการณ์ฝึกงานแบบ 3 มิติ พร้อมบทความสรุปเข้าใจง่าย โดย นายภคพล สมัยแก้ว (ฟีล)">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,16 +48,15 @@
         }
     </script>
     <style>
-        * { user-select: none; -webkit-user-select: none; }
         body { font-family: 'Sarabun', 'Kanit', sans-serif; }
         .dark body { background-color: #1e1f20; color: #e3e3e3; }
+        .stage-box { user-select: none; -webkit-user-select: none; }
         .stage-box:focus-visible { outline: 2px solid #1a73e8; outline-offset: -4px; }
-        /* Clean Modern Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #c4c7c5; border-radius: 9999px; }
     </style>
 </head>
-<body class="bg-background dark:bg-google-dark-bg text-foreground dark:text-google-dark-text min-h-screen flex flex-col justify-between overflow-hidden">
+<body class="bg-background dark:bg-google-dark-bg text-foreground dark:text-google-dark-text min-h-screen flex flex-col">
 
     <!-- Google 4-Color Accent Bar -->
     <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
@@ -67,266 +66,324 @@
         <div class="h-full flex-1 bg-google-green"></div>
     </div>
 
-    <!-- Navigation Bar -->
-    <header class="fixed top-0 left-0 right-0 z-40 bg-white/90 dark:bg-google-dark-surface/90 backdrop-blur-md border-b border-google-border dark:border-google-dark-border h-16 sm:h-18 px-4 sm:px-8 flex items-center justify-between">
+    <!-- Unified Top Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white/95 dark:bg-google-dark-surface/95 backdrop-blur-md border-b border-google-border dark:border-google-dark-border h-16 px-4 sm:px-6 flex items-center justify-between gap-3">
         
-        <div class="flex items-center gap-3">
-            <a href="index.html" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-google-muted dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-xs sm:text-sm font-semibold transition-all" title="กลับสู่หน้าหลัก">
+        <div class="flex items-center gap-2.5 min-w-0">
+            <a href="index.html" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-bg hover:bg-slate-100 dark:hover:bg-zinc-800 border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold transition-all shrink-0 shadow-xs" title="กลับสู่หน้าหลัก Portfolio">
                 <i class="fa-solid fa-arrow-left text-google-blue"></i>
-                <span>กลับหน้าหลัก</span>
+                <span>หน้าหลัก Portfolio</span>
             </a>
-            <div class="hidden sm:flex items-center gap-2 border-l border-google-border dark:border-google-dark-border pl-3">
-                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-950 text-google-blue flex items-center justify-center text-sm font-bold">
+            <div class="hidden sm:flex items-center gap-2.5 border-l border-google-border dark:border-google-dark-border pl-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/70 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm font-bold shrink-0">
                     <i class="fa-solid fa-dharmachakra"></i>
                 </div>
-                <div>
-                    <h1 class="text-xs sm:text-sm font-bold font-heading">3D Works Wheel</h1>
-                    <p class="text-[11px] text-muted-foreground">นายภคพล สมัยแก้ว (ฟีล)</p>
+                <div class="min-w-0">
+                    <h1 class="text-xs sm:text-sm font-bold font-heading truncate">วงล้อผลงาน 3 มิติ (3D Showcase)</h1>
+                    <p class="text-[11px] text-muted-foreground truncate">หมุนชมผลงานและอ่านสรุปแนวคิด • นายภคพล สมัยแก้ว (ฟีล)</p>
                 </div>
             </div>
         </div>
 
-        <!-- Mode Switcher & Tools -->
-        <div class="flex items-center gap-2">
-            <!-- Mode Switcher -->
-            <div class="flex items-center bg-slate-100 dark:bg-zinc-800 p-1 rounded-full border border-google-border dark:border-google-dark-border text-xs">
-                <button id="btn-mode-portfolio" onclick="switchDataMode('portfolio')" class="px-3 py-1 rounded-full font-bold bg-white dark:bg-google-dark-surface shadow-xs text-google-blue transition-all">
-                    ผลงานของภคพล
-                </button>
-                <button id="btn-mode-demo" onclick="switchDataMode('demo')" class="px-3 py-1 rounded-full font-medium text-muted-foreground hover:text-foreground transition-all">
-                    Demo Art (Unsplash)
-                </button>
-            </div>
+        <!-- Unified Quick App Switcher (4 Distinct Apps) -->
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <nav class="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-zinc-800/90 p-1 rounded-full border border-google-border dark:border-google-dark-border text-xs">
+                <a href="wheel.html" class="px-3 py-1 rounded-full font-bold bg-amber-500 text-white shadow-xs flex items-center gap-1.5">
+                    <i class="fa-solid fa-dharmachakra"></i> <span>1. วงล้อผลงาน 3D</span>
+                </a>
+                <a href="southern-food.html" class="px-3 py-1 rounded-full font-medium text-muted-foreground hover:text-foreground transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-utensils text-orange-500"></i> <span>2. สุ่มร้านอาหารนครฯ</span>
+                </a>
+                <a href="cctv.html" class="px-3 py-1 rounded-full font-medium text-muted-foreground hover:text-foreground transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-video text-red-500"></i> <span>3. กล้อง CCTV สด</span>
+                </a>
+                <a href="weather.html" class="px-3 py-1 rounded-full font-medium text-muted-foreground hover:text-foreground transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-cloud-bolt text-sky-500"></i> <span>4. เรดาร์อากาศสด</span>
+                </a>
+            </nav>
 
             <!-- Dark/Light Theme Button -->
-            <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border flex items-center justify-center hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors shadow-xs" title="สลับโหมดสว่าง / โหมดมืด">
+            <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border flex items-center justify-center hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
                 <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
             </button>
         </div>
     </header>
 
-    <!-- Main 3D Works Wheel Stage Container -->
-    <main class="pt-16 sm:pt-18 flex-1 relative w-full h-[calc(100vh-4rem)] overflow-hidden">
-        
-        <section 
-            id="wheel-section" 
-            aria-label="Works Wheel" 
-            class="relative h-full w-full overflow-hidden select-none"
-        >
-            <!-- Stage viewport with 3D perspective -->
-            <div
-                id="stage"
-                tabindex="0"
-                role="listbox"
-                aria-label="Works Wheel"
-                class="stage-box absolute inset-0 cursor-grab touch-pan-x outline-none active:cursor-grabbing"
-            >
-                <!-- 3D Drum Container -->
-                <div id="wheel-container" class="absolute top-1/2 left-1/2 [transform-style:preserve-3d]">
-                    <!-- Dynamically rendered card elements -->
+    <!-- Main Content: Split View (Left = Clear Readable Article, Right = Interactive 3D Wheel) -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-6 flex flex-col gap-5">
+
+        <!-- Concise Purpose Banner (เข้าใจบทความที่จะสื่อใน 3 วินาที) -->
+        <div class="rounded-2xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border p-4 sm:px-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-start sm:items-center gap-3">
+                <span class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-base shrink-0 mt-0.5 sm:mt-0">
+                    <i class="fa-solid fa-book-open-reader"></i>
+                </span>
+                <div>
+                    <h2 class="text-sm sm:text-base font-bold font-heading text-foreground dark:text-white">
+                        เว็บแอปที่ 1: สรุปผลงานและเกียรติบัตรในรูปแบบวงล้อ 3 มิติ (อ่านเข้าใจง่ายในหน้าเดียว)
+                    </h2>
+                    <p class="text-xs text-muted-foreground mt-0.5">
+                        กดปุ่ม <strong>"ก่อนหน้า / ถัดไป"</strong> หรือคลิกเลือกหัวข้อด้านล่าง เพื่ออ่านบทความสรุปที่มา วัตถุประสงค์ และผลลัพธ์ของผลงานแต่ละชิ้น
+                    </p>
                 </div>
             </div>
-
-            <!-- Central Ring Label (At Rest) -->
-            <div
-                id="ring-label"
-                class="pointer-events-none absolute inset-0 grid place-items-center font-heading font-extrabold tracking-tight text-foreground dark:text-google-dark-text opacity-100 transition-opacity"
-            >
-                Works '26
+            <div class="flex items-center gap-1.5 shrink-0">
+                <button onclick="stepWork(-1)" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-google-blue hover:text-white text-xs font-bold font-heading transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-chevron-left"></i> ก่อนหน้า
+                </button>
+                <span id="work-counter-badge" class="px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 font-mono text-xs font-bold">
+                    1 / 6
+                </span>
+                <button onclick="stepWork(1)" class="px-3.5 py-2 rounded-xl bg-google-blue hover:bg-blue-700 text-white text-xs font-bold font-heading transition flex items-center gap-1.5 shadow-xs cursor-pointer">
+                    ถัดไป <i class="fa-solid fa-chevron-right"></i>
+                </button>
             </div>
+        </div>
 
-            <!-- Active Card Title (Front Face - Left Aligned) -->
-            <div
-                id="front-title"
-                class="pointer-events-none absolute top-1/2 left-[6%] sm:left-[8%] -translate-y-1/2 font-heading font-extrabold tracking-tight text-foreground dark:text-google-dark-text opacity-0 max-w-xs sm:max-w-md transition-opacity leading-tight"
-            >
-                ตู้กดผ้าอนามัยอัตโนมัติ
-            </div>
+        <!-- 6 Quick Topic Pills (Non-overlapping, Easy Selection) -->
+        <div id="topic-pills-bar" class="flex items-center gap-2 overflow-x-auto pb-1">
+            <!-- Populated by JS -->
+        </div>
 
-            <!-- Side Numbered Index Navigation (Right Aligned) -->
-            <ol
-                id="index-list"
-                class="text-muted-foreground absolute top-[10%] right-[3%] sm:right-[2.5%] text-right leading-[1.75] max-h-[80vh] overflow-y-auto pr-1"
-            >
-                <!-- Dynamically rendered index buttons -->
-            </ol>
+        <!-- Main Grid: Left = Readable Story Article Card (5 cols), Right = 3D Interactive Wheel (7 cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch flex-1 min-h-[480px]">
+            
+            <!-- Left Column: Clear Article Card (เข้าใจบทความที่จะสื่อ) -->
+            <article class="lg:col-span-5 rounded-2xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border p-5 sm:p-6 shadow-sm flex flex-col justify-between space-y-5">
+                <div class="space-y-4">
+                    <!-- Category & Year Badge -->
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span id="article-category" class="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 text-xs font-bold font-heading">
+                            โครงงานสิ่งประดิษฐ์
+                        </span>
+                        <span id="article-year" class="text-xs font-medium text-muted-foreground">
+                            พ.ศ. 2567 - 2569
+                        </span>
+                    </div>
 
-            <!-- Bottom Floating Control Guide -->
-            <div class="pointer-events-none absolute bottom-4 inset-x-0 flex items-center justify-center">
-                <div class="pointer-events-auto px-4 py-1.5 rounded-full bg-white/90 dark:bg-google-dark-surface/90 backdrop-blur-md border border-google-border dark:border-google-dark-border text-xs text-muted-foreground shadow-md flex items-center gap-3">
-                    <span class="flex items-center gap-1.5">
-                        <i class="fa-solid fa-arrows-up-down text-google-blue"></i> เลื่อนเมาส์ / ลากเพื่อหมุนวงล้อ
-                    </span>
-                    <span class="text-slate-300 dark:text-zinc-600">•</span>
-                    <span class="flex items-center gap-1.5">
-                        <i class="fa-regular fa-keyboard text-google-green"></i> ปุ่มลูกศร ↑ / ↓
-                    </span>
+                    <!-- Work Title -->
+                    <h3 id="article-title" class="text-xl sm:text-2xl font-extrabold font-heading text-foreground dark:text-white leading-snug">
+                        ตู้กดผ้าอนามัยอัตโนมัติ (หยอดเหรียญ & สแกนจ่าย QR)
+                    </h3>
+
+                    <!-- Main Readable Article Content -->
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-200/70 dark:border-zinc-700/70 space-y-2">
+                        <div class="text-xs font-bold font-heading text-google-blue dark:text-sky-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-lightbulb"></i> สาระสำคัญและบทความที่จะสื่อ:
+                        </div>
+                        <p id="article-summary" class="text-sm sm:text-base text-slate-700 dark:text-slate-200 leading-relaxed">
+                            โครงงานสิ่งประดิษฐ์ที่พัฒนาขึ้นเพื่ออำนวยความสะดวกให้แก่นักเรียนและนักศึกษาในสถานศึกษา โดยประยุกต์ใช้ไมโครคอนโทรลเลอร์ควบคุมกลไกการจ่ายสิ่งของอัตโนมัติ รองรับทั้งการหยอดเหรียญและการสแกนชำระเงิน
+                        </p>
+                    </div>
+
+                    <!-- Key Highlights List -->
+                    <div>
+                        <div class="text-xs font-bold font-heading text-muted-foreground uppercase tracking-wider mb-2">
+                            ทักษะและจุดเด่นที่ได้รับจากผลงานนี้:
+                        </div>
+                        <ul id="article-highlights" class="space-y-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
                 </div>
-            </div>
 
-        </section>
+                <!-- Bottom Action Buttons -->
+                <div class="pt-4 border-t border-google-border dark:border-google-dark-border flex flex-wrap items-center justify-between gap-2">
+                    <button type="button" onclick="openCurrentPreviewModal()" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-foreground dark:text-white text-xs sm:text-sm font-bold font-heading transition flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-magnifying-glass-plus text-google-blue"></i> ขยายดูรูปภาพชัดๆ
+                    </button>
+                    <a id="article-action-link" href="index.html#projects" class="flex-1 px-4 py-2.5 rounded-xl bg-google-blue hover:bg-blue-700 text-white text-xs sm:text-sm font-bold font-heading transition flex items-center justify-center gap-2 shadow-sm">
+                        <span id="article-action-text">เปิดดูในหน้าหลัก</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+            </article>
+
+            <!-- Right Column: Interactive 3D Wheel Stage (7 cols) -->
+            <section 
+                id="wheel-section" 
+                aria-label="Works Wheel" 
+                class="lg:col-span-7 relative min-h-[380px] sm:min-h-[460px] rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-zinc-900 border border-google-border dark:border-google-dark-border overflow-hidden select-none shadow-md"
+            >
+                <!-- Top instruction overlay inside 3D stage -->
+                <div class="pointer-events-none absolute top-3 left-3 right-3 z-20 flex items-center justify-between text-xs text-white/80">
+                    <span class="px-3 py-1 rounded-full bg-black/45 backdrop-blur-md border border-white/15 flex items-center gap-1.5">
+                        <i class="fa-solid fa-hand-pointer text-amber-400"></i> หมุนลูกกลิ้งเมาส์ หรือลากขึ้น-ลงบนการ์ดเพื่อหมุนวงล้อ 3 มิติ
+                    </span>
+                    <button type="button" onclick="toggleWheelOverview()" class="pointer-events-auto px-3 py-1 rounded-full bg-white/15 hover:bg-white/25 text-white backdrop-blur-md border border-white/20 text-xs font-semibold transition cursor-pointer">
+                        <i class="fa-solid fa-rotate"></i> มุมมองวงแหวนรวม
+                    </button>
+                </div>
+
+                <!-- Stage viewport with 3D perspective -->
+                <div
+                    id="stage"
+                    tabindex="0"
+                    role="listbox"
+                    aria-label="Works Wheel"
+                    class="stage-box absolute inset-0 cursor-grab touch-pan-x outline-none active:cursor-grabbing"
+                >
+                    <!-- 3D Drum Container -->
+                    <div id="wheel-container" class="absolute top-1/2 left-1/2 [transform-style:preserve-3d]">
+                        <!-- Dynamically rendered card elements -->
+                    </div>
+                </div>
+
+                <!-- Central Ring Label (At Rest / Overview) -->
+                <div
+                    id="ring-label"
+                    class="pointer-events-none absolute inset-0 grid place-items-center font-heading font-extrabold tracking-tight text-white opacity-0 transition-opacity"
+                >
+                    ผลงานภคพล
+                </div>
+
+                <!-- Bottom Floating Controls inside 3D Stage -->
+                <div class="pointer-events-none absolute bottom-3 inset-x-3 z-20 flex items-center justify-between gap-2">
+                    <button type="button" onclick="stepWork(-1)" class="pointer-events-auto px-3.5 py-1.5 rounded-full bg-black/55 hover:bg-black/80 text-white border border-white/20 text-xs font-semibold backdrop-blur-md flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-arrow-up"></i> ชิ้นก่อนหน้า
+                    </button>
+                    <span id="stage-caption-pill" class="px-3.5 py-1.5 rounded-full bg-black/55 text-amber-300 border border-amber-400/30 text-xs font-heading font-bold backdrop-blur-md truncate max-w-[240px] sm:max-w-xs">
+                        1. ตู้กดผ้าอนามัยอัตโนมัติ
+                    </span>
+                    <button type="button" onclick="stepWork(1)" class="pointer-events-auto px-3.5 py-1.5 rounded-full bg-black/55 hover:bg-black/80 text-white border border-white/20 text-xs font-semibold backdrop-blur-md flex items-center gap-1.5 cursor-pointer">
+                        ชิ้นถัดไป <i class="fa-solid fa-arrow-down"></i>
+                    </button>
+                </div>
+            </section>
+
+        </div>
 
     </main>
 
-    <!-- Modal for Previewing Document / Project Detail -->
-    <div id="preview-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-6">
+    <!-- Modal for Previewing Full Image -->
+    <div id="preview-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-6">
         <div class="bg-white dark:bg-google-dark-surface w-full max-w-4xl max-h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-2xl border border-google-border dark:border-google-dark-border">
-            <div class="px-5 py-3 border-b border-google-border dark:border-google-dark-border flex items-center justify-between">
-                <h3 id="modal-title" class="text-sm sm:text-base font-bold font-heading truncate">รายละเอียด</h3>
-                <button onclick="closePreviewModal()" class="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-zinc-800 flex items-center justify-center text-muted-foreground">
+            <div class="px-5 py-3.5 border-b border-google-border dark:border-google-dark-border flex items-center justify-between">
+                <h3 id="modal-title" class="text-sm sm:text-base font-bold font-heading truncate">รายละเอียดผลงาน</h3>
+                <button onclick="closePreviewModal()" class="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-zinc-800 flex items-center justify-center text-muted-foreground cursor-pointer">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="p-4 flex-1 overflow-auto flex items-center justify-center bg-slate-900">
-                <img id="modal-img" src="" alt="preview" class="max-w-full max-h-[70vh] object-contain rounded-lg">
+            <div class="p-4 flex-1 overflow-auto flex items-center justify-center bg-slate-950">
+                <img id="modal-img" src="" alt="preview" class="max-w-full max-h-[68vh] object-contain rounded-lg">
             </div>
-            <div class="p-3 bg-slate-50 dark:bg-zinc-900 border-t border-google-border dark:border-google-dark-border flex items-center justify-end gap-2">
-                <a id="modal-link" href="#" class="px-4 py-2 rounded-full bg-google-blue hover:bg-blue-600 text-white text-xs font-semibold flex items-center gap-1.5">
-                    <span>เปิดดูฉบับเต็ม / ไปยังหน้านี้</span>
+            <div class="p-3.5 bg-slate-50 dark:bg-zinc-900 border-t border-google-border dark:border-google-dark-border flex items-center justify-between gap-2">
+                <p id="modal-desc" class="text-xs text-muted-foreground truncate"></p>
+                <a id="modal-link" href="#" class="px-4 py-2 rounded-full bg-google-blue hover:bg-blue-600 text-white text-xs font-semibold flex items-center gap-1.5 shrink-0">
+                    <span>เปิดดูในหน้าหลัก Portfolio</span>
                     <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Logic Script (Vanilla JS Port of WorksWheel) -->
     <script>
-        // Data Collections
+        // 6 Non-overlapping Portfolio Showcase Items with Clear Articles
         const PORTFOLIO_WORKS = [
             {
-                title: "ตู้กดผ้าอนามัยแบบหยอดเหรียญ & QR Code",
+                title: "โครงงานตู้กดผ้าอนามัยอัตโนมัติ",
+                category: "1. โครงงานและสิ่งประดิษฐ์",
+                year: "พ.ศ. 2568 - 2569",
                 image: "./project_vending/IMG_20260218_114431.jpg",
                 href: "./index.html#projects",
-                action: "เปิดดูโครงงาน"
+                action: "ดูรายละเอียดโครงงาน",
+                summary: "สิ่งประดิษฐ์ตู้จำหน่ายผ้าอนามัยอัตโนมัติสำหรับติดตั้งในสถานศึกษา ออกแบบมาเพื่อแก้ปัญหาความฉุกเฉินและเพิ่มความสะดวกให้แก่นักเรียนนักศึกษา โดยใช้ไมโครคอนโทรลเลอร์ควบคุมเซนเซอร์ตรวจจับและมอเตอร์จ่ายสินค้า",
+                highlights: [
+                    "ออกแบบและประกอบตู้โครงสร้างจริงพร้อมระบบวงจรควบคุม",
+                    "ประยุกต์ใช้ไมโครคอนโทรลเลอร์และเซนเซอร์สั่งจ่ายสินค้าแม่นยำ",
+                    "ฝึกฝนการทำงานเป็นทีมและการแก้ปัญหาเชิงวิศวกรรมจริง"
+                ]
             },
             {
-                title: "ระบบตรวจการณ์ CCTV นครศรีฯ (สด 6 จอ)",
-                image: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=800&q=80",
-                href: "./cctv.html",
-                action: "ดูกล้อง CCTV สด"
-            },
-            {
-                title: "เรดาร์สภาพอากาศ & พายุฝน Windy สด",
-                image: "https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=800&q=80",
-                href: "./weather.html",
-                action: "เปิดเรดาร์สภาพอากาศ"
-            },
-            {
-                title: "เกียรติบัตรรางวัลคนเก่ง (Excellence)",
+                title: "เกียรติบัตรรางวัลคนเก่ง (Excellence Award)",
+                category: "2. เกียรติบัตรความภูมิใจ",
+                year: "วิทยาลัยอาชีวศึกษานครศรีธรรมราช",
                 image: "./cert_konkeng.jpg",
                 href: "./index.html#certificates",
-                action: "ดูเกียรติบัตร (PDF)"
+                action: "เปิดดูไฟล์เกียรติบัตร",
+                summary: "เกียรติบัตรเชิดชูเกียรติผู้มีความมุ่งมั่นตั้งใจในการศึกษาและพัฒนาทักษะวิชาชีพอย่างต่อเนื่อง สะท้อนถึงความมีวินัย ความรับผิดชอบ และการรักษามาตรฐานการเรียนในระดับอาชีวศึกษา",
+                highlights: [
+                    "รับรองความมุ่งมั่นและผลการปฏิบัติตนดีเด่นในสถานศึกษา",
+                    "เป็นแรงผลักดันในการพัฒนาทักษะด้านเทคโนโลยีคอมพิวเตอร์",
+                    "มีไฟล์เอกสาร PDF ฉบับจริงสามารถเปิดตรวจสอบได้"
+                ]
             },
             {
-                title: "แข่งขันทักษะวิทยาศาสตร์ (ระดับจังหวัด)",
+                title: "การแข่งขันทักษะวิทยาศาสตร์ (ระดับจังหวัด)",
+                category: "3. การแข่งขันทักษะวิชาการ",
+                year: "ระดับอาชีวศึกษาจังหวัดนครศรีธรรมราช",
                 image: "./cert_wit_prov.jpg",
                 href: "./index.html#certificates",
-                action: "ดูเกียรติบัตร (PDF)"
+                action: "เปิดดูไฟล์เกียรติบัตร",
+                summary: "เกียรติบัตรจากการเข้าร่วมการแข่งขันทักษะทางวิทยาศาสตร์และเทคโนโลยีในระดับจังหวัด โดยนำความรู้ด้านกระบวนการคิดวิเคราะห์และการทดลองมาประยุกต์แก้โจทย์ปัญหา",
+                highlights: [
+                    "ฝึกทักษะการคิดวิเคราะห์เชิงวิทยาศาสตร์อย่างเป็นระบบ",
+                    "ตัวแทนสถานศึกษาเข้าร่วมแข่งขันในระดับจังหวัดนครศรีธรรมราช",
+                    "ต่อยอดสู่การแข่งขันในระดับภาคใต้ต่อไป"
+                ]
             },
             {
-                title: "แข่งขันทักษะวิทยาศาสตร์ (ระดับภาค)",
+                title: "การแข่งขันทักษะวิทยาศาสตร์ (ระดับภาคใต้)",
+                category: "4. การแข่งขันระดับภูมิภาค",
+                year: "ระดับอาชีวศึกษาภาคใต้",
                 image: "./cert_wit_region.jpg",
                 href: "./index.html#certificates",
-                action: "ดูเกียรติบัตร (PDF)"
-            },
-            {
-                title: "Logic & Pattern Solving (รูบิค 3x3)",
-                image: "./ตัวเองที่ทะเล.jpg",
-                href: "./index.html#skills",
-                action: "ดูทักษะรูบิค 3x3"
-            },
-            {
-                title: "เอกสารบริการและกิจกรรมนักเรียนนักศึกษา",
-                image: "./doc_studentservice.jpg",
-                href: "./index.html#documents",
-                action: "ดูเอกสารทางการ"
+                action: "เปิดดูไฟล์เกียรติบัตร",
+                summary: "เกียรติบัตรการเข้าร่วมแข่งขันทักษะวิชาการด้านวิทยาศาสตร์ในระดับภาคใต้ ซึ่งเป็นเวทีแลกเปลี่ยนเรียนรู้และวัดทักษะการแก้ปัญหาร่วมกับตัวแทนจากวิทยาลัยต่างๆ ทั่วภาคใต้",
+                highlights: [
+                    "ยกระดับประสบการณ์การแข่งขันสู่เวทีระดับภูมิภาค (ภาคใต้)",
+                    "ทำงานร่วมกับทีมและอาจารย์ที่ปรึกษาภายใต้เวลาจำกัด",
+                    "นำประสบการณ์มาปรับปรุงการทำโครงงานสิ่งประดิษฐ์"
+                ]
             },
             {
                 title: "ประสบการณ์ฝึกงาน บริษัท เชียร์ คอมมูนิเคชั่น",
+                category: "5. ประสบการณ์ปฏิบัติงานจริง",
+                year: "พ.ศ. 2567",
                 image: "./ตัวเองตอน ฝึกดร..JPG",
-                href: "./index.html#experience",
-                action: "ดูประวัติฝึกงาน"
+                href: "./index.html#about",
+                action: "อ่านประวัติการฝึกงาน",
+                summary: "การฝึกประสบการณ์วิชาชีพจริงร่วมกับทีมช่างเทคนิค ณ บริษัท เชียร์ คอมมูนิเคชั่น จำกัด ได้เรียนรู้การติดตั้ง ตรวจสอบ และบำรุงรักษาระบบสื่อสารโทรคมนาคมและอุปกรณ์เครือข่ายในสถานที่จริง",
+                highlights: [
+                    "เรียนรู้ขั้นตอนการปฏิบัติงานภาคสนามร่วมกับทีมช่างมืออาชีพ",
+                    "เข้าใจการตรวจสอบสัญญาณ การเดินสาย และอุปกรณ์โครงข่าย",
+                    "พัฒนาทักษะการสื่อสาร ความปลอดภัย และความรับผิดชอบในงาน"
+                ]
+            },
+            {
+                title: "ทักษะการคิดเชิงตรรกะ & การแก้รูบิค 3x3",
+                category: "6. ทักษะเฉพาะตัว & AI",
+                year: "ทักษะเสริมสมาธิและการแก้ปัญหา",
+                image: "./ตัวเองที่ทะเล.jpg",
+                href: "./index.html#skills",
+                action: "ดูทักษะความสามารถ",
+                summary: "นอกจากการเขียนโปรแกรมไมโครคอนโทรลเลอร์ (ESP32) และการใช้ AI ช่วยทำงานแล้ว ยังฝึกฝนการแก้รูบิค 3x3 เป็นประจำ ซึ่งช่วยเสริมสร้างสมาธิ การจดจำรูปแบบ (Pattern Recognition) และการวางลำดับความคิดแบบอัลกอริทึม",
+                highlights: [
+                    "ฝึกการวิเคราะห์ปัญหาเป็นลำดับขั้นตอน (Algorithmic Thinking)",
+                    "ต่อยอดสู่การเขียนโค้ดควบคุม ESP32 และการตัดต่อวิดีโอ",
+                    "ผสมผสานการใช้ AI สมัยใหม่เพื่อเพิ่มความรวดเร็วในการทำงาน"
+                ]
             }
         ];
 
-        const DEMO_WORKS = [
-            {
-                title: "Prismatic Rift",
-                image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
-                href: "#prismatic-rift",
-                action: "View Art"
-            },
-            {
-                title: "Ember Clouds",
-                image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
-                href: "#ember-clouds",
-                action: "View Art"
-            },
-            {
-                title: "Neon Portal",
-                image: "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=800&q=80",
-                href: "#neon-portal",
-                action: "View Art"
-            },
-            {
-                title: "Red Ribbon",
-                image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=800&q=80",
-                href: "#red-ribbon",
-                action: "View Art"
-            },
-            {
-                title: "Celestial",
-                image: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80",
-                href: "#celestial",
-                action: "View Art"
-            },
-            {
-                title: "Uplight",
-                image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
-                href: "#uplight",
-                action: "View Art"
-            },
-            {
-                title: "Indigo Marble",
-                image: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80",
-                href: "#indigo-marble",
-                action: "View Art"
-            },
-            {
-                title: "Launch Window",
-                image: "https://images.unsplash.com/photo-1517976487515-59a9e69d7675?auto=format&fit=crop&w=800&q=80",
-                href: "#launch-window",
-                action: "View Art"
-            },
-            {
-                title: "Cosmic Wave",
-                image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80",
-                href: "#cosmic-wave",
-                action: "View Art"
-            }
-        ];
-
-        // Active dataset
-        let currentItems = PORTFOLIO_WORKS;
-        let currentLabel = "ผลงาน '26";
+        const currentItems = PORTFOLIO_WORKS;
 
         // Geometry Constants
-        const CARD_H = 0.38;
-        const CARD_MAX_W = 0.34;
+        const CARD_H = 0.44;
+        const CARD_MAX_W = 0.48;
         const CARD_RATIO = 1.45;
-        const STEP = 40;
-        const DRUM = 2.22;
-        const LENS = 2.7;
-        const RING_R = 1.14;
-        const BOW = 1.82;
-        const TITLE = 0.124;
-        const INDEX = 0.04;
-        const CULL = 1.6;
+        const STEP = 42;
+        const DRUM = 2.15;
+        const LENS = 2.6;
+        const RING_R = 1.12;
+        const BOW = 1.7;
+        const TITLE = 0.11;
+        const CULL = 1.65;
 
-        const WHEEL_UNITS = 900;
-        const DRAG_UNITS = 420;
+        const WHEEL_UNITS = 850;
+        const DRAG_UNITS = 380;
         const SETTLE = 140;
-        const EASE = 0.12;
+        const EASE = 0.14;
 
         const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
         const lerp = (a, b, t) => a + (b - a) * t;
@@ -337,24 +394,22 @@
             return `translateX(${m * bowAt(drumDeg, bow)}px) rotateZ(${(1 - m) * ringDeg}deg) translateY(${-(1 - m) * ringR}px) rotateX(${m * drumDeg}deg) translateZ(${m * drumR}px)`;
         }
 
-        // State
+        // Start directly on Card #1 (target = 1) so the user immediately sees the first card & article!
         let stageW = 0;
         let stageH = 0;
-        let turn = 0;
-        let target = 0;
-        let active = 0;
+        let turn = 1;
+        let target = 1;
+        let active = -1;
         let settlingTimer = null;
         let dragY = null;
         let cardElements = [];
-        let indexButtons = [];
+        let topicButtons = [];
         let reducedMotion = false;
 
-        // Elements
         const stageEl = document.getElementById('stage');
         const wheelContainerEl = document.getElementById('wheel-container');
         const ringLabelEl = document.getElementById('ring-label');
-        const frontTitleEl = document.getElementById('front-title');
-        const indexListEl = document.getElementById('index-list');
+        const topicPillsBar = document.getElementById('topic-pills-bar');
 
         function checkReducedMotion() {
             reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -368,7 +423,7 @@
             const drumR = cardH * DRUM;
             const ringR = cardH * RING_R;
             const count = currentItems.length;
-            const ringScale = count ? clamp((((2 * Math.PI * ringR) / count) * 0.82) / (cardW || 1), 0.16, 1) : 1;
+            const ringScale = count ? clamp((((2 * Math.PI * ringR) / count) * 0.82) / (cardW || 1), 0.18, 1) : 1;
             return {
                 cardW,
                 cardH,
@@ -377,8 +432,7 @@
                 drumR,
                 bow: cardH * BOW,
                 depth: cardH * LENS,
-                titleSize: cardH * TITLE,
-                indexSize: Math.max(12, cardH * INDEX)
+                titleSize: cardH * TITLE
             };
         }
 
@@ -387,17 +441,56 @@
             target = clamp(next, 0, last + 1);
         }
 
+        function stepWork(delta) {
+            const currentIdx = target < 1 ? 0 : Math.round(target - 1);
+            const nextIdx = (currentIdx + delta + currentItems.length) % currentItems.length;
+            to(nextIdx + 1);
+        }
+
+        function toggleWheelOverview() {
+            if (target > 0.5) {
+                to(0);
+            } else {
+                to((active >= 0 ? active : 0) + 1);
+            }
+        }
+
+        function updateArticlePanel(idx) {
+            const item = currentItems[idx] || currentItems[0];
+            document.getElementById('article-category').textContent = item.category;
+            document.getElementById('article-year').textContent = item.year;
+            document.getElementById('article-title').textContent = item.title;
+            document.getElementById('article-summary').textContent = item.summary;
+            document.getElementById('article-highlights').innerHTML = (item.highlights || []).map(h => `
+                <li class="flex items-start gap-2">
+                    <i class="fa-solid fa-circle-check text-emerald-500 mt-1 shrink-0 text-xs"></i>
+                    <span>${h}</span>
+                </li>
+            `).join('');
+            document.getElementById('article-action-link').href = item.href;
+            document.getElementById('article-action-text').textContent = item.action;
+            document.getElementById('work-counter-badge').textContent = `${idx + 1} / ${currentItems.length}`;
+            document.getElementById('stage-caption-pill').textContent = `${idx + 1}. ${item.title}`;
+
+            topicButtons.forEach((btn, i) => {
+                if (i === idx) {
+                    btn.className = 'px-3.5 py-1.5 rounded-full text-xs font-heading font-bold bg-google-blue text-white shadow-xs whitespace-nowrap transition cursor-pointer';
+                } else {
+                    btn.className = 'px-3.5 py-1.5 rounded-full text-xs font-heading font-medium bg-white dark:bg-google-dark-surface text-muted-foreground hover:text-foreground border border-google-border dark:border-google-dark-border whitespace-nowrap transition cursor-pointer';
+                }
+            });
+        }
+
         function renderWheelItems() {
             wheelContainerEl.innerHTML = '';
-            indexListEl.innerHTML = '';
+            topicPillsBar.innerHTML = '';
             cardElements = [];
-            indexButtons = [];
+            topicButtons = [];
 
             const metrics = calculateMetrics();
-            const count = currentItems.length;
 
             currentItems.forEach((item, i) => {
-                // 1. Create Card
+                // 1. Create 3D Card
                 const card = document.createElement('div');
                 card.id = `card-${i}`;
                 card.role = 'option';
@@ -408,32 +501,32 @@
                 card.style.marginTop = `${-metrics.cardH / 2}px`;
 
                 card.innerHTML = `
-                    <div class="card-face relative w-full h-full rounded-2xl overflow-hidden bg-slate-900 shadow-2xl border border-white/20">
+                    <div class="card-face relative w-full h-full rounded-2xl overflow-hidden bg-slate-900 shadow-2xl border-2 border-white/25 group-hover:border-amber-400 transition-colors">
                         <img 
                             src="${item.image}" 
                             alt="${item.title}" 
                             draggable="false" 
                             class="w-full h-full object-cover select-none pointer-events-none group-hover:scale-105 transition-transform duration-300"
                         />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                        <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white">
-                            <span class="text-xs font-bold font-heading drop-shadow truncate pr-2">${item.title}</span>
-                            <span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-semibold flex items-center gap-1 group-hover:bg-google-blue group-hover:text-white transition-colors">
-                                <span>${item.action || 'เปิดดู'}</span>
-                                <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent"></div>
+                        <div class="absolute top-2.5 left-2.5">
+                            <span class="px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-amber-300 text-[10px] font-heading font-bold border border-amber-400/30">
+                                ${item.category}
+                            </span>
+                        </div>
+                        <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white gap-2">
+                            <span class="text-xs sm:text-sm font-bold font-heading drop-shadow truncate">${item.title}</span>
+                            <span class="px-2.5 py-1 rounded-full bg-google-blue text-white text-[10px] font-semibold flex items-center gap-1 shrink-0 shadow-sm">
+                                <span>ดูภาพใหญ่</span>
+                                <i class="fa-solid fa-expand text-[9px]"></i>
                             </span>
                         </div>
                     </div>
                 `;
 
-                card.onclick = (e) => {
-                    // If card is front card, navigate or show modal
+                card.onclick = () => {
                     if (active === i && turn > 0.5) {
-                        if (item.href.startsWith('#')) {
-                            openPreviewModal(item.title, item.image, item.href);
-                        } else {
-                            window.location.href = item.href;
-                        }
+                        openPreviewModal(item);
                     } else {
                         to(i + 1);
                     }
@@ -442,30 +535,22 @@
                 wheelContainerEl.appendChild(card);
                 cardElements.push(card);
 
-                // 2. Create Index List item
-                const li = document.createElement('li');
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'cursor-pointer hover:text-google-blue dark:hover:text-white transition-colors font-heading text-right truncate max-w-[220px] sm:max-w-xs block py-0.5';
-                btn.style.fontSize = `${metrics.indexSize}px`;
-                btn.textContent = `${i + 1}. ${item.title}`;
-                btn.onclick = () => to(i + 1);
-
-                li.appendChild(btn);
-                indexListEl.appendChild(li);
-                indexButtons.push(btn);
+                // 2. Create Topic Pill Button
+                const pill = document.createElement('button');
+                pill.type = 'button';
+                pill.textContent = `${i + 1}. ${item.title}`;
+                pill.onclick = () => to(i + 1);
+                topicPillsBar.appendChild(pill);
+                topicButtons.push(pill);
             });
 
-            ringLabelEl.textContent = currentLabel;
             ringLabelEl.style.fontSize = `${metrics.titleSize}px`;
-            frontTitleEl.style.fontSize = `${metrics.titleSize}px`;
             stageEl.style.perspective = `${metrics.depth}px`;
+            updateArticlePanel(0);
         }
 
-        // Animation Loop via requestAnimationFrame
         function animate() {
             requestAnimationFrame(animate);
-
             if (!stageH) return;
 
             const gap = target - turn;
@@ -482,7 +567,6 @@
             const last = Math.max(count - 1, 0);
             const metrics = calculateMetrics();
 
-            // Transform wheel container
             wheelContainerEl.style.transform = `translateZ(${-m * metrics.drumR}px)`;
 
             for (let i = 0; i < count; i++) {
@@ -511,33 +595,20 @@
             }
 
             ringLabelEl.style.opacity = String(1 - m);
-            frontTitleEl.style.opacity = String(m);
 
             const near = clamp(Math.round(pos), 0, last);
             if (active !== near) {
                 active = near;
-                frontTitleEl.textContent = currentItems[active]?.title || '';
-
-                indexButtons.forEach((btn, idx) => {
-                    if (idx === active) {
-                        btn.classList.add('text-google-blue', 'dark:text-white', 'font-bold');
-                        btn.classList.remove('text-muted-foreground');
-                    } else {
-                        btn.classList.remove('text-google-blue', 'dark:text-white', 'font-bold');
-                        btn.classList.add('text-muted-foreground');
-                    }
-                });
+                updateArticlePanel(active);
             }
         }
 
-        // Resize Observer
         function setupResize() {
             const updateSize = () => {
                 stageW = stageEl.clientWidth;
                 stageH = stageEl.clientHeight;
                 const metrics = calculateMetrics();
                 ringLabelEl.style.fontSize = `${metrics.titleSize}px`;
-                frontTitleEl.style.fontSize = `${metrics.titleSize}px`;
                 stageEl.style.perspective = `${metrics.depth}px`;
 
                 cardElements.forEach(card => {
@@ -546,10 +617,6 @@
                     card.style.marginLeft = `${-metrics.cardW / 2}px`;
                     card.style.marginTop = `${-metrics.cardH / 2}px`;
                 });
-
-                indexButtons.forEach(btn => {
-                    btn.style.fontSize = `${metrics.indexSize}px`;
-                });
             };
 
             const ro = new ResizeObserver(updateSize);
@@ -557,9 +624,7 @@
             updateSize();
         }
 
-        // Gesture and Event Handlers
         function setupEventListeners() {
-            // Wheel gesture
             stageEl.addEventListener('wheel', (e) => {
                 const next = target + e.deltaY / WHEEL_UNITS;
                 const last = Math.max(currentItems.length - 1, 0);
@@ -568,11 +633,10 @@
 
                 clearTimeout(settlingTimer);
                 settlingTimer = setTimeout(() => {
-                    to(Math.round(target));
+                    to(Math.max(1, Math.round(target)));
                 }, SETTLE);
             }, { passive: false });
 
-            // Pointer drag
             stageEl.addEventListener('pointerdown', (e) => {
                 dragY = e.clientY;
                 stageEl.setPointerCapture(e.pointerId);
@@ -586,54 +650,31 @@
 
             stageEl.addEventListener('pointerup', () => {
                 dragY = null;
-                if (target > 1) to(Math.round(target));
+                if (target > 0.6) to(Math.max(1, Math.round(target)));
             });
 
-            // Keyboard navigation
-            stageEl.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowDown') {
-                    to(Math.round(target) + 1);
-                    e.preventDefault();
-                } else if (e.key === 'ArrowUp') {
-                    to(Math.round(target) - 1);
-                    e.preventDefault();
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                    stepWork(1);
+                } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                    stepWork(-1);
+                } else if (e.key === 'Escape') {
+                    closePreviewModal();
                 }
             });
         }
 
-        // Switch between Portfolio Works and Demo Art
-        function switchDataMode(mode) {
-            const btnPort = document.getElementById('btn-mode-portfolio');
-            const btnDemo = document.getElementById('btn-mode-demo');
-
-            if (mode === 'portfolio') {
-                currentItems = PORTFOLIO_WORKS;
-                currentLabel = "ผลงาน '26";
-                btnPort.className = "px-3 py-1 rounded-full font-bold bg-white dark:bg-google-dark-surface shadow-xs text-google-blue transition-all";
-                btnDemo.className = "px-3 py-1 rounded-full font-medium text-muted-foreground hover:text-foreground transition-all";
-            } else {
-                currentItems = DEMO_WORKS;
-                currentLabel = "Works '26";
-                btnDemo.className = "px-3 py-1 rounded-full font-bold bg-white dark:bg-google-dark-surface shadow-xs text-google-blue transition-all";
-                btnPort.className = "px-3 py-1 rounded-full font-medium text-muted-foreground hover:text-foreground transition-all";
-            }
-
-            target = 0;
-            turn = 0;
-            active = 0;
-            renderWheelItems();
+        function openCurrentPreviewModal() {
+            const item = currentItems[active >= 0 ? active : 0];
+            openPreviewModal(item);
         }
 
-        // Modal Helpers
-        function openPreviewModal(title, imgUrl, linkUrl) {
+        function openPreviewModal(item) {
             const modal = document.getElementById('preview-modal');
-            const mTitle = document.getElementById('modal-title');
-            const mImg = document.getElementById('modal-img');
-            const mLink = document.getElementById('modal-link');
-
-            mTitle.textContent = title;
-            mImg.src = imgUrl;
-            mLink.href = linkUrl;
+            document.getElementById('modal-title').textContent = item.title;
+            document.getElementById('modal-img').src = item.image;
+            document.getElementById('modal-desc').textContent = item.summary;
+            document.getElementById('modal-link').href = item.href;
 
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -645,19 +686,17 @@
             modal.classList.remove('flex');
         }
 
-        // Theme Toggle
         function toggleTheme() {
             const isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            localStorage.setItem('feel_theme', isDark ? 'dark' : 'light');
             const icon = document.getElementById('theme-icon');
             if (icon) {
                 icon.className = isDark ? 'fa-solid fa-sun text-xs text-yellow-400' : 'fa-solid fa-moon text-xs';
             }
         }
 
-        // Initialize on load
         window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme');
+            const savedTheme = localStorage.getItem('feel_theme') || localStorage.getItem('theme');
             if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
                 const icon = document.getElementById('theme-icon');
@@ -671,7 +710,5 @@
             animate();
         });
     </script>
-    <!-- Swarm Rebuild Universal Script -->
-    <script src="js/swarm-rebuild.js"></script>
 </body>
 </html>

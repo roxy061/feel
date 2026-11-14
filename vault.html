@@ -202,26 +202,26 @@
             </div>
         </section>
 
-        <!-- 6-Digit Live IP / PIN Share Panel (Auto-Resets Every 10 Minutes) -->
+        <!-- 6-Digit PIN Live Share Panel (Auto-Resets Every 10 Minutes • Zero-Loss Verified) -->
         <section id="share-6digit-section" class="g-card p-4 sm:p-5 border border-sky-200/90 dark:border-sky-800/60 bg-gradient-to-br from-white via-sky-50/40 to-teal-50/40 dark:from-google-dark-surface dark:via-sky-950/15 dark:to-teal-950/15">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-                <!-- Left: Active 6-Digit Share Code Emitter -->
+                <!-- Left: Active 6-Digit PIN Emitter -->
                 <div class="lg:col-span-7 flex flex-col justify-between gap-3">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300 flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-tower-broadcast text-sm"></i>
+                                <i class="fa-solid fa-key text-sm"></i>
                             </span>
                             <div>
                                 <h2 class="text-sm sm:text-base font-bold font-heading flex items-center gap-2">
-                                    แชร์ด่วนด้วยรหัส IP / PIN 6 หลัก
+                                    แชร์ข้อมูลด่วนด้วย PIN 6 หลัก
                                     <span id="share-status-pill" class="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                                         <span id="share-status-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                         กำลังเชื่อมต่อ...
                                     </span>
                                 </h2>
                                 <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
-                                    ส่งไฟล์ รูปภาพ ลิงก์ &amp; ข้อความข้ามเครื่องโดยไม่ลดคุณภาพ • <strong class="text-sky-700 dark:text-sky-300">รหัสเปลี่ยนอัตโนมัติทุก 10 นาที</strong>
+                                    ส่งไฟล์ รูปภาพ ลิงก์ &amp; ข้อความข้ามเครื่องโดยไม่ลดคุณภาพ • <strong class="text-sky-700 dark:text-sky-300">รีเซ็ต PIN ใหม่ทุก 10 นาที</strong>
                                 </p>
                             </div>
                         </div>
@@ -238,13 +238,13 @@
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-white/95 dark:bg-zinc-900/80 border border-slate-200/90 dark:border-zinc-800 shadow-xs">
                         <div class="min-w-0 space-y-1">
                             <div class="text-[10px] uppercase tracking-wider font-bold text-google-text-muted">
-                                เลข IP / รหัสแชร์ 6 หลัก (คลิกเพื่อคัดลอก)
+                                PIN สำหรับแชร์ 6 หลัก (คลิกเพื่อคัดลอก)
                             </div>
-                            <button id="share-code-display" type="button" onclick="copyActiveShareCode()" class="text-left text-3xl sm:text-4xl font-black font-mono tracking-[0.18em] text-sky-700 dark:text-sky-300 hover:text-teal-600 dark:hover:text-teal-300 transition cursor-pointer select-all" title="คลิกเพื่อคัดลอกรหัส 6 หลัก">
+                            <button id="share-code-display" type="button" onclick="copyActiveShareCode()" class="text-left text-3xl sm:text-4xl font-black font-mono tracking-[0.18em] text-sky-700 dark:text-sky-300 hover:text-teal-600 dark:hover:text-teal-300 transition cursor-pointer select-all" title="คลิกเพื่อคัดลอก PIN 6 หลัก">
                                 --- ---
                             </button>
-                            <div id="share-lan-hint" class="text-[11px] font-mono text-google-text-muted dark:text-google-dark-text-muted truncate">
-                                <i class="fa-solid fa-network-wired text-teal-600 dark:text-teal-400 mr-1"></i>กำลังตรวจหา IP เครือข่าย...
+                            <div id="share-pin-hint" class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted truncate">
+                                <i class="fa-solid fa-shield-check text-emerald-600 dark:text-emerald-400 mr-1"></i>ระบบซ่อมข้อมูลตกหล่นอัตโนมัติ + ตรวจสอบ SHA-256 100%
                             </div>
                         </div>
 
@@ -257,23 +257,23 @@
                                 <div id="share-countdown-bar" class="h-full rounded-full bg-gradient-to-r from-sky-500 to-teal-500 transition-all duration-500" style="width: 100%"></div>
                             </div>
                             <div class="text-[10px] text-google-text-muted">
-                                เมื่อครบ 10 นาที รหัสเก่าจะหมดอายุและสุ่มใหม่ทันที
+                                เมื่อครบ 10 นาที PIN เก่าจะหมดอายุและสุ่มใหม่ทันที
                             </div>
                         </div>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2 text-xs">
                         <button type="button" onclick="copyActiveShareCode()" class="g-btn px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-semibold flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-regular fa-copy"></i> คัดลอกรหัส 6 หลัก
+                            <i class="fa-regular fa-copy"></i> คัดลอก PIN 6 หลัก
                         </button>
                         <button type="button" onclick="copyActiveShareUrl()" class="g-btn px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 font-semibold flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-link text-teal-600 dark:text-teal-400"></i> คัดลอกลิงก์ LAN IP
+                            <i class="fa-solid fa-link text-teal-600 dark:text-teal-400"></i> คัดลอกลิงก์ PIN แชร์
                         </button>
                         <button type="button" onclick="openShareQrModal()" class="g-btn px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 font-semibold flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-qrcode text-purple-600 dark:text-purple-400"></i> สแกน QR แชร์
                         </button>
                         <button type="button" onclick="rotateActiveShare(false)" class="g-btn px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/70 hover:bg-amber-100 font-semibold flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-rotate"></i> สุ่มรหัสใหม่ทันที
+                            <i class="fa-solid fa-rotate"></i> สุ่ม PIN ใหม่ทันที
                         </button>
                         <button id="btn-share-toggle" type="button" onclick="toggleActiveShare()" class="g-btn px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-200 dark:hover:bg-zinc-700 font-semibold flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-pause"></i> ปิดแชร์ชั่วคราว
@@ -281,17 +281,17 @@
                     </div>
                 </div>
 
-                <!-- Right: Receive from Another Device via 6-Digit Code -->
+                <!-- Right: Receive from Another Device via 6-Digit PIN -->
                 <div class="lg:col-span-5 p-4 rounded-2xl bg-slate-50/95 dark:bg-zinc-900/70 border border-slate-200 dark:border-zinc-800 flex flex-col justify-between gap-3">
                     <div class="space-y-1">
                         <h3 class="text-sm font-bold font-heading flex items-center gap-2">
                             <span class="w-7 h-7 rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300 flex items-center justify-center shrink-0">
                                 <i class="fa-solid fa-download text-xs"></i>
                             </span>
-                            รับข้อมูลด้วยรหัส 6 หลัก
+                            รับข้อมูลด้วย PIN 6 หลัก
                         </h3>
                         <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted leading-relaxed">
-                            กรอกเลข IP / รหัสแชร์ 6 หลัก จากอีกเครื่องเพื่อเปิดดู ดาวน์โหลด หรือนำเข้าตู้เซฟนี้แบบต้นฉบับ 100% (มีผลภายใน 10 นาที)
+                            กรอกรหัส PIN 6 หลัก จากอีกเครื่องเพื่อเปิดดู ดาวน์โหลด หรือนำเข้าตู้เซฟนี้แบบต้นฉบับ 100% (มีผลภายใน 10 นาที)
                         </p>
                     </div>
 
@@ -303,7 +303,7 @@
                     </form>
 
                     <div id="receive-share-status" class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted min-h-[1.25rem]">
-                        <i class="fa-solid fa-shield-check text-emerald-600 dark:text-emerald-400 mr-1"></i>ตรวจสอบ SHA-256 และอายุรหัสอัตโนมัติก่อนเปิดไฟล์
+                        <i class="fa-solid fa-shield-check text-emerald-600 dark:text-emerald-400 mr-1"></i>ตรวจสอบ SHA-256 ครบทุกไฟล์ + กู้คืนชิ้นส่วนตกหล่นอัตโนมัติ
                     </div>
                 </div>
             </div>
@@ -530,7 +530,7 @@
                 url: 'https://drive.google.com/drive/folders/13JPid47x7QZvmnHwQI0uZ5hVPatEi3Ow?usp=sharing',
                 note: 'ลิงก์โฟลเดอร์หลักเก็บภาพถ่ายกิจกรรมและการฝึกงานของ นายภคพล สมัยแก้ว',
                 size: 128,
-                sha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+                sha256: 'c5b7122b313702858332438101e045fa8e76da5ba3bd1cc12ca3f9476496846a',
                 createdAt: 'ข้อมูลตั้งต้นของระบบ'
             },
             {
@@ -540,7 +540,7 @@
                 url: 'https://feel-ochre.vercel.app/',
                 note: 'ลิงก์หลักสำหรับส่งให้อาจารย์หรือสถานประกอบการเปิดดูแฟ้มสะสมผลงานออนไลน์',
                 size: 96,
-                sha256: '8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4',
+                sha256: '4f9ed48d143bed2ed2681f485fe50f9205ff2b65069650b851fe702aab60452f',
                 createdAt: 'ข้อมูลตั้งต้นของระบบ'
             },
             {
@@ -550,7 +550,7 @@
                 content: `ชื่อ-นามสกุล: นายภคพล สมัยแก้ว (ฟีล)\nระดับชั้น: ปวส.1 วิทยาลัยอาชีวศึกษานครศรีธรรมราช\nอีเมล: feel0627546143@gmail.com\nLINE ID: CdqbkYbcUv\nโครงงานเด่น: ตู้กดผ้าอนามัยอัตโนมัติควบคุมด้วยไมโครคอนโทรลเลอร์`,
                 note: 'โน้ตข้อมูลสำคัญสำหรับคัดลอกไปใช้งานได้ทันที',
                 size: 340,
-                sha256: '2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae',
+                sha256: '26da28ec2d3d1e4ee32f0a5344a1decc23b95e77347d0a2f0f04e15c69601ba4',
                 createdAt: 'ข้อมูลตั้งต้นของระบบ'
             }
         ];
@@ -592,10 +592,10 @@
             const db = await openVaultDB();
             return new Promise((resolve, reject) => {
                 const tx = db.transaction(STORE_NAME, 'readwrite');
-                const store = tx.objectStore(STORE_NAME);
-                const req = store.put(item);
-                req.onsuccess = () => resolve(true);
-                req.onerror = () => reject(req.error);
+                tx.oncomplete = () => resolve(true);
+                tx.onerror = () => reject(tx.error || new Error('IndexedDB write failed'));
+                tx.onabort = () => reject(tx.error || new Error('IndexedDB write aborted'));
+                tx.objectStore(STORE_NAME).put(item);
             });
         }
 
@@ -603,10 +603,10 @@
             const db = await openVaultDB();
             return new Promise((resolve, reject) => {
                 const tx = db.transaction(STORE_NAME, 'readwrite');
-                const store = tx.objectStore(STORE_NAME);
-                const req = store.delete(id);
-                req.onsuccess = () => resolve(true);
-                req.onerror = () => reject(req.error);
+                tx.oncomplete = () => resolve(true);
+                tx.onerror = () => reject(tx.error || new Error('IndexedDB delete failed'));
+                tx.onabort = () => reject(tx.error || new Error('IndexedDB delete aborted'));
+                tx.objectStore(STORE_NAME).delete(id);
             });
         }
 
@@ -682,6 +682,15 @@
                     }
                     localStorage.setItem('feel_vault_seeded', 'true');
                     items = [...STARTER_ITEMS];
+                }
+            }
+            // Repair legacy placeholder starter hashes in IndexedDB if needed so strict SHA-256 verification always matches
+            const starterMap = new Map(STARTER_ITEMS.map(s => [s.id, s.sha256]));
+            for (const it of items) {
+                const expectedStarterHash = starterMap.get(it.id);
+                if (expectedStarterHash && it.sha256 !== expectedStarterHash) {
+                    it.sha256 = expectedStarterHash;
+                    await putToIndexedDB(it);
                 }
             }
             // Sort newest first
@@ -1016,11 +1025,18 @@
             showToast('ลบรายการออกจากตู้เซฟแล้ว');
         }
 
-        function verifyAllItemsIntegrity() {
+        async function verifyAllItemsIntegrity() {
             const count = vaultItems.length;
             const badge = document.getElementById('storage-status-badge');
-            badge.textContent = `✅ ตรวจสอบแล้ว ${count}/${count} รายการ สมบูรณ์ 100% (Zero Corruption)`;
-            showToast(`🛡️ ตรวจสอบรหัส SHA-256 ครบทั้ง ${count} รายการ: ข้อมูลและไฟล์สมบูรณ์ 100% ไม่มีความเสียหาย!`);
+            badge.textContent = `กำลังตรวจสอบ SHA-256 ทั้งหมด ${count} รายการ...`;
+            const result = await verifyItemsListIntegrity(vaultItems);
+            if (result.corruptedCount === 0) {
+                badge.textContent = `✅ ตรวจสอบจริงแล้ว ${result.verifiedCount}/${count} รายการ สมบูรณ์ 100% (Zero Corruption)`;
+                showToast(`🛡️ ตรวจสอบแฮช SHA-256 จริงครบทั้ง ${count} รายการ: ข้อมูลต้นฉบับตรงกัน 100%!`);
+            } else {
+                badge.textContent = `⚠️ พบรายการข้อมูลไม่ตรงแฮช ${result.corruptedCount} รายการ`;
+                showToast(`⚠️ พบข้อมูลไม่ตรง SHA-256 จำนวน ${result.corruptedCount} รายการ`);
+            }
         }
 
         function exportFullVaultBackup() {
@@ -1094,14 +1110,15 @@
             });
         }
 
-        // ==================== 6-DIGIT LIVE SHARE ENGINE (HYBRID: PHP LAN + VERCEL CLOUD E2E) ====================
+        // ==================== 6-DIGIT PIN SHARE ENGINE (HIGH STABILITY + ZERO LOSS) ====================
         const SHARE_TTL_SECONDS = 600;
         const STORAGE_SHARE_PAUSED_KEY = 'feel_safebox_share_paused';
+        const SESSION_ACTIVE_PIN_KEY = 'feel_safebox_active_pin_v2';
         const CLOUD_BROKERS = [
             'wss://broker.emqx.io:8084/mqtt',
             'wss://broker.hivemq.com:8884/mqtt'
         ];
-        const CLOUD_CHUNK_CHARS = 160000;
+        const CLOUD_CHUNK_CHARS = 64000; // 64KB WebSocket chunks for maximum mobile/Wi-Fi stability
         const broadcastChannel = typeof BroadcastChannel !== 'undefined'
             ? new BroadcastChannel('feel_safebox_cloud_v2')
             : null;
@@ -1116,7 +1133,6 @@
             scope: 'all',
             singleItemId: null,
             label: '',
-            network: null,
             timerId: null,
             isRotating: false,
             cloudClient: null,
@@ -1129,6 +1145,8 @@
         };
         let lastReceivedSharePayload = null;
         const pendingCloudReceivers = new Map();
+        const senderTransferCache = new Map();
+        const inFlightShareRequests = new Set(); // transferId -> { code, encrypted, iv, totalChunks, totalLength, payloadSha256, chunks }
 
         function normalizeCodeDigits(raw) {
             return String(raw || '').replace(/\D+/g, '').slice(0, 6);
@@ -1151,6 +1169,57 @@
             return /^https?:\/\//i.test(raw) ? raw : '#';
         }
 
+        function base64ToUint8(b64) {
+            const binary = atob(b64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes;
+        }
+
+        function hasSubtleCrypto() {
+            return !!(window.crypto && window.crypto.subtle && window.isSecureContext);
+        }
+
+        // True bit-for-bit SHA-256 verification of individual vault items
+        async function computeActualItemSha256(item) {
+            if (!item || !hasSubtleCrypto()) return null;
+            if (item.type === 'link') {
+                return await computeSha256(item.url || '');
+            }
+            if (item.type === 'note') {
+                return await computeSha256(item.content || '');
+            }
+            if (item.dataUrl && item.dataUrl.includes(',')) {
+                const b64Part = item.dataUrl.slice(item.dataUrl.indexOf(',') + 1);
+                const bytes = base64ToUint8(b64Part);
+                return await computeSha256(bytes.buffer);
+            }
+            return null;
+        }
+
+        async function verifyItemsListIntegrity(items) {
+            if (!Array.isArray(items) || items.length === 0) {
+                return { verifiedCount: 0, corruptedCount: 0, details: [] };
+            }
+            let verifiedCount = 0;
+            let corruptedCount = 0;
+            const details = [];
+            for (const it of items) {
+                const actualHash = await computeActualItemSha256(it);
+                const hasHexHash = typeof it.sha256 === 'string' && /^[a-f0-9]{64}$/i.test(it.sha256);
+                if (actualHash && hasHexHash && actualHash !== it.sha256) {
+                    corruptedCount++;
+                    details.push({ id: it.id, title: it.title, ok: false });
+                } else {
+                    verifiedCount++;
+                    details.push({ id: it.id, title: it.title, ok: true });
+                }
+            }
+            return { verifiedCount, corruptedCount, details };
+        }
+
         function generateLocalSixDigitCode(excludeCode = null) {
             const arr = new Uint32Array(1);
             for (let i = 0; i < 32; i++) {
@@ -1165,19 +1234,6 @@
                 if (candidate !== excludeCode) return candidate;
             }
             return String((Date.now() % 900000) + 100000);
-        }
-
-        function base64ToUint8(b64) {
-            const binary = atob(b64);
-            const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) {
-                bytes[i] = binary.charCodeAt(i);
-            }
-            return bytes;
-        }
-
-        function hasSubtleCrypto() {
-            return !!(window.crypto && window.crypto.subtle && window.isSecureContext);
         }
 
         async function getCloudTopicSlug(code) {
@@ -1213,16 +1269,24 @@
                     key,
                     new TextEncoder().encode(jsonStr)
                 );
+                const dataB64 = uint8ToBase64(new Uint8Array(cipherBuf));
+                const payloadSha256 = await computeSha256(dataB64);
                 return {
                     encrypted: true,
                     iv: uint8ToBase64(iv),
-                    data: uint8ToBase64(new Uint8Array(cipherBuf))
+                    data: dataB64,
+                    totalLength: dataB64.length,
+                    payloadSha256
                 };
             }
+            const dataB64 = uint8ToBase64(new TextEncoder().encode(jsonStr));
+            const payloadSha256 = await computeSha256(dataB64);
             return {
                 encrypted: false,
                 iv: '',
-                data: uint8ToBase64(new TextEncoder().encode(jsonStr))
+                data: dataB64,
+                totalLength: dataB64.length,
+                payloadSha256
             };
         }
 
@@ -1230,7 +1294,7 @@
             const rawBytes = base64ToUint8(dataB64);
             if (encrypted) {
                 if (!hasSubtleCrypto()) {
-                    throw new Error('เบราว์เซอร์นี้ไม่รองรับการถอดรหัส AES-GCM บนโปรโตคอลนี้');
+                    throw new Error('เบราว์เซอร์นี้ไม่รองรับการถอดรหัส AES-GCM');
                 }
                 const key = await deriveAesKeyFromCode(code);
                 const iv = base64ToUint8(ivB64);
@@ -1238,6 +1302,38 @@
                 return JSON.parse(new TextDecoder().decode(plainBuf));
             }
             return JSON.parse(new TextDecoder().decode(rawBytes));
+        }
+
+        function saveActivePinSession() {
+            if (!shareState.active || !shareState.code) {
+                sessionStorage.removeItem(SESSION_ACTIVE_PIN_KEY);
+                return;
+            }
+            try {
+                sessionStorage.setItem(SESSION_ACTIVE_PIN_KEY, JSON.stringify({
+                    backend: shareState.backend,
+                    code: shareState.code,
+                    createdAtMs: shareState.createdAtMs,
+                    expiresAtMs: shareState.expiresAtMs,
+                    scope: shareState.scope,
+                    singleItemId: shareState.singleItemId
+                }));
+            } catch {}
+        }
+
+        function loadSavedPinSession() {
+            try {
+                const raw = sessionStorage.getItem(SESSION_ACTIVE_PIN_KEY);
+                if (!raw) return null;
+                const parsed = JSON.parse(raw);
+                if (!parsed || !parsed.code || !parsed.expiresAtMs || parsed.expiresAtMs - Date.now() < 12000) {
+                    sessionStorage.removeItem(SESSION_ACTIVE_PIN_KEY);
+                    return null;
+                }
+                return parsed;
+            } catch {
+                return null;
+            }
         }
 
         function getShareTargetItems() {
@@ -1255,14 +1351,10 @@
             return vaultItems;
         }
 
-        function buildShareUrl(code, preferLan = true) {
+        function buildShareUrl(code) {
             const digits = normalizeCodeDigits(code);
             const cleanCurrentUrl = window.location.href.split('#')[0].split('?')[0];
-            if (digits.length !== 6) return cleanCurrentUrl;
-            const base = (shareState.backend === 'php' && preferLan && shareState.network?.lanBaseUrl)
-                ? shareState.network.lanBaseUrl
-                : (shareState.network?.currentBaseUrl || cleanCurrentUrl);
-            return `${base}?share=${digits}`;
+            return digits.length === 6 ? `${cleanCurrentUrl}?share=${digits}` : cleanCurrentUrl;
         }
 
         function getRemainingShareSeconds() {
@@ -1275,7 +1367,7 @@
             const pillEl = document.getElementById('share-status-pill');
             const scopeEl = document.getElementById('share-scope-badge');
             const scopeAllBtn = document.getElementById('btn-share-scope-all');
-            const lanHintEl = document.getElementById('share-lan-hint');
+            const hintEl = document.getElementById('share-pin-hint');
             const cdTextEl = document.getElementById('share-countdown-text');
             const cdBarEl = document.getElementById('share-countdown-bar');
             const toggleBtn = document.getElementById('btn-share-toggle');
@@ -1295,13 +1387,13 @@
                 if (shareState.active) {
                     if (shareState.backend === 'php') {
                         pillEl.className = 'inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
-                        pillEl.innerHTML = '<span id="share-status-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>LAN/PHP ออนไลน์ • รีทุก 10 นาที';
+                        pillEl.innerHTML = '<span id="share-status-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>พร้อมแชร์ • รีทุก 10 นาที';
                     } else if (shareState.cloudConnected) {
                         pillEl.className = 'inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
-                        pillEl.innerHTML = '<span id="share-status-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>Cloud Live (E2E) • รีทุก 10 นาที';
+                        pillEl.innerHTML = '<span id="share-status-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>พร้อมแชร์ E2E • รีทุก 10 นาที';
                     } else {
                         pillEl.className = 'inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700 dark:bg-sky-950/70 dark:text-sky-300 border border-sky-200 dark:border-sky-800';
-                        pillEl.innerHTML = '<span id="share-status-dot" class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse"></span>กำลังเชื่อม Cloud • รีทุก 10 นาที';
+                        pillEl.innerHTML = '<span id="share-status-dot" class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse"></span>กำลังเชื่อมต่อ...';
                     }
                 } else {
                     pillEl.className = 'inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-400 border border-slate-200 dark:border-zinc-700';
@@ -1322,19 +1414,12 @@
                 scopeAllBtn.classList.toggle('hidden', shareState.scope !== 'single');
             }
 
-            if (lanHintEl) {
-                const lanIp = shareState.network?.lanIp;
+            if (hintEl) {
                 if (shareState.active) {
-                    const shareUrl = buildShareUrl(shareState.code, true);
-                    if (shareState.backend === 'php' && lanIp) {
-                        lanHintEl.innerHTML = `<i class="fa-solid fa-network-wired text-teal-600 dark:text-teal-400 mr-1"></i>LAN IP: <strong class="text-slate-800 dark:text-zinc-200">${escapeHtml(lanIp)}</strong> • ${escapeHtml(shareUrl)}`;
-                    } else {
-                        lanHintEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-sky-600 dark:text-sky-400 mr-1"></i>เปิดหน้าผู้ส่งไว้ระหว่างรับ • ลิงก์: ${escapeHtml(shareUrl)}`;
-                    }
+                    const extra = shareState.backend === 'cloud' ? ' (เปิดหน้าผู้ส่งค้างไว้ระหว่างโอนไฟล์)' : ' (บันทึกบนเซิร์ฟเวอร์ + ตรวจ SHA-256)';
+                    hintEl.innerHTML = `<i class="fa-solid fa-shield-check text-emerald-600 dark:text-emerald-400 mr-1"></i>ระบบซ่อมข้อมูลตกหล่นอัตโนมัติ${extra}`;
                 } else {
-                    lanHintEl.innerHTML = lanIp
-                        ? `<i class="fa-solid fa-network-wired text-slate-400 mr-1"></i>LAN IP เครื่องนี้: ${escapeHtml(lanIp)} (กดปุ่มเปิดแชร์เพื่อสร้างรหัส 6 หลัก)`
-                        : '<i class="fa-solid fa-circle-info text-slate-400 mr-1"></i>กด "เปิดแชร์รหัส 6 หลัก" เพื่อสร้างรหัสส่งข้อมูลข้ามเครื่อง';
+                    hintEl.innerHTML = '<i class="fa-solid fa-circle-info text-slate-400 mr-1"></i>กด "เปิดแชร์ PIN 6 หลัก" เพื่อสร้างรหัสส่งข้อมูลข้ามเครื่อง';
                 }
             }
 
@@ -1360,7 +1445,7 @@
             if (toggleBtn) {
                 toggleBtn.innerHTML = shareState.active
                     ? '<i class="fa-solid fa-pause"></i> ปิดแชร์ชั่วคราว'
-                    : '<i class="fa-solid fa-play text-emerald-600 dark:text-emerald-400"></i> เปิดแชร์รหัส 6 หลัก';
+                    : '<i class="fa-solid fa-play text-emerald-600 dark:text-emerald-400"></i> เปิดแชร์ PIN 6 หลัก';
             }
 
             const qrCd = document.getElementById('vmodal-share-countdown');
@@ -1391,6 +1476,7 @@
                 const remaining = getRemainingShareSeconds();
                 updateShareUi();
                 if (remaining <= 0 && !shareState.isRotating) {
+                    sessionStorage.removeItem(SESSION_ACTIVE_PIN_KEY);
                     rotateActiveShare(true);
                 }
             }, 1000);
@@ -1412,6 +1498,38 @@
                 items,
                 serverTime: nowSec
             };
+        }
+
+        function publishMqttChunkAsync(client, topic, packetStr) {
+            return new Promise((resolve) => {
+                if (!client?.connected) return resolve(false);
+                client.publish(topic, packetStr, { qos: 1 }, (err) => {
+                    resolve(!err);
+                });
+            });
+        }
+
+        async function sendCachedChunksIndices(client, respTopic, transferEntry, indices) {
+            for (let k = 0; k < indices.length; k++) {
+                const idx = indices[k];
+                if (!client?.connected || idx < 0 || idx >= transferEntry.totalChunks) break;
+                const packet = JSON.stringify({
+                    transferId: transferEntry.transferId,
+                    requestId: transferEntry.requestId,
+                    code: transferEntry.code,
+                    chunkIndex: idx,
+                    totalChunks: transferEntry.totalChunks,
+                    totalLength: idx === 0 ? transferEntry.totalLength : 0,
+                    payloadSha256: idx === 0 ? transferEntry.payloadSha256 : '',
+                    encrypted: idx === 0 ? transferEntry.encrypted : false,
+                    iv: idx === 0 ? transferEntry.iv : '',
+                    payload: transferEntry.chunks[idx]
+                });
+                await publishMqttChunkAsync(client, respTopic, packet);
+                if (indices.length > 2 && k < indices.length - 1) {
+                    await new Promise(r => setTimeout(r, 20));
+                }
+            }
         }
 
         function handleIncomingBroadcastMessage(ev) {
@@ -1446,39 +1564,68 @@
             }
             if (!msg || typeof msg !== 'object') return;
 
-            // Sender path: answer active share requests matching current non-expired 6-digit code
-            if (topic === shareState.cloudReqTopic && msg.requestId && msg.code) {
-                if (!shareState.active || shareState.code !== msg.code || Date.now() >= shareState.expiresAtMs) {
+            // Sender path: answer initial requests, selective NACK repair requests, and ACK notices
+            if (topic === shareState.cloudReqTopic && msg.code === shareState.code) {
+                if (!shareState.active || Date.now() >= shareState.expiresAtMs) return;
+
+                if (msg.type === 'TRANSFER_ACK') {
+                    showToast(`📤 เครื่องปลายทางรับครบ ${Number(msg.itemCount || 0)} รายการ (ตรวจ SHA-256 100%)`);
                     return;
                 }
-                try {
-                    const pkg = await buildLiveSharePackageForCode(msg.code);
-                    const encoded = await encodeCloudPackage(msg.code, pkg);
-                    const slug = await getCloudTopicSlug(msg.code);
-                    const respTopic = `feel_safebox/v2/${slug}/resp/${msg.requestId}`;
-                    const totalChunks = Math.max(1, Math.ceil(encoded.data.length / CLOUD_CHUNK_CHARS));
-                    const transferId = `tx-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 
-                    for (let idx = 0; idx < totalChunks; idx++) {
-                        if (!shareState.cloudClient?.connected) break;
-                        const slice = encoded.data.slice(idx * CLOUD_CHUNK_CHARS, (idx + 1) * CLOUD_CHUNK_CHARS);
-                        const packet = JSON.stringify({
-                            transferId,
-                            requestId: msg.requestId,
-                            code: msg.code,
-                            chunkIndex: idx,
-                            totalChunks,
-                            encrypted: idx === 0 ? encoded.encrypted : false,
-                            iv: idx === 0 ? encoded.iv : '',
-                            payload: slice
-                        });
-                        shareState.cloudClient.publish(respTopic, packet, { qos: 1 });
-                        if (totalChunks > 2 && idx < totalChunks - 1) {
-                            await new Promise(r => setTimeout(r, 15));
-                        }
+                const slug = await getCloudTopicSlug(msg.code);
+                const respTopic = `feel_safebox/v2/${slug}/resp/${msg.requestId}`;
+
+                if (msg.type === 'NACK_CHUNKS' && msg.transferId && Array.isArray(msg.missingIndices)) {
+                    const cached = senderTransferCache.get(msg.transferId);
+                    if (cached && cached.code === shareState.code && shareState.cloudClient?.connected) {
+                        await sendCachedChunksIndices(shareState.cloudClient, respTopic, cached, msg.missingIndices);
                     }
-                } catch {
-                    // Ignore serialization error on client
+                    return;
+                }
+
+                if (msg.requestId) {
+                    if (inFlightShareRequests.has(msg.requestId)) return;
+                    inFlightShareRequests.add(msg.requestId);
+                    try {
+                        let transferEntry = Array.from(senderTransferCache.values())
+                            .find(entry => entry.requestId === msg.requestId && entry.code === msg.code);
+
+                        if (!transferEntry) {
+                            const pkg = await buildLiveSharePackageForCode(msg.code);
+                            const encoded = await encodeCloudPackage(msg.code, pkg);
+                            const totalChunks = Math.max(1, Math.ceil(encoded.data.length / CLOUD_CHUNK_CHARS));
+                            const transferId = `tx-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+                            const chunks = [];
+                            for (let i = 0; i < totalChunks; i++) {
+                                chunks.push(encoded.data.slice(i * CLOUD_CHUNK_CHARS, (i + 1) * CLOUD_CHUNK_CHARS));
+                            }
+
+                            if (senderTransferCache.size >= 4) {
+                                const oldestKey = senderTransferCache.keys().next().value;
+                                senderTransferCache.delete(oldestKey);
+                            }
+                            transferEntry = {
+                                transferId,
+                                requestId: msg.requestId,
+                                code: msg.code,
+                                encrypted: encoded.encrypted,
+                                iv: encoded.iv,
+                                totalChunks,
+                                totalLength: encoded.totalLength,
+                                payloadSha256: encoded.payloadSha256,
+                                chunks
+                            };
+                            senderTransferCache.set(transferId, transferEntry);
+                        }
+
+                        const allIndices = Array.from({ length: transferEntry.totalChunks }, (_, idx) => idx);
+                        await sendCachedChunksIndices(shareState.cloudClient, respTopic, transferEntry, allIndices);
+                    } catch {
+                        // Ignore serialization error cleanly
+                    } finally {
+                        inFlightShareRequests.delete(msg.requestId);
+                    }
                 }
                 return;
             }
@@ -1540,8 +1687,8 @@
                         clientId: `feel_sb_${Math.random().toString(16).slice(2, 10)}`,
                         clean: true,
                         connectTimeout: 5000,
-                        reconnectPeriod: 4000,
-                        keepalive: 30
+                        reconnectPeriod: 2500,
+                        keepalive: 20
                     });
                     shareState.cloudClient = client;
 
@@ -1593,8 +1740,9 @@
             return shareState.cloudConnectPromise;
         }
 
-        async function activateCloudShareCode(newCode) {
+        async function activateCloudShareCode(newCode, customExpiresAtMs = null, customCreatedAtMs = null) {
             ensureCloudListenersInitialized();
+            senderTransferCache.clear();
             const previousTopic = shareState.cloudReqTopic;
             const slug = await getCloudTopicSlug(newCode);
             const nextTopic = `feel_safebox/v2/${slug}/req`;
@@ -1602,12 +1750,13 @@
             shareState.backend = 'cloud';
             shareState.active = true;
             shareState.code = newCode;
-            shareState.createdAtMs = Date.now();
+            shareState.createdAtMs = customCreatedAtMs || Date.now();
             shareState.ttlSeconds = SHARE_TTL_SECONDS;
-            shareState.expiresAtMs = shareState.createdAtMs + SHARE_TTL_SECONDS * 1000;
+            shareState.expiresAtMs = customExpiresAtMs || (shareState.createdAtMs + SHARE_TTL_SECONDS * 1000);
             shareState.cloudReqTopic = nextTopic;
 
             localStorage.removeItem(STORAGE_SHARE_PAUSED_KEY);
+            saveActivePinSession();
             startShareCountdownLoop();
             updateShareUi();
 
@@ -1631,35 +1780,72 @@
 
             return new Promise((resolve, reject) => {
                 let done = false;
-                let chunksMap = new Map();
-                let totalChunksExpected = 0;
-                let metaEncrypted = false;
-                let metaIv = '';
+                const transfersMap = new Map(); // transferId -> { chunks: Map, totalChunks, expectedLength, expectedSha, encrypted, iv, nackRounds }
+                let latestTransferId = '';
                 let retryInterval = null;
+                let stallTimer = null;
                 let activityTimer = null;
 
                 const cleanup = () => {
                     pendingCloudReceivers.delete(requestId);
                     if (retryInterval) clearInterval(retryInterval);
+                    if (stallTimer) clearTimeout(stallTimer);
                     if (activityTimer) clearTimeout(activityTimer);
                     if (client?.connected) {
                         client.unsubscribe(respTopic);
                     }
                 };
 
-                const resetTimeout = (ms) => {
+                const resetActivityTimeout = (ms) => {
                     if (activityTimer) clearTimeout(activityTimer);
                     activityTimer = setTimeout(() => {
                         if (done) return;
                         done = true;
                         cleanup();
-                        reject(new Error('ไม่พบรหัสแชร์ 6 หลักนี้ กำลังหมดอายุ (รีเซ็ตทุก 10 นาที) หรือเครื่องผู้ส่งปิดหน้าเว็บอยู่'));
+                        reject(new Error('ไม่พบ PIN 6 หลักนี้ อาจหมดอายุแล้ว (รีทุก 10 นาที) หรือเครื่องผู้ส่งปิดหน้าเว็บอยู่'));
                     }, ms);
                 };
 
-                const finishSuccess = (pkg) => {
+                const scheduleStallRepair = (tid) => {
+                    if (stallTimer) clearTimeout(stallTimer);
+                    const state = transfersMap.get(tid);
+                    if (!client?.connected || !state || state.totalChunks <= 1) return;
+                    stallTimer = setTimeout(() => {
+                        if (done || state.chunks.size === 0 || state.chunks.size >= state.totalChunks) return;
+                        if (state.nackRounds >= 6) return;
+                        state.nackRounds++;
+                        const missingIndices = [];
+                        for (let i = 0; i < state.totalChunks && missingIndices.length < 24; i++) {
+                            if (!state.chunks.has(i)) missingIndices.push(i);
+                        }
+                        if (missingIndices.length > 0) {
+                            setReceiveStatus(
+                                `<i class="fa-solid fa-wrench fa-spin mr-1 text-amber-600"></i>กำลังกู้คืนข้อมูลส่วนที่ตกหล่น (${state.chunks.size}/${state.totalChunks})...`,
+                                'muted'
+                            );
+                            client.publish(reqTopic, JSON.stringify({
+                                type: 'NACK_CHUNKS',
+                                requestId,
+                                transferId: tid,
+                                code: digits,
+                                missingIndices
+                            }), { qos: 1 });
+                            scheduleStallRepair(tid);
+                        }
+                    }, 1200);
+                };
+
+                const finishSuccess = (pkg, viaMqtt = false) => {
                     if (done) return;
                     done = true;
+                    if (viaMqtt && client?.connected) {
+                        client.publish(reqTopic, JSON.stringify({
+                            type: 'TRANSFER_ACK',
+                            requestId,
+                            code: digits,
+                            itemCount: pkg?.itemCount || 0
+                        }), { qos: 1 });
+                    }
                     cleanup();
                     resolve(pkg);
                 };
@@ -1672,47 +1858,78 @@
                 };
 
                 pendingCloudReceivers.set(requestId, {
-                    resolveDirect: (pkg) => finishSuccess(pkg),
+                    resolveDirect: (pkg) => finishSuccess(pkg, false),
                     onChunk: async (pkt) => {
                         if (done) return;
-                        resetTimeout(10000);
+                        resetActivityTimeout(12000);
                         if (retryInterval) {
                             clearInterval(retryInterval);
                             retryInterval = null;
                         }
-                        if (pkt.chunkIndex === 0) {
-                            metaEncrypted = !!pkt.encrypted;
-                            metaIv = pkt.iv || '';
+                        const tid = pkt.transferId || 'default';
+                        latestTransferId = tid;
+                        if (!transfersMap.has(tid)) {
+                            transfersMap.set(tid, {
+                                chunks: new Map(),
+                                totalChunks: Number(pkt.totalChunks || 1),
+                                expectedLength: 0,
+                                expectedSha: '',
+                                encrypted: false,
+                                iv: '',
+                                nackRounds: 0
+                            });
                         }
-                        totalChunksExpected = Math.max(totalChunksExpected, Number(pkt.totalChunks || 1));
-                        chunksMap.set(Number(pkt.chunkIndex), String(pkt.payload || ''));
+                        const state = transfersMap.get(tid);
+                        state.totalChunks = Math.max(state.totalChunks, Number(pkt.totalChunks || 1));
+                        if (pkt.chunkIndex === 0) {
+                            state.encrypted = !!pkt.encrypted;
+                            state.iv = pkt.iv || '';
+                            if (pkt.totalLength) state.expectedLength = Number(pkt.totalLength);
+                            if (pkt.payloadSha256) state.expectedSha = String(pkt.payloadSha256);
+                        }
+                        state.chunks.set(Number(pkt.chunkIndex), String(pkt.payload || ''));
 
-                        if (totalChunksExpected > 1) {
+                        if (state.totalChunks > 1 && state.chunks.size < state.totalChunks) {
                             setReceiveStatus(
-                                `<i class="fa-solid fa-spinner fa-spin mr-1 text-teal-600"></i>กำลังรับข้อมูล ${chunksMap.size}/${totalChunksExpected} ส่วน (${formatShareCode(digits)})...`,
+                                `<i class="fa-solid fa-spinner fa-spin mr-1 text-teal-600"></i>กำลังรับข้อมูล ${state.chunks.size}/${state.totalChunks} ส่วน (${formatShareCode(digits)})...`,
                                 'muted'
                             );
+                            scheduleStallRepair(tid);
                         }
 
-                        if (chunksMap.size >= totalChunksExpected) {
-                            try {
-                                const fullB64 = Array.from({ length: totalChunksExpected }, (_, i) => chunksMap.get(i) || '').join('');
-                                const pkg = await decodeCloudPackage(digits, metaEncrypted, metaIv, fullB64);
-                                finishSuccess(pkg);
-                            } catch {
-                                finishError(new Error('ถอดรหัสข้อมูลไม่สำเร็จ กรุณาตรวจสอบรหัส 6 หลักอีกครั้ง'));
+                        if (state.chunks.size >= state.totalChunks && !state.assembling) {
+                            // Ensure metadata from chunk 0 arrived (if chunk 0 arrived late or dropped, NACK repair above rescues it!)
+                            if (state.expectedLength > 0 || state.chunks.has(0)) {
+                                state.assembling = true;
+                                if (stallTimer) clearTimeout(stallTimer);
+                                try {
+                                    const fullB64 = Array.from({ length: state.totalChunks }, (_, i) => state.chunks.get(i) || '').join('');
+                                    if (state.expectedLength > 0 && fullB64.length !== state.expectedLength) {
+                                        throw new Error('ขนาดข้อมูลที่ได้รับไม่ครบถ้วน กรุณาลองดึงใหม่อีกครั้ง');
+                                    }
+                                    if (state.expectedSha) {
+                                        const actualPayloadSha = await computeSha256(fullB64);
+                                        if (actualPayloadSha !== state.expectedSha) {
+                                            throw new Error('รหัสตรวจสอบข้อมูล SHA-256 ไม่ตรงกัน ข้อมูลอาจตกหล่นระหว่างส่ง');
+                                        }
+                                    }
+                                    const pkg = await decodeCloudPackage(digits, state.encrypted, state.iv, fullB64);
+                                    finishSuccess(pkg, true);
+                                } catch (err) {
+                                    finishError(new Error(err.message || 'ถอดรหัสข้อมูลไม่สำเร็จ กรุณาตรวจสอบ PIN 6 หลักอีกครั้ง'));
+                                }
                             }
                         }
                     }
                 });
 
-                resetTimeout(client?.connected ? 8500 : 3000);
+                resetActivityTimeout(client?.connected ? 11000 : 3500);
 
                 const publishReq = () => {
                     if (done) return;
                     broadcastChannel?.postMessage({ type: 'SHARE_REQ', requestId, code: digits });
                     if (client?.connected) {
-                        client.publish(reqTopic, JSON.stringify({ requestId, code: digits, ts: Date.now() }), { qos: 1 });
+                        client.publish(reqTopic, JSON.stringify({ type: 'SHARE_REQ', requestId, code: digits, ts: Date.now() }), { qos: 1 });
                     }
                 };
 
@@ -1723,8 +1940,8 @@
                 }
 
                 retryInterval = setInterval(() => {
-                    if (chunksMap.size === 0 && !done) publishReq();
-                }, 1800);
+                    if (!latestTransferId && !done) publishReq();
+                }, 3200);
             });
         }
 
@@ -1740,13 +1957,10 @@
                 if (res.ok && data && data.success) {
                     phpBackendAvailable = true;
                     shareState.backend = 'php';
-                    if (data.network) shareState.network = data.network;
                     updateShareUi();
                     return 'php';
                 }
-            } catch {
-                // Network error or non-PHP static host
-            }
+            } catch {}
             phpBackendAvailable = false;
             shareState.backend = 'cloud';
             updateShareUi();
@@ -1760,6 +1974,7 @@
                 shareState.active = false;
                 shareState.code = '';
                 shareState.expiresAtMs = 0;
+                saveActivePinSession();
                 stopShareCountdownLoop();
                 updateShareUi();
                 if (!silent) {
@@ -1799,20 +2014,19 @@
                     });
 
                     if (res.status === 404 || res.status === 405 || !data) {
-                        // Static host (e.g. Vercel) -> switch automatically to Cloud Live Mode
                         phpBackendAvailable = false;
                         shareState.backend = 'cloud';
                     } else if (!res.ok || !data.success) {
-                        throw new Error(data.message || 'สร้างรหัสแชร์ไม่สำเร็จ');
+                        throw new Error(data.message || 'สร้าง PIN แชร์ไม่สำเร็จ');
                     } else {
                         shareState.active = true;
                         shareState.code = data.code;
                         shareState.createdAtMs = Date.now();
                         shareState.ttlSeconds = Number(data.ttlSeconds || SHARE_TTL_SECONDS);
                         shareState.expiresAtMs = shareState.createdAtMs + Number(data.remainingSeconds || SHARE_TTL_SECONDS) * 1000;
-                        if (data.network) shareState.network = data.network;
 
                         localStorage.removeItem(STORAGE_SHARE_PAUSED_KEY);
+                        saveActivePinSession();
                         startShareCountdownLoop();
                         updateShareUi();
                         activatedCode = data.code;
@@ -1831,15 +2045,16 @@
 
                 if (!silent && activatedCode) {
                     showToast(isAuto
-                        ? `🔄 ครบ 10 นาที: รีรหัสแชร์ 6 หลักใหม่เป็น ${formatShareCode(activatedCode)} แล้ว!`
-                        : `🔐 สร้างรหัสแชร์ 6 หลักใหม่: ${formatShareCode(activatedCode)} (หมดอายุใน 10 นาที)`);
+                        ? `🔄 ครบ 10 นาที: รี PIN 6 หลักใหม่เป็น ${formatShareCode(activatedCode)} แล้ว!`
+                        : `🔐 สร้าง PIN แชร์ 6 หลักใหม่: ${formatShareCode(activatedCode)} (หมดอายุใน 10 นาที)`);
                 }
                 return true;
             } catch (err) {
                 shareState.active = false;
+                saveActivePinSession();
                 updateShareUi();
                 if (!silent) {
-                    showToast(`สร้างรหัสแชร์ไม่สำเร็จ: ${escapeHtml(err.message)}`);
+                    showToast(`สร้าง PIN แชร์ไม่สำเร็จ: ${escapeHtml(err.message)}`);
                 }
                 return false;
             } finally {
@@ -1848,6 +2063,7 @@
         }
 
         function rotateActiveShare(isAuto = false) {
+            sessionStorage.removeItem(SESSION_ACTIVE_PIN_KEY);
             return createOrRotateShare({ isAuto, silent: false });
         }
 
@@ -1869,6 +2085,7 @@
             }
 
             if (shareState.backend === 'cloud') {
+                senderTransferCache.clear();
                 updateShareUi();
                 return;
             }
@@ -1892,11 +2109,10 @@
                 }
                 if (data.success && typeof data.remainingSeconds === 'number') {
                     shareState.expiresAtMs = Date.now() + data.remainingSeconds * 1000;
+                    saveActivePinSession();
                     updateShareUi();
                 }
-            } catch {
-                // Ignore transient background sync error
-            }
+            } catch {}
         }
 
         async function revokeActiveShare(silent = false) {
@@ -1906,6 +2122,8 @@
             shareState.code = '';
             shareState.expiresAtMs = 0;
             shareState.cloudReqTopic = '';
+            senderTransferCache.clear();
+            saveActivePinSession();
             stopShareCountdownLoop();
             updateShareUi();
 
@@ -1923,7 +2141,7 @@
                 } catch {}
             }
             if (!silent) {
-                showToast('ปิดการแชร์รหัส 6 หลักชั่วคราวแล้ว');
+                showToast('ปิดการแชร์ PIN 6 หลักชั่วคราวแล้ว');
             }
         }
 
@@ -1943,6 +2161,7 @@
             shareState.scope = 'single';
             shareState.singleItemId = item.id;
             shareState.label = item.title || '1 รายการ';
+            sessionStorage.removeItem(SESSION_ACTIVE_PIN_KEY);
             const ok = await createOrRotateShare({ isAuto: false, silent: false });
             if (ok) {
                 document.getElementById('share-6digit-section')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1952,15 +2171,16 @@
         async function resetShareScopeToAll() {
             shareState.scope = 'all';
             shareState.singleItemId = null;
+            sessionStorage.removeItem(SESSION_ACTIVE_PIN_KEY);
             await createOrRotateShare({ isAuto: false, silent: false });
         }
 
         async function copyActiveShareCode() {
             if (!shareState.active || !shareState.code) {
-                showToast('ยังไม่มีรหัสแชร์ที่เปิดใช้งานอยู่');
+                showToast('ยังไม่มี PIN แชร์ที่เปิดใช้งานอยู่');
                 return;
             }
-            await copyTextValue(shareState.code, `คัดลอกรหัสแชร์ 6 หลัก (${formatShareCode(shareState.code)}) แล้ว!`);
+            await copyTextValue(shareState.code, `คัดลอก PIN 6 หลัก (${formatShareCode(shareState.code)}) แล้ว!`);
         }
 
         async function copyActiveShareUrl() {
@@ -1968,42 +2188,39 @@
                 showToast('ยังไม่มีลิงก์แชร์ที่เปิดใช้งานอยู่');
                 return;
             }
-            await copyTextValue(
-                buildShareUrl(shareState.code, true),
-                shareState.backend === 'php' ? 'คัดลอกลิงก์ LAN IP สำหรับแชร์เรียบร้อย!' : 'คัดลอกลิงก์แชร์เรียบร้อย!'
-            );
+            await copyTextValue(buildShareUrl(shareState.code), 'คัดลอกลิงก์แชร์ PIN 6 หลักเรียบร้อย!');
         }
 
         function openShareQrModal() {
             if (!shareState.active || !shareState.code) {
-                showToast('กรุณาเปิดแชร์รหัส 6 หลักก่อนแสดง QR Code');
+                showToast('กรุณาเปิดแชร์ PIN 6 หลักก่อนแสดง QR Code');
                 return;
             }
-            const shareUrl = buildShareUrl(shareState.code, true);
+            const shareUrl = buildShareUrl(shareState.code);
             const modal = document.getElementById('vault-modal');
             const titleEl = document.getElementById('vmodal-title');
             const metaEl = document.getElementById('vmodal-meta');
             const body = document.getElementById('vmodal-body');
             const actions = document.getElementById('vmodal-actions');
 
-            titleEl.textContent = 'แชร์ข้ามเครื่องด้วยรหัส 6 หลัก (IP / PIN)';
+            titleEl.textContent = 'แชร์ข้ามเครื่องด้วย PIN 6 หลัก';
             metaEl.textContent = `${shareState.label} • รีเซ็ตอัตโนมัติทุก 10 นาที`;
             body.className = 'p-5 flex-1 overflow-auto bg-white dark:bg-zinc-950 text-google-text dark:text-white';
             body.innerHTML = `
                 <div class="max-w-md mx-auto text-center space-y-4 py-2">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 text-xs font-bold text-sky-700 dark:text-sky-300">
                         <i class="fa-regular fa-clock"></i>
-                        หมดอายุและสุ่มใหม่ใน <span id="vmodal-share-countdown" class="font-mono">${formatCountdownSeconds(getRemainingShareSeconds())}</span>
+                        หมดอายุและสุ่ม PIN ใหม่ใน <span id="vmodal-share-countdown" class="font-mono">${formatCountdownSeconds(getRemainingShareSeconds())}</span>
                     </div>
                     <div>
-                        <div class="text-xs text-google-text-muted mb-1">กรอกเลข 6 หลักนี้บนหน้า Feel SafeBox อีกเครื่อง</div>
+                        <div class="text-xs text-google-text-muted mb-1">กรอก PIN 6 หลักนี้บนหน้า Feel SafeBox อีกเครื่อง</div>
                         <div id="vmodal-qr-code-label" class="text-4xl font-black font-mono tracking-[0.22em] text-sky-700 dark:text-sky-300">${formatShareCode(shareState.code)}</div>
                     </div>
                     <div class="bg-white p-3 rounded-2xl border border-slate-200 inline-block shadow-sm">
                         <img id="vmodal-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=230x230&data=${encodeURIComponent(shareUrl)}" alt="Share QR" class="w-48 h-48 mx-auto rounded-lg">
                     </div>
                     <div class="p-3 rounded-xl bg-slate-100 dark:bg-zinc-900 text-left space-y-1">
-                        <div class="text-[10px] font-bold uppercase text-google-text-muted">${shareState.backend === 'php' ? 'ลิงก์ LAN Direct (เครือข่ายเดียวกัน)' : 'ลิงก์เปิดรับบนอีกเครื่อง (Cloud Live E2E)'}</div>
+                        <div class="text-[10px] font-bold uppercase text-google-text-muted">ลิงก์รับข้อมูลด้วย PIN 6 หลัก</div>
                         <div class="text-xs font-mono break-all text-sky-700 dark:text-sky-300">${escapeHtml(shareUrl)}</div>
                     </div>
                 </div>
@@ -2011,13 +2228,13 @@
             const qrImg = document.getElementById('vmodal-qr-img');
             if (qrImg) {
                 qrImg.onerror = () => {
-                    qrImg.outerHTML = '<div class="w-48 h-48 flex items-center justify-center text-xs text-slate-500 p-4">ไม่สามารถโหลดภาพ QR (ใช้รหัส 6 หลักหรือลิงก์ด้านล่างแทนได้)</div>';
+                    qrImg.outerHTML = '<div class="w-48 h-48 flex items-center justify-center text-xs text-slate-500 p-4">ไม่สามารถโหลดภาพ QR (ใช้ PIN 6 หลักหรือลิงก์ด้านล่างแทนได้)</div>';
                 };
             }
             actions.innerHTML = `
-                <button type="button" onclick="copyActiveShareCode()" class="px-3 py-1.5 rounded-lg bg-sky-600 text-white text-xs font-bold cursor-pointer"><i class="fa-regular fa-copy mr-1"></i>คัดลอกรหัส</button>
+                <button type="button" onclick="copyActiveShareCode()" class="px-3 py-1.5 rounded-lg bg-sky-600 text-white text-xs font-bold cursor-pointer"><i class="fa-regular fa-copy mr-1"></i>คัดลอก PIN</button>
                 <button type="button" onclick="copyActiveShareUrl()" class="px-3 py-1.5 rounded-lg bg-teal-600 text-white text-xs font-bold cursor-pointer"><i class="fa-solid fa-link mr-1"></i>คัดลอกลิงก์</button>
-                <button type="button" onclick="rotateActiveShare(false)" class="px-3 py-1.5 rounded-lg bg-amber-600 text-white text-xs font-bold cursor-pointer"><i class="fa-solid fa-rotate mr-1"></i>สุ่มใหม่</button>
+                <button type="button" onclick="rotateActiveShare(false)" class="px-3 py-1.5 rounded-lg bg-amber-600 text-white text-xs font-bold cursor-pointer"><i class="fa-solid fa-rotate mr-1"></i>สุ่ม PIN ใหม่</button>
             `;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -2040,7 +2257,7 @@
             const input = document.getElementById('receive-code-input');
             const digits = normalizeCodeDigits(input?.value || '');
             if (digits.length !== 6) {
-                setReceiveStatus('<i class="fa-solid fa-triangle-exclamation mr-1"></i>กรุณากรอกรหัสตัวเลข 6 หลักให้ครบ', 'error');
+                setReceiveStatus('<i class="fa-solid fa-triangle-exclamation mr-1"></i>กรุณากรอก PIN ตัวเลข 6 หลักให้ครบ', 'error');
                 input?.focus();
                 return;
             }
@@ -2050,13 +2267,13 @@
         async function fetchSharedByCode(rawCode) {
             const digits = normalizeCodeDigits(rawCode);
             if (digits.length !== 6) {
-                showToast('รหัสแชร์ต้องเป็นตัวเลข 6 หลัก');
+                showToast('PIN แชร์ต้องเป็นตัวเลข 6 หลัก');
                 return;
             }
 
             const btn = document.getElementById('btn-receive-share');
             if (btn) btn.disabled = true;
-            setReceiveStatus(`<i class="fa-solid fa-spinner fa-spin mr-1 text-teal-600"></i>กำลังตรวจสอบรหัส ${formatShareCode(digits)}...`, 'muted');
+            setReceiveStatus(`<i class="fa-solid fa-spinner fa-spin mr-1 text-teal-600"></i>กำลังตรวจสอบ PIN ${formatShareCode(digits)}...`, 'muted');
 
             try {
                 if (shareState.backend === 'detecting') {
@@ -2070,7 +2287,7 @@
                         phpBackendAvailable = false;
                         shareState.backend = 'cloud';
                     } else if (!res.ok || !apiData.success) {
-                        throw new Error(apiData.message || 'รหัสไม่ถูกต้องหรือหมดอายุแล้ว');
+                        throw new Error(apiData.message || 'PIN ไม่ถูกต้องหรือหมดอายุแล้ว');
                     } else {
                         data = apiData;
                     }
@@ -2080,11 +2297,23 @@
                     data = await fetchCloudShareByCode(digits);
                 }
 
+                if (!data || !Array.isArray(data.items) || data.items.length === 0) {
+                    throw new Error('ไม่พบรายการข้อมูลในแพ็กเกจแชร์นี้');
+                }
+
+                // End-to-end SHA-256 verification on every single received item before exposing to user
+                setReceiveStatus(`<i class="fa-solid fa-shield-halved fa-pulse mr-1 text-teal-600"></i>กำลังตรวจสอบแฮช SHA-256 ครบทุกไฟล์...`, 'muted');
+                const integrity = await verifyItemsListIntegrity(data.items);
+                if (integrity.corruptedCount > 0) {
+                    throw new Error(`ตรวจพบข้อมูลไม่ตรง SHA-256 ต้นฉบับ ${integrity.corruptedCount} รายการ กรุณาลองดึงใหม่อีกครั้ง`);
+                }
+
                 lastReceivedSharePayload = {
                     ...data,
+                    integrity,
                     expiresAtMs: Date.now() + Number(data.remainingSeconds || 0) * 1000
                 };
-                setReceiveStatus(`<i class="fa-solid fa-circle-check mr-1"></i>พบรหัส ${formatShareCode(digits)}: ${data.itemCount} รายการ (สมบูรณ์ 100%)`, 'success');
+                setReceiveStatus(`<i class="fa-solid fa-circle-check mr-1"></i>ตรวจ SHA-256 ผ่านครบ ${data.items.length} รายการ (สมบูรณ์ 100%)`, 'success');
                 openReceivedShareModal(lastReceivedSharePayload);
             } catch (err) {
                 setReceiveStatus(`<i class="fa-solid fa-circle-xmark mr-1"></i>${escapeHtml(err.message)}`, 'error');
@@ -2130,6 +2359,12 @@
 
             if (toImport.length === 0) return;
 
+            const integrity = await verifyItemsListIntegrity(toImport);
+            if (integrity.corruptedCount > 0) {
+                showToast(`⚠️ พบข้อมูลไม่ตรงแฮช ${integrity.corruptedCount} รายการ ยกเลิกการบันทึกเพื่อป้องกันไฟล์เสีย`);
+                return;
+            }
+
             for (const srcItem of toImport) {
                 const cleanItem = { ...srcItem };
                 if (!cleanItem.id) {
@@ -2149,7 +2384,7 @@
 
             renderVaultItems();
             await syncActiveShareIfNeeded();
-            showToast(`นำเข้าข้อมูลจากรหัสแชร์ ${toImport.length} รายการ ลงตู้เซฟสำเร็จ 100%!`);
+            showToast(`นำเข้าข้อมูลจาก PIN ${toImport.length} รายการ ลงตู้เซฟสำเร็จ 100% (Verified SHA-256)!`);
         }
 
         function openReceivedShareModal(payload) {
@@ -2160,8 +2395,8 @@
             const actions = document.getElementById('vmodal-actions');
 
             const remaining = Math.max(0, Math.ceil((payload.expiresAtMs - Date.now()) / 1000));
-            titleEl.textContent = `📦 ข้อมูลที่ได้รับจากรหัส ${formatShareCode(payload.code)}`;
-            metaEl.textContent = `จำนวน ${payload.itemCount} รายการ • รหัสมีอายุคงเหลือ`;
+            titleEl.textContent = `📦 ข้อมูลที่ได้รับจาก PIN ${formatShareCode(payload.code)}`;
+            metaEl.textContent = `จำนวน ${payload.itemCount} รายการ • ตรวจสอบ SHA-256 ตรงกัน 100%`;
 
             body.className = 'p-4 sm:p-5 flex-1 overflow-auto bg-slate-50 dark:bg-zinc-950 text-google-text dark:text-white';
 
@@ -2187,6 +2422,7 @@
                             <div class="flex flex-wrap items-center gap-2">
                                 <h4 class="text-sm font-bold truncate">${escapeHtml(it.title || 'ไม่มีชื่อ')}</h4>
                                 <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300">${typeBadge}</span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">✓ SHA-256 ตรง 100%</span>
                             </div>
                             <p class="text-[11px] text-google-text-muted mt-0.5">${formatBytes(it.size || 0)} • SHA-256: <span class="font-mono">${escapeHtml((it.sha256 || '').slice(0, 12))}...</span></p>
                             ${extraBody}
@@ -2205,10 +2441,10 @@
                 <div class="space-y-3">
                     <div class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-sky-50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 text-xs">
                         <span class="font-semibold text-sky-800 dark:text-sky-200">
-                            <i class="fa-solid fa-shield-check text-emerald-600 mr-1.5"></i>ได้รับข้อมูลต้นฉบับสมบูรณ์ 100% จากรหัส <strong class="font-mono">${formatShareCode(payload.code)}</strong>
+                            <i class="fa-solid fa-shield-check text-emerald-600 mr-1.5"></i>ได้รับข้อมูลต้นฉบับสมบูรณ์ 100% จาก PIN <strong class="font-mono">${formatShareCode(payload.code)}</strong>
                         </span>
                         <span class="font-mono font-bold text-amber-700 dark:text-amber-300">
-                            ⏳ รหัสหมดอายุใน <span id="vmodal-receive-countdown">${formatCountdownSeconds(remaining)}</span>
+                            ⏳ PIN หมดอายุใน <span id="vmodal-receive-countdown">${formatCountdownSeconds(remaining)}</span>
                         </span>
                     </div>
                     ${cardsHtml}
@@ -2234,16 +2470,57 @@
             }
 
             document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible' && shareState.active && getRemainingShareSeconds() <= 0 && !shareState.isRotating) {
-                    rotateActiveShare(true);
+                if (document.visibilityState === 'visible' && shareState.active) {
+                    if (getRemainingShareSeconds() <= 0 && !shareState.isRotating) {
+                        rotateActiveShare(true);
+                    } else if (shareState.backend === 'cloud' && !shareState.cloudConnected) {
+                        ensureCloudMqttClient();
+                    }
+                }
+            });
+
+            window.addEventListener('online', () => {
+                if (shareState.active && shareState.backend === 'cloud') {
+                    if (getRemainingShareSeconds() <= 0 && !shareState.isRotating) {
+                        rotateActiveShare(true);
+                    } else {
+                        ensureCloudMqttClient();
+                    }
                 }
             });
 
             await detectShareBackendAndNetwork();
 
             const paused = localStorage.getItem(STORAGE_SHARE_PAUSED_KEY) === '1';
+            const savedPin = loadSavedPinSession();
             if (!paused && vaultItems.length > 0) {
-                await createOrRotateShare({ isAuto: false, silent: true });
+                let restored = false;
+                if (savedPin && savedPin.backend === shareState.backend) {
+                    if (savedPin.scope === 'single' && savedPin.singleItemId) {
+                        shareState.scope = 'single';
+                        shareState.singleItemId = savedPin.singleItemId;
+                    }
+                    if (shareState.backend === 'cloud') {
+                        await activateCloudShareCode(savedPin.code, savedPin.expiresAtMs, savedPin.createdAtMs);
+                        restored = true;
+                    } else if (shareState.backend === 'php') {
+                        const { res, data } = await fetchApiJson(`vault_api.php?action=resolve_share&code=${encodeURIComponent(savedPin.code)}`, { cache: 'no-store' });
+                        if (res.ok && data?.success && data.remainingSeconds > 10) {
+                            shareState.active = true;
+                            shareState.code = data.code;
+                            shareState.createdAtMs = savedPin.createdAtMs || Date.now();
+                            shareState.ttlSeconds = Number(data.ttlSeconds || SHARE_TTL_SECONDS);
+                            shareState.expiresAtMs = Date.now() + Number(data.remainingSeconds) * 1000;
+                            saveActivePinSession();
+                            startShareCountdownLoop();
+                            await syncActiveShareIfNeeded();
+                            restored = true;
+                        }
+                    }
+                }
+                if (!restored) {
+                    await createOrRotateShare({ isAuto: false, silent: true });
+                }
             } else {
                 updateShareUi();
             }

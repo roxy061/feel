@@ -2,8 +2,9 @@
 /**
  * Lossless Digital Vault API (Feel SafeBox)
  * Stores metadata and base64-encoded binary files safely in data/vault/
- * with automatic backup to prevent any data corruption, plus temporary
- * 6-digit IP/PIN sharing sessions that auto-expire and rotate every 10 minutes.
+ * with atomic locked writes and automatic backup recovery to prevent
+ * data corruption or loss, plus 6-digit PIN sharing sessions that
+ * auto-expire and rotate every 10 minutes.
  */
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
@@ -12,7 +13,7 @@ header('Access-Control-Allow-Headers: Content-Type');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(204);
+    http_response_code(200);
     exit;
 }
 
@@ -23,16 +24,38 @@ if (!is_dir($vaultDir)) {
     @mkdir($vaultDir, 0777, true);
 }
 $indexFile = $vaultDir . '/vault_items.json';
+$backupFile = $vaultDir . '/vault_items.backup.json';
 $sharesFile = $vaultDir . '/shares.json';
 
 function respondJson(array $data, int $statusCode = 200): void
 {
     http_response_code($statusCode);
-    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    $encoded = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    if ($encoded === false) {
+        http_response_code(500);
+        echo '{"success":false,"message":"เกิดข้อผิดพลาดในการเข้ารหัส JSON"}';
+        exit;
+    }
+    echo $encoded;
     exit;
 }
 
-function readJsonAssoc(string $path, array $default = []): array
+function withFileLock(string $lockFilePath, callable $callback): mixed
+{
+    $fp = @fopen($lockFilePath, 'c+');
+    if ($fp === false) {
+        return $callback();
+    }
+    @flock($fp, LOCK_EX);
+    try {
+        return $callback();
+    } finally {
+        @flock($fp, LOCK_UN);
+        @fclose($fp);
+    }
+}
+
+function readJsonAssocStrict(string $path, array $default = []): array
 {
     if (!file_exists($path)) {
         return $default;
@@ -42,16 +65,59 @@ function readJsonAssoc(string $path, array $default = []): array
         return $default;
     }
     $decoded = json_decode($raw, true);
-    return is_array($decoded) ? $decoded : $default;
+    if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
+        return $default;
+    }
+    return $decoded;
 }
 
-function writeJsonAssoc(string $path, array $data): int|false
+function readVaultItemsSafe(string $indexFile, string $backupFile): array
+{
+    if (file_exists($indexFile)) {
+        $raw = @file_get_contents($indexFile);
+        if ($raw !== false && trim($raw) !== '') {
+            $decoded = json_decode($raw, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $decoded;
+            }
+        }
+    }
+    // Recover from automatic backup if primary file is unreadable or corrupted
+    return readJsonAssocStrict($backupFile, []);
+}
+
+function writeJsonAtomic(string $path, array $data): int|false
 {
     $jsonStr = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     if ($jsonStr === false) {
         return false;
     }
-    return @file_put_contents($path, $jsonStr, LOCK_EX);
+    $tmpPath = $path . '.tmp.' . getmypid() . '.' . mt_rand(1000, 9999);
+    $fp = @fopen($tmpPath, 'wb');
+    if ($fp === false) {
+        return @file_put_contents($path, $jsonStr, LOCK_EX);
+    }
+    $bytes = @fwrite($fp, $jsonStr);
+    @fflush($fp);
+    @fclose($fp);
+
+    if ($bytes === false || $bytes !== strlen($jsonStr)) {
+        @unlink($tmpPath);
+        return false;
+    }
+    if (!@rename($tmpPath, $path)) {
+        // Fallback when target lock differs on Windows
+        $ok = @file_put_contents($path, $jsonStr, LOCK_EX);
+        @unlink($tmpPath);
+        return $ok;
+    }
+    return $bytes;
+}
+
+function computeItemsDigest(array $items): string
+{
+    $canonical = json_encode(array_values($items), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    return $canonical !== false ? hash('sha256', $canonical) : '';
 }
 
 function normalizeShareCode(string $raw): string
@@ -84,14 +150,16 @@ function pruneExpiredShares(array $shares, int $now): array
     return ['shares' => $active, 'changed' => $changed];
 }
 
-function loadActiveShares(string $sharesFile, int $now): array
+function loadActiveSharesLocked(string $sharesFile, int $now): array
 {
-    $rawShares = readJsonAssoc($sharesFile, []);
-    $result = pruneExpiredShares($rawShares, $now);
-    if ($result['changed']) {
-        writeJsonAssoc($sharesFile, $result['shares']);
-    }
-    return $result['shares'];
+    return withFileLock($sharesFile . '.lock', static function () use ($sharesFile, $now): array {
+        $rawShares = readJsonAssocStrict($sharesFile, []);
+        $result = pruneExpiredShares($rawShares, $now);
+        if ($result['changed']) {
+            writeJsonAtomic($sharesFile, $result['shares']);
+        }
+        return $result['shares'];
+    });
 }
 
 function generateUniqueShareCode(array $shares, ?string $excludeCode = null): string
@@ -102,78 +170,10 @@ function generateUniqueShareCode(array $shares, ?string $excludeCode = null): st
             return $candidate;
         }
     }
-    // Deterministic fallback in extreme collision case
     do {
         $candidate = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
     } while ($candidate === $excludeCode || isset($shares[$candidate]));
     return $candidate;
-}
-
-function scoreLanIpv4(string $ip): int
-{
-    if (str_starts_with($ip, '192.168.')) return 3;
-    if (str_starts_with($ip, '10.')) return 2;
-    if (preg_match('/^172\.(1[6-9]|2\d|3[0-1])\./', $ip) === 1) return 1;
-    return 0;
-}
-
-function detectServerLanInfo(): array
-{
-    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-        || (isset($_SERVER['SERVER_PORT']) && (string)$_SERVER['SERVER_PORT'] === '443');
-    $scheme = $isHttps ? 'https' : 'http';
-    $httpHost = (string)($_SERVER['HTTP_HOST'] ?? 'localhost');
-
-    $candidates = [];
-    $serverAddr = (string)($_SERVER['SERVER_ADDR'] ?? '');
-    if ($serverAddr !== '') {
-        $candidates[] = $serverAddr;
-    }
-    $hostName = @gethostname();
-    if (is_string($hostName) && $hostName !== '') {
-        $resolved = @gethostbynamel($hostName);
-        if (is_array($resolved)) {
-            $candidates = array_merge($candidates, $resolved);
-        }
-    }
-
-    $lanIps = [];
-    foreach ($candidates as $ip) {
-        if (
-            filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) &&
-            !str_starts_with($ip, '127.') &&
-            !str_starts_with($ip, '169.254.') &&
-            !in_array($ip, $lanIps, true)
-        ) {
-            $lanIps[] = $ip;
-        }
-    }
-
-    usort($lanIps, static fn(string $a, string $b): int => scoreLanIpv4($b) <=> scoreLanIpv4($a));
-    $bestLanIp = $lanIps[0] ?? '';
-
-    $scriptDir = rtrim(str_replace('\\', '/', dirname((string)($_SERVER['SCRIPT_NAME'] ?? '/vault_api.php'))), '/');
-    $hostPort = '';
-    if (str_contains($httpHost, ':')) {
-        $parts = explode(':', $httpHost, 2);
-        if (!in_array($parts[1], ['80', '443'], true) && ctype_digit($parts[1])) {
-            $hostPort = ':' . $parts[1];
-        }
-    }
-
-    $currentBaseUrl = "{$scheme}://{$httpHost}{$scriptDir}/vault.html";
-    $lanBaseUrl = $bestLanIp !== ''
-        ? "{$scheme}://{$bestLanIp}{$hostPort}{$scriptDir}/vault.html"
-        : $currentBaseUrl;
-
-    return [
-        'scheme' => $scheme,
-        'httpHost' => $httpHost,
-        'lanIp' => $bestLanIp,
-        'allIps' => $lanIps,
-        'currentBaseUrl' => $currentBaseUrl,
-        'lanBaseUrl' => $lanBaseUrl,
-    ];
 }
 
 $now = time();
@@ -182,13 +182,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $action = (string)($_GET['action'] ?? 'list');
 
     if ($action === 'server_info') {
-        $activeShares = loadActiveShares($sharesFile, $now);
+        $activeShares = loadActiveSharesLocked($sharesFile, $now);
         respondJson([
             'success' => true,
             'serverTime' => $now,
             'ttlSeconds' => VAULT_SHARE_TTL_SECONDS,
             'activeShareCount' => count($activeShares),
-            'network' => detectServerLanInfo(),
         ]);
     }
 
@@ -198,22 +197,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             respondJson([
                 'success' => false,
                 'error' => 'INVALID_CODE',
-                'message' => 'กรุณาระบุรหัสแชร์ตัวเลข 6 หลักให้ถูกต้อง',
+                'message' => 'กรุณาระบุรหัส PIN ตัวเลข 6 หลักให้ถูกต้อง',
             ], 400);
         }
 
-        $activeShares = loadActiveShares($sharesFile, $now);
+        $activeShares = loadActiveSharesLocked($sharesFile, $now);
         if (!isset($activeShares[$code])) {
             respondJson([
                 'success' => false,
                 'error' => 'EXPIRED_OR_NOT_FOUND',
-                'message' => 'รหัส 6 หลักนี้หมดอายุแล้ว (รีเซ็ตทุก 10 นาที) หรือยังไม่ได้เปิดแชร์',
+                'message' => 'PIN 6 หลักนี้หมดอายุแล้ว (รีเซ็ตทุก 10 นาที) หรือยังไม่ได้เปิดแชร์',
             ], 404);
         }
 
         $entry = $activeShares[$code];
         $expiresAt = (int)$entry['expiresAt'];
-        $items = isset($entry['items']) && is_array($entry['items']) ? $entry['items'] : [];
+        $items = isset($entry['items']) && is_array($entry['items']) ? array_values($entry['items']) : [];
+        $payloadSha256 = (string)($entry['payloadSha256'] ?? computeItemsDigest($items));
 
         respondJson([
             'success' => true,
@@ -225,13 +225,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             'scope' => (string)($entry['scope'] ?? 'all'),
             'label' => (string)($entry['label'] ?? ''),
             'itemCount' => count($items),
+            'payloadSha256' => $payloadSha256,
             'items' => $items,
-            'network' => detectServerLanInfo(),
         ]);
     }
 
-    // Default: return vault items list
-    $items = readJsonAssoc($indexFile, []);
+    // Default: return vault items list (auto-recovering from backup if needed)
+    $items = withFileLock($indexFile . '.lock', static fn(): array => readVaultItemsSafe($indexFile, $backupFile));
     respondJson([
         'success' => true,
         'items' => $items,
@@ -250,11 +250,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $action = (string)$payload['action'];
 
-    // -------------------- 6-DIGIT LIVE SHARE ACTIONS (10-MIN AUTO ROTATION) --------------------
+    // -------------------- 6-DIGIT PIN LIVE SHARE ACTIONS (10-MIN AUTO ROTATION) --------------------
     if ($action === 'create_share') {
         $items = (isset($payload['items']) && is_array($payload['items']))
             ? array_values($payload['items'])
-            : readJsonAssoc($indexFile, []);
+            : withFileLock($indexFile . '.lock', static fn(): array => readVaultItemsSafe($indexFile, $backupFile));
 
         if (count($items) === 0) {
             respondJson([
@@ -269,98 +269,120 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ? (string)$payload['scope']
             : 'all';
         $label = trim((string)($payload['label'] ?? ''));
+        $payloadSha256 = computeItemsDigest($items);
 
-        $activeShares = loadActiveShares($sharesFile, $now);
-        if (isValidShareCode($previousCode) && isset($activeShares[$previousCode])) {
-            unset($activeShares[$previousCode]);
-        }
+        $created = withFileLock($sharesFile . '.lock', static function () use (
+            $sharesFile, $now, $previousCode, $scope, $label, $items, $payloadSha256
+        ): array {
+            $rawShares = readJsonAssocStrict($sharesFile, []);
+            $activeShares = pruneExpiredShares($rawShares, $now)['shares'];
+            if (isValidShareCode($previousCode) && isset($activeShares[$previousCode])) {
+                unset($activeShares[$previousCode]);
+            }
 
-        $newCode = generateUniqueShareCode($activeShares, isValidShareCode($previousCode) ? $previousCode : null);
-        $expiresAt = $now + VAULT_SHARE_TTL_SECONDS;
+            $newCode = generateUniqueShareCode($activeShares, isValidShareCode($previousCode) ? $previousCode : null);
+            $expiresAt = $now + VAULT_SHARE_TTL_SECONDS;
 
-        $activeShares[$newCode] = [
-            'code' => $newCode,
-            'createdAt' => $now,
-            'expiresAt' => $expiresAt,
-            'ttlSeconds' => VAULT_SHARE_TTL_SECONDS,
-            'scope' => $scope,
-            'label' => $label,
-            'itemCount' => count($items),
-            'items' => $items,
-            'createdIp' => (string)($_SERVER['REMOTE_ADDR'] ?? ''),
-        ];
+            $activeShares[$newCode] = [
+                'code' => $newCode,
+                'createdAt' => $now,
+                'expiresAt' => $expiresAt,
+                'ttlSeconds' => VAULT_SHARE_TTL_SECONDS,
+                'scope' => $scope,
+                'label' => $label,
+                'itemCount' => count($items),
+                'payloadSha256' => $payloadSha256,
+                'items' => $items,
+            ];
 
-        if (writeJsonAssoc($sharesFile, $activeShares) === false) {
+            $written = writeJsonAtomic($sharesFile, $activeShares);
+            return ['ok' => $written !== false, 'code' => $newCode, 'expiresAt' => $expiresAt];
+        });
+
+        if (!$created['ok']) {
             respondJson([
                 'success' => false,
-                'message' => 'ไม่สามารถบันทึกรหัสแชร์ลงเซิร์ฟเวอร์ได้',
+                'message' => 'ไม่สามารถบันทึก PIN แชร์ลงเซิร์ฟเวอร์ได้',
             ], 500);
         }
 
         respondJson([
             'success' => true,
-            'code' => $newCode,
+            'code' => $created['code'],
             'createdAt' => $now,
-            'expiresAt' => $expiresAt,
+            'expiresAt' => $created['expiresAt'],
             'remainingSeconds' => VAULT_SHARE_TTL_SECONDS,
             'ttlSeconds' => VAULT_SHARE_TTL_SECONDS,
             'scope' => $scope,
             'label' => $label,
             'itemCount' => count($items),
-            'network' => detectServerLanInfo(),
+            'payloadSha256' => $payloadSha256,
         ]);
     }
 
     if ($action === 'update_share') {
         $code = normalizeShareCode((string)($payload['code'] ?? ''));
         if (!isValidShareCode($code)) {
-            respondJson(['success' => false, 'message' => 'รหัสแชร์ 6 หลักไม่ถูกต้อง'], 400);
-        }
-
-        $activeShares = loadActiveShares($sharesFile, $now);
-        if (!isset($activeShares[$code])) {
-            respondJson([
-                'success' => false,
-                'expired' => true,
-                'message' => 'รหัสแชร์ 6 หลักหมดอายุแล้ว',
-            ], 404);
+            respondJson(['success' => false, 'message' => 'PIN 6 หลักไม่ถูกต้อง'], 400);
         }
 
         $items = (isset($payload['items']) && is_array($payload['items'])) ? array_values($payload['items']) : [];
-        if (count($items) === 0) {
-            unset($activeShares[$code]);
-            writeJsonAssoc($sharesFile, $activeShares);
+
+        $result = withFileLock($sharesFile . '.lock', static function () use (
+            $sharesFile, $now, $code, $items, $payload
+        ): array {
+            $activeShares = pruneExpiredShares(readJsonAssocStrict($sharesFile, []), $now)['shares'];
+            if (!isset($activeShares[$code])) {
+                return ['expired' => true];
+            }
+            if (count($items) === 0) {
+                unset($activeShares[$code]);
+                writeJsonAtomic($sharesFile, $activeShares);
+                return ['revoked' => true];
+            }
+
+            $activeShares[$code]['items'] = $items;
+            $activeShares[$code]['itemCount'] = count($items);
+            $activeShares[$code]['payloadSha256'] = computeItemsDigest($items);
+            if (isset($payload['scope']) && in_array($payload['scope'], ['all', 'single'], true)) {
+                $activeShares[$code]['scope'] = (string)$payload['scope'];
+            }
+            if (isset($payload['label'])) {
+                $activeShares[$code]['label'] = trim((string)$payload['label']);
+            }
+            writeJsonAtomic($sharesFile, $activeShares);
+            return ['expiresAt' => (int)$activeShares[$code]['expiresAt']];
+        });
+
+        if (!empty($result['expired'])) {
+            respondJson([
+                'success' => false,
+                'expired' => true,
+                'message' => 'PIN 6 หลักหมดอายุแล้ว',
+            ], 404);
+        }
+        if (!empty($result['revoked'])) {
             respondJson(['success' => true, 'revoked' => true, 'code' => $code, 'itemCount' => 0]);
         }
-
-        $activeShares[$code]['items'] = $items;
-        $activeShares[$code]['itemCount'] = count($items);
-        if (isset($payload['scope']) && in_array($payload['scope'], ['all', 'single'], true)) {
-            $activeShares[$code]['scope'] = (string)$payload['scope'];
-        }
-        if (isset($payload['label'])) {
-            $activeShares[$code]['label'] = trim((string)$payload['label']);
-        }
-
-        writeJsonAssoc($sharesFile, $activeShares);
-        $expiresAt = (int)$activeShares[$code]['expiresAt'];
 
         respondJson([
             'success' => true,
             'code' => $code,
-            'expiresAt' => $expiresAt,
-            'remainingSeconds' => max(0, $expiresAt - $now),
+            'expiresAt' => $result['expiresAt'],
+            'remainingSeconds' => max(0, $result['expiresAt'] - $now),
             'itemCount' => count($items),
         ]);
     }
 
     if ($action === 'revoke_share') {
         $code = normalizeShareCode((string)($payload['code'] ?? ''));
-        $activeShares = loadActiveShares($sharesFile, $now);
-        if (isValidShareCode($code) && isset($activeShares[$code])) {
-            unset($activeShares[$code]);
-            writeJsonAssoc($sharesFile, $activeShares);
-        }
+        withFileLock($sharesFile . '.lock', static function () use ($sharesFile, $now, $code): void {
+            $activeShares = pruneExpiredShares(readJsonAssocStrict($sharesFile, []), $now)['shares'];
+            if (isValidShareCode($code) && isset($activeShares[$code])) {
+                unset($activeShares[$code]);
+                writeJsonAtomic($sharesFile, $activeShares);
+            }
+        });
         respondJson([
             'success' => true,
             'revoked' => true,
@@ -368,37 +390,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
     }
 
-    // -------------------- VAULT ITEM STORAGE ACTIONS --------------------
-    $items = readJsonAssoc($indexFile, []);
+    // -------------------- VAULT ITEM STORAGE ACTIONS (ATOMIC LOCK + BACKUP) --------------------
+    $storageResult = withFileLock($indexFile . '.lock', static function () use (
+        $indexFile, $backupFile, $action, $payload
+    ): array {
+        $items = readVaultItemsSafe($indexFile, $backupFile);
 
-    if ($action === 'save_item' && isset($payload['item']) && is_array($payload['item'])) {
-        $newItem = $payload['item'];
-        $items = array_values(array_filter($items, static function ($it) use ($newItem) {
-            return isset($it['id'], $newItem['id']) && $it['id'] !== $newItem['id'];
-        }));
-        array_unshift($items, $newItem);
-    } elseif ($action === 'delete_item' && isset($payload['id'])) {
-        $delId = $payload['id'];
-        $items = array_values(array_filter($items, static function ($it) use ($delId) {
-            return isset($it['id']) && $it['id'] !== $delId;
-        }));
-    } elseif ($action === 'sync_all' && isset($payload['items']) && is_array($payload['items'])) {
-        $items = $payload['items'];
-    } else {
+        if ($action === 'save_item' && isset($payload['item']) && is_array($payload['item'])) {
+            $newItem = $payload['item'];
+            $items = array_values(array_filter($items, static function ($it) use ($newItem) {
+                return isset($it['id'], $newItem['id']) && $it['id'] !== $newItem['id'];
+            }));
+            array_unshift($items, $newItem);
+        } elseif ($action === 'delete_item' && isset($payload['id'])) {
+            $delId = $payload['id'];
+            $items = array_values(array_filter($items, static function ($it) use ($delId) {
+                return isset($it['id']) && $it['id'] !== $delId;
+            }));
+        } elseif ($action === 'sync_all' && isset($payload['items']) && is_array($payload['items'])) {
+            $items = $payload['items'];
+        } else {
+            return ['invalid' => true];
+        }
+
+        // Create backup only from valid existing index
+        if (file_exists($indexFile) && !empty(readJsonAssocStrict($indexFile, []))) {
+            @copy($indexFile, $backupFile);
+        }
+
+        $written = writeJsonAtomic($indexFile, $items);
+        return [
+            'ok' => $written !== false,
+            'count' => count($items),
+            'bytes' => $written ?: 0,
+        ];
+    });
+
+    if (!empty($storageResult['invalid'])) {
         respondJson(['success' => false, 'message' => 'คำสั่งไม่ถูกต้อง'], 400);
     }
 
-    // Create backup before writing
-    if (file_exists($indexFile)) {
-        @copy($indexFile, $vaultDir . '/vault_items.backup.json');
-    }
-
-    $written = writeJsonAssoc($indexFile, $items);
-
     respondJson([
-        'success' => $written !== false,
-        'count' => count($items),
-        'bytes' => $written ?: 0,
+        'success' => $storageResult['ok'],
+        'count' => $storageResult['count'],
+        'bytes' => $storageResult['bytes'],
     ]);
 }
 

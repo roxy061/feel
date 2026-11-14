@@ -569,7 +569,7 @@ void loop() {
 <ul class="list-disc pl-5 mt-2 space-y-1">
     <li><a href="wheel.html" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">1. วงล้อผลงาน 3 มิติ (wheel.html)</a> — หมุนชมผลงานและอ่านสรุปแนวคิดแบบ 3D</li>
     <li><a href="southern-food.html" class="text-orange-600 dark:text-orange-400 font-bold hover:underline">2. สุ่มร้านอาหารเมืองคอน (southern-food.html)</a> — แนะนำ 48 ร้านเด็ดในเมืองนครฯ พร้อมโหมดสุ่มแผ่นดินไหว 20 วินาที</li>
-    <li><a href="cctv.html" class="text-red-600 dark:text-rose-400 font-bold hover:underline">3. กล้องวงจรปิดสด NST CCTV (cctv.html)</a> — ดูภาพสดจราจรและระดับน้ำในเมืองนครฯ 1–6 จอ</li>
+    <li><a href="cctv.html" class="text-red-600 dark:text-rose-400 font-bold hover:underline">3. กล้องวงจรปิดสด NST CCTV (cctv.html)</a> — ดูภาพสดจราจรและระดับน้ำในเมืองนครฯ 1–20 จอ</li>
     <li><a href="weather.html" class="text-sky-600 dark:text-sky-400 font-bold hover:underline">4. เรดาร์สภาพอากาศสด (weather.html)</a> — ติดตามกลุ่มเมฆฝน พายุ และลมมรสุมภาคใต้</li>
     <li><a href="rubik.html" class="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">5. จับเวลาและฝึกแก้รูบิค 3x3 (rubik.html)</a> — นาฬิกาจับเวลา WCA + จำลองหน้ารูบิค 6 ด้าน</li>
     <li><a href="ai-assistant.html" class="text-purple-600 dark:text-purple-400 font-bold hover:underline">6. ผู้ช่วย AI อัจฉริยะ (ai-assistant.html)</a> — ถาม-ตอบ สรุปบทความ และแนะนำข้อมูล</li>
@@ -701,7 +701,7 @@ void loop() {
                 return {
                     html: `<strong>🌧️ ระบบตรวจสอบสภาพอากาศและกล้องวงจรปิดเมืองนครศรีธรรมราช:</strong>
 <ul class="list-disc pl-5 mt-2 space-y-1">
-    <li>หากต้องการดูภาพสดสภาพถนนและระดับน้ำตามสี่แยก สามารถเปิด <a href="cctv.html" class="text-red-600 font-bold underline">ระบบกล้องวงจรปิด NST CCTV สด (ดูพร้อมกันได้ 6 จอ)</a></li>
+    <li>หากต้องการดูภาพสดสภาพถนนและระดับน้ำตามสี่แยก สามารถเปิด <a href="cctv.html" class="text-red-600 font-bold underline">ระบบกล้องวงจรปิด NST CCTV สด (ดูพร้อมกันสูงสุด 20 จอ)</a></li>
     <li>หากต้องการดูกลุ่มเมฆฝนและพายุฟ้าคะนองภาคใต้ สามารถเปิด <a href="weather.html" class="text-sky-600 font-bold underline">เรดาร์สภาพอากาศสด Windy</a></li>
 </ul>`,
                     plain: "สามารถตรวจสอบสภาพจราจรและระดับน้ำได้ที่หน้ากล้องวงจรปิดสด NST CCTV หรือดูกลุ่มเมฆฝนได้ที่หน้าเรดาร์สภาพอากาศสดครับ"
@@ -864,7 +864,7 @@ void loop() {
                 desc: "รวมเครื่องมือออนไลน์สำหรับใช้ในชีวิตประจำวันในเขตอำเภอเมือง จังหวัดนครศรีธรรมราช:",
                 items: [
                     { badge: "ยอดฮิต", name: "หรอยเมืองคอน! สุ่มร้านอาหารในเมืองนครฯ (48 ร้าน)", detail: "คิดไม่ออกว่ามื้อนี้กินอะไรดี กดสุ่มร้านเด็ดพร้อมเอฟเฟกต์แผ่นดินไหว 20 วินาที และพิกัด Google Maps", href: "southern-food.html", btn: "เปิดสุ่มร้านอาหารนครฯ" },
-                    { badge: "เช็กจราจร/น้ำ", name: "ระบบกล้องวงจรปิดสด NST CCTV (ดูพร้อมกัน 6 จอ)", detail: "ดูภาพสดสภาพถนน สี่แยกสำคัญ และหน้าโรงเรียนในเขตเทศบาลนครนครศรีธรรมราชแบบเรียลไทม์", href: "cctv.html", btn: "เปิดดูกล้อง CCTV สด" },
+                    { badge: "เช็กจราจร/น้ำ", name: "ระบบกล้องวงจรปิดสด NST CCTV (ดูพร้อมกันสูงสุด 20 จอ)", detail: "ดูภาพสดสภาพถนน สี่แยกสำคัญ และหน้าโรงเรียนในเขตเทศบาลนครนครศรีธรรมราชแบบเรียลไทม์", href: "cctv.html", btn: "เปิดดูกล้อง CCTV สด" },
                     { badge: "เช็กฝน/พายุ", name: "เรดาร์สภาพอากาศและพายุฝนภาคใต้ (Windy Radar)", detail: "ตรวจสอบกลุ่มเมฆฝน พายุฟ้าคะนอง และทิศทางลมในพื้นที่นครศรีธรรมราชก่อนออกเดินทาง", href: "weather.html", btn: "เปิดเรดาร์สภาพอากาศ" }
                 ]
             }

@@ -152,6 +152,23 @@
             border-color: #38bdf8 !important;
             box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.8), 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
         }
+        .slot-card.dense-wall .slot-header-bar {
+            height: 1.75rem;
+            padding-left: 0.45rem;
+            padding-right: 0.45rem;
+        }
+        .slot-card.dense-wall .slot-body-area {
+            min-height: 140px;
+        }
+        #grid-viewport-wrapper:fullscreen #cctv-grid-container.wall-20-grid {
+            grid-auto-rows: minmax(0, 1fr);
+        }
+        #grid-viewport-wrapper:fullscreen .slot-card.dense-wall {
+            min-height: 0 !important;
+        }
+        #grid-viewport-wrapper:fullscreen .slot-card.dense-wall .slot-body-area {
+            min-height: 0 !important;
+        }
     </style>
 </head>
 <body class="min-h-screen lg:h-screen flex flex-col lg:overflow-hidden antialiased selection:bg-google-blue selection:text-white">
@@ -344,22 +361,26 @@
                     </button>
 
                     <span class="text-xs sm:text-sm font-heading font-bold text-google-text dark:text-white flex items-center gap-1.5">
-                        <i class="fa-solid fa-bolt text-amber-500"></i> เปิดดูด่วน 4 จอในคลิกเดียว:
+                        <i class="fa-solid fa-bolt text-amber-500"></i> เปิดดูด่วนใน 1 คลิก:
                     </span>
                 </div>
 
                 <div class="flex items-center gap-1.5 flex-wrap">
-                    <button type="button" onclick="openQuickCategoryWall('water')" class="px-3 py-1.5 rounded-full bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer">
-                        <span>🌊 4 จอ ดูระดับน้ำ</span>
+                    <button type="button" onclick="open20CameraWall()" class="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer" title="เปิดศูนย์ควบคุม 20 จอพร้อมกันทันที (ระดับน้ำ+จราจร+โรงเรียน+Safety)">
+                        <i class="fa-solid fa-tv"></i>
+                        <span>วอลล์รวม 20 จอ</span>
                     </button>
-                    <button type="button" onclick="openQuickCategoryWall('traffic')" class="px-3 py-1.5 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer">
-                        <span>🚦 4 จอ การจราจร</span>
+                    <button type="button" onclick="openQuickCategoryWall('water')" class="px-3 py-1.5 rounded-full bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer" title="เปิดกล้องดูระดับน้ำหลายจอพร้อมกัน">
+                        <span>🌊 ดูระดับน้ำ</span>
                     </button>
-                    <button type="button" onclick="openQuickCategoryWall('school')" class="px-3 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer">
-                        <span>🏫 4 จอ หน้าโรงเรียน</span>
+                    <button type="button" onclick="openQuickCategoryWall('traffic')" class="px-3 py-1.5 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer" title="เปิดกล้องจราจรหลายจอพร้อมกัน">
+                        <span>🚦 การจราจร</span>
                     </button>
-                    <button type="button" onclick="openQuickCategoryWall('safety')" class="px-3 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer">
-                        <span>🛡️ 4 จอ Safety Zone</span>
+                    <button type="button" onclick="openQuickCategoryWall('school')" class="px-3 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer" title="เปิดกล้องหน้าโรงเรียนหลายจอพร้อมกัน">
+                        <span>🏫 หน้าโรงเรียน</span>
+                    </button>
+                    <button type="button" onclick="openQuickCategoryWall('safety')" class="px-3 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer" title="เปิดกล้อง Safety Zone หลายจอพร้อมกัน">
+                        <span>🛡️ Safety Zone</span>
                     </button>
                     <button type="button" id="auto-tour-btn" onclick="toggleAutoTour()" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-purple-500 text-xs font-bold text-google-text dark:text-white shadow-xs transition flex items-center gap-1.5 cursor-pointer" title="สลับกล้องอัตโนมัติทุก 15 วินาที (สำหรับเปิดมอนิเตอร์ทิ้งไว้)">
                         <i id="auto-tour-icon" class="fa-solid fa-rotate text-purple-500"></i>
@@ -410,12 +431,15 @@
                             </button>
                         </div>
 
-                        <!-- Grid Mode Selector: 1, 2, 4, 6 จอ -->
-                        <div class="flex items-center bg-google-subtle dark:bg-google-dark-subtle p-1 rounded-full border border-google-border dark:border-google-dark-border text-xs">
-                            <button onclick="setGridMode(1)" id="grid-btn-1" class="grid-mode-btn px-3 py-1 rounded-full font-bold bg-google-blue text-white shadow-xs transition-all cursor-pointer">1 จอ</button>
-                            <button onclick="setGridMode(2)" id="grid-btn-2" class="grid-mode-btn px-3 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer">2 จอ</button>
-                            <button onclick="setGridMode(4)" id="grid-btn-4" class="grid-mode-btn px-3 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer">4 จอ</button>
-                            <button onclick="setGridMode(6)" id="grid-btn-6" class="grid-mode-btn px-3 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer">6 จอ</button>
+                        <!-- Grid Mode Selector: 1, 2, 4, 6, 9, 12, 20 จอ -->
+                        <div class="flex items-center flex-wrap gap-0.5 bg-google-subtle dark:bg-google-dark-subtle p-1 rounded-2xl sm:rounded-full border border-google-border dark:border-google-dark-border text-xs">
+                            <button onclick="setGridMode(1)" id="grid-btn-1" class="grid-mode-btn px-2.5 py-1 rounded-full font-bold bg-google-blue text-white shadow-xs transition-all cursor-pointer">1 จอ</button>
+                            <button onclick="setGridMode(2)" id="grid-btn-2" class="grid-mode-btn px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer">2 จอ</button>
+                            <button onclick="setGridMode(4)" id="grid-btn-4" class="grid-mode-btn px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer">4 จอ</button>
+                            <button onclick="setGridMode(6)" id="grid-btn-6" class="grid-mode-btn px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer">6 จอ</button>
+                            <button onclick="setGridMode(9)" id="grid-btn-9" class="grid-mode-btn px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer">9 จอ</button>
+                            <button onclick="setGridMode(12)" id="grid-btn-12" class="grid-mode-btn px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer">12 จอ</button>
+                            <button onclick="setGridMode(20)" id="grid-btn-20" class="grid-mode-btn px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer">20 จอ</button>
                         </div>
 
                         <!-- Multi-mode Tools -->
@@ -457,10 +481,10 @@
                 </div>
 
                 <!-- Video Viewport & Multi-Screen Grid Area -->
-                <div id="grid-viewport-wrapper" class="flex-1 min-h-[380px] sm:min-h-[480px] lg:min-h-[540px] relative rounded-xl overflow-hidden bg-slate-950 border border-google-border dark:border-google-dark-border shadow-inner p-2 sm:p-2.5 flex flex-col">
+                <div id="grid-viewport-wrapper" class="flex-1 min-h-[380px] sm:min-h-[480px] lg:min-h-[540px] relative rounded-xl overflow-y-auto bg-slate-950 border border-google-border dark:border-google-dark-border shadow-inner p-2 sm:p-2.5 flex flex-col">
                     
-                    <div id="cctv-grid-container" class="grid grid-cols-1 gap-2 sm:gap-2.5 flex-1 w-full h-full">
-                        <!-- Slots 0 to 5 generated cleanly via JS -->
+                    <div id="cctv-grid-container" class="grid grid-cols-1 gap-2 flex-1 w-full h-full">
+                        <!-- Slots 0 to 19 (up to 20 screens) generated cleanly via JS -->
                     </div>
 
                     <!-- Multi-view Active Slot Bottom Helper Banner -->
@@ -519,14 +543,22 @@
         let collapsedGroups = new Set(); // Group names collapsed by user
         let sidebarHiddenOnDesktop = false;
 
-        // Multi-screen Grid State (1, 2, 4, 6 screens)
+        // Multi-screen Grid State (1, 2, 4, 6, 9, 12, 20 screens)
+        const MAX_SLOTS = 20;
+        const GRID_MODES = [1, 2, 4, 6, 9, 12, 20];
         let gridMode = 1;
         let activeSlotIndex = 0;
-        let slots = Array.from({ length: 6 }, () => ({ cam: null, isHD: false }));
+        let slots = Array.from({ length: MAX_SLOTS }, () => ({ cam: null, isHD: false }));
+        let staggerTimers = [];
 
         // Auto Tour Timer
         let autoTourTimer = null;
         let autoTourIndex = 0;
+
+        function clearStaggerTimers() {
+            staggerTimers.forEach(id => clearTimeout(id));
+            staggerTimers = [];
+        }
 
         function escapeHtml(str) {
             return String(str ?? '').replace(/[&<>"']/g, m => ({
@@ -534,44 +566,44 @@
             }[m]));
         }
 
-        // 0. Build 6 clean slot DOM cards dynamically
+        // 0. Build 20 clean slot DOM cards dynamically
         function buildSlotCards() {
             const container = document.getElementById('cctv-grid-container');
             if (!container) return;
             container.innerHTML = '';
 
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < MAX_SLOTS; i++) {
                 const div = document.createElement('div');
                 div.id = `slot-card-${i}`;
-                div.className = 'slot-card hidden relative flex-col rounded-xl overflow-hidden bg-slate-900 border border-slate-700/80 transition-all select-none group min-h-[190px]';
+                div.className = 'slot-card hidden relative flex-col rounded-xl overflow-hidden bg-slate-900 border border-slate-700/80 transition-all select-none group min-h-[160px]';
                 div.onclick = () => selectSlot(i);
                 div.innerHTML = `
-                    <div id="slot-header-${i}" class="h-9 px-3 bg-slate-950/95 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0 z-10 text-xs">
-                        <div class="flex items-center gap-2 min-w-0 flex-1">
-                            <span id="slot-badge-${i}" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-sky-300 border border-slate-700 shrink-0">จอ ${i + 1}</span>
-                            <span id="slot-title-${i}" class="font-semibold text-white truncate text-xs sm:text-sm">ว่าง (คลิกเพื่อเลือก)</span>
+                    <div id="slot-header-${i}" class="slot-header-bar h-9 px-2.5 bg-slate-950/95 border-b border-slate-800 flex items-center justify-between gap-1.5 shrink-0 z-10 text-xs">
+                        <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                            <span id="slot-badge-${i}" class="text-[11px] font-bold px-1.5 py-0.5 rounded-full bg-slate-800 text-sky-300 border border-slate-700 shrink-0">จอ ${i + 1}</span>
+                            <span id="slot-title-${i}" class="font-semibold text-white truncate text-xs sm:text-[13px]">ว่าง</span>
                         </div>
-                        <div class="flex items-center gap-1 shrink-0">
-                            <span id="slot-status-${i}" class="hidden text-[10px] px-2 py-0.5 rounded-full font-bold">ON</span>
-                            <button onclick="event.stopPropagation(); toggleSlotQuality(${i})" id="slot-hd-btn-${i}" class="hidden text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-slate-200 hover:bg-white/20 transition cursor-pointer" title="สลับความชัด SD/HD">SD</button>
-                            <button onclick="event.stopPropagation(); reloadSlot(${i})" id="slot-reload-btn-${i}" class="hidden w-6 h-6 rounded flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition cursor-pointer" title="รีโหลดภาพจอนี้"><i class="fa-solid fa-rotate-right text-[10px]"></i></button>
-                            <button onclick="event.stopPropagation(); openSlotNewTab(${i})" id="slot-ext-btn-${i}" class="hidden w-6 h-6 rounded flex items-center justify-center text-slate-300 hover:text-sky-400 hover:bg-white/10 transition cursor-pointer" title="เปิดภาพสดในแท็บใหม่"><i class="fa-solid fa-up-right-from-square text-[10px]"></i></button>
-                            <button onclick="event.stopPropagation(); focusSlot(${i})" id="slot-focus-btn-${i}" class="hidden w-6 h-6 rounded flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition cursor-pointer" title="ขยายดูจอนี้เดี่ยว"><i class="fa-solid fa-expand text-[10px]"></i></button>
-                            <button onclick="event.stopPropagation(); clearSlot(${i})" id="slot-clear-btn-${i}" class="hidden w-6 h-6 rounded flex items-center justify-center text-slate-300 hover:text-rose-400 hover:bg-rose-500/20 transition cursor-pointer" title="นำกล้องออกจากจอนี้"><i class="fa-solid fa-xmark text-xs"></i></button>
+                        <div class="flex items-center gap-0.5 sm:gap-1 shrink-0">
+                            <span id="slot-status-${i}" class="hidden text-[10px] px-1.5 py-0.5 rounded-full font-bold">ON</span>
+                            <button onclick="event.stopPropagation(); toggleSlotQuality(${i})" id="slot-hd-btn-${i}" class="hidden text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-200 hover:bg-white/20 transition cursor-pointer" title="สลับความชัด SD/HD">SD</button>
+                            <button onclick="event.stopPropagation(); reloadSlot(${i})" id="slot-reload-btn-${i}" class="hidden w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition cursor-pointer" title="รีโหลดภาพจอนี้"><i class="fa-solid fa-rotate-right text-[10px]"></i></button>
+                            <button onclick="event.stopPropagation(); openSlotNewTab(${i})" id="slot-ext-btn-${i}" class="hidden w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-slate-300 hover:text-sky-400 hover:bg-white/10 transition cursor-pointer" title="เปิดภาพสดในแท็บใหม่"><i class="fa-solid fa-up-right-from-square text-[10px]"></i></button>
+                            <button onclick="event.stopPropagation(); focusSlot(${i})" id="slot-focus-btn-${i}" class="hidden w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition cursor-pointer" title="ขยายดูจอนี้เดี่ยว"><i class="fa-solid fa-expand text-[10px]"></i></button>
+                            <button onclick="event.stopPropagation(); clearSlot(${i})" id="slot-clear-btn-${i}" class="hidden w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-slate-300 hover:text-rose-400 hover:bg-rose-500/20 transition cursor-pointer" title="นำกล้องออกจากจอนี้"><i class="fa-solid fa-xmark text-xs"></i></button>
                         </div>
                     </div>
-                    <div class="flex-1 relative flex items-center justify-center bg-black overflow-hidden">
-                        <div id="slot-empty-${i}" class="p-4 text-center cursor-pointer text-slate-300 hover:text-white transition space-y-2">
-                            <div class="w-11 h-11 rounded-2xl bg-google-blue/15 text-sky-400 flex items-center justify-center mx-auto text-lg group-hover:scale-110 transition-transform">
+                    <div class="slot-body-area flex-1 relative flex items-center justify-center bg-black overflow-hidden">
+                        <div id="slot-empty-${i}" class="p-3 text-center cursor-pointer text-slate-300 hover:text-white transition space-y-1.5">
+                            <div class="w-9 h-9 rounded-xl bg-google-blue/15 text-sky-400 flex items-center justify-center mx-auto text-base group-hover:scale-110 transition-transform">
                                 <i class="fa-solid fa-video"></i>
                             </div>
-                            <p class="text-xs sm:text-sm font-semibold">จอ ${i + 1} ว่าง — เลือกกล้องฝั่งซ้ายเพื่อใส่จอนี้</p>
+                            <p class="text-[11px] sm:text-xs font-semibold">จอ ${i + 1} ว่าง (คลิกเลือกกล้องฝั่งซ้าย)</p>
                             ${i === 0 ? `<button onclick="event.stopPropagation(); pickFirstAvailableCamera()" class="mt-1 px-4 py-1.5 rounded-full bg-google-blue hover:bg-google-blue-hover text-white text-xs font-bold shadow-xs cursor-pointer">เปิดกล้องที่พร้อมดูทันที</button>` : ''}
                         </div>
-                        <div id="slot-offline-${i}" class="hidden p-4 text-center text-rose-400 space-y-2">
-                            <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
-                            <p class="text-sm font-bold">กล้องจุดนี้ออฟไลน์ชั่วคราว</p>
-                            <button onclick="event.stopPropagation(); stepSingleCamera(1)" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold cursor-pointer">ข้ามไปดูกล้องถัดไป <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        <div id="slot-offline-${i}" class="hidden p-3 text-center text-rose-400 space-y-1.5">
+                            <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                            <p class="text-xs font-bold">กล้องจุดนี้ออฟไลน์ชั่วคราว</p>
+                            <button onclick="event.stopPropagation(); stepSingleCamera(1)" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white text-[11px] font-semibold cursor-pointer">ข้ามไปจุดถัดไป <i class="fa-solid fa-arrow-right ml-1"></i></button>
                         </div>
                         <iframe id="slot-frame-${i}" src="about:blank" class="hidden w-full h-full border-none" allow="autoplay; fullscreen" allowfullscreen></iframe>
                     </div>
@@ -643,15 +675,16 @@
             }
         }
 
-        // 2. Grid Mode Controller
-        function setGridMode(num) {
+        // 2. Grid Mode Controller (1, 2, 4, 6, 9, 12, 20 screens)
+        function setGridMode(num, staggerStreams = false) {
+            clearStaggerTimers();
             gridMode = num;
-            [1, 2, 4, 6].forEach(n => {
+            GRID_MODES.forEach(n => {
                 const btn = document.getElementById(`grid-btn-${n}`);
                 if (!btn) return;
                 btn.className = n === num
-                    ? 'grid-mode-btn px-3 py-1 rounded-full font-bold bg-google-blue text-white shadow-xs transition-all cursor-pointer'
-                    : 'grid-mode-btn px-3 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer';
+                    ? 'grid-mode-btn px-2.5 py-1 rounded-full font-bold bg-google-blue text-white shadow-xs transition-all cursor-pointer'
+                    : 'grid-mode-btn px-2.5 py-1 rounded-full font-medium text-google-text-body dark:text-google-dark-text-body hover:text-google-blue transition-all cursor-pointer';
             });
 
             const singleControls = document.getElementById('single-mode-controls');
@@ -673,31 +706,43 @@
                 if (activeSlotIndex >= gridMode) activeSlotIndex = 0;
             }
 
-            updateGridUI();
+            updateGridUI(staggerStreams);
             updateCamListIndicators();
         }
 
-        function updateGridUI() {
+        function updateGridUI(staggerStreams = false) {
             const container = document.getElementById('cctv-grid-container');
             if (!container) return;
 
-            container.classList.remove('grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'sm:grid-cols-2', 'md:grid-cols-2', 'lg:grid-cols-3');
+            container.classList.remove(
+                'grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4', 'grid-cols-5',
+                'sm:grid-cols-2', 'sm:grid-cols-3', 'md:grid-cols-2', 'md:grid-cols-3',
+                'lg:grid-cols-3', 'lg:grid-cols-4', 'xl:grid-cols-4', 'xl:grid-cols-5',
+                'wall-20-grid'
+            );
+
             if (gridMode === 1) container.classList.add('grid-cols-1');
             else if (gridMode === 2) container.classList.add('grid-cols-1', 'md:grid-cols-2');
             else if (gridMode === 4) container.classList.add('grid-cols-1', 'sm:grid-cols-2');
             else if (gridMode === 6) container.classList.add('grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3');
+            else if (gridMode === 9) container.classList.add('grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3');
+            else if (gridMode === 12) container.classList.add('grid-cols-2', 'sm:grid-cols-3', 'xl:grid-cols-4');
+            else if (gridMode === 20) container.classList.add('grid-cols-2', 'sm:grid-cols-3', 'lg:grid-cols-4', 'xl:grid-cols-5', 'wall-20-grid');
 
-            for (let i = 0; i < 6; i++) {
+            const isDense = gridMode >= 9;
+            for (let i = 0; i < MAX_SLOTS; i++) {
                 const card = document.getElementById(`slot-card-${i}`);
                 if (!card) continue;
+                card.classList.toggle('dense-wall', isDense);
                 if (i < gridMode) {
                     card.classList.remove('hidden');
                     card.classList.add('flex');
                     card.classList.toggle('active-target', gridMode > 1 && i === activeSlotIndex);
-                    renderSlot(i);
+                    const delay = (staggerStreams && slots[i].cam) ? i * 90 : 0;
+                    renderSlot(i, delay);
                 } else {
                     card.classList.add('hidden');
-                    card.classList.remove('flex', 'active-target');
+                    card.classList.remove('flex', 'active-target', 'dense-wall');
                     const frame = document.getElementById(`slot-frame-${i}`);
                     if (frame && frame.src !== 'about:blank') frame.src = 'about:blank';
                 }
@@ -756,7 +801,7 @@
             }
         }
 
-        function renderSlot(idx) {
+        function renderSlot(idx, staggerDelayMs = 0) {
             const slot = slots[idx];
             if (!slot) return;
 
@@ -824,7 +869,16 @@
                     frameEl.classList.remove('hidden');
                     const targetUrl = slot.isHD ? `${API_BASE}/cam/${cam.id}/` : `${API_BASE}/cam/${cam.id}_sub/`;
                     if (frameEl.src !== targetUrl && !frameEl.src.startsWith(targetUrl + '?t=')) {
-                        frameEl.src = targetUrl;
+                        if (staggerDelayMs > 0) {
+                            const tid = setTimeout(() => {
+                                if (idx < gridMode && slots[idx]?.cam?.id === cam.id && camStatuses[cam.id] !== 'offline') {
+                                    frameEl.src = targetUrl;
+                                }
+                            }, staggerDelayMs);
+                            staggerTimers.push(tid);
+                        } else {
+                            frameEl.src = targetUrl;
+                        }
                     }
                 }
             }
@@ -888,7 +942,7 @@
             selectCamera(activeList[idx]);
         }
 
-        // 1-Click Quick Multi-View Wall by Category
+        // 1-Click Quick Multi-View Wall by Category (fills current wall size if >= 6, else 4 screens)
         function openQuickCategoryWall(catKey) {
             stopAutoTour();
             setFilterCategory(catKey);
@@ -900,18 +954,71 @@
                 return;
             }
 
-            setGridMode(4);
-            for (let i = 0; i < 4; i++) {
-                slots[i].cam = pool[i % pool.length];
-                slots[i].isHD = false;
+            const targetCount = gridMode >= 6 ? Math.min(gridMode, pool.length) : Math.min(4, pool.length);
+            const modeToSet = gridMode >= 6 ? gridMode : 4;
+
+            for (let i = 0; i < MAX_SLOTS; i++) {
+                if (i < targetCount) {
+                    slots[i].cam = pool[i];
+                    slots[i].isHD = false;
+                } else {
+                    slots[i].cam = null;
+                    slots[i].isHD = false;
+                }
             }
             activeSlotIndex = 0;
-            updateGridUI();
-            updateCamListIndicators();
+            setGridMode(modeToSet, modeToSet > 6);
 
             if (window.innerWidth < 1024) setMobileView('player');
             const names = { water: 'ดูระดับน้ำ', traffic: 'การจราจร', school: 'หน้าโรงเรียน', safety: 'Safety Zone' };
-            showToast(`เปิดหน้าจอ ${names[catKey]} 4 จอพร้อมกันเรียบร้อย!`, 'success');
+            showToast(`เปิดกล้องหมวด "${names[catKey]}" ${targetCount} จอพร้อมกันแล้ว!`, 'success');
+        }
+
+        // 1-Click 20-Screen Simultaneous Command Wall
+        function open20CameraWall() {
+            stopAutoTour();
+            const onlineFiltered = (filteredCams.length > 0 ? filteredCams : allCams).filter(c => camStatuses[c.id] !== 'offline');
+            const allOnline = allCams.filter(c => camStatuses[c.id] !== 'offline');
+
+            if (allOnline.length === 0 && allCams.length === 0) {
+                showToast('กำลังรอข้อมูลกล้องจากระบบ กรุณารอสักครู่', 'warning');
+                return;
+            }
+
+            // Build prioritized unique 20 cameras: favorites -> active filtered online -> mixed categories
+            const chosen = [];
+            const chosenIds = new Set();
+            const addUnique = (list) => {
+                for (const c of list) {
+                    if (chosen.length >= 20) break;
+                    if (!chosenIds.has(c.id)) {
+                        chosenIds.add(c.id);
+                        chosen.push(c);
+                    }
+                }
+            };
+
+            addUnique(onlineFiltered.filter(c => favorites.has(c.id)));
+            if (currentFilter === 'all') {
+                // Mix nicely across Flood Water, Traffic, School, Safety Zone so command wall covers whole city
+                addUnique(allOnline.filter(c => matchCategory(c, 'water')).slice(0, 6));
+                addUnique(allOnline.filter(c => matchCategory(c, 'traffic')).slice(0, 8));
+                addUnique(allOnline.filter(c => matchCategory(c, 'school')).slice(0, 3));
+                addUnique(allOnline.filter(c => matchCategory(c, 'safety')).slice(0, 3));
+            } else {
+                addUnique(onlineFiltered);
+            }
+            addUnique(allOnline);
+
+            for (let i = 0; i < MAX_SLOTS; i++) {
+                slots[i].cam = chosen[i] || null;
+                slots[i].isHD = false;
+            }
+            activeSlotIndex = 0;
+            setGridMode(20, true);
+
+            if (window.innerWidth < 1024) setMobileView('player');
+            showToast(`🖥️ เปิดวอลล์ตรวจการณ์พร้อมกัน ${chosen.length} จอเรียบร้อย! (กดขยายเต็มจอเพื่อความคมชัดสูงสุด)`, 'success');
         }
 
         // Auto Tour Mode (Cycles online filtered cameras every 15s)
@@ -995,22 +1102,27 @@
                 : 'fa-regular fa-star text-amber-400';
         }
 
-        // Auto-populate filtered cameras
+        // Auto-populate filtered cameras (up to 20 unique online screens)
         function autoPopulateSlots() {
-            const pool = (filteredCams.length > 0 ? filteredCams : allCams).filter(c => camStatuses[c.id] !== 'offline');
-            if (pool.length === 0) {
-                showToast('ไม่มีกล้องออนไลน์ในหมวดที่เลือก', 'warning');
+            clearStaggerTimers();
+            const filteredOnline = (filteredCams.length > 0 ? filteredCams : allCams).filter(c => camStatuses[c.id] !== 'offline');
+            const fallbackOnline = allCams.filter(c => camStatuses[c.id] !== 'offline');
+            if (filteredOnline.length === 0 && fallbackOnline.length === 0) {
+                showToast('ไม่มีกล้องออนไลน์ในขณะนี้', 'warning');
                 return;
             }
-            const shuffled = [...pool].sort(() => 0.5 - Math.random());
+            const shuffled = [...filteredOnline].sort(() => 0.5 - Math.random());
+            const extra = [...fallbackOnline].filter(c => !shuffled.some(s => s.id === c.id)).sort(() => 0.5 - Math.random());
+            const combined = [...shuffled, ...extra];
+
             for (let i = 0; i < gridMode; i++) {
-                slots[i].cam = shuffled[i % shuffled.length];
+                slots[i].cam = combined[i % combined.length];
                 slots[i].isHD = false;
             }
             activeSlotIndex = 0;
-            updateGridUI();
+            updateGridUI(gridMode > 6);
             updateCamListIndicators();
-            showToast(`สุ่มเติมกล้องออนไลน์ลงใน ${gridMode} จอแล้ว`, 'success');
+            showToast(`สุ่มเติมกล้องออนไลน์ครบ ${gridMode} จอเรียบร้อยแล้ว`, 'success');
         }
 
         function clearSlot(idx) {
@@ -1023,7 +1135,8 @@
         }
 
         function clearAllSlots() {
-            for (let i = 0; i < 6; i++) { slots[i].cam = null; slots[i].isHD = false; }
+            clearStaggerTimers();
+            for (let i = 0; i < MAX_SLOTS; i++) { slots[i].cam = null; slots[i].isHD = false; }
             activeSlotIndex = 0;
             updateGridUI();
             updateCamListIndicators();

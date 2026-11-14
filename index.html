@@ -340,9 +340,220 @@
             box-shadow: 0 8px 24px -4px rgba(0,0,0,0.5);
             border-color: #5f6368;
         }
+
+        /* ========================================== */
+        /* FIRST-VISIT PORTFOLIO INTRO ANIMATION      */
+        /* ========================================== */
+        #intro-splash {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        html.feel-intro-pending body {
+            overflow: hidden;
+        }
+        html.feel-intro-pending #intro-splash,
+        html.feel-intro-playing #intro-splash {
+            display: flex;
+        }
+        html.feel-intro-pending #home {
+            opacity: 0;
+            transform: translateY(22px) scale(0.988);
+        }
+        html.feel-intro-reveal #home {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            transition: opacity 0.78s cubic-bezier(0.22, 1, 0.36, 1), transform 0.78s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #intro-splash {
+            transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), filter 0.65s ease;
+        }
+        #intro-splash.intro-exit {
+            opacity: 0;
+            transform: scale(1.035) translateY(-10px);
+            filter: blur(8px);
+            pointer-events: none;
+        }
+        @keyframes introOrbDrift {
+            0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(18px, -16px, 0) scale(1.08); }
+        }
+        @keyframes introSpinHalo {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes introPulseRing {
+            0% { transform: scale(0.86); opacity: 0.75; }
+            100% { transform: scale(1.48); opacity: 0; }
+        }
+        @keyframes introEmblemPop {
+            0% { opacity: 0; transform: scale(0.55) translateY(14px); }
+            65% { opacity: 1; transform: scale(1.06) translateY(-2px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes introStrokeDraw {
+            from { stroke-dashoffset: 240; }
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes introLineSweep {
+            from { transform: scaleX(0); opacity: 0.3; }
+            to { transform: scaleX(1); opacity: 1; }
+        }
+        @keyframes introSlideUp {
+            0% { opacity: 0; transform: translateY(24px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes introTitleReveal {
+            0% { opacity: 0; transform: translateY(105%); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes introBadgeSpring {
+            0% { opacity: 0; transform: scale(0.75) translateY(12px); }
+            70% { opacity: 1; transform: scale(1.06) translateY(-1px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes introProgressFill {
+            0% { transform: scaleX(0); }
+            25% { transform: scaleX(0.32); }
+            65% { transform: scaleX(0.76); }
+            100% { transform: scaleX(1); }
+        }
+        .intro-orb-1 { animation: introOrbDrift 6.5s ease-in-out infinite; }
+        .intro-orb-2 { animation: introOrbDrift 7.5s ease-in-out infinite reverse; }
+        .intro-halo { animation: introSpinHalo 6s linear infinite; }
+        .intro-ring-1 { animation: introPulseRing 2s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+        .intro-ring-2 { animation: introPulseRing 2s cubic-bezier(0.16, 1, 0.3, 1) 0.7s infinite; }
+        .intro-emblem { animation: introEmblemPop 0.85s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .intro-svg-path {
+            stroke-dasharray: 240;
+            stroke-dashoffset: 240;
+            animation: introStrokeDraw 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+        }
+        .intro-top-bar { transform-origin: center; animation: introLineSweep 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .intro-eyebrow { animation: introSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both; }
+        .intro-title-inner { animation: introTitleReveal 0.82s cubic-bezier(0.22, 1, 0.36, 1) 0.42s both; }
+        .intro-nickname { animation: introBadgeSpring 0.72s cubic-bezier(0.34, 1.56, 0.64, 1) 0.68s both; }
+        .intro-sub { animation: introSlideUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.82s both; }
+        .intro-chip-1 { animation: introBadgeSpring 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.96s both; }
+        .intro-chip-2 { animation: introBadgeSpring 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 1.08s both; }
+        .intro-chip-3 { animation: introBadgeSpring 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 1.20s both; }
+        .intro-chip-4 { animation: introBadgeSpring 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 1.32s both; }
+        .intro-progress-wrap { animation: introSlideUp 0.55s ease 0.9s both; }
+        .intro-progress-fill { transform-origin: left center; animation: introProgressFill 2.35s cubic-bezier(0.4, 0, 0.2, 1) 0.35s both; }
+        .intro-skip { animation: introSlideUp 0.5s ease 0.5s both; }
     </style>
+    <script>
+        // Run before first paint so returning visitors never experience any splash flash
+        (function () {
+            try {
+                if (localStorage.getItem('feel_theme') === 'dark') {
+                    document.documentElement.classList.add('dark');
+                }
+                var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                if (!reduced && !localStorage.getItem('feel_portfolio_intro_seen_v1')) {
+                    document.documentElement.classList.add('feel-intro-pending', 'feel-intro-playing');
+                    localStorage.setItem('feel_portfolio_intro_seen_v1', String(Date.now()));
+                }
+            } catch (_) {}
+        })();
+    </script>
 </head>
 <body class="min-h-screen selection:bg-google-blue selection:text-white flex flex-col justify-between relative overflow-x-hidden antialiased">
+
+    <!-- ========================================== -->
+    <!-- FIRST-VISIT CINEMATIC INTRO SPLASH (ONCE)  -->
+    <!-- ========================================== -->
+    <div id="intro-splash" aria-hidden="true" class="fixed inset-0 z-[9999] items-center justify-center overflow-hidden bg-[#f8fafd] dark:bg-[#131417] select-none px-5">
+        <!-- Top Sweeping Google 4-Color Signature Line -->
+        <div class="intro-top-bar fixed top-0 left-0 right-0 h-1 flex pointer-events-none">
+            <div class="h-full flex-1 bg-google-blue"></div>
+            <div class="h-full flex-1 bg-google-red"></div>
+            <div class="h-full flex-1 bg-google-yellow"></div>
+            <div class="h-full flex-1 bg-google-green"></div>
+        </div>
+
+        <!-- Subtle Tech Dot Grid & Ambient Aurora Glow Orbs -->
+        <div class="absolute inset-0 pointer-events-none opacity-45 dark:opacity-25" style="background-image: radial-gradient(rgba(26, 115, 232, 0.22) 1px, transparent 1px); background-size: 26px 26px;"></div>
+        <div class="intro-orb-1 absolute -top-24 -left-20 w-80 h-80 sm:w-[420px] sm:h-[420px] rounded-full bg-sky-400/25 dark:bg-sky-500/20 blur-3xl pointer-events-none"></div>
+        <div class="intro-orb-2 absolute -bottom-24 -right-20 w-80 h-80 sm:w-[440px] sm:h-[440px] rounded-full bg-emerald-400/20 dark:bg-emerald-500/15 blur-3xl pointer-events-none"></div>
+        <div class="absolute top-1/3 right-1/4 w-56 h-56 rounded-full bg-amber-400/15 dark:bg-indigo-500/15 blur-3xl pointer-events-none"></div>
+
+        <!-- Center Stage -->
+        <div class="relative z-10 max-w-2xl w-full flex flex-col items-center text-center space-y-5">
+            <!-- Animated Emblem with 4-Color Rotating Conic Ring & Pulse Ripples -->
+            <div class="intro-emblem relative w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
+                <div class="intro-ring-1 absolute inset-0 rounded-full border-2 border-google-blue/40 dark:border-sky-400/40"></div>
+                <div class="intro-ring-2 absolute inset-0 rounded-full border-2 border-emerald-500/35"></div>
+                <div class="intro-halo absolute -inset-1 rounded-[1.85rem] opacity-90" style="background: conic-gradient(from 0deg, #1a73e8, #d93025, #f9ab00, #1e8e3e, #1a73e8);"></div>
+                <div class="relative w-full h-full rounded-[1.7rem] bg-white dark:bg-[#1e1f22] shadow-xl border border-white/80 dark:border-zinc-700/60 flex items-center justify-center">
+                    <svg viewBox="0 0 64 64" class="w-12 h-12 sm:w-14 sm:h-14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path class="intro-svg-path" d="M32 10L56 22L32 34L8 22L32 10Z" stroke="#1a73e8" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path class="intro-svg-path" d="M16 27V41C16 41 22.5 47 32 47C41.5 47 48 41 48 41V27" stroke="#1e8e3e" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path class="intro-svg-path" d="M56 22V38" stroke="#f9ab00" stroke-width="3.2" stroke-linecap="round"/>
+                        <circle cx="56" cy="40" r="2.6" fill="#d93025"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Eyebrow Badge -->
+            <div class="intro-eyebrow inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/90 dark:bg-zinc-800/90 border border-google-border dark:border-zinc-700 shadow-xs text-[11px] sm:text-xs font-heading font-semibold tracking-wider text-google-blue dark:text-sky-300 uppercase">
+                <span class="w-2 h-2 rounded-full bg-google-green animate-pulse"></span>
+                <span>Official Portfolio • ยินดีต้อนรับเข้าชม</span>
+            </div>
+
+            <!-- Masked Wordmark Reveal -->
+            <div class="space-y-2">
+                <div class="overflow-hidden py-1">
+                    <h2 class="intro-title-inner text-3xl sm:text-5xl font-extrabold font-heading tracking-tight bg-gradient-to-r from-google-text via-google-blue to-indigo-600 dark:from-white dark:via-sky-300 dark:to-indigo-300 bg-clip-text text-transparent">
+                        นายภคพล สมัยแก้ว
+                    </h2>
+                </div>
+                <div class="intro-nickname flex items-center justify-center gap-2 flex-wrap">
+                    <span class="px-3.5 py-1 rounded-full bg-google-blue text-white font-heading font-bold text-sm sm:text-base shadow-md shadow-google-blue/25">
+                        ฟีล (Feel)
+                    </span>
+                    <span class="intro-sub text-xs sm:text-sm text-google-text-muted dark:text-zinc-300 font-medium">
+                        วิทยาลัยอาชีวศึกษานครศรีธรรมราช • ปวส.1
+                    </span>
+                </div>
+            </div>
+
+            <!-- Stagger Showcase Chips -->
+            <div class="flex flex-wrap items-center justify-center gap-2 pt-1 max-w-2xl">
+                <span class="intro-chip-1 px-3 py-1 rounded-full bg-white/90 dark:bg-zinc-800/90 border border-sky-200 dark:border-sky-800/70 text-[11px] sm:text-xs font-semibold text-sky-700 dark:text-sky-300 shadow-xs">
+                    <i class="fa-solid fa-microchip mr-1"></i> ESP32 &amp; IoT
+                </span>
+                <span class="intro-chip-2 px-3 py-1 rounded-full bg-white/90 dark:bg-zinc-800/90 border border-emerald-200 dark:border-emerald-800/70 text-[11px] sm:text-xs font-semibold text-emerald-700 dark:text-emerald-300 shadow-xs">
+                    <i class="fa-solid fa-brain mr-1"></i> AI &amp; Automation
+                </span>
+                <span class="intro-chip-3 px-3 py-1 rounded-full bg-white/90 dark:bg-zinc-800/90 border border-rose-200 dark:border-rose-800/70 text-[11px] sm:text-xs font-semibold text-rose-700 dark:text-rose-300 shadow-xs">
+                    <i class="fa-solid fa-award mr-1"></i> โครงงาน &amp; เกียรติบัตร
+                </span>
+                <span class="intro-chip-4 px-3 py-1 rounded-full bg-white/90 dark:bg-zinc-800/90 border border-amber-200 dark:border-amber-800/70 text-[11px] sm:text-xs font-semibold text-amber-700 dark:text-amber-300 shadow-xs">
+                    <i class="fa-solid fa-layer-group mr-1"></i> 9 เว็บแอปเสริม
+                </span>
+            </div>
+
+            <!-- Signature 4-Color Progress Bar -->
+            <div class="intro-progress-wrap w-64 sm:w-80 pt-2 space-y-2">
+                <div class="h-1.5 w-full rounded-full bg-slate-200/80 dark:bg-zinc-800 overflow-hidden shadow-inner">
+                    <div id="intro-progress-bar" class="intro-progress-fill h-full w-full rounded-full" style="background: linear-gradient(90deg, #1a73e8, #d93025, #f9ab00, #1e8e3e);"></div>
+                </div>
+                <p id="intro-status-text" class="text-[11px] sm:text-xs text-google-text-muted dark:text-zinc-400 font-medium">
+                    กำลังเปิดแฟ้มสะสมผลงาน...
+                </p>
+            </div>
+        </div>
+
+        <!-- Subtle Skip Control -->
+        <button type="button" id="intro-skip-btn" onclick="dismissFirstVisitIntro()" class="intro-skip fixed bottom-6 right-6 px-3.5 py-2 rounded-full bg-white/90 dark:bg-zinc-800/90 hover:bg-google-blue hover:text-white dark:hover:bg-google-blue border border-google-border dark:border-zinc-700 text-xs font-heading font-semibold text-google-text-muted dark:text-zinc-300 shadow-md backdrop-blur-md transition-all cursor-pointer flex items-center gap-1.5">
+            <span>ข้าม</span>
+            <i class="fa-solid fa-forward text-[10px]"></i>
+        </button>
+    </div>
 
     <!-- Google 4-Color Signature Accent Bar (Top Border) -->
     <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
@@ -1467,7 +1678,12 @@
                 <span>© 2026 แฟ้มสะสมผลงาน นายภคพล สมัยแก้ว (ฟีล) • วิทยาลัยอาชีวศึกษานครศรีธรรมราช</span>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 flex-wrap justify-center">
+                <button type="button" onclick="replayFirstVisitIntro()" class="hover:text-google-blue transition-colors flex items-center gap-1.5 cursor-pointer" title="เล่นแอนิเมชันเปิดเว็บใหม่อีกครั้ง">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500 text-xs"></i>
+                    <span>ชมแอนิเมชันเปิดเว็บ</span>
+                </button>
+                <span class="text-google-border dark:text-google-dark-border">•</span>
                 <a href="#home" class="hover:text-google-blue transition-colors flex items-center gap-1.5">
                     <span>กลับขึ้นด้านบน</span>
                     <i class="fa-solid fa-arrow-up text-xs"></i>
@@ -3235,6 +3451,95 @@
                 });
             }
         }
+
+        // ==================== FIRST-VISIT INTRO ANIMATION ====================
+        const INTRO_SEEN_KEY = 'feel_portfolio_intro_seen_v1';
+        let introTimer = null;
+        let introStatusTimer = null;
+        let introDoneTimer = null;
+
+        function onIntroKeydown(e) {
+            if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                dismissFirstVisitIntro();
+            }
+        }
+
+        function finishIntroCleanup() {
+            const splash = document.getElementById('intro-splash');
+            if (splash) {
+                splash.classList.remove('intro-exit');
+            }
+            document.documentElement.classList.remove('feel-intro-pending', 'feel-intro-playing');
+            document.documentElement.classList.add('feel-intro-reveal');
+            document.removeEventListener('keydown', onIntroKeydown);
+            setTimeout(() => {
+                document.documentElement.classList.remove('feel-intro-reveal');
+            }, 850);
+        }
+
+        function dismissFirstVisitIntro() {
+            clearTimeout(introTimer);
+            clearTimeout(introStatusTimer);
+            const splash = document.getElementById('intro-splash');
+            if (!splash || !document.documentElement.classList.contains('feel-intro-playing')) {
+                finishIntroCleanup();
+                return;
+            }
+            document.documentElement.classList.remove('feel-intro-pending');
+            document.documentElement.classList.add('feel-intro-reveal');
+            splash.classList.add('intro-exit');
+            clearTimeout(introDoneTimer);
+            introDoneTimer = setTimeout(finishIntroCleanup, 650);
+        }
+
+        function runFirstVisitIntroSequence(restartAnimations = false) {
+            const splash = document.getElementById('intro-splash');
+            if (!splash) return;
+            try {
+                localStorage.setItem(INTRO_SEEN_KEY, String(Date.now()));
+            } catch (_) {}
+
+            const statusEl = document.getElementById('intro-status-text');
+            if (statusEl) statusEl.textContent = 'กำลังเปิดแฟ้มสะสมผลงาน...';
+
+            splash.classList.remove('intro-exit');
+            if (restartAnimations) {
+                splash.querySelectorAll('[class*="intro-"]').forEach(el => {
+                    el.style.animation = 'none';
+                    void el.offsetWidth;
+                    el.style.animation = '';
+                });
+            }
+
+            clearTimeout(introTimer);
+            clearTimeout(introStatusTimer);
+            clearTimeout(introDoneTimer);
+
+            document.addEventListener('keydown', onIntroKeydown);
+            introStatusTimer = setTimeout(() => {
+                if (statusEl) statusEl.textContent = 'พร้อมเข้าชมผลงานของ นายภคพล (ฟีล) แล้ว!';
+            }, 1650);
+            introTimer = setTimeout(dismissFirstVisitIntro, 2550);
+        }
+
+        function initFirstVisitIntro() {
+            if (!document.documentElement.classList.contains('feel-intro-playing')) {
+                document.documentElement.classList.remove('feel-intro-pending');
+                return;
+            }
+            runFirstVisitIntroSequence(false);
+        }
+
+        function replayFirstVisitIntro() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.documentElement.classList.remove('feel-intro-reveal');
+            document.documentElement.classList.add('feel-intro-pending', 'feel-intro-playing');
+            runFirstVisitIntroSequence(true);
+        }
+
+        // Start first-visit intro timer immediately after body DOM parses
+        initFirstVisitIntro();
 
         // Application Initialization
         document.addEventListener('DOMContentLoaded', async () => {

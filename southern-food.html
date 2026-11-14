@@ -91,6 +91,62 @@
         .pop-reveal {
             animation: popReveal 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
+        @keyframes epicShakeLv1 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-2px, 1px) rotate(-0.4deg); }
+            50% { transform: translate(2px, -1px) rotate(0.4deg); }
+            75% { transform: translate(-1px, -2px) rotate(-0.2deg); }
+        }
+        @keyframes epicShakeLv2 {
+            0%, 100% { transform: translate(0, 0) scale(1.01) rotate(0deg); }
+            20% { transform: translate(-5px, 3px) scale(1.02) rotate(-1deg); }
+            40% { transform: translate(5px, -4px) scale(1.015) rotate(1deg); }
+            60% { transform: translate(-4px, -3px) scale(1.025) rotate(-0.8deg); }
+            80% { transform: translate(4px, 4px) scale(1.02) rotate(0.8deg); }
+        }
+        @keyframes epicShakeLv3 {
+            0%, 100% { transform: translate(0, 0) scale(1.03) rotate(0deg); }
+            15% { transform: translate(-8px, -5px) scale(1.04) rotate(-1.8deg); }
+            35% { transform: translate(8px, 4px) scale(1.035) rotate(1.8deg); }
+            55% { transform: translate(-6px, 6px) scale(1.045) rotate(-1.5deg); }
+            75% { transform: translate(7px, -6px) scale(1.04) rotate(1.5deg); }
+        }
+        @keyframes neonRainbowGlow {
+            0% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.65), 0 0 60px rgba(220, 38, 38, 0.35), inset 0 0 20px rgba(245, 158, 11, 0.2); border-color: #f59e0b; }
+            33% { box-shadow: 0 0 35px rgba(220, 38, 38, 0.8), 0 0 80px rgba(168, 85, 247, 0.45), inset 0 0 25px rgba(220, 38, 38, 0.25); border-color: #ef4444; }
+            66% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.75), 0 0 85px rgba(59, 130, 246, 0.45), inset 0 0 25px rgba(16, 185, 129, 0.25); border-color: #10b981; }
+            100% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.65), 0 0 60px rgba(220, 38, 38, 0.35), inset 0 0 20px rgba(245, 158, 11, 0.2); border-color: #f59e0b; }
+        }
+        @keyframes radarSweep {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes jackpotFlash {
+            0% { transform: scale(0.7); opacity: 0; filter: brightness(2.5); }
+            50% { transform: scale(1.06); opacity: 1; filter: brightness(1.4); }
+            100% { transform: scale(1); opacity: 1; filter: brightness(1); }
+        }
+        .epic-stage-1 {
+            animation: epicShakeLv1 0.35s infinite, neonRainbowGlow 2.5s linear infinite;
+        }
+        .epic-stage-2 {
+            animation: epicShakeLv2 0.16s infinite, neonRainbowGlow 1.2s linear infinite;
+        }
+        .epic-stage-3 {
+            animation: epicShakeLv3 0.11s infinite, neonRainbowGlow 0.6s linear infinite;
+        }
+        .epic-stage-4 {
+            animation: neonRainbowGlow 0.4s linear infinite;
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.85), 0 0 100px rgba(245, 158, 11, 0.6) !important;
+        }
+        .jackpot-winner-card {
+            animation: jackpotFlash 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            box-shadow: 0 0 45px rgba(245, 158, 11, 0.55), 0 20px 50px rgba(220, 38, 38, 0.25) !important;
+            border-color: #f59e0b !important;
+        }
+        .radar-spinner {
+            animation: radarSweep 1.2s linear infinite;
+        }
         ::-webkit-scrollbar { width: 7px; height: 7px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 9999px; }
@@ -1367,8 +1423,31 @@
 
         function playWinChime() {
             if (!soundEnabled) return;
-            [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
-                setTimeout(() => playTick(freq, 0.18, 0.08), idx * 75);
+            // Epic Grand Fanfare Chime
+            const notes = [
+                { f: 523.25, t: 0, d: 0.16, v: 0.09 },
+                { f: 659.25, t: 90, d: 0.16, v: 0.09 },
+                { f: 783.99, t: 180, d: 0.16, v: 0.09 },
+                { f: 1046.50, t: 270, d: 0.32, v: 0.11 },
+                { f: 783.99, t: 480, d: 0.14, v: 0.09 },
+                { f: 1046.50, t: 620, d: 0.55, v: 0.13 },
+                { f: 1318.51, t: 620, d: 0.55, v: 0.09 }
+            ];
+            notes.forEach(n => {
+                setTimeout(() => playTick(n.f, n.d, n.v), n.t);
+            });
+        }
+
+        function playHeartbeat() {
+            if (!soundEnabled) return;
+            playTick(110, 0.12, 0.14);
+            setTimeout(() => playTick(95, 0.16, 0.11), 130);
+        }
+
+        function playPowerUpSweep() {
+            if (!soundEnabled) return;
+            [330, 440, 554, 659, 880, 1174].forEach((f, i) => {
+                setTimeout(() => playTick(f, 0.08, 0.07), i * 45);
             });
         }
 
@@ -1469,7 +1548,15 @@
             return meals.map(m => `<span class="px-2 py-0.5 rounded-full text-xs font-medium ${colors[m] || 'bg-stone-100 text-stone-600'}">${escapeHtml(m)}</span>`).join('');
         }
 
-        // ==================== TAB 1: RANDOMIZER ====================
+        // ==================== TAB 1: 20-SECOND OVER-THE-TOP EPIC RANDOMIZER ====================
+        let activeSpinCancel = null;
+
+        function skipEpicSpin() {
+            if (typeof activeSpinCancel === 'function') {
+                activeSpinCancel();
+            }
+        }
+
         function spinRandomPlace() {
             if (isSpinning) return;
             if (filteredPlaces.length === 0) {
@@ -1490,32 +1577,193 @@
             const btn = document.getElementById('spinCardBtn');
             btn.disabled = true;
             btn.classList.add('opacity-75');
+            document.getElementById('placeQuickActions').style.display = 'none';
 
             const display = document.getElementById('placeDisplay');
             const card = document.getElementById('resultCardContainer');
-            card.classList.add('spinning-card');
+            card.classList.remove('jackpot-winner-card');
 
-            let step = 0;
-            const totalSteps = 14;
-            const runSlot = () => {
-                const temp = filteredPlaces[Math.floor(Math.random() * filteredPlaces.length)];
+            // Pre-select the final winner and 4 decoy finalists for the 20-second spectacle
+            const winner = pickWeightedPlace(pool);
+            const others = filteredPlaces.filter(p => p.id !== winner.id).sort(() => Math.random() - 0.5);
+            const finalists = [winner, ...others.slice(0, 4)].sort(() => Math.random() - 0.5);
+            const fakeoutPlace = others[0] || winner;
+
+            const TOTAL_DURATION = 20000; // 20.0 seconds!
+            const startTime = performance.now();
+            let lastSwapTime = 0;
+            let lastStage = 0;
+            let fakeoutTriggered = false;
+            let currentShown = filteredPlaces[0];
+            let cancelled = false;
+            let rafId = null;
+
+            activeSpinCancel = () => {
+                cancelled = true;
+                if (rafId) cancelAnimationFrame(rafId);
+                activeSpinCancel = null;
+                card.classList.remove('epic-stage-1', 'epic-stage-2', 'epic-stage-3', 'epic-stage-4');
+                finishPlaceSpin(winner);
+            };
+
+            playPowerUpSweep();
+
+            function updateEpicFrame(now) {
+                if (cancelled) return;
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / TOTAL_DURATION, 1);
+                const remainingSec = Math.max(0, (TOTAL_DURATION - elapsed) / 1000).toFixed(1);
+
+                // Determine Stage (1 to 5 across 20 seconds)
+                let stage = 1;
+                let stageTitle = '🛰️ STAGE 1/5: เปิดเรดาร์ดาวเทียมสแกน 48 ร้านเด็ดทั่วเมืองนครฯ...';
+                let stageBadgeClass = 'from-sky-500 to-indigo-600';
+                let swapInterval = 110;
+
+                if (elapsed < 4000) {
+                    stage = 1;
+                    swapInterval = 110;
+                    stageTitle = '🛰️ STAGE 1/5: เปิดเรดาร์สแกนพิกัดร้านอร่อยทั่ว อ.เมือง นครศรีฯ...';
+                    stageBadgeClass = 'from-sky-500 to-blue-600';
+                } else if (elapsed < 9000) {
+                    stage = 2;
+                    swapInterval = 55;
+                    stageTitle = '🔥 STAGE 2/5: โหมดไฮเปอร์สปีด! ปั่นสล็อตความเร็วแสงทะลุพิกัด!';
+                    stageBadgeClass = 'from-amber-500 via-orange-500 to-red-600';
+                } else if (elapsed < 14000) {
+                    stage = 3;
+                    swapInterval = 150;
+                    stageTitle = '⚡ STAGE 3/5: พายุเครื่องแกงใต้! คัดเน้นๆ เข้ารอบ 5 ร้านสุดท้าย!';
+                    stageBadgeClass = 'from-purple-600 via-fuchsia-600 to-rose-600';
+                } else if (elapsed < 17500) {
+                    stage = 4;
+                    const slowProgress = (elapsed - 14000) / 3500;
+                    swapInterval = 240 + slowProgress * 450;
+                    stageTitle = '💓 STAGE 4/5: ชะลอความเร็ว... กำลังจะหยุดที่ร้านผู้ชนะแล้ว!';
+                    stageBadgeClass = 'from-rose-600 to-red-700';
+                } else {
+                    stage = 5;
+                    swapInterval = 520;
+                    stageTitle = '🚨 STAGE 5/5: เดี๋ยวก่อน!! พลังความหิวพุ่งทะลุหลอด ดีดเปลี่ยนร้านวินาทีสุดท้าย!!';
+                    stageBadgeClass = 'from-yellow-400 via-red-600 to-purple-700';
+                }
+
+                if (stage !== lastStage) {
+                    card.classList.remove('epic-stage-1', 'epic-stage-2', 'epic-stage-3', 'epic-stage-4');
+                    card.classList.add(`epic-stage-${Math.min(stage, 4)}`);
+                    if (stage === 2 || stage === 3) {
+                        playPowerUpSweep();
+                        launchMiniBurst();
+                    }
+                    if (stage === 5 && !fakeoutTriggered) {
+                        fakeoutTriggered = true;
+                        playPowerUpSweep();
+                        launchConfetti();
+                    }
+                    lastStage = stage;
+                }
+
+                if (now - lastSwapTime >= swapInterval) {
+                    lastSwapTime = now;
+                    if (stage === 1 || stage === 2) {
+                        currentShown = filteredPlaces[Math.floor(Math.random() * filteredPlaces.length)];
+                        playTick(320 + Math.floor(progress * 520), 0.035, 0.055);
+                    } else if (stage === 3) {
+                        currentShown = finalists[Math.floor(Math.random() * finalists.length)];
+                        playTick(580 + Math.floor(Math.random() * 250), 0.05, 0.075);
+                    } else if (stage === 4) {
+                        currentShown = elapsed > 16300 ? fakeoutPlace : finalists[Math.floor(Math.random() * finalists.length)];
+                        playHeartbeat();
+                    } else {
+                        currentShown = elapsed > 19100 ? winner : finalists[Math.floor(Math.random() * finalists.length)];
+                        playHeartbeat();
+                    }
+                }
+
+                // Build Finalists vs-strip for Stage 3-5
+                const finalistHtml = stage >= 3 ? `
+                    <div class="w-full max-w-lg mx-auto mt-3 pt-2.5 border-t border-amber-500/20">
+                        <div class="text-[11px] font-heading font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1.5">
+                            🏆 5 ร้านตัวตึงที่เข้ารอบสุดท้าย
+                        </div>
+                        <div class="grid grid-cols-5 gap-1.5">
+                            ${finalists.map(f => {
+                                const isActive = f.id === currentShown.id;
+                                return `
+                                    <div class="p-1.5 rounded-xl border text-center transition-all ${isActive ? 'bg-gradient-to-br from-amber-500 to-chili-600 text-white border-yellow-300 scale-110 shadow-lg font-bold' : 'bg-stone-100/80 dark:bg-stone-800/70 border-stone-200 dark:border-stone-700 opacity-55 text-stone-600 dark:text-stone-400'}">
+                                        <div class="text-lg">${escapeHtml(f.emoji)}</div>
+                                        <div class="text-[10px] truncate">${escapeHtml(f.name)}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                ` : '';
+
+                const prevPlace = filteredPlaces[(filteredPlaces.indexOf(currentShown) - 1 + filteredPlaces.length) % filteredPlaces.length] || currentShown;
+                const nextPlace = filteredPlaces[(filteredPlaces.indexOf(currentShown) + 1) % filteredPlaces.length] || currentShown;
+
                 display.innerHTML = `
-                    <div class="py-8 flex flex-col items-center justify-center opacity-85">
-                        <div class="text-6xl mb-3">${escapeHtml(temp.emoji)}</div>
-                        <div class="font-heading text-2xl sm:text-3xl font-bold text-turmeric-700 dark:text-turmeric-400">${escapeHtml(temp.name)}</div>
-                        <div class="text-xs text-stone-400 mt-1">${escapeHtml(temp.zone)} • กำลังเลือกร้านเด็ด...</div>
+                    <div class="w-full py-2 flex flex-col items-center justify-center select-none">
+                        <!-- Stage & Countdown Header -->
+                        <div class="w-full flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <span class="px-3.5 py-1 rounded-full bg-gradient-to-r ${stageBadgeClass} text-white text-xs sm:text-sm font-heading font-bold shadow-md animate-pulse">
+                                ${stageTitle}
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 rounded-full bg-stone-900 text-amber-400 font-mono font-extrabold text-xs sm:text-sm border border-amber-500/40 shadow-inner">
+                                    ⏱️ ${remainingSec}s
+                                </span>
+                                <button type="button" onclick="skipEpicSpin()" class="px-2.5 py-1 rounded-full bg-stone-200 dark:bg-stone-800 hover:bg-chili-600 hover:text-white text-stone-600 dark:text-stone-300 text-xs font-heading font-semibold transition cursor-pointer">
+                                    ⏩ ข้ามไปเฉลย
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 20-Second Progress Bar -->
+                        <div class="w-full h-3 rounded-full bg-stone-200 dark:bg-stone-800 overflow-hidden mb-4 p-0.5 border border-amber-500/30">
+                            <div class="h-full rounded-full bg-gradient-to-r from-turmeric-500 via-chili-500 to-purple-600 transition-all duration-75 relative" style="width: ${(progress * 100).toFixed(1)}%"></div>
+                        </div>
+
+                        <!-- 3-Card Slot Machine Reel -->
+                        <div class="w-full grid grid-cols-1 sm:grid-cols-12 gap-2 items-center my-1">
+                            <div class="hidden sm:flex sm:col-span-3 flex-col items-center p-2.5 rounded-2xl bg-stone-100/70 dark:bg-stone-800/50 border border-stone-200/60 dark:border-stone-700/50 opacity-45 scale-90 blur-[0.5px]">
+                                <div class="text-3xl mb-1">${escapeHtml(prevPlace.emoji)}</div>
+                                <div class="font-heading text-xs font-bold truncate max-w-full">${escapeHtml(prevPlace.name)}</div>
+                            </div>
+
+                            <div class="sm:col-span-6 p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-50 via-white to-orange-50 dark:from-stone-800 dark:via-stone-900 dark:to-amber-950/40 border-2 border-amber-400 dark:border-amber-500 shadow-2xl transform scale-105 relative overflow-hidden">
+                                ${stage === 5 ? '<div class="absolute inset-x-0 top-0 bg-red-600 text-white text-[11px] font-heading font-bold py-0.5 uppercase tracking-widest animate-bounce">⚡ FAKE-OUT! พลิกโผวินาทีสุดท้าย! ⚡</div>' : ''}
+                                <div class="text-6xl sm:text-7xl mb-2 mt-1 transform transition-transform">${escapeHtml(currentShown.emoji)}</div>
+                                <div class="font-heading text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-turmeric-700 via-chili-600 to-amber-600 dark:from-amber-300 dark:via-orange-400 dark:to-rose-400 leading-tight">
+                                    ${escapeHtml(currentShown.name)}
+                                </div>
+                                <div class="text-xs text-stone-500 dark:text-stone-400 mt-1 font-medium">
+                                    📍 ${escapeHtml(currentShown.zone)} • ${escapeHtml(currentShown.category)}
+                                </div>
+                                ${getPlaceWeight(currentShown) > 1 ? '<div class="mt-1.5 inline-block px-2.5 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold">🔥 BOOST x10 TARGET</div>' : ''}
+                            </div>
+
+                            <div class="hidden sm:flex sm:col-span-3 flex-col items-center p-2.5 rounded-2xl bg-stone-100/70 dark:bg-stone-800/50 border border-stone-200/60 dark:border-stone-700/50 opacity-45 scale-90 blur-[0.5px]">
+                                <div class="text-3xl mb-1">${escapeHtml(nextPlace.emoji)}</div>
+                                <div class="font-heading text-xs font-bold truncate max-w-full">${escapeHtml(nextPlace.name)}</div>
+                            </div>
+                        </div>
+
+                        ${finalistHtml}
                     </div>
                 `;
-                playTick(400 + step * 25, 0.03, 0.04);
-                step++;
-                if (step < totalSteps) {
-                    setTimeout(runSlot, 55 + step * 10);
+
+                if (progress < 1) {
+                    rafId = requestAnimationFrame(updateEpicFrame);
                 } else {
-                    const winner = pickWeightedPlace(pool);
+                    activeSpinCancel = null;
+                    card.classList.remove('epic-stage-1', 'epic-stage-2', 'epic-stage-3', 'epic-stage-4');
                     finishPlaceSpin(winner);
                 }
-            };
-            runSlot();
+            }
+
+            rafId = requestAnimationFrame(updateEpicFrame);
         }
 
         function finishPlaceSpin(place) {
@@ -1527,12 +1775,16 @@
             const btn = document.getElementById('spinCardBtn');
             btn.disabled = false;
             btn.classList.remove('opacity-75');
-            document.getElementById('resultCardContainer').classList.remove('spinning-card');
+            const card = document.getElementById('resultCardContainer');
+            card.classList.remove('spinning-card', 'epic-stage-1', 'epic-stage-2', 'epic-stage-3', 'epic-stage-4');
+            card.classList.add('jackpot-winner-card');
 
             renderPlaceCard(place);
             addToHistory(place);
             playWinChime();
             launchConfetti();
+            setTimeout(() => launchConfetti(), 450);
+            setTimeout(() => launchConfetti(), 950);
 
             document.getElementById('nakhonTip').textContent =
                 NAKHON_TIPS[Math.floor(Math.random() * NAKHON_TIPS.length)];
@@ -1741,6 +1993,11 @@
             });
         }
 
+        let activeWheelSkip = null;
+        function skipWheelSpin() {
+            if (typeof activeWheelSkip === 'function') activeWheelSkip();
+        }
+
         function spinWheel() {
             if (isWheelSpinning || wheelItems.length === 0) return;
             isWheelSpinning = true;
@@ -1749,41 +2006,109 @@
             const chosenPlace = pickWeightedPlace(wheelItems);
             const winIdx = Math.max(0, wheelItems.indexOf(chosenPlace));
             const sliceAngle = (Math.PI * 2) / wheelItems.length;
-            const offsetInSlice = 0.18 + Math.random() * 0.64;
+            const offsetInSlice = 0.22 + Math.random() * 0.56;
             const TWO_PI = Math.PI * 2;
             const desiredMod = ((Math.PI * 1.5 - (winIdx + offsetInSlice) * sliceAngle) % TWO_PI + TWO_PI) % TWO_PI;
             const startAngle = wheelAngle;
             const currentMod = ((startAngle % TWO_PI) + TWO_PI) % TWO_PI;
             const deltaMod = (desiredMod - currentMod + TWO_PI) % TWO_PI;
-            const extraSpins = (5 + Math.floor(Math.random() * 4)) * TWO_PI;
+            // 38 to 45 full rotations for a 20-second mega spin!
+            const extraSpins = (38 + Math.floor(Math.random() * 7)) * TWO_PI;
             const targetAngle = startAngle + deltaMod + extraSpins;
-            const duration = 4200;
+            const duration = 20000; // 20 seconds!
             const startTime = performance.now();
             let lastSliceIdx = -1;
+            let rafId = null;
+            let skipped = false;
+
+            const resultBox = document.getElementById('wheelResultBox');
+
+            activeWheelSkip = () => {
+                skipped = true;
+                if (rafId) cancelAnimationFrame(rafId);
+                activeWheelSkip = null;
+                wheelAngle = targetAngle;
+                drawWheel();
+                isWheelSpinning = false;
+                document.getElementById('wheelSpinBtn').disabled = false;
+                showWheelWinner(wheelItems[winIdx]);
+            };
+
+            playPowerUpSweep();
+
+            // Custom 20s dramatic curve with turbo boost & final suspense crawl
+            function dramaticWheelEase(t) {
+                if (t < 0.15) {
+                    // 0s-3s: rev up acceleration
+                    return 0.12 * Math.pow(t / 0.15, 2.2);
+                } else if (t < 0.65) {
+                    // 3s-13s: hyper-speed cruise
+                    return 0.12 + 0.66 * ((t - 0.15) / 0.50);
+                } else {
+                    // 13s-20s: long nail-biting deceleration
+                    const u = (t - 0.65) / 0.35;
+                    return 0.78 + 0.22 * (1 - Math.pow(1 - u, 4.2));
+                }
+            }
 
             function animate(now) {
+                if (skipped) return;
                 const elapsed = now - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                const ease = 1 - Math.pow(1 - progress, 4);
+                const remSec = Math.max(0, (duration - elapsed) / 1000).toFixed(1);
+                const ease = dramaticWheelEase(progress);
                 wheelAngle = startAngle + (targetAngle - startAngle) * ease;
                 drawWheel();
 
                 const pointerAngle = (Math.PI * 1.5 - wheelAngle % TWO_PI + Math.PI * 4) % TWO_PI;
                 const currentIdx = Math.floor(pointerAngle / sliceAngle) % wheelItems.length;
+                const pointingPlace = wheelItems[currentIdx] || chosenPlace;
+
                 if (currentIdx !== lastSliceIdx) {
-                    playTick(680, 0.025, 0.04);
+                    playTick(520 + Math.floor(progress * 380), 0.025, 0.05);
                     lastSliceIdx = currentIdx;
                 }
 
+                let phaseLabel = '🌪️ กำลังเร่งเครื่องวงล้อความเร็วสูง...';
+                if (progress > 0.85) phaseLabel = '💓 วินาทีตัดสิน! เข็มกำลังจะหยุดแล้ว...';
+                else if (progress > 0.65) phaseLabel = '🎯 กำลังชะลอความเร็ว ลุ้นร้านผู้ชนะ!';
+                else if (progress > 0.15) phaseLabel = '🔥 ไฮเปอร์สปีด! หมุนทะลวงพิกัด 48 ร้าน!';
+
+                resultBox.innerHTML = `
+                    <div class="space-y-4 text-center py-4">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-chili-600 text-white text-xs font-heading font-bold animate-pulse">
+                                ${phaseLabel}
+                            </span>
+                            <span class="px-3 py-1 rounded-full bg-stone-900 text-amber-400 font-mono font-bold text-xs">
+                                ⏱️ ${remSec}s
+                            </span>
+                        </div>
+                        <div class="w-full h-2.5 rounded-full bg-stone-200 dark:bg-stone-800 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-turmeric-500 via-chili-500 to-purple-600" style="width:${(progress * 100).toFixed(1)}%"></div>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-amber-50/80 dark:bg-stone-800 border-2 border-amber-400/70 shadow-inner">
+                            <div class="text-xs text-stone-400 mb-1">เข็มกำลังชี้ผ่านร้าน:</div>
+                            <div class="text-5xl mb-1">${escapeHtml(pointingPlace.emoji)}</div>
+                            <div class="font-heading text-xl font-extrabold text-turmeric-700 dark:text-turmeric-400 truncate">${escapeHtml(pointingPlace.name)}</div>
+                            <div class="text-xs text-stone-500 mt-0.5">${escapeHtml(pointingPlace.zone)}</div>
+                        </div>
+                        <button type="button" onclick="skipWheelSpin()" class="px-4 py-1.5 rounded-full bg-stone-200 dark:bg-stone-800 hover:bg-chili-600 hover:text-white text-xs font-heading font-semibold transition cursor-pointer">
+                            ⏩ ข้ามไปดูผลลัพธ์เลย
+                        </button>
+                    </div>
+                `;
+
                 if (progress < 1) {
-                    requestAnimationFrame(animate);
+                    rafId = requestAnimationFrame(animate);
                 } else {
+                    activeWheelSkip = null;
                     isWheelSpinning = false;
                     document.getElementById('wheelSpinBtn').disabled = false;
                     showWheelWinner(wheelItems[winIdx]);
                 }
             }
-            requestAnimationFrame(animate);
+            rafId = requestAnimationFrame(animate);
         }
 
         function showWheelWinner(place) {
@@ -2026,6 +2351,43 @@
             toastTimer = setTimeout(() => {
                 t.classList.add('opacity-0', 'translate-y-4');
             }, 2400);
+        }
+
+        function launchMiniBurst() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const colors = ['#f59e0b', '#ef4444', '#a855f7', '#fbbf24'];
+            const sparks = Array.from({ length: 30 }, () => ({
+                x: canvas.width / 2,
+                y: canvas.height * 0.45,
+                vx: (Math.random() - 0.5) * 18,
+                vy: (Math.random() - 0.5) * 18,
+                r: Math.random() * 5 + 2,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                life: 1
+            }));
+            function step() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let alive = false;
+                sparks.forEach(s => {
+                    if (s.life <= 0) return;
+                    alive = true;
+                    s.x += s.vx;
+                    s.y += s.vy;
+                    s.life -= 0.04;
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, s.life);
+                    ctx.fillStyle = s.color;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                });
+                if (alive) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
         }
 
         function launchConfetti() {

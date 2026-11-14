@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Password &amp; Key Generator — สุ่มรหัสผ่าน API Key UUID v4 &amp; Hash | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="เครื่องมือสุ่มรหัสผ่านความปลอดภัยสูงด้วย CSPRNG (crypto.getRandomValues), API Secret Key, .env Token, UUID v4 และคำนวณ Hash (MD5, SHA-1, SHA-256, SHA-512, HMAC-SHA256) พร้อมแถบวัดความแข็งแกร่ง 100% ออฟไลน์">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.15rem;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.10), 0 1px 3px 1px rgba(60, 64, 67, 0.06);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-rose-600 selection:text-white">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Centered Bottom Toast Notification -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 w-[92vw] max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- UNIFIED SINGLE-ROW NAVIGATION HEADER       -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก</span>
+            </a>
+
+            <div class="flex items-center gap-2.5 sm:border-l border-google-border dark:border-google-dark-border sm:pl-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-600 via-red-500 to-amber-500 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            Password &amp; Key Generator
+                        </h1>
+                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 text-[10px] font-bold whitespace-nowrap shrink-0">
+                            CSPRNG • API Key • UUID • Hash
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        สุ่มรหัสผ่านความปลอดภัยสูง API Secret UUID v4 และคำนวณ MD5 / SHA-256 ในเบราว์เซอร์ 100%
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <a href="dev-tools.html" class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition whitespace-nowrap">
+                <i class="fa-solid fa-terminal"></i>
+                <span>Dev Utilities</span>
+            </a>
+
+            <!-- App Switcher Dropdown (14 Apps) -->
+            <div class="relative shrink-0">
+                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (14 ระบบ)">
+                    <i class="fa-solid fa-layer-group text-rose-600 dark:text-rose-400"></i>
+                    <span class="hidden sm:inline">สลับเว็บแอป</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 text-[10px] font-bold leading-none">14</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                </button>
+                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
+                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
+                        </div>
+                    </a>
+                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
+                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (14 ระบบ)</div>
+                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
+                        </div>
+                    </a>
+                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
+                        </div>
+                    </a>
+                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
+                        </div>
+                    </a>
+                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ &amp; พายุ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
+                        </div>
+                    </a>
+                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble &amp; สูตร CFOP</div>
+                        </div>
+                    </a>
+                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง &amp; ถาม-ตอบ</div>
+                        </div>
+                    </a>
+                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ &amp; แชร์ PIN 6 หลัก</div>
+                        </div>
+                    </a>
+                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง &amp; รูปติดบัตร</div>
+                        </div>
+                    </a>
+                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI &amp; โฮสต์ฟรี</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI &amp; รันไฟล์</div>
+                        </div>
+                    </a>
+                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON • JWT • Base64 • Timestamp</div>
+                        </div>
+                    </a>
+                    <a href="subnet.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-blue-600 bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-network-wired"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">11. IP &amp; Subnet Calculator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CIDR • Host Range • VLAN • Netplan</div>
+                        </div>
+                    </a>
+                    <a href="regex.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-fuchsia-600 bg-fuchsia-50 dark:bg-fuchsia-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">12. Regex Tester &amp; Cheatsheet</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Live Match • Presets • Replace</div>
+                        </div>
+                    </a>
+                    <a href="diff.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code-compare"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">13. Diff Checker &amp; Code Compare</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Side-by-Side • Patch • Word Diff</div>
+                        </div>
+                    </a>
+                    <a href="keygen.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 transition">
+                        <div class="w-8 h-8 rounded-lg text-rose-600 bg-rose-100 dark:bg-rose-950 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">14. Password &amp; Key Generator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CSPRNG • API Key • UUID • Hash</div>
+                        </div>
+                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-rose-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Theme Switcher -->
+            <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN WORKSPACE                             -->
+    <!-- ========================================== -->
+    <main class="flex-1 w-full max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
+
+        <!-- Security Guarantee + Clean Tab Switcher -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div class="grid grid-cols-2 sm:inline-flex items-center gap-1.5 p-1 rounded-2xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border shadow-xs">
+                <button type="button" id="tab-btn-password" onclick="switchKeygenTab('password')" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-bold bg-rose-600 text-white shadow-xs transition-colors duration-75 flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer">
+                    <i class="fa-solid fa-key"></i>
+                    <span>รหัสผ่าน &amp; Passphrase</span>
+                </button>
+                <button type="button" id="tab-btn-apikey" onclick="switchKeygenTab('apikey')" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-bold text-google-text-muted dark:text-google-dark-text-muted hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors duration-75 flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer">
+                    <i class="fa-solid fa-microchip"></i>
+                    <span>API Secret &amp; .env</span>
+                </button>
+                <button type="button" id="tab-btn-uuid" onclick="switchKeygenTab('uuid')" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-bold text-google-text-muted dark:text-google-dark-text-muted hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors duration-75 flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer">
+                    <i class="fa-solid fa-fingerprint"></i>
+                    <span>UUID v4</span>
+                </button>
+                <button type="button" id="tab-btn-hash" onclick="switchKeygenTab('hash')" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-bold text-google-text-muted dark:text-google-dark-text-muted hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors duration-75 flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <span>Hash (MD5 / SHA)</span>
+                </button>
+            </div>
+
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-xs font-semibold shrink-0 self-start md:self-auto">
+                <i class="fa-solid fa-lock"></i>
+                <span>CSPRNG 100% ออฟไลน์ — ไม่ส่งข้อมูลออกนอกเครื่อง</span>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 1: PASSWORD & STRENGTH ANALYZER        -->
+        <!-- ========================================== -->
+        <section id="panel-password" class="space-y-4">
+            <!-- Quick Preset Pills -->
+            <div class="g-card p-3 sm:p-4 flex flex-wrap items-center gap-1.5 text-xs">
+                <span class="font-bold text-google-text-muted dark:text-google-dark-text-muted mr-1"><i class="fa-solid fa-bolt text-amber-500 mr-1"></i>สูตรแนะนำ:</span>
+                <button type="button" onclick="applyPwPreset('standard')" class="px-3 py-1.5 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 hover:bg-rose-100 font-semibold transition cursor-pointer">รหัสผ่านเว็บทั่วไป (16)</button>
+                <button type="button" onclick="applyPwPreset('database')" class="px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 hover:bg-blue-100 font-semibold transition cursor-pointer">Database MySQL/Postgres (24)</button>
+                <button type="button" onclick="applyPwPreset('wifi')" class="px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 font-semibold transition cursor-pointer">Wi-Fi WPA2/WPA3 (20)</button>
+                <button type="button" onclick="applyPwPreset('pin')" class="px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 hover:bg-amber-100 font-semibold transition cursor-pointer">PIN ตัวเลข 6 หลัก</button>
+                <button type="button" onclick="generatePassphrase()" class="px-3 py-1.5 rounded-full bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 hover:bg-purple-100 font-semibold transition cursor-pointer">Passphrase 4 คำจำง่าย</button>
+            </div>
+
+            <!-- Generated Password Display + Strength Bar -->
+            <div class="g-card p-4 sm:p-6 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted">
+                        <i class="fa-solid fa-key text-rose-600 mr-1"></i>รหัสผ่านที่สุ่มได้ (พิมพ์/วางรหัสผ่านของคุณเองลงช่องนี้เพื่อวัดความปลอดภัยได้ทันที)
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" id="pw-mask-btn" onclick="togglePasswordMask()" class="px-2.5 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-slate-200 dark:hover:bg-zinc-700 text-xs font-semibold cursor-pointer" title="ซ่อนหรือแสดงรหัสผ่าน">
+                            <i id="pw-mask-icon" class="fa-regular fa-eye-slash mr-1"></i><span id="pw-mask-label">ซ่อน</span>
+                        </button>
+                        <button type="button" onclick="generatePassword()" class="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs cursor-pointer">
+                            <i class="fa-solid fa-rotate mr-1"></i>สุ่มใหม่
+                        </button>
+                        <button type="button" onclick="copyTextById('pw-output', 'รหัสผ่าน')" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs cursor-pointer">
+                            <i class="fa-regular fa-copy mr-1"></i>คัดลอก
+                        </button>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <input type="text" id="pw-output" oninput="analyzePasswordStrength(this.value)" spellcheck="false" autocomplete="off"
+                        class="w-full px-4 py-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg border-2 border-google-border dark:border-google-dark-border focus:border-rose-500 font-mono text-lg sm:text-2xl font-bold tracking-wider text-google-text dark:text-white outline-none transition" />
+                </div>
+
+                <!-- Strength Progress Bar + Metrics -->
+                <div class="space-y-2.5">
+                    <div class="flex items-center justify-between gap-2 text-xs sm:text-sm">
+                        <div class="flex items-center gap-2">
+                            <span class="text-google-text-muted dark:text-google-dark-text-muted font-semibold">ระดับความปลอดภัย:</span>
+                            <span id="pw-strength-badge" class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300">-</span>
+                        </div>
+                        <div class="flex items-center gap-3 font-mono text-xs text-google-text-muted dark:text-google-dark-text-muted">
+                            <span>Entropy: <strong id="pw-entropy" class="text-google-text dark:text-white">0 bits</strong></span>
+                            <span>ยาว: <strong id="pw-char-count" class="text-google-text dark:text-white">0</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="h-2.5 w-full rounded-full bg-slate-200 dark:bg-zinc-700 overflow-hidden">
+                        <div id="pw-strength-bar" class="h-full rounded-full transition-all duration-300 bg-emerald-500" style="width: 0%;"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-xs">
+                        <div class="px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border flex items-center justify-between">
+                            <span class="text-google-text-muted dark:text-google-dark-text-muted">คาดการณ์เวลา Brute-Force</span>
+                            <strong id="pw-crack-time" class="font-mono text-google-text dark:text-white">-</strong>
+                        </div>
+                        <div class="px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border flex items-center justify-between">
+                            <span class="text-google-text-muted dark:text-google-dark-text-muted">ชุดอักขระที่พบ</span>
+                            <strong id="pw-classes-found" class="font-mono text-google-text dark:text-white">-</strong>
+                        </div>
+                        <div class="px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border flex items-center justify-between gap-2">
+                            <span class="text-google-text-muted dark:text-google-dark-text-muted shrink-0">คำแนะนำ</span>
+                            <strong id="pw-advice" class="text-emerald-600 dark:text-emerald-400 text-right">-</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Options Grid: Generator Settings & Batch/Passphrase -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- Left: Length & Charset Settings -->
+                <div class="g-card p-4 sm:p-5 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-sm font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-rose-600"></i>ปรับแต่งตัวอักษรและความยาว
+                        </h2>
+                        <span id="pw-length-badge" class="px-2.5 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-mono text-xs font-extrabold">16 ตัวอักษร</span>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="stepPwLength(-2)" class="w-8 h-8 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-slate-200 dark:hover:bg-zinc-700 font-bold text-sm cursor-pointer">-</button>
+                        <input type="range" id="pw-length" min="6" max="64" value="16" oninput="syncPwLength(this.value)" class="flex-1 accent-rose-600 cursor-pointer" />
+                        <button type="button" onclick="stepPwLength(2)" class="w-8 h-8 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-slate-200 dark:hover:bg-zinc-700 font-bold text-sm cursor-pointer">+</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm">
+                        <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border cursor-pointer">
+                            <input type="checkbox" id="opt-upper" checked onchange="generatePassword()" class="accent-rose-600 rounded">
+                            <span>ตัวพิมพ์ใหญ่ <code class="font-mono text-xs text-google-text-muted">(A-Z)</code></span>
+                        </label>
+                        <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border cursor-pointer">
+                            <input type="checkbox" id="opt-lower" checked onchange="generatePassword()" class="accent-rose-600 rounded">
+                            <span>ตัวพิมพ์เล็ก <code class="font-mono text-xs text-google-text-muted">(a-z)</code></span>
+                        </label>
+                        <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border cursor-pointer">
+                            <input type="checkbox" id="opt-digits" checked onchange="generatePassword()" class="accent-rose-600 rounded">
+                            <span>ตัวเลข <code class="font-mono text-xs text-google-text-muted">(0-9)</code></span>
+                        </label>
+                        <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border cursor-pointer">
+                            <input type="checkbox" id="opt-symbols" checked onchange="generatePassword()" class="accent-rose-600 rounded">
+                            <span>สัญลักษณ์พิเศษ <code class="font-mono text-xs text-google-text-muted">(!@#$%)</code></span>
+                        </label>
+                        <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border cursor-pointer">
+                            <input type="checkbox" id="opt-no-ambiguous" onchange="generatePassword()" class="accent-rose-600 rounded">
+                            <span>ตัดตัวคล้าย <code class="font-mono text-xs text-google-text-muted">(0/O, 1/l/I)</code></span>
+                        </label>
+                        <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border cursor-pointer">
+                            <input type="checkbox" id="opt-db-safe" onchange="generatePassword()" class="accent-rose-600 rounded">
+                            <span>ปลอดภัยต่อ URL/DB <code class="font-mono text-xs text-google-text-muted">(ไม่ใส่ ' " \ $)</code></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Right: Passphrase Builder & Batch Generator -->
+                <div class="g-card p-4 sm:p-5 space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <h2 class="text-sm font-bold font-heading text-google-text dark:text-white flex items-center gap-2 whitespace-nowrap">
+                            <i class="fa-solid fa-list-ol text-purple-600"></i>Passphrase &amp; สุ่มเป็นชุด
+                        </h2>
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <select id="pp-words" class="px-2 py-1 rounded-lg bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                                <option value="3">3 คำ</option>
+                                <option value="4" selected>4 คำ</option>
+                                <option value="5">5 คำ</option>
+                                <option value="6">6 คำ</option>
+                            </select>
+                            <select id="pp-sep" class="px-2 py-1 rounded-lg bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                                <option value="-">คั่นด้วย -</option>
+                                <option value="_">คั่นด้วย _</option>
+                                <option value=".">คั่นด้วย .</option>
+                                <option value=" ">คั่นด้วยช่องว่าง</option>
+                            </select>
+                            <button type="button" onclick="generatePassphrase()" class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold cursor-pointer">สุ่ม Passphrase</button>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-google-border dark:border-google-dark-border pt-3 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted">สุ่มรหัสผ่านสำรอง 5 ชุด (คลิกคัดลอกได้ทีละแถว)</span>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="generatePasswordBatch()" class="px-2.5 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-slate-200 dark:hover:bg-zinc-700 text-xs font-bold cursor-pointer">
+                                    <i class="fa-solid fa-shuffle mr-1"></i>รีเฟรชชุด
+                                </button>
+                                <button type="button" onclick="copyAllBatchPasswords()" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer">
+                                    คัดลอกทั้งหมด
+                                </button>
+                            </div>
+                        </div>
+                        <div id="pw-batch-list" class="space-y-1.5"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: API SECRET & TOKEN KEY GENERATOR    -->
+        <!-- ========================================== -->
+        <section id="panel-apikey" class="hidden space-y-4">
+            <div class="g-card p-4 sm:p-5 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                        <span class="font-bold text-google-text-muted dark:text-google-dark-text-muted mr-1">รูปแบบโปรเจกต์:</span>
+                        <button type="button" onclick="applyApiPreset('jwt')" class="px-3 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 font-semibold cursor-pointer">JWT Secret (256-bit Base64URL)</button>
+                        <button type="button" onclick="applyApiPreset('sk')" class="px-3 py-1.5 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 hover:bg-rose-100 font-semibold cursor-pointer">API Key (sk_live_...)</button>
+                        <button type="button" onclick="applyApiPreset('laravel')" class="px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 font-semibold cursor-pointer">Laravel APP_KEY</button>
+                        <button type="button" onclick="applyApiPreset('webhook')" class="px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 hover:bg-amber-100 font-semibold cursor-pointer">Webhook Secret (whsec_...)</button>
+                        <button type="button" onclick="applyApiPreset('aes')" class="px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 hover:bg-blue-100 font-semibold cursor-pointer">AES-256 Encryption Key (Hex)</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+                    <div>
+                        <label class="block font-bold text-google-text-muted dark:text-google-dark-text-muted mb-1">ความแข็งแกร่ง (Entropy)</label>
+                        <select id="api-bytes" onchange="generateApiKeys()" class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-semibold">
+                            <option value="16">128-bit (16 bytes)</option>
+                            <option value="24">192-bit (24 bytes)</option>
+                            <option value="32" selected>256-bit (32 bytes — แนะนำ)</option>
+                            <option value="48">384-bit (48 bytes)</option>
+                            <option value="64">512-bit (64 bytes)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-google-text-muted dark:text-google-dark-text-muted mb-1">รูปแบบการเข้ารหัส</label>
+                        <select id="api-format" onchange="generateApiKeys()" class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-semibold">
+                            <option value="base64url">Base64URL (URL-safe)</option>
+                            <option value="hex">Hex (0-9a-f)</option>
+                            <option value="base64">Base64 (มาตรฐาน)</option>
+                            <option value="base62">Base62 (A-Za-z0-9)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-google-text-muted dark:text-google-dark-text-muted mb-1">คำนำหน้า (Prefix - ถ้ามี)</label>
+                        <input type="text" id="api-prefix" value="sk_live_" oninput="generateApiKeys()" placeholder="เช่น sk_live_ หรือ base64:"
+                            class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-mono font-semibold outline-none focus:border-rose-500" />
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <button type="button" onclick="generateApiKeys()" class="flex-1 px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold cursor-pointer">
+                            <i class="fa-solid fa-rotate mr-1"></i>สุ่ม Secret Key
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Primary Secret Display -->
+                <div class="p-4 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-google-text-muted dark:text-google-dark-text-muted">Secret Key หลัก (<span id="api-meta-info">256-bit • Base64URL</span>)</span>
+                        <button type="button" onclick="copyTextById('api-primary-output', 'API Secret Key')" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer">
+                            <i class="fa-regular fa-copy mr-1"></i>คัดลอกคีย์
+                        </button>
+                    </div>
+                    <input type="text" id="api-primary-output" readonly
+                        class="w-full px-3 py-2.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border font-mono text-sm sm:text-base font-bold text-google-text dark:text-white outline-none" />
+                </div>
+
+                <!-- Ready-to-paste .env Block -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-google-text-muted dark:text-google-dark-text-muted">
+                            <i class="fa-solid fa-file-code text-emerald-600 mr-1"></i>ชุดตัวแปร <code class="font-mono">.env</code> พร้อมวางลงโปรเจกต์ (สุ่มแยกอิสระทุกบรรทัด)
+                        </span>
+                        <button type="button" onclick="copyTextById('api-env-output', 'ชุดตัวแปร .env')" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold cursor-pointer">
+                            <i class="fa-regular fa-copy mr-1"></i>คัดลอก .env
+                        </button>
+                    </div>
+                    <textarea id="api-env-output" rows="5" readonly spellcheck="false"
+                        class="w-full p-3.5 rounded-xl bg-slate-900 text-emerald-300 border border-slate-700 font-mono text-xs sm:text-sm leading-relaxed outline-none resize-none"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: UUID v4 GENERATOR & VALIDATOR       -->
+        <!-- ========================================== -->
+        <section id="panel-uuid" class="hidden space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- Left: Single & Bulk UUID v4 Generator -->
+                <div class="g-card p-4 sm:p-5 space-y-4">
+                    <div class="flex items-center justify-between gap-2">
+                        <h2 class="text-sm font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-fingerprint text-blue-600"></i>สร้าง UUID v4 (RFC 4122 CSPRNG)
+                        </h2>
+                        <button type="button" onclick="generateUuids()" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer">
+                            <i class="fa-solid fa-rotate mr-1"></i>สุ่ม UUID v4 ใหม่
+                        </button>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                        <select id="uuid-format" onchange="generateUuids()" class="px-3 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-semibold">
+                            <option value="standard">มาตรฐาน (ตัวพิมพ์เล็กมีขีด -)</option>
+                            <option value="upper">ตัวพิมพ์ใหญ่ (UPPERCASE)</option>
+                            <option value="nohyphen">ไม่มีขีด (32 Hex)</option>
+                            <option value="braces">มีปีกกา ({UUID})</option>
+                            <option value="urn">URN (urn:uuid:...)</option>
+                        </select>
+                        <select id="uuid-count" onchange="generateUuids()" class="px-3 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-semibold">
+                            <option value="1">จำนวน 1 รายการ</option>
+                            <option value="5" selected>จำนวน 5 รายการ</option>
+                            <option value="10">จำนวน 10 รายการ</option>
+                            <option value="25">จำนวน 25 รายการ</option>
+                        </select>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 flex items-center justify-between gap-2">
+                        <code id="uuid-single-output" class="font-mono text-sm sm:text-base font-bold text-blue-800 dark:text-blue-200 truncate"></code>
+                        <button type="button" onclick="copyTextValue(document.getElementById('uuid-single-output').textContent, 'UUID v4')" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shrink-0 cursor-pointer">
+                            <i class="fa-regular fa-copy mr-1"></i>คัดลอก
+                        </button>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-semibold text-google-text-muted dark:text-google-dark-text-muted">รายการแบบ Bulk (บรรทัดละ 1 UUID)</span>
+                            <button type="button" onclick="copyTextById('uuid-bulk-output', 'รายการ UUID')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer">
+                                <i class="fa-regular fa-copy mr-1"></i>คัดลอกทั้งหมด
+                            </button>
+                        </div>
+                        <textarea id="uuid-bulk-output" rows="7" readonly spellcheck="false"
+                            class="w-full p-3 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-mono text-xs sm:text-sm outline-none resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- Right: UUID Validator / Inspector -->
+                <div class="g-card p-4 sm:p-5 space-y-4">
+                    <h2 class="text-sm font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass text-indigo-600"></i>ตรวจสอบรูปแบบ UUID (Validator &amp; Inspector)
+                    </h2>
+                    <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">วางสตริง UUID เพื่อตรวจว่าถูกต้องตาม RFC 4122/9562 หรือไม่ พร้อมดู Version และ Variant</p>
+                    <input type="text" id="uuid-inspect-input" oninput="inspectUuid(this.value)" placeholder="วาง UUID เช่น 550e8400-e29b-41d4-a716-446655440000"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-mono text-xs sm:text-sm outline-none focus:border-indigo-500" />
+
+                    <div id="uuid-inspect-result" class="p-4 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border text-xs space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-google-text-muted dark:text-google-dark-text-muted">สถานะความถูกต้อง:</span>
+                            <strong id="uuid-val-status" class="font-bold">-</strong>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-google-text-muted dark:text-google-dark-text-muted">เวอร์ชัน (Version):</span>
+                            <strong id="uuid-val-version" class="font-mono">-</strong>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-google-text-muted dark:text-google-dark-text-muted">โครงสร้าง (Variant):</span>
+                            <strong id="uuid-val-variant" class="font-mono">-</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: HASH CALCULATOR (MD5 / SHA / HMAC)  -->
+        <!-- ========================================== -->
+        <section id="panel-hash" class="hidden space-y-4">
+            <div class="g-card p-4 sm:p-5 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h2 class="text-sm font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-hashtag text-emerald-600"></i>คำนวณ Hash (MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512) &amp; HMAC-SHA256
+                    </h2>
+                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                        <label class="inline-flex items-center gap-1.5 cursor-pointer select-none px-2.5 py-1 rounded-lg bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border">
+                            <input type="checkbox" id="hash-uppercase" onchange="computeAllHashes()" class="accent-emerald-600 rounded">
+                            <span>ตัวพิมพ์ใหญ่ (UPPERCASE)</span>
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-semibold cursor-pointer">
+                            <i class="fa-solid fa-file-shield"></i>
+                            <span>แฮชไฟล์จากเครื่อง</span>
+                            <input type="file" id="hash-file-input" onchange="hashLocalFile(event)" class="hidden">
+                        </label>
+                        <button type="button" onclick="clearHashInputs()" class="px-2.5 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-slate-200 dark:hover:bg-zinc-700 font-semibold cursor-pointer">ล้างค่า</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                    <div class="lg:col-span-2 space-y-1.5">
+                        <label class="block text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted">ข้อความต้นฉบับ (UTF-8 Input) หรือเลือกไฟล์ด้านบน (<span id="hash-source-badge">โหมดข้อความ</span>)</label>
+                        <textarea id="hash-input" rows="3" oninput="onHashTextChange()" spellcheck="false" placeholder="พิมพ์ข้อความที่ต้องการคำนวณ MD5 / SHA-256..."
+                            class="w-full p-3 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border focus:border-emerald-500 font-mono text-xs sm:text-sm outline-none resize-y">FeelPortfolio2026!@#</textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <div>
+                            <label class="block text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted mb-1">HMAC Secret Key (ไม่บังคับ)</label>
+                            <input type="text" id="hmac-secret" oninput="computeAllHashes()" placeholder="ใส่ Secret Key สำหรับ HMAC-SHA256"
+                                class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border focus:border-emerald-500 font-mono text-xs outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-google-text-muted dark:text-google-dark-text-muted mb-1">ตรวจสอบ Checksum (Compare Hash)</label>
+                            <input type="text" id="hash-verify-input" oninput="verifyExpectedHash()" placeholder="วาง MD5 หรือ SHA-256 เพื่อตรวจว่าตรงหรือไม่"
+                                class="w-full px-3 py-2 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border font-mono text-xs outline-none" />
+                            <div id="hash-verify-badge" class="hidden mt-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Digest Output Grid -->
+                <div class="grid grid-cols-1 gap-2.5">
+                    <div class="p-3 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/80 dark:border-google-dark-border flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div class="min-w-0 flex-1">
+                            <span class="inline-block px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 text-[10px] font-bold mr-2">MD5 (128-bit)</span>
+                            <code id="out-md5" class="font-mono text-xs sm:text-sm text-google-text dark:text-white break-all"></code>
+                        </div>
+                        <button type="button" onclick="copyTextValue(document.getElementById('out-md5').textContent, 'MD5')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-emerald-50 text-xs font-bold shrink-0 cursor-pointer">
+                            <i class="fa-regular fa-copy mr-1"></i>คัดลอก
+                        </button>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/80 dark:border-google-dark-border flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div class="min-w-0 flex-1">
+                            <span class="inline-block px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold mr-2">SHA-256 (256-bit)</span>
+                            <code id="out-sha256" class="font-mono text-xs sm:text-sm text-google-text dark:text-white break-all"></code>
+                        </div>
+                        <button type="button" onclick="copyTextValue(document.getElementById('out-sha256').textContent, 'SHA-256')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-emerald-50 text-xs font-bold shrink-0 cursor-pointer">
+                            <i class="fa-regular fa-copy mr-1"></i>คัดลอก
+                        </button>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/80 dark:border-google-dark-border flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div class="min-w-0 flex-1">
+                            <span class="inline-block px-2 py-0.5 rounded bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-slate-200 text-[10px] font-bold mr-2">SHA-1 (160-bit)</span>
+                            <code id="out-sha1" class="font-mono text-xs text-google-text dark:text-white break-all"></code>
+                        </div>
+                        <button type="button" onclick="copyTextValue(document.getElementById('out-sha1').textContent, 'SHA-1')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-emerald-50 text-xs font-bold shrink-0 cursor-pointer">
+                            <i class="fa-regular fa-copy mr-1"></i>คัดลอก
+                        </button>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/80 dark:border-google-dark-border flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div class="min-w-0 flex-1">
+                            <span class="inline-block px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950/70 text-indigo-800 dark:text-indigo-300 text-[10px] font-bold mr-2">SHA-512 (512-bit)</span>
+                            <code id="out-sha512" class="font-mono text-xs text-google-text dark:text-white break-all"></code>
+                        </div>
+                        <button type="button" onclick="copyTextValue(document.getElementById('out-sha512').textContent, 'SHA-512')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-emerald-50 text-xs font-bold shrink-0 cursor-pointer">
+                            <i class="fa-regular fa-copy mr-1"></i>คัดลอก
+                        </button>
+                    </div>
+
+                    <div id="row-hmac" class="hidden p-3 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div class="min-w-0 flex-1">
+                            <span class="inline-block px-2 py-0.5 rounded bg-purple-600 text-white text-[10px] font-bold mr-2">HMAC-SHA256</span>
+                            <code id="out-hmac" class="font-mono text-xs sm:text-sm text-purple-900 dark:text-purple-200 break-all"></code>
+                        </div>
+                        <button type="button" onclick="copyTextValue(document.getElementById('out-hmac').textContent, 'HMAC-SHA256')" class="px-2.5 py-1 rounded-lg bg-purple-600 text-white text-xs font-bold shrink-0 cursor-pointer">
+                            <i class="fa-regular fa-copy mr-1"></i>คัดลอก
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // ==================== CSPRNG HELPERS (crypto.getRandomValues) ====================
+        function cryptoRandomInt(max) {
+            if (max <= 0) return 0;
+            const range = 0x100000000;
+            const limit = range - (range % max);
+            const buf = new Uint32Array(1);
+            while (true) {
+                crypto.getRandomValues(buf);
+                if (buf[0] < limit) return buf[0] % max;
+            }
+        }
+
+        function shuffleCrypto(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = cryptoRandomInt(i + 1);
+                const tmp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = tmp;
+            }
+            return arr;
+        }
+
+        function randomBytes(len) {
+            const arr = new Uint8Array(len);
+            crypto.getRandomValues(arr);
+            return arr;
+        }
+
+        // ==================== TOAST & CLIPBOARD ====================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            container.innerHTML = '';
+            const el = document.createElement('div');
+            const bg = type === 'error'
+                ? 'bg-rose-600 text-white'
+                : 'bg-slate-900 dark:bg-zinc-800 text-white border border-slate-700';
+            el.className = `pointer-events-auto px-4 py-2 rounded-full shadow-lg text-xs font-semibold flex items-center gap-2 ${bg}`;
+            const icon = type === 'error'
+                ? '<i class="fa-solid fa-circle-exclamation"></i>'
+                : '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+            el.innerHTML = `${icon}<span></span>`;
+            el.querySelector('span').textContent = message;
+            container.appendChild(el);
+            clearTimeout(window.__toastTimer);
+            window.__toastTimer = setTimeout(() => {
+                if (el.parentNode) el.remove();
+            }, 2400);
+        }
+
+        async function copyTextValue(val, label = 'ข้อมูล') {
+            if (!val) {
+                showToast(`ไม่มี${label}ให้คัดลอก`, 'error');
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(val);
+            } catch {
+                const ta = document.createElement('textarea');
+                ta.value = val;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                ta.remove();
+            }
+            showToast(`คัดลอก${label}เรียบร้อยแล้ว`);
+        }
+
+        function copyTextById(id, label) {
+            const el = document.getElementById(id);
+            copyTextValue(el ? el.value : '', label);
+        }
+
+        // ==================== TAB SWITCHER ====================
+        const KEYGEN_TABS = ['password', 'apikey', 'uuid', 'hash'];
+        function switchKeygenTab(tab) {
+            for (const t of KEYGEN_TABS) {
+                const panel = document.getElementById(`panel-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const active = t === tab;
+                panel.classList.toggle('hidden', !active);
+                btn.className = active
+                    ? 'px-3 py-2 rounded-xl text-xs sm:text-sm font-bold bg-rose-600 text-white shadow-xs transition-colors duration-75 flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer'
+                    : 'px-3 py-2 rounded-xl text-xs sm:text-sm font-bold text-google-text-muted dark:text-google-dark-text-muted hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors duration-75 flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer';
+            }
+        }
+
+        // ==================== TAB 1: PASSWORD & PASSPHRASE ====================
+        const CHARSETS = {
+            upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            lower: 'abcdefghijklmnopqrstuvwxyz',
+            digits: '0123456789',
+            symbolsAll: '!@#$%^&*()-_=+[]{};:,.<>?/|~',
+            symbolsDbSafe: '!@#%^&*-_=+.,?'
+        };
+        const AMBIGUOUS_RE = /[0O1lI|`'"]/g;
+
+        const WORDLIST = [
+            'amber', 'anchor', 'apple', 'atlas', 'aurora', 'bamboo', 'beacon', 'breeze', 'bridge', 'cactus',
+            'canyon', 'cedar', 'cipher', 'cobalt', 'comet', 'coral', 'cosmos', 'crystal', 'cypress', 'delta',
+            'diamond', 'dragon', 'dynamo', 'echo', 'ember', 'emerald', 'falcon', 'fiber', 'fjord', 'forest',
+            'fusion', 'galaxy', 'garnet', 'glacier', 'granite', 'harbor', 'horizon', 'ignite', 'indigo', 'ivory',
+            'jasper', 'juniper', 'kernel', 'kinetic', 'lagoon', 'lantern', 'legend', 'lemon', 'liberty', 'lotus',
+            'lunar', 'magnet', 'mango', 'marble', 'matrix', 'meadow', 'meteor', 'mirage', 'nebula', 'nectar',
+            'nimbus', 'noble', 'nomad', 'nova', 'oasis', 'obsidian', 'ocean', 'omega', 'onyx', 'orbit',
+            'orchid', 'orion', 'osprey', 'oxygen', 'palace', 'panther', 'paradox', 'pebble', 'pepper', 'phoenix',
+            'photon', 'pioneer', 'pixel', 'planet', 'plasma', 'prism', 'pulse', 'python', 'quantum', 'quartz',
+            'quasar', 'radar', 'raven', 'redwood', 'ripple', 'river', 'rocket', 'ruby', 'saffron', 'sapphire',
+            'saturn', 'scarlet', 'sequoia', 'shadow', 'shield', 'Sierra', 'signal', 'silver', 'skyline', 'solar',
+            'sonic', 'spark', 'spectrum', 'sphere', 'spirit', 'spruce', 'starlight', 'stealth', 'stellar', 'stone',
+            'storm', 'summit', 'sunrise', 'thunder', 'tiger', 'timber', 'titanium', 'topaz', 'tornado', 'tundra',
+            'turbo', 'twilight', 'ultra', 'unicorn', 'vector', 'velvet', 'vertex', 'vibrant', 'viking', 'violet',
+            'vortex', 'voyager', 'walnut', 'wave', 'whisper', 'wildfire', 'willow', 'winter', 'wizard', 'zenith'
+        ].map(w => w.toLowerCase());
+
+        function getPasswordOptions() {
+            return {
+                length: Math.max(6, Math.min(64, parseInt(document.getElementById('pw-length').value, 10) || 16)),
+                upper: document.getElementById('opt-upper').checked,
+                lower: document.getElementById('opt-lower').checked,
+                digits: document.getElementById('opt-digits').checked,
+                symbols: document.getElementById('opt-symbols').checked,
+                noAmbiguous: document.getElementById('opt-no-ambiguous').checked,
+                dbSafe: document.getElementById('opt-db-safe').checked
+            };
+        }
+
+        function buildRandomPassword(opts) {
+            const activePools = [];
+            const filter = (str) => opts.noAmbiguous ? str.replace(AMBIGUOUS_RE, '') : str;
+
+            if (opts.upper) activePools.push(filter(CHARSETS.upper));
+            if (opts.lower) activePools.push(filter(CHARSETS.lower));
+            if (opts.digits) activePools.push(filter(CHARSETS.digits));
+            if (opts.symbols) {
+                const sym = opts.dbSafe ? CHARSETS.symbolsDbSafe : CHARSETS.symbolsAll;
+                activePools.push(filter(sym));
+            }
+
+            if (!activePools.length) {
+                // Fallback automatically to lowercase if user unchecks every pool
+                document.getElementById('opt-lower').checked = true;
+                activePools.push(filter(CHARSETS.lower));
+                showToast('ต้องเลือกอักขระอย่างน้อย 1 กลุ่ม (เปิด a-z ให้อัตโนมัติ)', 'error');
+            }
+
+            const combined = activePools.join('');
+            const chars = [];
+            // Guarantee >= 1 char from each selected pool up to target length
+            for (let i = 0; i < activePools.length && chars.length < opts.length; i++) {
+                const pool = activePools[i];
+                chars.push(pool[cryptoRandomInt(pool.length)]);
+            }
+            while (chars.length < opts.length) {
+                chars.push(combined[cryptoRandomInt(combined.length)]);
+            }
+            shuffleCrypto(chars);
+            return chars.join('');
+        }
+
+        function generatePassword() {
+            const opts = getPasswordOptions();
+            const pw = buildRandomPassword(opts);
+            document.getElementById('pw-output').value = pw;
+            analyzePasswordStrength(pw);
+            generatePasswordBatch();
+        }
+
+        function generatePasswordBatch() {
+            const opts = getPasswordOptions();
+            const list = document.getElementById('pw-batch-list');
+            list.innerHTML = '';
+            const passwords = [];
+            for (let i = 0; i < 5; i++) {
+                const pw = buildRandomPassword(opts);
+                passwords.push(pw);
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border';
+                const code = document.createElement('code');
+                code.className = 'font-mono text-xs text-google-text dark:text-white truncate select-all';
+                code.textContent = pw;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'px-2 py-0.5 rounded-md bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-emerald-50 text-[11px] font-bold shrink-0 cursor-pointer';
+                btn.textContent = 'คัดลอก';
+                btn.onclick = () => copyTextValue(pw, `รหัสชุดที่ ${i + 1}`);
+                row.appendChild(code);
+                row.appendChild(btn);
+                list.appendChild(row);
+            }
+            window.__lastBatchPasswords = passwords;
+        }
+
+        function copyAllBatchPasswords() {
+            const arr = window.__lastBatchPasswords || [];
+            copyTextValue(arr.join('\n'), 'ชุดรหัสผ่าน 5 รายการ');
+        }
+
+        function syncPwLength(val) {
+            const n = Math.max(6, Math.min(64, parseInt(val, 10) || 16));
+            document.getElementById('pw-length').value = n;
+            document.getElementById('pw-length-badge').textContent = `${n} ตัวอักษร`;
+            generatePassword();
+        }
+
+        function stepPwLength(delta) {
+            const cur = parseInt(document.getElementById('pw-length').value, 10) || 16;
+            syncPwLength(cur + delta);
+        }
+
+        function applyPwPreset(name) {
+            const set = (len, u, l, d, s, noAmb, db) => {
+                document.getElementById('pw-length').value = len;
+                document.getElementById('pw-length-badge').textContent = `${len} ตัวอักษร`;
+                document.getElementById('opt-upper').checked = u;
+                document.getElementById('opt-lower').checked = l;
+                document.getElementById('opt-digits').checked = d;
+                document.getElementById('opt-symbols').checked = s;
+                document.getElementById('opt-no-ambiguous').checked = noAmb;
+                document.getElementById('opt-db-safe').checked = db;
+            };
+            if (name === 'standard') set(16, true, true, true, true, false, false);
+            else if (name === 'database') set(24, true, true, true, true, true, true);
+            else if (name === 'wifi') set(20, true, true, true, true, true, false);
+            else if (name === 'pin') set(6, false, false, true, false, false, false);
+            generatePassword();
+            showToast(`ใช้สูตร ${name.toUpperCase()} แล้ว`);
+        }
+
+        function generatePassphrase() {
+            const count = parseInt(document.getElementById('pp-words').value, 10) || 4;
+            const sep = document.getElementById('pp-sep').value;
+            const picked = [];
+            for (let i = 0; i < count; i++) {
+                const w = WORDLIST[cryptoRandomInt(WORDLIST.length)];
+                const capped = i === 0 ? (w[0].toUpperCase() + w.slice(1)) : w;
+                picked.push(capped);
+            }
+            const numSuffix = String(cryptoRandomInt(90) + 10);
+            const phrase = picked.join(sep) + sep + numSuffix;
+            document.getElementById('pw-output').value = phrase;
+            // Word-based entropy estimation
+            const bits = Math.round(count * Math.log2(WORDLIST.length) + Math.log2(90));
+            analyzePasswordStrength(phrase, bits, `${count} คำศัพท์ + เลขสุ่ม`);
+            showToast(`สุ่ม Passphrase ${count} คำเรียบร้อย`);
+        }
+
+        function togglePasswordMask() {
+            const inp = document.getElementById('pw-output');
+            const icon = document.getElementById('pw-mask-icon');
+            const lbl = document.getElementById('pw-mask-label');
+            const willHide = inp.type === 'text';
+            inp.type = willHide ? 'password' : 'text';
+            icon.className = willHide ? 'fa-regular fa-eye mr-1' : 'fa-regular fa-eye-slash mr-1';
+            lbl.textContent = willHide ? 'แสดง' : 'ซ่อน';
+        }
+
+        function formatCrackTime(bits) {
+            if (bits <= 0) return '0 วินาที';
+            // Assume fast offline GPU rig @ 10^10 guesses/sec (~2^33.2 / sec)
+            const avgAttemptsBits = Math.max(0, bits - 1);
+            const seconds = Math.pow(2, avgAttemptsBits) / 1e10;
+            if (!isFinite(seconds) || seconds > 3.15576e16) return 'หลายพันล้านปี+';
+            if (seconds < 1) return 'ไม่ถึง 1 วินาที';
+            if (seconds < 60) return `${Math.round(seconds)} วินาที`;
+            const mins = seconds / 60;
+            if (mins < 60) return `${Math.round(mins)} นาที`;
+            const hours = mins / 60;
+            if (hours < 24) return `${Math.round(hours)} ชั่วโมง`;
+            const days = hours / 24;
+            if (days < 365) return `${Math.round(days)} วัน`;
+            const years = days / 365.25;
+            if (years < 1000) return `${Math.round(years)} ปี`;
+            if (years < 1e6) return `${Math.round(years / 1000)} พันปี`;
+            if (years < 1e9) return `${Math.round(years / 1e6)} ล้านปี`;
+            return 'หลายพันล้านปี+';
+        }
+
+        function analyzePasswordStrength(pw, overrideBits = null, overrideLabel = null) {
+            const len = pw.length;
+            document.getElementById('pw-char-count').textContent = `${len} ตัว`;
+
+            const hasLower = /[a-z]/.test(pw);
+            const hasUpper = /[A-Z]/.test(pw);
+            const hasDigit = /[0-9]/.test(pw);
+            const hasSymbol = /[^A-Za-z0-9]/.test(pw);
+
+            const foundTags = [];
+            let pool = 0;
+            if (hasUpper) { pool += 26; foundTags.push('A-Z'); }
+            if (hasLower) { pool += 26; foundTags.push('a-z'); }
+            if (hasDigit) { pool += 10; foundTags.push('0-9'); }
+            if (hasSymbol) { pool += 32; foundTags.push('#$!'); }
+
+            const uniqueCount = new Set(pw).size;
+            let bits = 0;
+            if (overrideBits !== null) {
+                bits = overrideBits;
+            } else if (len > 0 && pool > 0) {
+                bits = Math.round(len * Math.log2(pool));
+                // Penalize low variety / repeated runs or tiny common passwords
+                if (uniqueCount <= 2 && len > 2) bits = Math.min(bits, 14);
+                else if (uniqueCount < len * 0.4) bits = Math.round(bits * 0.55);
+                if (/^(12345|password|qwerty|admin|letmein|000000|111111)/i.test(pw)) bits = Math.min(bits, 12);
+            }
+
+            document.getElementById('pw-entropy').textContent = `${bits} bits`;
+            document.getElementById('pw-classes-found').textContent = overrideLabel || (foundTags.length ? foundTags.join(' + ') : 'ว่าง');
+            document.getElementById('pw-crack-time').textContent = len ? formatCrackTime(bits) : '-';
+
+            const bar = document.getElementById('pw-strength-bar');
+            const badge = document.getElementById('pw-strength-badge');
+            const advice = document.getElementById('pw-advice');
+
+            let label, pct, badgeCls, barCls, tip;
+            if (!len) {
+                label = 'ไม่มีข้อมูล'; pct = 0;
+                badgeCls = 'px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-200 text-slate-600 dark:bg-zinc-700 dark:text-slate-300';
+                barCls = 'h-full rounded-full transition-all duration-300 bg-slate-400';
+                tip = 'พิมพ์หรือกดสุ่มใหม่';
+            } else if (bits < 36) {
+                label = 'อ่อนมาก (เดาง่าย)'; pct = 20;
+                badgeCls = 'px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-rose-100 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300';
+                barCls = 'h-full rounded-full transition-all duration-300 bg-rose-500';
+                tip = 'เพิ่มความยาวเป็น >= 12 ตัว';
+            } else if (bits < 55) {
+                label = 'พอใช้ (ควรเพิ่มความยาว)'; pct = 45;
+                badgeCls = 'px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300';
+                barCls = 'h-full rounded-full transition-all duration-300 bg-amber-500';
+                tip = 'ผสมตัวเลขและสัญลักษณ์';
+            } else if (bits < 75) {
+                label = 'ปานกลาง-ดี'; pct = 70;
+                badgeCls = 'px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-blue-100 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300';
+                barCls = 'h-full rounded-full transition-all duration-300 bg-blue-500';
+                tip = 'เหมาะกับใช้งานทั่วไป';
+            } else if (bits < 100) {
+                label = 'แข็งแกร่ง (Strong)'; pct = 88;
+                badgeCls = 'px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300';
+                barCls = 'h-full rounded-full transition-all duration-300 bg-emerald-500';
+                tip = 'ปลอดภัยสูงระดับ Production';
+            } else {
+                label = 'แข็งแกร่งมาก (Very Strong)'; pct = 100;
+                badgeCls = 'px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-600 text-white';
+                barCls = 'h-full rounded-full transition-all duration-300 bg-emerald-600';
+                tip = 'ทนทานต่อ Brute-Force ระยะยาว';
+            }
+
+            badge.textContent = label;
+            badge.className = badgeCls;
+            bar.style.width = `${pct}%`;
+            bar.className = barCls;
+            advice.textContent = tip;
+        }
+
+        // ==================== TAB 2: API SECRET & .ENV GENERATOR ====================
+        function bytesToFormat(bytes, format) {
+            if (format === 'hex') {
+                return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+            }
+            if (format === 'base62') {
+                const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+                const len = Math.max(16, Math.round(bytes.length * 1.35));
+                let out = '';
+                for (let i = 0; i < len; i++) {
+                    out += alphabet[cryptoRandomInt(alphabet.length)];
+                }
+                return out;
+            }
+            let bin = '';
+            for (const b of bytes) bin += String.fromCharCode(b);
+            const b64 = btoa(bin);
+            if (format === 'base64url') {
+                return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+            }
+            return b64;
+        }
+
+        function generateApiKeys() {
+            const byteLen = parseInt(document.getElementById('api-bytes').value, 10) || 32;
+            const fmt = document.getElementById('api-format').value;
+            const prefix = document.getElementById('api-prefix').value || '';
+
+            const key = prefix + bytesToFormat(randomBytes(byteLen), fmt);
+            document.getElementById('api-primary-output').value = key;
+            document.getElementById('api-meta-info').textContent = `${byteLen * 8}-bit • ${fmt.toUpperCase()} • ${key.length} ตัวอักษร`;
+
+            const envLines = [
+                `APP_KEY=base64:${bytesToFormat(randomBytes(32), 'base64')}`,
+                `JWT_SECRET=${bytesToFormat(randomBytes(byteLen), 'base64url')}`,
+                `API_SECRET_KEY=${prefix || 'sk_live_'}${bytesToFormat(randomBytes(24), 'base62')}`,
+                `DB_PASSWORD=${buildRandomPassword({ length: 24, upper: true, lower: true, digits: true, symbols: true, noAmbiguous: true, dbSafe: true })}`,
+                `WEBHOOK_SECRET=whsec_${bytesToFormat(randomBytes(24), 'base64url')}`
+            ];
+            document.getElementById('api-env-output').value = envLines.join('\n');
+        }
+
+        function applyApiPreset(type) {
+            if (type === 'jwt') {
+                document.getElementById('api-bytes').value = '32';
+                document.getElementById('api-format').value = 'base64url';
+                document.getElementById('api-prefix').value = '';
+            } else if (type === 'sk') {
+                document.getElementById('api-bytes').value = '32';
+                document.getElementById('api-format').value = 'base62';
+                document.getElementById('api-prefix').value = 'sk_live_';
+            } else if (type === 'laravel') {
+                document.getElementById('api-bytes').value = '32';
+                document.getElementById('api-format').value = 'base64';
+                document.getElementById('api-prefix').value = 'base64:';
+            } else if (type === 'webhook') {
+                document.getElementById('api-bytes').value = '24';
+                document.getElementById('api-format').value = 'base64url';
+                document.getElementById('api-prefix').value = 'whsec_';
+            } else if (type === 'aes') {
+                document.getElementById('api-bytes').value = '32';
+                document.getElementById('api-format').value = 'hex';
+                document.getElementById('api-prefix').value = '';
+            }
+            generateApiKeys();
+            showToast(`สุ่มคีย์รูปแบบ ${type.toUpperCase()} แล้ว`);
+        }
+
+        // ==================== TAB 3: UUID v4 GENERATOR & VALIDATOR ====================
+        function makeRawUuidV4() {
+            if (typeof crypto.randomUUID === 'function') {
+                return crypto.randomUUID();
+            }
+            const b = randomBytes(16);
+            b[6] = (b[6] & 0x0f) | 0x40;
+            b[8] = (b[8] & 0x3f) | 0x80;
+            const hex = Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
+            return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+        }
+
+        function formatUuid(raw, fmt) {
+            if (fmt === 'upper') return raw.toUpperCase();
+            if (fmt === 'nohyphen') return raw.replace(/-/g, '');
+            if (fmt === 'braces') return `{${raw.toUpperCase()}}`;
+            if (fmt === 'urn') return `urn:uuid:${raw}`;
+            return raw;
+        }
+
+        function generateUuids() {
+            const fmt = document.getElementById('uuid-format').value;
+            const count = parseInt(document.getElementById('uuid-count').value, 10) || 5;
+            const list = [];
+            for (let i = 0; i < count; i++) {
+                list.push(formatUuid(makeRawUuidV4(), fmt));
+            }
+            document.getElementById('uuid-single-output').textContent = list[0];
+            document.getElementById('uuid-bulk-output').value = list.join('\n');
+            if (!document.getElementById('uuid-inspect-input').value.trim()) {
+                document.getElementById('uuid-inspect-input').value = makeRawUuidV4();
+                inspectUuid(document.getElementById('uuid-inspect-input').value);
+            }
+        }
+
+        function inspectUuid(input) {
+            const raw = (input || '').trim().replace(/^urn:uuid:/i, '').replace(/^\{|\}$/g, '');
+            const statusEl = document.getElementById('uuid-val-status');
+            const verEl = document.getElementById('uuid-val-version');
+            const varEl = document.getElementById('uuid-val-variant');
+
+            if (!raw) {
+                statusEl.textContent = 'ยังไม่ได้ระบุ';
+                statusEl.className = 'font-bold text-google-text-muted';
+                verEl.textContent = '-';
+                varEl.textContent = '-';
+                return;
+            }
+            const m = /^([0-9a-f]{8})-?([0-9a-f]{4})-?([0-9a-f]{4})-?([0-9a-f]{4})-?([0-9a-f]{12})$/i.exec(raw);
+            if (!m) {
+                statusEl.textContent = 'รูปแบบไม่ถูกต้อง (Invalid UUID)';
+                statusEl.className = 'font-bold text-rose-600 dark:text-rose-400';
+                verEl.textContent = '-';
+                varEl.textContent = '-';
+                return;
+            }
+            const ver = parseInt(m[3][0], 16);
+            const varNibble = parseInt(m[4][0], 16);
+            let variantName = 'ไม่ทราบชนิด';
+            if ((varNibble & 0x8) === 0) variantName = 'NCS (Legacy)';
+            else if ((varNibble & 0xc) === 0x8) variantName = 'RFC 4122 / RFC 9562 (Standard)';
+            else if ((varNibble & 0xe) === 0xc) variantName = 'Microsoft GUID (Legacy)';
+            else variantName = 'Future / Reserved';
+
+            const isAllZero = /^0+$/.test(m.slice(1).join(''));
+            statusEl.textContent = 'ถูกต้อง (Valid UUID)';
+            statusEl.className = 'font-bold text-emerald-600 dark:text-emerald-400';
+            verEl.textContent = isAllZero ? 'Nil UUID (0000...)' : `Version ${ver}${ver === 4 ? ' (Random CSPRNG)' : ''}`;
+            varEl.textContent = variantName;
+        }
+
+        // ==================== TAB 4: VERIFIED RFC 1321 MD5 + WEB CRYPTO SHA ====================
+        // Pure-JS RFC 1321 MD5 over raw Uint8Array bytes
+        const MD5_S = [
+            7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
+            5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
+            4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
+            6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
+        ];
+        const MD5_K = Array.from({ length: 64 }, (_, i) => Math.floor(Math.abs(Math.sin(i + 1)) * 0x100000000) >>> 0);
+
+        function md5Bytes(inputBytes) {
+            const origLen = inputBytes.length;
+            const padZeroBytes = (55 - (origLen % 64) + 64) % 64;
+            const totalLen = origLen + 1 + padZeroBytes + 8;
+            const msg = new Uint8Array(totalLen);
+            msg.set(inputBytes);
+            msg[origLen] = 0x80;
+
+            const bitLenLo = (origLen * 8) >>> 0;
+            const bitLenHi = Math.floor((origLen * 8) / 0x100000000) >>> 0;
+            const view = new DataView(msg.buffer);
+            view.setUint32(totalLen - 8, bitLenLo, true);
+            view.setUint32(totalLen - 4, bitLenHi, true);
+
+            let a0 = 0x67452301;
+            let b0 = 0xefcdab89;
+            let c0 = 0x98badcfe;
+            let d0 = 0x10325476;
+
+            for (let offset = 0; offset < totalLen; offset += 64) {
+                const M = new Uint32Array(16);
+                for (let j = 0; j < 16; j++) {
+                    M[j] = view.getUint32(offset + j * 4, true);
+                }
+                let A = a0, B = b0, C = c0, D = d0;
+                for (let i = 0; i < 64; i++) {
+                    let F, g;
+                    if (i < 16) {
+                        F = (B & C) | ((~B) & D);
+                        g = i;
+                    } else if (i < 32) {
+                        F = (D & B) | ((~D) & C);
+                        g = (5 * i + 1) % 16;
+                    } else if (i < 48) {
+                        F = B ^ C ^ D;
+                        g = (3 * i + 5) % 16;
+                    } else {
+                        F = C ^ (B | (~D));
+                        g = (7 * i) % 16;
+                    }
+                    const sum = (A + F + MD5_K[i] + M[g]) >>> 0;
+                    const s = MD5_S[i];
+                    const rot = ((sum << s) | (sum >>> (32 - s))) >>> 0;
+                    A = D;
+                    D = C;
+                    C = B;
+                    B = (B + rot) >>> 0;
+                }
+                a0 = (a0 + A) >>> 0;
+                b0 = (b0 + B) >>> 0;
+                c0 = (c0 + C) >>> 0;
+                d0 = (d0 + D) >>> 0;
+            }
+
+            const out = new Uint8Array(16);
+            const ov = new DataView(out.buffer);
+            ov.setUint32(0, a0, true);
+            ov.setUint32(4, b0, true);
+            ov.setUint32(8, c0, true);
+            ov.setUint32(12, d0, true);
+            return Array.from(out, b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        let currentHashBytes = new TextEncoder().encode('');
+
+        function onHashTextChange() {
+            const text = document.getElementById('hash-input').value;
+            currentHashBytes = new TextEncoder().encode(text);
+            document.getElementById('hash-source-badge').textContent = `โหมดข้อความ (${currentHashBytes.length} bytes)`;
+            computeAllHashes();
+        }
+
+        function hashLocalFile(event) {
+            const file = event.target?.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                currentHashBytes = new Uint8Array(reader.result);
+                document.getElementById('hash-source-badge').textContent = `ไฟล์: ${file.name} (${currentHashBytes.length.toLocaleString()} bytes)`;
+                computeAllHashes();
+                showToast(`คำนวณแฮชไฟล์ "${file.name}" สำเร็จ`);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function clearHashInputs() {
+            document.getElementById('hash-input').value = '';
+            document.getElementById('hmac-secret').value = '';
+            document.getElementById('hash-verify-input').value = '';
+            document.getElementById('hash-file-input').value = '';
+            onHashTextChange();
+        }
+
+        async function digestHex(algo, bytes) {
+            const buf = await crypto.subtle.digest(algo, bytes);
+            return Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        let hashJobToken = 0;
+        async function computeAllHashes() {
+            const token = ++hashJobToken;
+            const upper = document.getElementById('hash-uppercase').checked;
+            const fmt = (h) => upper ? h.toUpperCase() : h.toLowerCase();
+
+            const md5 = md5Bytes(currentHashBytes);
+            const [sha1, sha256, sha512] = await Promise.all([
+                digestHex('SHA-1', currentHashBytes),
+                digestHex('SHA-256', currentHashBytes),
+                digestHex('SHA-512', currentHashBytes)
+            ]);
+            if (token !== hashJobToken) return;
+
+            document.getElementById('out-md5').textContent = fmt(md5);
+            document.getElementById('out-sha1').textContent = fmt(sha1);
+            document.getElementById('out-sha256').textContent = fmt(sha256);
+            document.getElementById('out-sha512').textContent = fmt(sha512);
+
+            const secret = document.getElementById('hmac-secret').value;
+            const hmacRow = document.getElementById('row-hmac');
+            if (secret) {
+                const key = await crypto.subtle.importKey(
+                    'raw',
+                    new TextEncoder().encode(secret),
+                    { name: 'HMAC', hash: 'SHA-256' },
+                    false,
+                    ['sign']
+                );
+                const sig = await crypto.subtle.sign('HMAC', key, currentHashBytes);
+                if (token !== hashJobToken) return;
+                const hmacHex = Array.from(new Uint8Array(sig), b => b.toString(16).padStart(2, '0')).join('');
+                document.getElementById('out-hmac').textContent = fmt(hmacHex);
+                hmacRow.classList.remove('hidden');
+            } else {
+                document.getElementById('out-hmac').textContent = '';
+                hmacRow.classList.add('hidden');
+            }
+
+            verifyExpectedHash();
+        }
+
+        function verifyExpectedHash() {
+            const expected = (document.getElementById('hash-verify-input').value || '').trim().toLowerCase();
+            const badge = document.getElementById('hash-verify-badge');
+            if (!expected) {
+                badge.classList.add('hidden');
+                return;
+            }
+            const candidates = [
+                { name: 'MD5', val: document.getElementById('out-md5').textContent.toLowerCase() },
+                { name: 'SHA-1', val: document.getElementById('out-sha1').textContent.toLowerCase() },
+                { name: 'SHA-256', val: document.getElementById('out-sha256').textContent.toLowerCase() },
+                { name: 'SHA-512', val: document.getElementById('out-sha512').textContent.toLowerCase() },
+                { name: 'HMAC-SHA256', val: document.getElementById('out-hmac').textContent.toLowerCase() }
+            ].filter(x => x.val);
+
+            const match = candidates.find(c => c.val === expected);
+            badge.classList.remove('hidden');
+            if (match) {
+                badge.className = 'mt-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300';
+                badge.textContent = `ตรงกัน 100% (${match.name})`;
+            } else {
+                badge.className = 'mt-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300';
+                badge.textContent = 'ไม่ตรงกับแฮชใดๆ (Mismatch)';
+            }
+        }
+
+        // ==================== THEME & APP SWITCHER ====================
+        function initTheme() {
+            const saved = localStorage.getItem('feel_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        function toggleSubAppSwitcher(forceState) {
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu) return;
+            const willOpen = typeof forceState === 'boolean' ? forceState : menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !willOpen);
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('app-switcher-btn');
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu || menu.classList.contains('hidden')) return;
+            if ((!btn || !btn.contains(e.target)) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleSubAppSwitcher(false);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            generatePassword();
+            generateApiKeys();
+            generateUuids();
+            onHashTextChange();
+        });
+    </script>
+</body>
+</html>

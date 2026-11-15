@@ -208,6 +208,8 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="assets/feel-shell.css">
+    <script src="assets/feel-shell.js"></script>
 </head>
 <body class="antialiased selection:bg-sky-600 selection:text-white min-h-screen flex flex-col">
 
@@ -225,9 +227,9 @@
     <!-- ========================================== -->
     <!-- UNIFIED SINGLE-ROW NAVIGATION HEADER       -->
     <!-- ========================================== -->
-    <header class="no-print h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+    <header class="feel-header-refined no-print h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
         <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-3 py-2 min-h-[40px] rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
                 <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
                 <span class="hidden sm:inline">หน้าหลัก</span>
             </a>
@@ -241,194 +243,26 @@
                         <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
                             Resume &amp; Portfolio PDF Builder
                         </h1>
-                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/70 text-sky-800 dark:text-sky-300 text-[10px] font-bold whitespace-nowrap shrink-0">
-                            A4 Auto Layout &bull; PDF Export
-                        </span>
+                        
                     </div>
-                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
-                        กรอกประวัติ ทักษะ &amp; เกียรติบัตร จัดหน้าลงเทมเพลต A4 อัตโนมัติ พร้อมสั่งพิมพ์และส่งออก PDF
-                    </p>
                 </div>
             </div>
         </div>
 
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <a href="pdf-tools.html" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 text-xs font-semibold text-red-700 dark:text-red-300 hover:bg-red-100 transition whitespace-nowrap">
-                <i class="fa-solid fa-file-pdf"></i>
-                <span>รวม/แยกไฟล์ PDF</span>
-            </a>
 
             <!-- App Switcher Dropdown (19 Apps) -->
-            <div class="relative shrink-0">
-                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (21 ระบบ)">
-                    <i class="fa-solid fa-layer-group text-sky-600 dark:text-sky-400"></i>
-                    <span class="hidden sm:inline">สลับเว็บแอป</span>
-                    <span class="px-1.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 text-[10px] font-bold leading-none">21</span>
-                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
-                </button>
-                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
-                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
-                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
-                        </div>
-                    </a>
-                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
-                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (21 ระบบ)</div>
-                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
-                        </div>
-                    </a>
-                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
-                        </div>
-                    </a>
-                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
-                        </div>
-                    </a>
-                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ &amp; พายุ</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
-                        </div>
-                    </a>
-                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble &amp; สูตร CFOP</div>
-                        </div>
-                    </a>
-                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง &amp; ถาม-ตอบ</div>
-                        </div>
-                    </a>
-                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ &amp; แชร์ PIN 6 หลัก</div>
-                        </div>
-                    </a>
-                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง &amp; รูปติดบัตร</div>
-                        </div>
-                    </a>
-                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI &amp; โฮสต์ฟรี</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI &amp; รันไฟล์</div>
-                        </div>
-                    </a>
-                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON &bull; JWT &bull; Base64 &bull; Timestamp</div>
-                        </div>
-                    </a>
-                    <a href="subnet.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-blue-600 bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-network-wired"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">11. IP &amp; Subnet Calculator</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CIDR &bull; Host Range &bull; VLAN &bull; Netplan</div>
-                        </div>
-                    </a>
-                    <a href="regex.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-fuchsia-600 bg-fuchsia-50 dark:bg-fuchsia-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">12. Regex Tester &amp; Cheatsheet</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Live Match &bull; Presets &bull; Replace</div>
-                        </div>
-                    </a>
-                    <a href="diff.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code-compare"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">13. Diff Checker &amp; Code Compare</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Side-by-Side &bull; Patch &bull; Word Diff</div>
-                        </div>
-                    </a>
-                    <a href="keygen.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-rose-600 bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">14. Password &amp; Key Generator</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CSPRNG &bull; API Key &bull; UUID &bull; Hash</div>
-                        </div>
-                    </a>
-                    <a href="pdf-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-red-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">15. PDF Merge &amp; Split</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวมไฟล์ &bull; แยกหน้า &bull; หมุน &amp; ลบหน้า</div>
-                        </div>
-                    </a>
-                    <a href="image-converter.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-images"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">16. Image Compressor &amp; Converter</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JPG &bull; PNG &bull; WebP &bull; Batch ZIP</div>
-                        </div>
-                    </a>
-                    <a href="qr-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-qrcode"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">17. Custom QR Code Studio</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">URL &bull; Wi-Fi &bull; PromptPay &bull; PNG/SVG</div>
-                        </div>
-                    </a>
-                    <a href="ocr.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-purple-600 bg-purple-50 dark:bg-purple-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-lines"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">18. OCR Image-to-Text</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">สแกนไทย/อังกฤษจากภาพ &bull; สไลด์</div>
-                        </div>
-                    </a>
-                    <a href="resume-builder.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-sky-50 dark:bg-sky-950/60 border border-sky-300 dark:border-sky-700 transition">
-                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-100 dark:bg-sky-950 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-address-card"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">19. Resume &amp; Portfolio PDF</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">เทมเพลต A4 &bull; Export PDF พร้อมพิมพ์</div>
-                        </div>
-                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-sky-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
-                    </a>
-                    <a href="hardware-tester.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-display"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">20. Screen &amp; Mic Hardware Tester</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Dead Pixel &bull; ไมค์ &bull; คีย์บอร์ด &bull; กล้อง</div>
-                        </div>
-                    </a>
-                    <a href="web-cloner.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-arrow-down"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">21. Web Source Cloner &amp; ZIP</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดึงซอร์ส HTML/CSS/JS/รูปภาพ &bull; .ZIP</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
+                        <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" aria-expanded="false" aria-controls="feel-app-hub" class="feel-hub-trigger bg-white dark:bg-google-dark-surface hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-slate-200 shadow-xs" title="เปิดศูนย์รวมเว็บแอป 21 ระบบ (Ctrl+K)">
+                <i class="fa-solid fa-grip text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">สลับแอป</span>
+                <span class="hidden xl:inline feel-kbd">Ctrl+K</span>
+            </button>
+            <button type="button" class="feel-icon-btn w-10 h-10 bg-white dark:bg-google-dark-surface hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-slate-300 shadow-xs" title="วิธีใช้งานและข้อมูลเครื่องมือ" aria-label="วิธีใช้งานและข้อมูลเครื่องมือ" data-feel-info-title="Resume &amp; Portfolio PDF Builder (A4 Print-Ready)" data-feel-info="กรอกประวัติ ทักษะ และผลงานแล้วจัดลงเทมเพลต A4 อัตโนมัติ 20 ดีไซน์มาตรฐาน + โหมดสร้างเทมเพลตเอง (Custom Builder) พร้อม QR Code และ Auto-Fit 1 หน้า|ข้อมูลบันทึกอัตโนมัติในเบราว์เซอร์ และกด Export PDF เพื่อสั่งพิมพ์หรือบันทึกไฟล์ A4 คมชัดได้ทันที">
+                <i class="fa-solid fa-circle-info text-sm"></i>
+            </button>
 
             <!-- Theme Switcher -->
-            <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+            <button type="button" onclick="toggleTheme()" class="feel-icon-btn w-10 h-10 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
                 <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
             </button>
         </div>
@@ -692,25 +526,141 @@
 
                     <!-- TAB 5: DESIGN & A4 SETTINGS -->
                     <div id="tab-panel-design" class="hidden space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-2">1. เลือกรูปแบบเทมเพลต A4 (4 ดีไซน์)</label>
-                            <div class="grid grid-cols-2 gap-2" id="template-selector-grid">
-                                <button type="button" data-tpl="modern-sidebar" onclick="updateDesignField('template', 'modern-sidebar')" class="tpl-choice p-2.5 rounded-xl border text-left transition cursor-pointer">
-                                    <div class="text-xs font-bold">Modern Sidebar</div>
-                                    <div class="text-[11px] opacity-75">แถบข้างซ้าย + คอลัมน์หลัก</div>
+                        <div class="space-y-2.5">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <div>
+                                    <label class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body">1. เลือกรูปแบบเทมเพลต A4 (20 ดีไซน์ + สร้างเองได้)</label>
+                                    <div class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5">
+                                        กำลังใช้: <span id="active-template-badge" class="font-bold text-sky-600 dark:text-sky-400">01. Modern Sidebar</span>
+                                    </div>
+                                </div>
+                                <button type="button" id="open-custom-builder-btn" onclick="openCustomTemplateBuilder()" aria-expanded="false" class="px-2.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-[11px] font-bold transition cursor-pointer whitespace-nowrap">
+                                    <i class="fa-solid fa-sliders mr-1"></i><span>สร้าง/ปรับแต่งเอง</span>
                                 </button>
-                                <button type="button" data-tpl="executive-classic" onclick="updateDesignField('template', 'executive-classic')" class="tpl-choice p-2.5 rounded-xl border text-left transition cursor-pointer">
-                                    <div class="text-xs font-bold">Executive Classic</div>
-                                    <div class="text-[11px] opacity-75">ทางการ คอลัมน์เดี่ยวกึ่งกลาง</div>
-                                </button>
-                                <button type="button" data-tpl="tech-minimal" onclick="updateDesignField('template', 'tech-minimal')" class="tpl-choice p-2.5 rounded-xl border text-left transition cursor-pointer">
-                                    <div class="text-xs font-bold">Tech Minimal ATS</div>
-                                    <div class="text-[11px] opacity-75">อ่านง่ายสำหรับสาย IT &amp; วิศวะ</div>
-                                </button>
-                                <button type="button" data-tpl="portfolio-showcase" onclick="updateDesignField('template', 'portfolio-showcase')" class="tpl-choice p-2.5 rounded-xl border text-left transition cursor-pointer">
-                                    <div class="text-xs font-bold">Portfolio Showcase</div>
-                                    <div class="text-[11px] opacity-75">เน้นโชว์โครงงาน &amp; เกียรติบัตร</div>
-                                </button>
+                            </div>
+
+                            <!-- Template Category Filter Pills -->
+                            <div id="template-cat-bar" class="flex flex-wrap gap-1.5">
+                                <button type="button" data-tpl-cat="all" onclick="filterTemplateCatalog('all')" class="tpl-cat-btn px-2.5 py-1 rounded-full text-[11px] font-bold bg-sky-600 text-white cursor-pointer transition">ทั้งหมด (20)</button>
+                                <button type="button" data-tpl-cat="sidebar" onclick="filterTemplateCatalog('sidebar')" class="tpl-cat-btn px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text-body cursor-pointer transition">แถบข้าง (5)</button>
+                                <button type="button" data-tpl-cat="formal" onclick="filterTemplateCatalog('formal')" class="tpl-cat-btn px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text-body cursor-pointer transition">ทางการ (4)</button>
+                                <button type="button" data-tpl-cat="tech" onclick="filterTemplateCatalog('tech')" class="tpl-cat-btn px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text-body cursor-pointer transition">ไอที/ATS (4)</button>
+                                <button type="button" data-tpl-cat="creative" onclick="filterTemplateCatalog('creative')" class="tpl-cat-btn px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text-body cursor-pointer transition">พอร์ต/ครีเอทีฟ (4)</button>
+                                <button type="button" data-tpl-cat="student" onclick="filterTemplateCatalog('student')" class="tpl-cat-btn px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text-body cursor-pointer transition">นักศึกษา/ฝึกงาน (3)</button>
+                                <button type="button" data-tpl-cat="custom" onclick="filterTemplateCatalog('custom')" class="tpl-cat-btn px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text-body cursor-pointer transition">สร้างเอง</button>
+                            </div>
+
+                            <!-- 20 Templates + Custom Cards Grid -->
+                            <div id="template-selector-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-1"></div>
+
+                            <!-- Custom Template Studio Builder Panel -->
+                            <div id="custom-template-builder" class="hidden p-3.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/25 border border-indigo-200 dark:border-indigo-800/70 space-y-3">
+                                <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-indigo-200/70 dark:border-indigo-800/60">
+                                    <div class="text-xs font-bold text-indigo-800 dark:text-indigo-200 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                        <span>Custom Template Studio — ออกแบบเทมเพลต A4 เอง</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <button type="button" id="clone-current-tpl-btn" onclick="cloneActiveTemplateToCustom()" class="px-2 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-indigo-200 dark:border-indigo-700 text-[10px] font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 cursor-pointer" title="ดึงโครงสร้างจากดีไซน์ที่ใช้อยู่มาปรับต่อ">
+                                            <i class="fa-regular fa-clone mr-1"></i>ดึงจากแบบปัจจุบัน
+                                        </button>
+                                        <button type="button" id="random-custom-tpl-btn" onclick="randomizeCustomTemplate()" class="px-2 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-indigo-200 dark:border-indigo-700 text-[10px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-50 cursor-pointer" title="สุ่มผสมโครงสร้างเทมเพลตใหม่">
+                                            <i class="fa-solid fa-shuffle mr-1"></i>สุ่มดีไซน์
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                                    <div class="sm:col-span-2">
+                                        <label for="custom-tpl-name" class="block text-[11px] font-bold text-google-text-body dark:text-google-dark-text-body mb-1">ชื่อเทมเพลตของคุณ</label>
+                                        <input id="custom-tpl-name" type="text" value="ดีไซน์ของฉัน" oninput="updateCustomTemplateProp('name', this.value)" placeholder="เช่น สไตล์พอร์ตวิศวะของฉัน" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text">
+                                    </div>
+                                    <div>
+                                        <label for="custom-layoutMode" class="block text-[11px] font-bold text-google-text-body dark:text-google-dark-text-body mb-1">โครงสร้างหน้ากระดาษ</label>
+                                        <select id="custom-layoutMode" onchange="updateCustomTemplateProp('layoutMode', this.value)" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs">
+                                            <option value="sidebar-left">แถบข้างซ้าย + คอลัมน์ขวา</option>
+                                            <option value="sidebar-right">คอลัมน์ซ้าย + แถบข้างขวา</option>
+                                            <option value="single-col">คอลัมน์เดี่ยวมาตรฐาน</option>
+                                            <option value="editorial-split">Swiss Grid (หัวข้อซ้าย/เนื้อหาขวา)</option>
+                                            <option value="two-col-balanced">แบ่ง 2 คอลัมน์สมดุล 50/50</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="custom-headerStyle" class="block text-[11px] font-bold text-google-text-body dark:text-google-dark-text-body mb-1">สไตล์ส่วนหัว (Header)</label>
+                                        <select id="custom-headerStyle" onchange="updateCustomTemplateProp('headerStyle', this.value)" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs">
+                                            <option value="minimal-left">เส้นขีดเรียบหรู (Minimal Left)</option>
+                                            <option value="centered-classic">จัดกลางทางการ (Classic Centered)</option>
+                                            <option value="solid-banner">แบนเนอร์สีธีมเข้มเต็มความกว้าง</option>
+                                            <option value="dark-banner">หัวกระดาษ Dark IDE (Developer)</option>
+                                            <option value="boxed-card">กล่องการ์ดขอบมน (Boxed Hero)</option>
+                                            <option value="blueprint-grid">กริดพิมพ์เขียว (Engineering Blueprint)</option>
+                                            <option value="magazine-hero">พาดหัวแมกกาซีน (Magazine Split)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="custom-sidebarTheme" class="block text-[11px] font-bold text-google-text-body dark:text-google-dark-text-body mb-1">พื้นหลังแถบข้าง</label>
+                                        <select id="custom-sidebarTheme" onchange="updateCustomTemplateProp('sidebarTheme', this.value)" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs">
+                                            <option value="soft-tint">สีอ่อนตามธีม (Soft Tint)</option>
+                                            <option value="dark-slate">สีกรมท่าเข้ม (Dark Slate)</option>
+                                            <option value="solid-accent">สีธีมเต็มผืน (Solid Accent)</option>
+                                            <option value="clean-white">พื้นขาวเส้นคั่นบาง</option>
+                                            <option value="floating-card">การ์ดลอยขอบมน (Floating Card)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="custom-sidebarWidth" class="block text-[11px] font-bold text-google-text-body dark:text-google-dark-text-body mb-1">ความกว้างแถบข้าง</label>
+                                        <select id="custom-sidebarWidth" onchange="updateCustomTemplateProp('sidebarWidth', this.value)" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs">
+                                            <option value="28%">กระชับ (28%)</option>
+                                            <option value="33.5%">สมดุลมาตรฐาน (33.5%)</option>
+                                            <option value="37%">กว้างพิเศษ (37%)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="custom-headingStyle" class="block text-[11px] font-bold text-google-text-body dark:text-google-dark-text-body mb-1">รูปแบบหัวข้อหมวดหมู่</label>
+                                        <select id="custom-headingStyle" onchange="updateCustomTemplateProp('headingStyle', this.value)" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs">
+                                            <option value="underline">เส้นขีดใต้ตามสีธีม</option>
+                                            <option value="left-pill">แถบขีดตั้งสีธีม + เส้นประ</option>
+                                            <option value="filled-band">แถบสีพื้นพาสเทลขอบซ้าย</option>
+                                            <option value="caps-line">เส้นคั่นเต็มบรรทัด (Academic)</option>
+                                            <option value="bracket-tech">แท็กสไตล์โค้ด [ // Heading ]</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="custom-itemStyle" class="block text-[11px] font-bold text-google-text-body dark:text-google-dark-text-body mb-1">รูปแบบการ์ดเนื้อหา</label>
+                                        <select id="custom-itemStyle" onchange="updateCustomTemplateProp('itemStyle', this.value)" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs">
+                                            <option value="left-border">ขีดซ้ายเน้นรายการ (Left Border)</option>
+                                            <option value="timeline-dots">เส้นไทม์ไลน์พร้อมจุด (Timeline Dots)</option>
+                                            <option value="boxed-cards">การ์ดกรอบสี่เหลี่ยม (Boxed Cards)</option>
+                                            <option value="clean-minimal">เรียบคลีนเส้นแบ่งบาง (Clean Minimal)</option>
+                                            <option value="two-col-compact">เรียงการ์ด 2 คอลัมน์ (Dense Grid)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="custom-skillStyle" class="block text-[11px] font-bold text-google-text-body dark:text-google-dark-text-body mb-1">รูปแบบแสดงทักษะ</label>
+                                        <select id="custom-skillStyle" onchange="updateCustomTemplateProp('skillStyle', this.value)" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs">
+                                            <option value="progress-bar">หลอดเปอร์เซ็นต์ความชำนาญ</option>
+                                            <option value="pill-chips">แท็กแคปซูล (Skill Chips)</option>
+                                            <option value="compact-grid">กล่องข้อมูลแบบกระชับ</option>
+                                            <option value="dot-rating">จุดคะแนน 5 ระดับ (Dot Rating)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="custom-pageFrame" class="block text-[11px] font-bold text-google-text-body dark:text-google-dark-text-body mb-1">กรอบหน้ากระดาษ A4</label>
+                                        <select id="custom-pageFrame" onchange="updateCustomTemplateProp('pageFrame', this.value)" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs">
+                                            <option value="none">ไม่มีกรอบ (สะอาดไร้ขอบ)</option>
+                                            <option value="top-bar">แถบสีบน-ล่างของหน้า</option>
+                                            <option value="double-frame">กรอบคู่ทางการรอบหน้ากระดาษ</option>
+                                            <option value="corner-accent">กรอบมุมเลขาคณิต (Corner Accent)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-indigo-200/70 dark:border-indigo-800/60">
+                                    <span class="text-[11px] text-indigo-700 dark:text-indigo-300">ตัวอย่าง A4 อัปเดตสดทันทีที่เปลี่ยนค่า</span>
+                                    <button type="button" id="save-custom-tpl-btn" onclick="saveCustomTemplatePreset()" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition cursor-pointer">
+                                        <i class="fa-solid fa-bookmark mr-1"></i>บันทึกเป็นเทมเพลตของฉัน
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -796,8 +746,9 @@
                     <div class="no-print px-3 sm:px-4 py-2.5 bg-slate-50 dark:bg-google-dark-bg border-b border-google-border dark:border-google-dark-border flex flex-wrap items-center justify-between gap-2">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="text-xs font-bold text-google-text dark:text-google-dark-text">
-                                <i class="fa-regular fa-file-lines text-sky-600 mr-1"></i>A4 Preview (210 &times; 297 mm)
+                                <i class="fa-regular fa-file-lines text-sky-600 mr-1"></i>A4 Preview
                             </span>
+                            <select id="quick-template-select" aria-label="เปลี่ยนเทมเพลต A4 ด่วน" onchange="selectResumeTemplate(this.value)" class="max-w-[195px] sm:max-w-[230px] px-2 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-[11px] font-semibold text-google-text dark:text-google-dark-text cursor-pointer"></select>
                             <span id="page-fit-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
                                 1 หน้า A4
                             </span>
@@ -892,6 +843,163 @@
             languages: 'ทักษะภาษา',
             interests: 'จุดเด่นเพิ่มเติม'
         };
+
+        const TEMPLATE_CATEGORY_NAMES = {
+            all: 'ทั้งหมด (20)',
+            sidebar: 'แถบข้าง',
+            formal: 'ทางการ',
+            tech: 'ไอที/ATS',
+            creative: 'พอร์ต/ครีเอทีฟ',
+            student: 'นักศึกษา/ฝึกงาน',
+            custom: 'สร้างเอง'
+        };
+
+        function createDefaultCustomTemplate() {
+            return {
+                id: 'custom-draft',
+                name: 'ดีไซน์ของฉัน',
+                layoutMode: 'sidebar-left',
+                headerStyle: 'minimal-left',
+                sidebarTheme: 'soft-tint',
+                sidebarWidth: '33.5%',
+                headingStyle: 'underline',
+                itemStyle: 'left-border',
+                skillStyle: 'progress-bar',
+                pageFrame: 'none'
+            };
+        }
+
+        const TEMPLATE_PRESETS = [
+            // 1-5: Sidebar Layouts
+            {
+                id: 'modern-sidebar', num: '01', cat: 'sidebar',
+                name: 'Modern Sidebar', desc: 'แถบข้างซ้ายสีอ่อน + คอลัมน์หลัก',
+                spec: { layoutMode: 'sidebar-left', headerStyle: 'minimal-left', sidebarTheme: 'soft-tint', sidebarWidth: '33.5%', headingStyle: 'underline', itemStyle: 'left-border', skillStyle: 'progress-bar', pageFrame: 'none' }
+            },
+            {
+                id: 'dark-executive-sidebar', num: '02', cat: 'sidebar',
+                name: 'Dark Navy Sidebar', desc: 'แถบซ้ายสีเข้ม Slate หรูหรา อักษรขาว',
+                spec: { layoutMode: 'sidebar-left', headerStyle: 'minimal-left', sidebarTheme: 'dark-slate', sidebarWidth: '33.5%', headingStyle: 'left-pill', itemStyle: 'left-border', skillStyle: 'progress-bar', pageFrame: 'none' }
+            },
+            {
+                id: 'right-sidebar-pro', num: '03', cat: 'sidebar',
+                name: 'Right Sidebar Pro', desc: 'เนื้อหาหลักซ้าย + แถบข้อมูลฝั่งขวา',
+                spec: { layoutMode: 'sidebar-right', headerStyle: 'boxed-card', sidebarTheme: 'soft-tint', sidebarWidth: '33.5%', headingStyle: 'underline', itemStyle: 'boxed-cards', skillStyle: 'dot-rating', pageFrame: 'top-bar' }
+            },
+            {
+                id: 'accent-pillar-left', num: '04', cat: 'sidebar',
+                name: 'Full Accent Pillar', desc: 'เสาข้างซ้ายสีธีมเข้มเต็มฝั่ง + กรอบรูปเด่น',
+                spec: { layoutMode: 'sidebar-left', headerStyle: 'minimal-left', sidebarTheme: 'solid-accent', sidebarWidth: '28%', headingStyle: 'filled-band', itemStyle: 'clean-minimal', skillStyle: 'progress-bar', pageFrame: 'none' }
+            },
+            {
+                id: 'floating-card-sidebar', num: '05', cat: 'sidebar',
+                name: 'Floating Card Sidebar', desc: 'แถบข้างการ์ดลอยขอบมน แยกสัดส่วนชัดเจน',
+                spec: { layoutMode: 'sidebar-left', headerStyle: 'boxed-card', sidebarTheme: 'floating-card', sidebarWidth: '33.5%', headingStyle: 'left-pill', itemStyle: 'boxed-cards', skillStyle: 'pill-chips', pageFrame: 'top-bar' }
+            },
+            // 6-9: Formal & Executive Layouts
+            {
+                id: 'executive-classic', num: '06', cat: 'formal',
+                name: 'Executive Classic', desc: 'ทางการ คอลัมน์เดี่ยวกึ่งกลาง',
+                spec: { layoutMode: 'single-col', headerStyle: 'centered-classic', sidebarTheme: 'clean-white', sidebarWidth: '33.5%', headingStyle: 'underline', itemStyle: 'left-border', skillStyle: 'compact-grid', pageFrame: 'none' }
+            },
+            {
+                id: 'harvard-academic', num: '07', cat: 'formal',
+                name: 'Harvard Academic CV', desc: 'มาตรฐานวิชาการ เส้นคั่นหัวข้อเต็มบรรทัด',
+                spec: { layoutMode: 'single-col', headerStyle: 'centered-classic', sidebarTheme: 'clean-white', sidebarWidth: '33.5%', headingStyle: 'caps-line', itemStyle: 'clean-minimal', skillStyle: 'compact-grid', pageFrame: 'none' }
+            },
+            {
+                id: 'corporate-frame', num: '08', cat: 'formal',
+                name: 'Corporate Border Frame', desc: 'กรอบคู่ทางการรอบหน้ากระดาษ A4',
+                spec: { layoutMode: 'single-col', headerStyle: 'minimal-left', sidebarTheme: 'clean-white', sidebarWidth: '33.5%', headingStyle: 'underline', itemStyle: 'left-border', skillStyle: 'compact-grid', pageFrame: 'double-frame' }
+            },
+            {
+                id: 'swiss-editorial', num: '09', cat: 'formal',
+                name: 'Swiss Grid Editorial', desc: 'ตารางสวิส หัวข้อซ้าย 28% เนื้อหาขวา 72%',
+                spec: { layoutMode: 'editorial-split', headerStyle: 'minimal-left', sidebarTheme: 'clean-white', sidebarWidth: '28%', headingStyle: 'caps-line', itemStyle: 'clean-minimal', skillStyle: 'pill-chips', pageFrame: 'top-bar' }
+            },
+            // 10-13: Tech, Engineering & ATS Layouts
+            {
+                id: 'tech-minimal', num: '10', cat: 'tech',
+                name: 'Tech Minimal ATS', desc: 'อ่านง่ายสำหรับสาย IT & วิศวะ',
+                spec: { layoutMode: 'single-col', headerStyle: 'minimal-left', sidebarTheme: 'clean-white', sidebarWidth: '33.5%', headingStyle: 'bracket-tech', itemStyle: 'left-border', skillStyle: 'pill-chips', pageFrame: 'top-bar', monoHeadline: true }
+            },
+            {
+                id: 'developer-terminal', num: '11', cat: 'tech',
+                name: 'Developer Code Header', desc: 'หัวกระดาษ Dark IDE + แท็กสกิลแบบโค้ด',
+                spec: { layoutMode: 'single-col', headerStyle: 'dark-banner', sidebarTheme: 'clean-white', sidebarWidth: '33.5%', headingStyle: 'bracket-tech', itemStyle: 'boxed-cards', skillStyle: 'pill-chips', pageFrame: 'none', monoHeadline: true }
+            },
+            {
+                id: 'iot-blueprint', num: '12', cat: 'tech',
+                name: 'IoT & Hardware Blueprint', desc: 'กริดพิมพ์เขียววิศวกรรมสมองกล + เกจทักษะ',
+                spec: { layoutMode: 'sidebar-left', headerStyle: 'blueprint-grid', sidebarTheme: 'clean-white', sidebarWidth: '33.5%', headingStyle: 'bracket-tech', itemStyle: 'boxed-cards', skillStyle: 'progress-bar', pageFrame: 'corner-accent', monoHeadline: true }
+            },
+            {
+                id: 'compact-dense-onepage', num: '13', cat: 'tech',
+                name: 'Ultra-Dense 1-Page', desc: 'แบ่ง 2 คอลัมน์ + การ์ดคู่ จุข้อมูลสูงสุด',
+                spec: { layoutMode: 'two-col-balanced', headerStyle: 'solid-banner', sidebarTheme: 'clean-white', sidebarWidth: '33.5%', headingStyle: 'filled-band', itemStyle: 'two-col-compact', skillStyle: 'pill-chips', pageFrame: 'none' }
+            },
+            // 14-17: Portfolio & Creative Layouts
+            {
+                id: 'portfolio-showcase', num: '14', cat: 'creative',
+                name: 'Portfolio Showcase', desc: 'เน้นโชว์โครงงาน & เกียรติบัตรเต็มตา',
+                spec: { layoutMode: 'single-col', headerStyle: 'solid-banner', sidebarTheme: 'clean-white', sidebarWidth: '33.5%', headingStyle: 'underline', itemStyle: 'boxed-cards', skillStyle: 'compact-grid', pageFrame: 'none' }
+            },
+            {
+                id: 'timeline-journey', num: '15', cat: 'creative',
+                name: 'Timeline Milestone', desc: 'เส้นไทม์ไลน์แนวตั้งเชื่อมประวัติและผลงาน',
+                spec: { layoutMode: 'single-col', headerStyle: 'boxed-card', sidebarTheme: 'clean-white', sidebarWidth: '33.5%', headingStyle: 'left-pill', itemStyle: 'timeline-dots', skillStyle: 'pill-chips', pageFrame: 'corner-accent' }
+            },
+            {
+                id: 'magazine-split', num: '16', cat: 'creative',
+                name: 'Magazine Hero Split', desc: 'พาดหัวแมกกาซีน + แบ่ง 2 คอลัมน์ 50/50',
+                spec: { layoutMode: 'two-col-balanced', headerStyle: 'magazine-hero', sidebarTheme: 'clean-white', sidebarWidth: '33.5%', headingStyle: 'filled-band', itemStyle: 'boxed-cards', skillStyle: 'dot-rating', pageFrame: 'top-bar' }
+            },
+            {
+                id: 'infographic-skillbars', num: '17', cat: 'creative',
+                name: 'Infographic Skill Matrix', desc: 'อินโฟกราฟิกหลอดทักษะ & จุดคะแนนเด่นชัด',
+                spec: { layoutMode: 'sidebar-left', headerStyle: 'solid-banner', sidebarTheme: 'soft-tint', sidebarWidth: '37%', headingStyle: 'filled-band', itemStyle: 'boxed-cards', skillStyle: 'dot-rating', pageFrame: 'none' }
+            },
+            // 18-20: Student, Vocational & Internship Layouts
+            {
+                id: 'vocational-honor', num: '18', cat: 'student',
+                name: 'Vocational Honor', desc: 'แฟ้มผลงานอาชีวศึกษา ปวช./ปวส. & สิ่งประดิษฐ์',
+                spec: { layoutMode: 'sidebar-left', headerStyle: 'boxed-card', sidebarTheme: 'soft-tint', sidebarWidth: '33.5%', headingStyle: 'filled-band', itemStyle: 'timeline-dots', skillStyle: 'progress-bar', pageFrame: 'corner-accent' }
+            },
+            {
+                id: 'internship-ready', num: '19', cat: 'student',
+                name: 'Internship Fast-Track', desc: 'ใบสมัครฝึกงาน/สหกิจ อ่านจบไวในหน้าเดียว',
+                spec: { layoutMode: 'two-col-balanced', headerStyle: 'centered-classic', sidebarTheme: 'clean-white', sidebarWidth: '33.5%', headingStyle: 'left-pill', itemStyle: 'left-border', skillStyle: 'progress-bar', pageFrame: 'top-bar' }
+            },
+            {
+                id: 'minimal-nordic', num: '20', cat: 'student',
+                name: 'Minimal Nordic Soft', desc: 'มินิมอลนอร์ดิก หัวข้อ Pill สบายตา',
+                spec: { layoutMode: 'editorial-split', headerStyle: 'boxed-card', sidebarTheme: 'floating-card', sidebarWidth: '28%', headingStyle: 'left-pill', itemStyle: 'clean-minimal', skillStyle: 'pill-chips', pageFrame: 'none' }
+            }
+        ];
+
+        const CUSTOM_ENUMS = {
+            layoutMode: ['sidebar-left', 'sidebar-right', 'single-col', 'editorial-split', 'two-col-balanced'],
+            headerStyle: ['minimal-left', 'centered-classic', 'solid-banner', 'dark-banner', 'boxed-card', 'blueprint-grid', 'magazine-hero'],
+            sidebarTheme: ['soft-tint', 'dark-slate', 'solid-accent', 'clean-white', 'floating-card'],
+            sidebarWidth: ['28%', '33.5%', '37%'],
+            headingStyle: ['underline', 'left-pill', 'filled-band', 'caps-line', 'bracket-tech'],
+            itemStyle: ['left-border', 'timeline-dots', 'boxed-cards', 'clean-minimal', 'two-col-compact'],
+            skillStyle: ['progress-bar', 'pill-chips', 'compact-grid', 'dot-rating'],
+            pageFrame: ['none', 'top-bar', 'double-frame', 'corner-accent']
+        };
+
+        function sanitizeCustomTemplateSpec(rawSpec) {
+            const def = createDefaultCustomTemplate();
+            const src = rawSpec && typeof rawSpec === 'object' ? rawSpec : {};
+            const out = {
+                id: typeof src.id === 'string' && src.id.trim() ? src.id.trim().slice(0, 64) : def.id,
+                name: typeof src.name === 'string' && src.name.trim() ? src.name.trim().slice(0, 60) : def.name
+            };
+            for (const [k, allowed] of Object.entries(CUSTOM_ENUMS)) {
+                out[k] = allowed.includes(src[k]) ? src[k] : def[k];
+            }
+            return out;
+        }
 
         function createPortfolioPreset() {
             return {
@@ -1033,6 +1141,8 @@
                     fontScale: 92,
                     showQr: true,
                     showPageGuides: true,
+                    customTemplate: createDefaultCustomTemplate(),
+                    savedCustomTemplates: [],
                     sectionOrder: ['summary', 'experience', 'education', 'projects', 'certificates', 'skills', 'languages', 'interests'],
                     sectionVisibility: {
                         summary: true,
@@ -1207,6 +1317,8 @@
         let resumeData = null;
         let currentEditorTab = 'profile';
         let previewZoomMode = 'fit';
+        let activeTemplateCategory = 'all';
+        let isCustomBuilderOpen = false;
         let activeToastEl = null;
         let qrRenderError = false;
 
@@ -1280,6 +1392,10 @@
                 design: {
                     ...base.design,
                     ...(loaded.design || {}),
+                    customTemplate: sanitizeCustomTemplateSpec((loaded.design && loaded.design.customTemplate) || base.design.customTemplate),
+                    savedCustomTemplates: Array.isArray(loaded.design && loaded.design.savedCustomTemplates)
+                        ? loaded.design.savedCustomTemplates.map(sanitizeCustomTemplateSpec).slice(0, 24)
+                        : [],
                     sectionVisibility: {
                         ...base.design.sectionVisibility,
                         ...((loaded.design && loaded.design.sectionVisibility) || {})
@@ -1325,6 +1441,8 @@
         }
 
         function loadPreset(kind) {
+            const prevCustom = resumeData?.design?.customTemplate;
+            const prevSaved = resumeData?.design?.savedCustomTemplates;
             if (kind === 'developer') {
                 resumeData = createDeveloperPreset();
                 showToast('โหลดเทมเพลตตัวอย่างสายงาน Dev/IT เรียบร้อย', 'info');
@@ -1335,6 +1453,8 @@
                 resumeData = createPortfolioPreset();
                 showToast('โหลดข้อมูลคุณภคพล สมัยแก้ว จาก Portfolio เรียบร้อย', 'success');
             }
+            resumeData.design.customTemplate = prevCustom ? sanitizeCustomTemplateSpec(prevCustom) : createDefaultCustomTemplate();
+            resumeData.design.savedCustomTemplates = Array.isArray(prevSaved) ? prevSaved.map(sanitizeCustomTemplateSpec) : [];
             saveToLocalStorage();
             syncAllFormsFromState();
             renderResumePreview();
@@ -1475,10 +1595,12 @@
             }
             if (key === 'template') {
                 highlightTemplateButtons();
+                syncCustomBuilderControls();
             }
             if (key === 'accentColor') {
                 const picker = document.getElementById('design-accentColor');
                 if (picker && picker.value !== val) picker.value = val;
+                renderTemplateSelectorGrid();
             }
             saveToLocalStorage();
             renderResumePreview();
@@ -1535,14 +1657,309 @@
             return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
         }
 
-        function highlightTemplateButtons() {
+        function getSavedCustomTemplates() {
+            if (!resumeData.design.customTemplate) {
+                resumeData.design.customTemplate = createDefaultCustomTemplate();
+            }
+            if (!Array.isArray(resumeData.design.savedCustomTemplates)) {
+                resumeData.design.savedCustomTemplates = [];
+            }
+            return resumeData.design.savedCustomTemplates;
+        }
+
+        function getTemplateMeta(tplId) {
+            const preset = TEMPLATE_PRESETS.find(t => t.id === tplId);
+            if (preset) {
+                return {
+                    id: preset.id,
+                    label: `${preset.num}. ${preset.name}`,
+                    desc: preset.desc,
+                    cat: preset.cat,
+                    isCustom: false,
+                    spec: preset.spec
+                };
+            }
+            const draft = sanitizeCustomTemplateSpec(resumeData?.design?.customTemplate);
+            if (tplId === 'custom-draft') {
+                return {
+                    id: 'custom-draft',
+                    label: `Custom: ${draft.name}`,
+                    desc: 'แบบร่างเทมเพลตที่กำลังปรับแต่งเอง',
+                    cat: 'custom',
+                    isCustom: true,
+                    spec: draft
+                };
+            }
+            const saved = getSavedCustomTemplates().find(c => c.id === tplId);
+            if (saved) {
+                return {
+                    id: saved.id,
+                    label: `Custom: ${saved.name}`,
+                    desc: `${saved.layoutMode} • ${saved.headerStyle}`,
+                    cat: 'custom',
+                    isCustom: true,
+                    spec: saved
+                };
+            }
+            const fallback = TEMPLATE_PRESETS[0];
+            return {
+                id: fallback.id,
+                label: `${fallback.num}. ${fallback.name}`,
+                desc: fallback.desc,
+                cat: fallback.cat,
+                isCustom: false,
+                spec: fallback.spec
+            };
+        }
+
+        function resolveActiveTemplateSpec() {
+            return getTemplateMeta(resumeData?.design?.template || 'modern-sidebar').spec;
+        }
+
+        function buildTemplateMiniThumb(spec, accent) {
+            const c = escapeHtml(accent || '#1a73e8');
+            const tint = hexToSoftTint(accent, 0.16);
+            const sideBg = spec.sidebarTheme === 'dark-slate' ? '#1e293b'
+                : (spec.sidebarTheme === 'solid-accent' ? c
+                : (spec.sidebarTheme === 'clean-white' ? '#f8fafc' : tint));
+            const topHdrBg = spec.headerStyle === 'dark-banner' ? '#0f172a'
+                : (spec.headerStyle === 'solid-banner' || spec.headerStyle === 'magazine-hero' ? c
+                : (spec.headerStyle === 'centered-classic' || spec.headerStyle === 'boxed-card' ? tint : '#e2e8f0'));
+            const frameBorder = spec.pageFrame === 'double-frame' ? `border:2px solid ${c};`
+                : (spec.pageFrame === 'top-bar' ? `border-top:3px solid ${c};` : 'border:1px solid #cbd5e1;');
+
+            if (spec.layoutMode === 'sidebar-left') {
+                return `<div style="width:32px;height:42px;border-radius:4px;overflow:hidden;background:#fff;${frameBorder}display:flex;flex-shrink:0;"><div style="width:35%;background:${sideBg};"></div><div style="flex:1;padding:4px;display:flex;flex-direction:column;gap:3px;"><div style="height:5px;border-radius:2px;background:${topHdrBg};"></div><div style="height:2px;background:#cbd5e1;"></div><div style="height:2px;width:80%;background:#e2e8f0;"></div><div style="height:2px;width:65%;background:#e2e8f0;"></div></div></div>`;
+            }
+            if (spec.layoutMode === 'sidebar-right') {
+                return `<div style="width:32px;height:42px;border-radius:4px;overflow:hidden;background:#fff;${frameBorder}display:flex;flex-shrink:0;"><div style="flex:1;padding:4px;display:flex;flex-direction:column;gap:3px;"><div style="height:5px;border-radius:2px;background:${topHdrBg};"></div><div style="height:2px;background:#cbd5e1;"></div><div style="height:2px;width:75%;background:#e2e8f0;"></div></div><div style="width:34%;background:${sideBg};"></div></div>`;
+            }
+            if (spec.layoutMode === 'editorial-split') {
+                return `<div style="width:32px;height:42px;border-radius:4px;overflow:hidden;background:#fff;${frameBorder}display:flex;flex-direction:column;padding:3px;gap:3px;flex-shrink:0;"><div style="height:7px;border-radius:2px;background:${topHdrBg};"></div><div style="display:flex;gap:3px;"><div style="width:32%;height:4px;background:${c};opacity:.7;border-radius:1px;"></div><div style="flex:1;height:4px;background:#e2e8f0;border-radius:1px;"></div></div><div style="display:flex;gap:3px;"><div style="width:32%;height:4px;background:${c};opacity:.7;border-radius:1px;"></div><div style="flex:1;height:4px;background:#e2e8f0;border-radius:1px;"></div></div></div>`;
+            }
+            if (spec.layoutMode === 'two-col-balanced') {
+                return `<div style="width:32px;height:42px;border-radius:4px;overflow:hidden;background:#fff;${frameBorder}display:flex;flex-direction:column;flex-shrink:0;"><div style="height:10px;background:${topHdrBg};"></div><div style="flex:1;padding:3px;display:grid;grid-template-columns:1fr 1fr;gap:3px;"><div style="background:#f1f5f9;border-radius:2px;"></div><div style="background:${tint};border-radius:2px;"></div></div></div>`;
+            }
+            return `<div style="width:32px;height:42px;border-radius:4px;overflow:hidden;background:#fff;${frameBorder}display:flex;flex-direction:column;flex-shrink:0;"><div style="height:11px;background:${topHdrBg};"></div><div style="padding:4px;display:flex;flex-direction:column;gap:3px;"><div style="height:2.5px;width:55%;background:${c};border-radius:1px;"></div><div style="height:2px;background:#cbd5e1;"></div><div style="height:2px;width:85%;background:#e2e8f0;"></div><div style="height:2px;width:70%;background:#e2e8f0;"></div></div></div>`;
+        }
+
+        function filterTemplateCatalog(cat) {
+            activeTemplateCategory = cat || 'all';
+            renderTemplateSelectorGrid();
+        }
+
+        function selectResumeTemplate(tplId) {
+            if (!tplId) return;
+            resumeData.design.template = tplId;
+            if (tplId === 'custom-draft' && !isCustomBuilderOpen) {
+                openCustomTemplateBuilder(true);
+            }
+            saveToLocalStorage();
+            highlightTemplateButtons();
+            syncCustomBuilderControls();
+            renderResumePreview();
+        }
+
+        function syncQuickTemplateSelect() {
+            const sel = document.getElementById('quick-template-select');
+            if (!sel || !resumeData) return;
             const current = resumeData.design.template;
-            document.querySelectorAll('.tpl-choice').forEach(btn => {
-                const active = btn.getAttribute('data-tpl') === current;
-                btn.className = active
-                    ? 'tpl-choice p-2.5 rounded-xl border-2 border-sky-600 bg-sky-50 dark:bg-sky-950/50 text-sky-900 dark:text-sky-100 text-left transition cursor-pointer'
-                    : 'tpl-choice p-2.5 rounded-xl border border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-bg text-google-text dark:text-google-dark-text text-left hover:border-sky-400 transition cursor-pointer';
+            const saved = getSavedCustomTemplates();
+            const customOpts = [
+                `<option value="custom-draft">${escapeHtml('★ แบบร่าง: ' + (resumeData.design.customTemplate?.name || 'ดีไซน์ของฉัน'))}</option>`,
+                ...saved.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml('★ Custom: ' + c.name)}</option>`)
+            ].join('');
+            const builtinOpts = TEMPLATE_PRESETS.map(t => `<option value="${escapeHtml(t.id)}">${escapeHtml(`${t.num}. ${t.name}`)}</option>`).join('');
+            sel.innerHTML = `<optgroup label="เทมเพลตมาตรฐาน (20 ดีไซน์)">${builtinOpts}</optgroup><optgroup label="เทมเพลตสร้างเอง (Custom)">${customOpts}</optgroup>`;
+            sel.value = current;
+            if (sel.value !== current) sel.value = TEMPLATE_PRESETS[0].id;
+        }
+
+        function renderTemplateSelectorGrid() {
+            const grid = document.getElementById('template-selector-grid');
+            if (!grid || !resumeData) return;
+
+            const current = resumeData.design.template;
+            const accent = resumeData.design.accentColor || '#1a73e8';
+            const saved = getSavedCustomTemplates();
+
+            document.querySelectorAll('.tpl-cat-btn').forEach(btn => {
+                const isAct = btn.getAttribute('data-tpl-cat') === activeTemplateCategory;
+                btn.className = isAct
+                    ? 'tpl-cat-btn px-2.5 py-1 rounded-full text-[11px] font-bold bg-sky-600 text-white cursor-pointer transition'
+                    : 'tpl-cat-btn px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text-body hover:border-sky-400 cursor-pointer transition';
             });
+
+            const cards = [];
+            if (activeTemplateCategory !== 'custom') {
+                const items = activeTemplateCategory === 'all'
+                    ? TEMPLATE_PRESETS
+                    : TEMPLATE_PRESETS.filter(t => t.cat === activeTemplateCategory);
+                for (const t of items) {
+                    const active = t.id === current;
+                    cards.push(`
+                        <button type="button" data-tpl="${escapeHtml(t.id)}" onclick="selectResumeTemplate('${escapeHtml(t.id)}')" class="tpl-choice p-2 rounded-xl border ${active ? 'border-2 border-sky-600 bg-sky-50 dark:bg-sky-950/50 text-sky-900 dark:text-sky-100' : 'border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-bg text-google-text dark:text-google-dark-text hover:border-sky-400'} text-left transition cursor-pointer flex items-center gap-2.5">
+                            ${buildTemplateMiniThumb(t.spec, accent)}
+                            <div class="min-w-0 flex-1">
+                                <div class="text-xs font-bold truncate">${escapeHtml(t.num + '. ' + t.name)}</div>
+                                <div class="text-[10.5px] opacity-75 line-clamp-2 leading-snug">${escapeHtml(t.desc)}</div>
+                            </div>
+                        </button>`);
+                }
+            }
+
+            if (activeTemplateCategory === 'all' || activeTemplateCategory === 'custom') {
+                for (const c of saved) {
+                    const active = c.id === current;
+                    cards.push(`
+                        <div class="tpl-choice relative p-2 rounded-xl border ${active ? 'border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-900 dark:text-indigo-100' : 'border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-bg text-google-text dark:text-google-dark-text hover:border-indigo-400'} text-left transition flex items-center gap-2">
+                            <button type="button" data-tpl="${escapeHtml(c.id)}" onclick="selectResumeTemplate('${escapeHtml(c.id)}')" class="flex-1 min-w-0 flex items-center gap-2.5 text-left cursor-pointer">
+                                ${buildTemplateMiniThumb(c, accent)}
+                                <div class="min-w-0 flex-1">
+                                    <div class="text-xs font-bold truncate"><span class="text-indigo-600 dark:text-indigo-400">★</span> ${escapeHtml(c.name)}</div>
+                                    <div class="text-[10.5px] opacity-75 truncate">${escapeHtml(c.layoutMode)} &bull; ${escapeHtml(c.headerStyle)}</div>
+                                </div>
+                            </button>
+                            <button type="button" onclick="deleteCustomTemplatePreset('${escapeHtml(c.id)}', event)" class="w-6 h-6 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 hover:bg-rose-100 flex items-center justify-center text-[10px] shrink-0 cursor-pointer" title="ลบเทมเพลตนี้">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>`);
+                }
+                const draft = sanitizeCustomTemplateSpec(resumeData.design.customTemplate);
+                const draftActive = current === 'custom-draft';
+                cards.push(`
+                    <button type="button" data-tpl="custom-draft" onclick="openCustomTemplateBuilder(true); selectResumeTemplate('custom-draft');" class="tpl-choice p-2 rounded-xl border-2 border-dashed ${draftActive ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-900 dark:text-indigo-100' : 'border-indigo-300 dark:border-indigo-700 bg-indigo-50/40 dark:bg-indigo-950/20 text-indigo-800 dark:text-indigo-200 hover:border-indigo-500'} text-left transition cursor-pointer flex items-center gap-2.5">
+                        ${buildTemplateMiniThumb(draft, accent)}
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold truncate"><i class="fa-solid fa-sliders mr-1"></i>สร้างดีไซน์เอง (${escapeHtml(draft.name)})</div>
+                            <div class="text-[10.5px] opacity-80 line-clamp-2 leading-snug">เลือก Layout, Header, กรอบหน้า &amp; บันทึกใช้ซ้ำได้</div>
+                        </div>
+                    </button>`);
+            }
+
+            grid.innerHTML = cards.join('');
+            const badge = document.getElementById('active-template-badge');
+            if (badge) badge.textContent = getTemplateMeta(current).label;
+            syncQuickTemplateSelect();
+        }
+
+        function highlightTemplateButtons() {
+            renderTemplateSelectorGrid();
+        }
+
+        function openCustomTemplateBuilder(forceState) {
+            const panel = document.getElementById('custom-template-builder');
+            const btn = document.getElementById('open-custom-builder-btn');
+            isCustomBuilderOpen = typeof forceState === 'boolean' ? forceState : !isCustomBuilderOpen;
+            if (panel) panel.classList.toggle('hidden', !isCustomBuilderOpen);
+            if (btn) btn.setAttribute('aria-expanded', String(isCustomBuilderOpen));
+            if (isCustomBuilderOpen) syncCustomBuilderControls();
+        }
+
+        function syncCustomBuilderControls() {
+            if (!resumeData) return;
+            const c = sanitizeCustomTemplateSpec(resumeData.design.customTemplate);
+            resumeData.design.customTemplate = c;
+            const setEl = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val ?? '';
+            };
+            setEl('custom-tpl-name', c.name);
+            setEl('custom-layoutMode', c.layoutMode);
+            setEl('custom-headerStyle', c.headerStyle);
+            setEl('custom-sidebarTheme', c.sidebarTheme);
+            setEl('custom-sidebarWidth', c.sidebarWidth);
+            setEl('custom-headingStyle', c.headingStyle);
+            setEl('custom-itemStyle', c.itemStyle);
+            setEl('custom-skillStyle', c.skillStyle);
+            setEl('custom-pageFrame', c.pageFrame);
+        }
+
+        function updateCustomTemplateProp(prop, val) {
+            if (!resumeData) return;
+            const draft = sanitizeCustomTemplateSpec(resumeData.design.customTemplate);
+            if (prop === 'name') {
+                draft.name = String(val || '').trim().slice(0, 60) || 'ดีไซน์ของฉัน';
+            } else if (CUSTOM_ENUMS[prop] && CUSTOM_ENUMS[prop].includes(val)) {
+                draft[prop] = val;
+            }
+            resumeData.design.customTemplate = draft;
+            resumeData.design.template = 'custom-draft';
+            saveToLocalStorage();
+            highlightTemplateButtons();
+            renderResumePreview();
+        }
+
+        function cloneActiveTemplateToCustom() {
+            const meta = getTemplateMeta(resumeData.design.template);
+            const next = sanitizeCustomTemplateSpec({
+                ...meta.spec,
+                id: 'custom-draft',
+                name: meta.isCustom ? meta.spec.name : `ปรับจาก ${meta.label.replace(/^\d+\.\s*/, '')}`
+            });
+            resumeData.design.customTemplate = next;
+            resumeData.design.template = 'custom-draft';
+            openCustomTemplateBuilder(true);
+            saveToLocalStorage();
+            highlightTemplateButtons();
+            renderResumePreview();
+            showToast(`ดึงโครงสร้าง "${meta.label}" มาปรับแต่งต่อแล้ว`, 'info');
+        }
+
+        function randomizeCustomTemplate() {
+            const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+            const next = sanitizeCustomTemplateSpec({
+                id: 'custom-draft',
+                name: `Custom Mix #${Math.floor(100 + Math.random() * 900)}`,
+                layoutMode: pick(CUSTOM_ENUMS.layoutMode),
+                headerStyle: pick(CUSTOM_ENUMS.headerStyle),
+                sidebarTheme: pick(CUSTOM_ENUMS.sidebarTheme),
+                sidebarWidth: pick(CUSTOM_ENUMS.sidebarWidth),
+                headingStyle: pick(CUSTOM_ENUMS.headingStyle),
+                itemStyle: pick(CUSTOM_ENUMS.itemStyle),
+                skillStyle: pick(CUSTOM_ENUMS.skillStyle),
+                pageFrame: pick(CUSTOM_ENUMS.pageFrame)
+            });
+            resumeData.design.customTemplate = next;
+            resumeData.design.template = 'custom-draft';
+            openCustomTemplateBuilder(true);
+            saveToLocalStorage();
+            highlightTemplateButtons();
+            renderResumePreview();
+            showToast('สุ่มผสมเทมเพลตใหม่เรียบร้อย', 'success');
+        }
+
+        function saveCustomTemplatePreset() {
+            const list = getSavedCustomTemplates();
+            const draft = sanitizeCustomTemplateSpec(resumeData.design.customTemplate);
+            const nameInput = document.getElementById('custom-tpl-name');
+            const finalName = (nameInput ? nameInput.value : draft.name).trim() || `เทมเพลตของฉัน #${list.length + 1}`;
+            const savedItem = sanitizeCustomTemplateSpec({
+                ...draft,
+                id: generateId('custom'),
+                name: finalName
+            });
+            list.unshift(savedItem);
+            if (list.length > 24) list.length = 24;
+            resumeData.design.savedCustomTemplates = list;
+            resumeData.design.template = savedItem.id;
+            saveToLocalStorage();
+            highlightTemplateButtons();
+            renderResumePreview();
+            showToast(`บันทึกเทมเพลต "${savedItem.name}" เรียบร้อย!`, 'success');
+        }
+
+        function deleteCustomTemplatePreset(customId, ev) {
+            if (ev) ev.stopPropagation();
+            const list = getSavedCustomTemplates().filter(c => c.id !== customId);
+            resumeData.design.savedCustomTemplates = list;
+            if (resumeData.design.template === customId) {
+                resumeData.design.template = 'modern-sidebar';
+            }
+            saveToLocalStorage();
+            highlightTemplateButtons();
+            renderResumePreview();
+            showToast('ลบเทมเพลตที่บันทึกไว้แล้ว', 'info');
         }
 
         const NEW_ITEM_TEMPLATES = {
@@ -1817,6 +2234,7 @@
 
             updatePhotoThumb();
             highlightTemplateButtons();
+            syncCustomBuilderControls();
             renderAllDynamicEditors();
         }
 
@@ -1881,7 +2299,16 @@
                 </div>`;
         }
 
-        function buildContactListHtml(accentColor, compact = false) {
+        function isLightColor(hex) {
+            const clean = String(hex || '#1a73e8').replace('#', '');
+            if (clean.length !== 6) return false;
+            const r = parseInt(clean.slice(0, 2), 16) || 0;
+            const g = parseInt(clean.slice(2, 4), 16) || 0;
+            const b = parseInt(clean.slice(4, 6), 16) || 0;
+            return ((0.299 * r + 0.587 * g + 0.114 * b) / 255) > 0.64;
+        }
+
+        function buildContactListHtml(accentColor, compact = false, inDark = false) {
             const p = resumeData.profile;
             const entries = [
                 { icon: 'fa-phone', text: p.phone },
@@ -1893,23 +2320,177 @@
             ].filter(e => String(e.text || '').trim().length > 0);
 
             if (!entries.length) return '';
+            const txtColor = inDark ? 'rgba(255,255,255,0.92)' : '#334155';
+            const iconColor = inDark ? 'rgba(255,255,255,0.88)' : escapeHtml(accentColor);
             return entries.map(e => `
-                <div style="display:flex;align-items:flex-start;gap:7px;font-size:${compact ? '11px' : '11.5px'};line-height:1.4;color:#334155;word-break:break-word;">
-                    <i class="fa-solid ${e.icon}" style="color:${escapeHtml(accentColor)};width:13px;margin-top:3px;text-align:center;flex-shrink:0;"></i>
+                <div style="display:flex;align-items:flex-start;gap:7px;font-size:${compact ? '11px' : '11.5px'};line-height:1.4;color:${txtColor};word-break:break-word;">
+                    <i class="fa-solid ${e.icon}" style="color:${iconColor};width:13px;margin-top:3px;text-align:center;flex-shrink:0;"></i>
                     <span>${escapeHtml(e.text)}</span>
                 </div>`).join('');
         }
 
-        function renderSectionContent(sectionKey, ctx) {
-            const { labels, accent, tintBg, tintBorder, dens, barStyle = false } = ctx;
+        function buildSectionHeading(title, iconClass, ctx, inDark = false) {
+            const hStyle = ctx.spec.headingStyle || 'underline';
+            const accent = ctx.accent;
+            const textColor = inDark ? '#ffffff' : '#0f172a';
+            const iconCol = inDark ? 'rgba(255,255,255,0.9)' : escapeHtml(accent);
+            const borderCol = inDark ? 'rgba(255,255,255,0.35)' : escapeHtml(accent);
+
+            if (hStyle === 'left-pill') {
+                return `
+                    <div class="resume-section-head" style="display:flex;align-items:center;gap:7px;padding-bottom:4px;margin-bottom:7px;border-bottom:1px dotted ${inDark ? 'rgba(255,255,255,0.28)' : escapeHtml(ctx.tintBorder)};">
+                        <span style="width:4px;height:14px;border-radius:999px;background:${inDark ? '#ffffff' : escapeHtml(accent)};flex-shrink:0;"></span>
+                        <i class="fa-solid ${iconClass}" style="color:${iconCol};font-size:11.5px;"></i>
+                        <span style="font-size:12.8px;font-weight:700;color:${textColor};">${escapeHtml(title)}</span>
+                    </div>`;
+            }
+            if (hStyle === 'filled-band') {
+                const bg = inDark ? 'rgba(255,255,255,0.14)' : ctx.tintBg;
+                return `
+                    <div class="resume-section-head" style="display:flex;align-items:center;gap:7px;background:${bg};border-left:3.5px solid ${inDark ? '#ffffff' : escapeHtml(accent)};padding:4px 9px;border-radius:6px;margin-bottom:7px;">
+                        <i class="fa-solid ${iconClass}" style="color:${iconCol};font-size:11.5px;"></i>
+                        <span style="font-size:12.6px;font-weight:700;color:${textColor};">${escapeHtml(title)}</span>
+                    </div>`;
+            }
+            if (hStyle === 'caps-line') {
+                return `
+                    <div class="resume-section-head" style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+                        <span style="font-size:12.5px;font-weight:800;letter-spacing:0.03em;text-transform:uppercase;color:${inDark ? '#ffffff' : escapeHtml(accent)};white-space:nowrap;">${escapeHtml(title)}</span>
+                        <span style="flex:1;height:1.5px;background:${borderCol};opacity:0.65;"></span>
+                    </div>`;
+            }
+            if (hStyle === 'bracket-tech') {
+                return `
+                    <div class="resume-section-head" style="display:flex;align-items:center;gap:6px;border-bottom:1.5px dashed ${inDark ? 'rgba(255,255,255,0.3)' : escapeHtml(ctx.tintBorder)};padding-bottom:3px;margin-bottom:7px;">
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:${iconCol};">//</span>
+                        <span style="font-size:12.6px;font-weight:700;color:${textColor};font-family:'JetBrains Mono','Sarabun',sans-serif;">${escapeHtml(title)}</span>
+                    </div>`;
+            }
+            return `
+                <div class="resume-section-head" style="display:flex;align-items:center;gap:7px;border-bottom:1.5px solid ${borderCol};padding-bottom:3px;margin-bottom:7px;">
+                    <i class="fa-solid ${iconClass}" style="color:${iconCol};font-size:12px;"></i>
+                    <span style="font-size:13px;font-weight:700;color:${textColor};letter-spacing:0.01em;">${escapeHtml(title)}</span>
+                </div>`;
+        }
+
+        function wrapStyledEntry(innerHtml, ctx, opts = {}) {
+            const { itemStyle = 'left-border', isAccent = false, inDark = false, isLast = false } = opts;
+            const accent = ctx.accent;
+            const lineCol = inDark ? 'rgba(255,255,255,0.35)' : (isAccent ? accent : ctx.tintBorder);
+            const cardBg = inDark ? 'rgba(255,255,255,0.09)' : '#f8fafc';
+            const cardBorder = inDark ? 'rgba(255,255,255,0.18)' : '#e2e8f0';
+
+            if (itemStyle === 'timeline-dots') {
+                return `
+                    <div class="resume-block" style="position:relative;border-left:2px solid ${escapeHtml(ctx.tintBorder)};padding-left:14px;margin-left:4px;padding-bottom:${isLast ? '0' : '3px'};">
+                        <span style="position:absolute;left:-5.5px;top:5px;width:9px;height:9px;border-radius:9999px;background:${escapeHtml(accent)};border:2px solid #ffffff;box-shadow:0 0 0 1px ${escapeHtml(ctx.tintBorder)};"></span>
+                        ${innerHtml}
+                    </div>`;
+            }
+            if (itemStyle === 'boxed-cards' || itemStyle === 'two-col-compact') {
+                return `
+                    <div class="resume-block" style="padding:7px 10px;border-radius:8px;background:${cardBg};border:1px solid ${cardBorder};">
+                        ${innerHtml}
+                    </div>`;
+            }
+            if (itemStyle === 'clean-minimal') {
+                return `
+                    <div class="resume-block" style="${isLast ? '' : `padding-bottom:6px;border-bottom:1px dashed ${cardBorder};`}">
+                        ${innerHtml}
+                    </div>`;
+            }
+            return `
+                <div class="resume-block" style="border-left:2.5px solid ${escapeHtml(lineCol)};padding-left:10px;">
+                    ${innerHtml}
+                </div>`;
+        }
+
+        function renderSkillCardHtml(sg, ctx, opts = {}) {
+            const { inDark = false } = opts;
+            const skillStyle = ctx.spec.skillStyle || 'progress-bar';
+            const accent = ctx.accent;
+            const tags = String(sg.items || '').split(',').map(s => s.trim()).filter(Boolean);
+            const pct = Math.max(20, Math.min(100, Number(sg.level || 80)));
+            const cardBg = inDark ? 'rgba(255,255,255,0.09)' : '#ffffff';
+            const cardBorder = inDark ? 'rgba(255,255,255,0.18)' : '#e2e8f0';
+            const titleCol = inDark ? '#ffffff' : '#0f172a';
+            const bodyCol = inDark ? 'rgba(255,255,255,0.84)' : '#475569';
+            const accentCol = inDark ? '#ffffff' : escapeHtml(accent);
+            const trackCol = inDark ? 'rgba(255,255,255,0.22)' : '#e2e8f0';
+
+            if (skillStyle === 'pill-chips') {
+                const chipBg = inDark ? 'rgba(255,255,255,0.14)' : ctx.tintBg;
+                const chipBorder = inDark ? 'rgba(255,255,255,0.28)' : ctx.tintBorder;
+                return `
+                    <div class="resume-block" style="padding:6px 8px;border-radius:7px;border:1px solid ${cardBorder};background:${cardBg};">
+                        <div style="font-size:11.2px;font-weight:700;color:${titleCol};margin-bottom:4px;">${escapeHtml(sg.category)}</div>
+                        <div style="display:flex;flex-wrap:wrap;gap:3.5px;">
+                            ${tags.map(t => `<span style="font-size:9.8px;font-weight:600;padding:1.5px 6px;border-radius:999px;background:${chipBg};color:${accentCol};border:1px solid ${escapeHtml(chipBorder)};">${escapeHtml(t)}</span>`).join('')}
+                        </div>
+                    </div>`;
+            }
+
+            if (skillStyle === 'dot-rating') {
+                const filled = Math.max(1, Math.min(5, Math.round(pct / 20)));
+                const dots = Array.from({ length: 5 }, (_, idx) =>
+                    `<span style="display:inline-block;width:6.5px;height:6.5px;border-radius:999px;background:${idx < filled ? accentCol : trackCol};"></span>`
+                ).join('');
+                return `
+                    <div class="resume-block" style="padding:6px 8px;border-radius:7px;border:1px solid ${cardBorder};background:${cardBg};">
+                        <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:3px;">
+                            <span style="font-size:11.2px;font-weight:700;color:${titleCol};">${escapeHtml(sg.category)}</span>
+                            <span style="display:inline-flex;align-items:center;gap:2.5px;flex-shrink:0;">${dots}</span>
+                        </div>
+                        <div style="font-size:10.4px;line-height:1.45;color:${bodyCol};">${escapeHtml(tags.join(' • '))}</div>
+                    </div>`;
+            }
+
+            const showBar = skillStyle === 'progress-bar';
+            return `
+                <div class="resume-block" style="padding:6px 8px;border-radius:7px;border:1px solid ${cardBorder};background:${cardBg};">
+                    <div style="display:flex;justify-content:space-between;align-items:center;font-size:11.4px;font-weight:700;color:${titleCol};margin-bottom:3px;">
+                        <span>${escapeHtml(sg.category)}</span>
+                        ${showBar ? `<span style="font-size:10px;color:${accentCol};">${pct}%</span>` : ''}
+                    </div>
+                    ${showBar ? `<div style="height:4px;border-radius:999px;background:${trackCol};overflow:hidden;margin-bottom:4px;"><div style="width:${pct}%;height:100%;background:${accentCol};"></div></div>` : ''}
+                    <div style="font-size:10.6px;line-height:1.45;color:${bodyCol};">${escapeHtml(tags.join(' • '))}</div>
+                </div>`;
+        }
+
+        function getSectionMeta(sectionKey) {
+            const labels = getLabels();
+            const map = {
+                summary: { title: labels.summary, icon: 'fa-user-tie' },
+                education: { title: labels.education, icon: 'fa-graduation-cap' },
+                experience: { title: labels.experience, icon: 'fa-briefcase' },
+                projects: { title: labels.projects, icon: 'fa-laptop-code' },
+                certificates: { title: labels.certificates, icon: 'fa-award' },
+                skills: { title: labels.skills, icon: 'fa-screwdriver-wrench' },
+                languages: { title: labels.languages, icon: 'fa-language' },
+                interests: { title: labels.interests, icon: 'fa-star' }
+            };
+            return map[sectionKey] || { title: sectionKey, icon: 'fa-circle' };
+        }
+
+        function renderSectionContent(sectionKey, ctx, opts = {}) {
+            const { labels, accent, tintBg, tintBorder, dens, spec } = ctx;
+            const { inSidebar = false, inDark = false, suppressHeading = false, narrowCol = false } = opts;
             const p = resumeData.profile;
+            const meta = getSectionMeta(sectionKey);
+            const heading = suppressHeading ? '' : buildSectionHeading(meta.title, meta.icon, ctx, inDark);
+            const itemStyle = spec.itemStyle || 'left-border';
+            const twoColCards = itemStyle === 'two-col-compact' && !inSidebar && !narrowCol;
+            const primCol = inDark ? '#ffffff' : '#0f172a';
+            const bodyCol = inDark ? 'rgba(255,255,255,0.88)' : '#334155';
+            const mutedCol = inDark ? 'rgba(255,255,255,0.75)' : '#475569';
+            const accentCol = inDark ? '#ffffff' : escapeHtml(accent);
 
             if (sectionKey === 'summary') {
                 if (!String(p.summary || '').trim()) return '';
                 return `
                     <div class="resume-block" style="margin-bottom:${dens.secGap};">
-                        ${buildSectionHeading(labels.summary, 'fa-user-tie', accent)}
-                        <p style="margin:0;font-size:12px;line-height:1.62;color:#334155;">${escapeHtml(p.summary)}</p>
+                        ${heading}
+                        <p style="margin:0;font-size:12px;line-height:1.62;color:${bodyCol};">${escapeHtml(p.summary)}</p>
                     </div>`;
             }
 
@@ -1918,20 +2499,19 @@
                 if (!items.length) return '';
                 return `
                     <div style="margin-bottom:${dens.secGap};">
-                        ${buildSectionHeading(labels.education, 'fa-graduation-cap', accent)}
-                        <div style="display:flex;flex-direction:column;gap:${dens.itemGap};">
-                            ${items.map(item => `
-                                <div class="resume-block" style="border-left:2.5px solid ${escapeHtml(tintBorder)};padding-left:10px;">
-                                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
-                                        <div style="font-size:12.8px;font-weight:700;color:#0f172a;">${escapeHtml(item.level)}</div>
-                                        <span style="font-size:10.5px;font-weight:700;color:${escapeHtml(accent)};white-space:nowrap;">${escapeHtml(item.period)}</span>
-                                    </div>
-                                    <div style="font-size:11.6px;font-weight:600;color:#475569;margin-top:1px;">
-                                        ${escapeHtml(item.institution)}
-                                        ${item.gpax ? `<span style="margin-left:6px;padding:1px 6px;border-radius:4px;background:${tintBg};color:${escapeHtml(accent)};font-size:10.5px;">GPAX ${escapeHtml(item.gpax)}</span>` : ''}
-                                    </div>
-                                    ${item.details ? `<p style="margin:3px 0 0;font-size:11.3px;line-height:1.5;color:#475569;">${escapeHtml(item.details)}</p>` : ''}
-                                </div>`).join('')}
+                        ${heading}
+                        <div style="${twoColCards && items.length > 1 ? `display:grid;grid-template-columns:1fr 1fr;gap:${dens.itemGap};` : `display:flex;flex-direction:column;gap:${dens.itemGap};`}">
+                            ${items.map((item, idx) => wrapStyledEntry(`
+                                <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+                                    <div style="font-size:12.6px;font-weight:700;color:${primCol};">${escapeHtml(item.level)}</div>
+                                    <span style="font-size:10.5px;font-weight:700;color:${accentCol};white-space:nowrap;">${escapeHtml(item.period)}</span>
+                                </div>
+                                <div style="font-size:11.5px;font-weight:600;color:${mutedCol};margin-top:1px;">
+                                    ${escapeHtml(item.institution)}
+                                    ${item.gpax ? `<span style="margin-left:6px;padding:1px 6px;border-radius:4px;background:${tintBg};color:${escapeHtml(accent)};font-size:10.5px;">GPAX ${escapeHtml(item.gpax)}</span>` : ''}
+                                </div>
+                                ${item.details ? `<p style="margin:3px 0 0;font-size:11.2px;line-height:1.5;color:${mutedCol};">${escapeHtml(item.details)}</p>` : ''}
+                            `, ctx, { itemStyle, inDark, isLast: idx === items.length - 1 })).join('')}
                         </div>
                     </div>`;
             }
@@ -1941,22 +2521,21 @@
                 if (!items.length) return '';
                 return `
                     <div style="margin-bottom:${dens.secGap};">
-                        ${buildSectionHeading(labels.experience, 'fa-briefcase', accent)}
-                        <div style="display:flex;flex-direction:column;gap:${dens.itemGap};">
-                            ${items.map(item => {
+                        ${heading}
+                        <div style="${twoColCards && items.length > 1 ? `display:grid;grid-template-columns:1fr 1fr;gap:${dens.itemGap};` : `display:flex;flex-direction:column;gap:${dens.itemGap};`}">
+                            ${items.map((item, idx) => {
                                 const bullets = String(item.highlights || '').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-                                return `
-                                <div class="resume-block" style="border-left:2.5px solid ${escapeHtml(accent)};padding-left:10px;">
+                                return wrapStyledEntry(`
                                     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
-                                        <div style="font-size:12.8px;font-weight:700;color:#0f172a;">${escapeHtml(item.role)}</div>
-                                        <span style="font-size:10.5px;font-weight:700;color:${escapeHtml(accent)};white-space:nowrap;">${escapeHtml(item.period)}</span>
+                                        <div style="font-size:12.6px;font-weight:700;color:${primCol};">${escapeHtml(item.role)}</div>
+                                        <span style="font-size:10.5px;font-weight:700;color:${accentCol};white-space:nowrap;">${escapeHtml(item.period)}</span>
                                     </div>
-                                    <div style="font-size:11.6px;font-weight:600;color:#475569;">${escapeHtml(item.company)}</div>
+                                    <div style="font-size:11.5px;font-weight:600;color:${mutedCol};">${escapeHtml(item.company)}</div>
                                     ${bullets.length ? `
-                                        <ul style="margin:3px 0 0;padding-left:15px;font-size:11.3px;line-height:1.52;color:#334155;">
+                                        <ul style="margin:3px 0 0;padding-left:15px;font-size:11.2px;line-height:1.52;color:${bodyCol};">
                                             ${bullets.map(b => `<li style="margin-bottom:1.5px;">${escapeHtml(b)}</li>`).join('')}
                                         </ul>` : ''}
-                                </div>`;
+                                `, ctx, { itemStyle, isAccent: true, inDark, isLast: idx === items.length - 1 });
                             }).join('')}
                         </div>
                     </div>`;
@@ -1967,22 +2546,22 @@
                 if (!items.length) return '';
                 return `
                     <div style="margin-bottom:${dens.secGap};">
-                        ${buildSectionHeading(labels.projects, 'fa-laptop-code', accent)}
-                        <div style="display:flex;flex-direction:column;gap:${dens.itemGap};">
-                            ${items.map(item => {
+                        ${heading}
+                        <div style="${twoColCards && items.length > 1 ? `display:grid;grid-template-columns:1fr 1fr;gap:${dens.itemGap};` : `display:flex;flex-direction:column;gap:${dens.itemGap};`}">
+                            ${items.map((item, idx) => {
                                 const tags = String(item.tags || '').split(',').map(s => s.trim()).filter(Boolean);
-                                return `
-                                <div class="resume-block" style="padding:7px 10px;border-radius:8px;background:#f8fafc;border:1px solid #e2e8f0;">
+                                const useBox = itemStyle === 'left-border' ? 'boxed-cards' : itemStyle;
+                                return wrapStyledEntry(`
                                     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
-                                        <div style="font-size:12.4px;font-weight:700;color:#0f172a;">${escapeHtml(item.title)}</div>
-                                        ${item.period ? `<span style="font-size:10px;font-weight:700;color:${escapeHtml(accent)};white-space:nowrap;">${escapeHtml(item.period)}</span>` : ''}
+                                        <div style="font-size:12.2px;font-weight:700;color:${primCol};">${escapeHtml(item.title)}</div>
+                                        ${item.period ? `<span style="font-size:10px;font-weight:700;color:${accentCol};white-space:nowrap;">${escapeHtml(item.period)}</span>` : ''}
                                     </div>
-                                    ${item.description ? `<p style="margin:3px 0 0;font-size:11.2px;line-height:1.48;color:#334155;">${escapeHtml(item.description)}</p>` : ''}
+                                    ${item.description ? `<p style="margin:3px 0 0;font-size:11.1px;line-height:1.48;color:${bodyCol};">${escapeHtml(item.description)}</p>` : ''}
                                     <div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:4px;">
                                         ${tags.map(tg => `<span style="font-size:9.8px;font-weight:600;padding:1px 6px;border-radius:999px;background:${tintBg};color:${escapeHtml(accent)};border:1px solid ${escapeHtml(tintBorder)};">${escapeHtml(tg)}</span>`).join('')}
-                                        ${item.url ? `<span style="font-size:9.8px;color:#64748b;margin-left:auto;">${escapeHtml(item.url)}</span>` : ''}
+                                        ${item.url ? `<span style="font-size:9.8px;color:${mutedCol};margin-left:auto;">${escapeHtml(item.url)}</span>` : ''}
                                     </div>
-                                </div>`;
+                                `, ctx, { itemStyle: useBox, inDark, isLast: idx === items.length - 1 });
                             }).join('')}
                         </div>
                     </div>`;
@@ -1993,21 +2572,22 @@
                 if (!items.length) return '';
                 return `
                     <div style="margin-bottom:${dens.secGap};">
-                        ${buildSectionHeading(labels.certificates, 'fa-award', accent)}
-                        <div style="display:flex;flex-direction:column;gap:6px;">
-                            ${items.map(item => `
-                                <div class="resume-block" style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:6px 9px;border-radius:7px;border:1px solid #e2e8f0;background:#ffffff;">
+                        ${heading}
+                        <div style="${twoColCards && items.length > 1 ? 'display:grid;grid-template-columns:1fr 1fr;gap:6px;' : 'display:flex;flex-direction:column;gap:6px;'}">
+                            ${items.map((item, idx) => wrapStyledEntry(`
+                                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
                                     <div style="min-width:0;flex:1;">
-                                        <div style="font-size:12px;font-weight:700;color:#0f172a;">${escapeHtml(item.title)}</div>
-                                        <div style="font-size:11px;color:#475569;margin-top:1px;">
+                                        <div style="font-size:11.8px;font-weight:700;color:${primCol};">${escapeHtml(item.title)}</div>
+                                        <div style="font-size:10.9px;color:${mutedCol};margin-top:1px;">
                                             ${escapeHtml(item.issuer)}${item.description ? ` — ${escapeHtml(item.description)}` : ''}
                                         </div>
                                     </div>
-                                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;shrink:0;">
+                                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;">
                                         ${item.level ? `<span style="font-size:9.8px;font-weight:700;padding:1px 7px;border-radius:999px;background:${tintBg};color:${escapeHtml(accent)};white-space:nowrap;">${escapeHtml(item.level)}</span>` : ''}
-                                        ${item.year ? `<span style="font-size:10px;color:#64748b;font-weight:600;">${escapeHtml(item.year)}</span>` : ''}
+                                        ${item.year ? `<span style="font-size:10px;color:${mutedCol};font-weight:600;">${escapeHtml(item.year)}</span>` : ''}
                                     </div>
-                                </div>`).join('')}
+                                </div>
+                            `, ctx, { itemStyle: itemStyle === 'left-border' ? 'boxed-cards' : itemStyle, inDark, isLast: idx === items.length - 1 })).join('')}
                         </div>
                     </div>`;
             }
@@ -2015,23 +2595,12 @@
             if (sectionKey === 'skills') {
                 const items = resumeData.skillGroups.filter(x => x.visible !== false);
                 if (!items.length) return '';
+                const gridCols = (inSidebar || narrowCol) ? '1fr' : '1fr 1fr';
                 return `
                     <div style="margin-bottom:${dens.secGap};">
-                        ${buildSectionHeading(labels.skills, 'fa-screwdriver-wrench', accent)}
-                        <div style="display:grid;grid-template-columns:${barStyle ? '1fr' : '1fr 1fr'};gap:7px;">
-                            ${items.map(sg => {
-                                const tags = String(sg.items || '').split(',').map(s => s.trim()).filter(Boolean);
-                                const pct = Math.max(20, Math.min(100, Number(sg.level || 80)));
-                                return `
-                                <div class="resume-block" style="padding:6px 8px;border-radius:7px;border:1px solid #e2e8f0;background:#ffffff;">
-                                    <div style="display:flex;justify-content:space-between;align-items:center;font-size:11.4px;font-weight:700;color:#0f172a;margin-bottom:3px;">
-                                        <span>${escapeHtml(sg.category)}</span>
-                                        ${barStyle ? `<span style="font-size:10px;color:${escapeHtml(accent)};">${pct}%</span>` : ''}
-                                    </div>
-                                    ${barStyle ? `<div style="height:4px;border-radius:999px;background:#e2e8f0;overflow:hidden;margin-bottom:4px;"><div style="width:${pct}%;height:100%;background:${escapeHtml(accent)};"></div></div>` : ''}
-                                    <div style="font-size:10.6px;line-height:1.45;color:#475569;">${escapeHtml(tags.join(' • '))}</div>
-                                </div>`;
-                            }).join('')}
+                        ${heading}
+                        <div style="display:grid;grid-template-columns:${gridCols};gap:7px;">
+                            ${items.map(sg => renderSkillCardHtml(sg, ctx, { inDark })).join('')}
                         </div>
                     </div>`;
             }
@@ -2039,14 +2608,16 @@
             if (sectionKey === 'languages') {
                 const items = resumeData.languages.filter(x => x.visible !== false);
                 if (!items.length) return '';
+                const pillBg = inDark ? 'rgba(255,255,255,0.1)' : '#f8fafc';
+                const pillBorder = inDark ? 'rgba(255,255,255,0.2)' : '#e2e8f0';
                 return `
                     <div class="resume-block" style="margin-bottom:${dens.secGap};">
-                        ${buildSectionHeading(labels.languages, 'fa-language', accent)}
+                        ${heading}
                         <div style="display:flex;flex-wrap:wrap;gap:6px;">
                             ${items.map(l => `
-                                <div style="padding:4px 9px;border-radius:7px;background:#f8fafc;border:1px solid #e2e8f0;font-size:11px;">
-                                    <strong style="color:#0f172a;">${escapeHtml(l.name)}</strong>
-                                    <span style="color:#64748b;"> — ${escapeHtml(l.level)}</span>
+                                <div style="padding:4px 9px;border-radius:7px;background:${pillBg};border:1px solid ${pillBorder};font-size:11px;">
+                                    <strong style="color:${primCol};">${escapeHtml(l.name)}</strong>
+                                    <span style="color:${mutedCol};"> — ${escapeHtml(l.level)}</span>
                                 </div>`).join('')}
                         </div>
                     </div>`;
@@ -2055,11 +2626,13 @@
             if (sectionKey === 'interests') {
                 const items = String(p.interests || '').split(',').map(s => s.trim()).filter(Boolean);
                 if (!items.length) return '';
+                const chipBg = inDark ? 'rgba(255,255,255,0.14)' : tintBg;
+                const chipColor = inDark ? '#ffffff' : escapeHtml(accent);
                 return `
                     <div class="resume-block" style="margin-bottom:${dens.secGap};">
-                        ${buildSectionHeading(labels.interests, 'fa-star', accent)}
+                        ${heading}
                         <div style="display:flex;flex-wrap:wrap;gap:5px;">
-                            ${items.map(tag => `<span style="font-size:10.8px;padding:2px 8px;border-radius:999px;background:${tintBg};color:${escapeHtml(accent)};font-weight:600;">${escapeHtml(tag)}</span>`).join('')}
+                            ${items.map(tag => `<span style="font-size:10.8px;padding:2px 8px;border-radius:999px;background:${chipBg};color:${chipColor};font-weight:600;">${escapeHtml(tag)}</span>`).join('')}
                         </div>
                     </div>`;
             }
@@ -2067,77 +2640,25 @@
             return '';
         }
 
-        function buildSectionHeading(title, iconClass, accentColor) {
-            return `
-                <div class="resume-section-head" style="display:flex;align-items:center;gap:7px;border-bottom:1.5px solid ${escapeHtml(accentColor)};padding-bottom:3px;margin-bottom:7px;">
-                    <i class="fa-solid ${iconClass}" style="color:${escapeHtml(accentColor)};font-size:12px;"></i>
-                    <span style="font-size:13px;font-weight:700;color:#0f172a;letter-spacing:0.01em;">${escapeHtml(title)}</span>
-                </div>`;
-        }
-
-        function renderTemplateModernSidebar(ctx) {
-            const { p, d, labels, accent, tintBg, tintBorder, dens, qrSvg } = ctx;
-            const sidebarSet = new Set(['skills', 'languages', 'interests']);
-            const vis = d.sectionVisibility;
-            const order = d.sectionOrder;
-
-            const mainSections = order
-                .filter(k => !sidebarSet.has(k) && vis[k] !== false)
-                .map(k => renderSectionContent(k, { ...ctx, barStyle: false }))
-                .join('');
-
-            const sideSections = order
-                .filter(k => sidebarSet.has(k) && vis[k] !== false)
-                .map(k => renderSectionContent(k, { ...ctx, barStyle: k === 'skills' }))
-                .join('');
-
-            const photoHtml = buildPhotoElement(104, d.photoShape, '#ffffff');
-            const contactHtml = buildContactListHtml(accent, true);
-
-            return `
-                <div style="display:flex;min-height:${ctx.innerMinHeight}px;background:linear-gradient(to right, ${tintBg} 33.5%, #ffffff 33.5%);">
-                    <aside style="width:33.5%;padding:${dens.padSidebar};border-right:1px solid ${escapeHtml(tintBorder)};display:flex;flex-direction:column;gap:14px;box-sizing:border-box;">
-                        ${photoHtml ? `<div style="display:flex;justify-content:center;">${photoHtml}</div>` : ''}
-                        <div>
-                            ${buildSectionHeading(labels.contact, 'fa-address-book', accent)}
-                            <div style="display:flex;flex-direction:column;gap:5.5px;">${contactHtml}</div>
-                        </div>
-                        <div>${sideSections}</div>
-                        ${qrSvg ? `
-                            <div class="resume-block" style="margin-top:auto;padding:8px;border-radius:10px;background:#ffffff;border:1px solid ${escapeHtml(tintBorder)};display:flex;align-items:center;gap:8px;">
-                                <div style="width:52px;height:52px;shrink:0;">${qrSvg}</div>
-                                <div style="font-size:10px;line-height:1.35;color:#334155;">
-                                    <div style="font-weight:700;color:${escapeHtml(accent)};">Portfolio QR</div>
-                                    <div>${escapeHtml(p.qrLabel || p.qrUrl)}</div>
-                                </div>
-                            </div>` : ''}
-                    </aside>
-                    <div style="width:66.5%;padding:${dens.padPage};box-sizing:border-box;">
-                        <header style="border-bottom:2px solid ${escapeHtml(accent)};padding-bottom:10px;margin-bottom:${dens.secGap};">
-                            <h2 style="margin:0;font-size:23px;font-weight:800;line-height:1.2;color:#0f172a;">${escapeHtml(p.fullName)}</h2>
-                            ${p.headline ? `<div style="margin-top:3px;font-size:12.5px;font-weight:600;color:${escapeHtml(accent)};">${escapeHtml(p.headline)}</div>` : ''}
-                        </header>
-                        ${mainSections}
-                    </div>
-                </div>`;
-        }
-
-        function renderTemplateSingleColumn(ctx, variant) {
+        function buildFullHeaderHtml(ctx, spec) {
             const { p, d, accent, tintBg, tintBorder, dens, qrSvg } = ctx;
-            const vis = d.sectionVisibility;
-            const order = d.sectionOrder;
-            const photoHtml = buildPhotoElement(variant === 'portfolio' ? 88 : 80, d.photoShape, variant === 'portfolio' ? '#ffffff' : accent);
+            const photoSize = spec.headerStyle === 'solid-banner' || spec.headerStyle === 'magazine-hero' ? 88 : 80;
+            const isLightAccent = isLightColor(accent);
+            const onAccentText = isLightAccent ? '#0f172a' : '#ffffff';
+            const borderCol = (spec.headerStyle === 'solid-banner' || spec.headerStyle === 'dark-banner') ? '#ffffff' : accent;
+            const photoHtml = buildPhotoElement(photoSize, d.photoShape, borderCol);
 
             const contactInline = [p.phone, p.email, p.lineText, p.website, p.location, p.nicknameBirth]
                 .map(s => String(s || '').trim())
                 .filter(Boolean)
                 .map(s => `<span>${escapeHtml(s)}</span>`)
-                .join('<span style="opacity:0.4;margin:0 6px;">|</span>');
+                .join('<span style="opacity:0.45;margin:0 6px;">|</span>');
 
-            let headerHtml = '';
-            if (variant === 'portfolio') {
-                headerHtml = `
-                    <header style="background:${escapeHtml(accent)};color:#ffffff;padding:${dens.headPad};display:flex;align-items:center;gap:16px;">
+            const headFont = spec.monoHeadline ? "font-family:'JetBrains Mono','Sarabun',monospace;" : '';
+
+            if (spec.headerStyle === 'solid-banner') {
+                return `
+                    <header style="background:${escapeHtml(accent)};color:${onAccentText};padding:${dens.headPad};display:flex;align-items:center;gap:16px;">
                         ${photoHtml}
                         <div style="flex:1;min-width:0;">
                             <h2 style="margin:0;font-size:22px;font-weight:800;line-height:1.2;">${escapeHtml(p.fullName)}</h2>
@@ -2146,8 +2667,66 @@
                         </div>
                         ${qrSvg ? `<div style="width:62px;height:62px;padding:3px;background:#ffffff;border-radius:8px;flex-shrink:0;">${qrSvg}</div>` : ''}
                     </header>`;
-            } else if (variant === 'classic') {
-                headerHtml = `
+            }
+
+            if (spec.headerStyle === 'dark-banner') {
+                return `
+                    <header style="background:#0f172a;color:#ffffff;padding:${dens.headPad};display:flex;align-items:center;gap:16px;border-bottom:3.5px solid ${escapeHtml(accent)};">
+                        ${photoHtml}
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#38bdf8;font-weight:700;margin-bottom:2px;">&gt;_ RESUME &amp; PORTFOLIO.BUILD()</div>
+                            <h2 style="margin:0;font-size:22px;font-weight:800;line-height:1.2;color:#ffffff;">${escapeHtml(p.fullName)}</h2>
+                            ${p.headline ? `<div style="margin-top:3px;font-size:12px;color:#cbd5e1;font-weight:600;${headFont}">${escapeHtml(p.headline)}</div>` : ''}
+                            <div style="margin-top:7px;font-size:10.5px;color:#e2e8f0;line-height:1.5;display:flex;flex-wrap:wrap;gap:2px 0;">${contactInline}</div>
+                        </div>
+                        ${qrSvg ? `<div style="width:60px;height:60px;padding:3px;background:#ffffff;border-radius:8px;flex-shrink:0;">${qrSvg}</div>` : ''}
+                    </header>`;
+            }
+
+            if (spec.headerStyle === 'blueprint-grid') {
+                const gridLine = hexToSoftTint(accent, 0.10);
+                return `
+                    <header style="background-color:#f8fafc;background-image:linear-gradient(${gridLine} 1px, transparent 1px),linear-gradient(90deg,${gridLine} 1px,transparent 1px);background-size:14px 14px;padding:${dens.headPad};display:flex;align-items:center;gap:15px;border-bottom:2.5px solid ${escapeHtml(accent)};">
+                        ${photoHtml}
+                        <div style="flex:1;min-width:0;">
+                            <span style="display:inline-block;padding:1px 7px;border-radius:4px;background:${escapeHtml(accent)};color:${onAccentText};font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;margin-bottom:4px;">SPEC // TECHNICAL PROFILE</span>
+                            <h2 style="margin:0;font-size:22px;font-weight:800;color:#0f172a;line-height:1.2;">${escapeHtml(p.fullName)}</h2>
+                            ${p.headline ? `<div style="margin-top:3px;font-size:12px;font-weight:700;color:${escapeHtml(accent)};${headFont}">${escapeHtml(p.headline)}</div>` : ''}
+                            <div style="margin-top:6px;font-size:10.6px;color:#334155;line-height:1.5;">${contactInline}</div>
+                        </div>
+                        ${qrSvg ? `<div style="width:58px;height:58px;padding:3px;background:#ffffff;border:1.5px solid ${escapeHtml(accent)};border-radius:8px;flex-shrink:0;">${qrSvg}</div>` : ''}
+                    </header>`;
+            }
+
+            if (spec.headerStyle === 'magazine-hero') {
+                return `
+                    <header style="padding:${dens.headPad};background:linear-gradient(125deg, #ffffff 62%, ${tintBg} 100%);border-bottom:3px solid ${escapeHtml(accent)};display:flex;align-items:center;gap:16px;">
+                        ${photoHtml}
+                        <div style="flex:1;min-width:0;">
+                            <div style="display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:999px;background:${escapeHtml(accent)};color:${onAccentText};font-size:9.5px;font-weight:800;letter-spacing:0.06em;margin-bottom:5px;">CURRICULUM VITAE</div>
+                            <h2 style="margin:0;font-size:24px;font-weight:900;color:#0f172a;line-height:1.15;">${escapeHtml(p.fullName)}</h2>
+                            ${p.headline ? `<div style="margin-top:3px;font-size:12.4px;font-weight:700;color:${escapeHtml(accent)};">${escapeHtml(p.headline)}</div>` : ''}
+                            <div style="margin-top:6px;font-size:10.6px;color:#334155;line-height:1.5;">${contactInline}</div>
+                        </div>
+                        ${qrSvg ? `<div style="width:58px;height:58px;padding:3px;background:#ffffff;border:1px solid ${escapeHtml(tintBorder)};border-radius:10px;flex-shrink:0;box-shadow:0 3px 10px rgba(15,23,42,0.08);">${qrSvg}</div>` : ''}
+                    </header>`;
+            }
+
+            if (spec.headerStyle === 'boxed-card') {
+                return `
+                    <header style="margin:14px 24px 0;padding:14px 18px;border-radius:12px;background:${tintBg};border:1.5px solid ${escapeHtml(tintBorder)};display:flex;align-items:center;gap:14px;">
+                        ${photoHtml}
+                        <div style="flex:1;min-width:0;">
+                            <h2 style="margin:0;font-size:22px;font-weight:800;color:#0f172a;line-height:1.2;">${escapeHtml(p.fullName)}</h2>
+                            ${p.headline ? `<div style="margin-top:3px;font-size:12px;font-weight:700;color:${escapeHtml(accent)};">${escapeHtml(p.headline)}</div>` : ''}
+                            <div style="margin-top:5px;font-size:10.6px;color:#334155;line-height:1.5;">${contactInline}</div>
+                        </div>
+                        ${qrSvg ? `<div style="width:56px;height:56px;padding:3px;background:#ffffff;border:1px solid ${escapeHtml(tintBorder)};border-radius:8px;flex-shrink:0;">${qrSvg}</div>` : ''}
+                    </header>`;
+            }
+
+            if (spec.headerStyle === 'centered-classic') {
+                return `
                     <header style="padding:${dens.headPad};padding-bottom:12px;text-align:center;border-bottom:2px solid ${escapeHtml(accent)};background:${tintBg};">
                         <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
                             ${photoHtml}
@@ -2156,32 +2735,215 @@
                             <div style="font-size:11px;color:#334155;line-height:1.5;">${contactInline}</div>
                         </div>
                     </header>`;
-            } else {
-                // tech-minimal
-                headerHtml = `
-                    <header style="padding:${dens.headPad};padding-bottom:12px;border-bottom:2.5px solid ${escapeHtml(accent)};display:flex;align-items:center;justify-content:space-between;gap:14px;">
-                        <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0;">
-                            ${photoHtml}
-                            <div style="min-width:0;">
-                                <h2 style="margin:0;font-size:22px;font-weight:800;color:#0f172a;">${escapeHtml(p.fullName)}</h2>
-                                ${p.headline ? `<div style="margin-top:2px;font-size:12px;font-weight:700;font-family:'JetBrains Mono','Sarabun',monospace;color:${escapeHtml(accent)};">${escapeHtml(p.headline)}</div>` : ''}
-                                <div style="margin-top:5px;font-size:10.8px;color:#475569;line-height:1.5;">${contactInline}</div>
-                            </div>
-                        </div>
-                        ${qrSvg ? `<div style="width:56px;height:56px;padding:3px;border:1px solid ${escapeHtml(tintBorder)};border-radius:8px;flex-shrink:0;">${qrSvg}</div>` : ''}
-                    </header>`;
             }
 
-            const bodyHtml = order
-                .filter(k => vis[k] !== false)
-                .map(k => renderSectionContent(k, { ...ctx, barStyle: false }))
-                .join('');
-
+            // minimal-left default
             return `
-                <div style="min-height:${ctx.innerMinHeight}px;background:#ffffff;display:flex;flex-direction:column;">
-                    ${headerHtml}
-                    <div style="padding:${dens.padPage};flex:1;">${bodyHtml}</div>
-                </div>`;
+                <header style="padding:${dens.headPad};padding-bottom:12px;border-bottom:2.5px solid ${escapeHtml(accent)};display:flex;align-items:center;justify-content:space-between;gap:14px;">
+                    <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0;">
+                        ${photoHtml}
+                        <div style="min-width:0;">
+                            <h2 style="margin:0;font-size:22px;font-weight:800;color:#0f172a;">${escapeHtml(p.fullName)}</h2>
+                            ${p.headline ? `<div style="margin-top:2px;font-size:12px;font-weight:700;${headFont}color:${escapeHtml(accent)};">${escapeHtml(p.headline)}</div>` : ''}
+                            <div style="margin-top:5px;font-size:10.8px;color:#475569;line-height:1.5;">${contactInline}</div>
+                        </div>
+                    </div>
+                    ${qrSvg ? `<div style="width:56px;height:56px;padding:3px;border:1px solid ${escapeHtml(tintBorder)};border-radius:8px;flex-shrink:0;">${qrSvg}</div>` : ''}
+                </header>`;
+        }
+
+        function wrapWithPageFrame(innerHtml, ctx, spec) {
+            const { accent, tintBorder } = ctx;
+            const frame = spec.pageFrame || 'none';
+            const minH = ctx.innerMinHeight;
+
+            if (frame === 'top-bar') {
+                return `
+                    <div style="min-height:${minH}px;background:#ffffff;display:flex;flex-direction:column;justify-content:space-between;">
+                        <div style="height:6px;background:${escapeHtml(accent)};flex-shrink:0;"></div>
+                        <div style="flex:1;display:flex;flex-direction:column;">${innerHtml}</div>
+                        <div style="height:4px;background:${escapeHtml(accent)};opacity:0.85;flex-shrink:0;"></div>
+                    </div>`;
+            }
+            if (frame === 'double-frame') {
+                return `
+                    <div style="min-height:${minH}px;background:#ffffff;padding:8px;box-sizing:border-box;display:flex;flex-direction:column;">
+                        <div style="flex:1;padding:3px;border:1px solid ${escapeHtml(tintBorder)};box-sizing:border-box;display:flex;flex-direction:column;">
+                            <div style="flex:1;border:2px solid ${escapeHtml(accent)};box-sizing:border-box;display:flex;flex-direction:column;overflow:hidden;">
+                                ${innerHtml}
+                            </div>
+                        </div>
+                    </div>`;
+            }
+            if (frame === 'corner-accent') {
+                return `
+                    <div style="min-height:${minH}px;background:#ffffff;position:relative;display:flex;flex-direction:column;">
+                        <div style="position:absolute;top:0;right:0;width:36px;height:36px;border-top:5px solid ${escapeHtml(accent)};border-right:5px solid ${escapeHtml(accent)};pointer-events:none;z-index:2;"></div>
+                        <div style="position:absolute;bottom:0;left:0;width:36px;height:36px;border-bottom:5px solid ${escapeHtml(accent)};border-left:5px solid ${escapeHtml(accent)};pointer-events:none;z-index:2;"></div>
+                        ${innerHtml}
+                    </div>`;
+            }
+            return innerHtml;
+        }
+
+        function renderParametricTemplate(ctx, spec) {
+            const { p, d, labels, accent, tintBg, tintBorder, dens, qrSvg } = ctx;
+            const vis = d.sectionVisibility;
+            const order = d.sectionOrder;
+            const layoutMode = spec.layoutMode || 'sidebar-left';
+            const sidebarW = spec.sidebarWidth || '33.5%';
+            const mainW = `${100 - parseFloat(sidebarW)}%`;
+            let bodyResult = '';
+
+            if (layoutMode === 'sidebar-left' || layoutMode === 'sidebar-right') {
+                const sidebarSet = new Set(['skills', 'languages', 'interests']);
+                const isBannerHeader = ['solid-banner', 'dark-banner', 'blueprint-grid', 'magazine-hero'].includes(spec.headerStyle);
+                const sTheme = spec.sidebarTheme || 'soft-tint';
+                const isDarkSide = sTheme === 'dark-slate' || (sTheme === 'solid-accent' && !isLightColor(accent));
+
+                let sideBg = tintBg;
+                let sideBorderStyle = `border-right:1px solid ${escapeHtml(tintBorder)};`;
+                if (layoutMode === 'sidebar-right') {
+                    sideBorderStyle = `border-left:1px solid ${escapeHtml(tintBorder)};`;
+                }
+                if (sTheme === 'dark-slate') {
+                    sideBg = '#0f172a';
+                    sideBorderStyle = '';
+                } else if (sTheme === 'solid-accent') {
+                    sideBg = escapeHtml(accent);
+                    sideBorderStyle = '';
+                } else if (sTheme === 'clean-white') {
+                    sideBg = '#ffffff';
+                    sideBorderStyle = layoutMode === 'sidebar-right' ? 'border-left:1px solid #e2e8f0;' : 'border-right:1px solid #e2e8f0;';
+                } else if (sTheme === 'floating-card') {
+                    sideBg = 'transparent';
+                    sideBorderStyle = '';
+                }
+
+                const mainSections = order
+                    .filter(k => !sidebarSet.has(k) && vis[k] !== false)
+                    .map(k => renderSectionContent(k, { ...ctx, spec }, { inSidebar: false, inDark: false }))
+                    .join('');
+
+                const sideSections = order
+                    .filter(k => sidebarSet.has(k) && vis[k] !== false)
+                    .map(k => renderSectionContent(k, { ...ctx, spec }, { inSidebar: true, inDark: isDarkSide }))
+                    .join('');
+
+                const photoHtml = isBannerHeader ? '' : buildPhotoElement(104, d.photoShape, isDarkSide ? 'rgba(255,255,255,0.85)' : '#ffffff');
+                const contactHtml = buildContactListHtml(accent, true, isDarkSide);
+
+                const mainHeaderHtml = isBannerHeader ? '' : (
+                    spec.headerStyle === 'boxed-card'
+                        ? `<header style="padding:11px 14px;border-radius:10px;background:${tintBg};border:1px solid ${escapeHtml(tintBorder)};margin-bottom:${dens.secGap};"><h2 style="margin:0;font-size:22px;font-weight:800;line-height:1.2;color:#0f172a;">${escapeHtml(p.fullName)}</h2>${p.headline ? `<div style="margin-top:3px;font-size:12px;font-weight:600;color:${escapeHtml(accent)};">${escapeHtml(p.headline)}</div>` : ''}</header>`
+                        : spec.headerStyle === 'centered-classic'
+                            ? `<header style="text-align:center;border-bottom:2px solid ${escapeHtml(accent)};padding-bottom:10px;margin-bottom:${dens.secGap};"><h2 style="margin:0;font-size:23px;font-weight:800;line-height:1.2;color:#0f172a;">${escapeHtml(p.fullName)}</h2>${p.headline ? `<div style="margin-top:3px;font-size:12.2px;font-weight:600;color:${escapeHtml(accent)};">${escapeHtml(p.headline)}</div>` : ''}</header>`
+                            : `<header style="border-bottom:2px solid ${escapeHtml(accent)};padding-bottom:10px;margin-bottom:${dens.secGap};"><h2 style="margin:0;font-size:23px;font-weight:800;line-height:1.2;color:#0f172a;">${escapeHtml(p.fullName)}</h2>${p.headline ? `<div style="margin-top:3px;font-size:12.5px;font-weight:600;color:${escapeHtml(accent)};${spec.monoHeadline ? "font-family:'JetBrains Mono','Sarabun',monospace;" : ''}">${escapeHtml(p.headline)}</div>` : ''}</header>`
+                );
+
+                const qrBoxBg = isDarkSide ? 'rgba(255,255,255,0.1)' : '#ffffff';
+                const qrBoxBorder = isDarkSide ? 'rgba(255,255,255,0.22)' : escapeHtml(tintBorder);
+                const qrBlock = (!isBannerHeader && qrSvg) ? `
+                    <div class="resume-block" style="margin-top:auto;padding:8px;border-radius:10px;background:${qrBoxBg};border:1px solid ${qrBoxBorder};display:flex;align-items:center;gap:8px;">
+                        <div style="width:52px;height:52px;flex-shrink:0;">${qrSvg}</div>
+                        <div style="font-size:10px;line-height:1.35;color:${isDarkSide ? 'rgba(255,255,255,0.9)' : '#334155'};">
+                            <div style="font-weight:700;color:${isDarkSide ? '#ffffff' : escapeHtml(accent)};">Portfolio QR</div>
+                            <div>${escapeHtml(p.qrLabel || p.qrUrl)}</div>
+                        </div>
+                    </div>` : '';
+
+                const asideCardInner = `
+                    ${photoHtml ? `<div style="display:flex;justify-content:center;">${photoHtml}</div>` : ''}
+                    <div>
+                        ${buildSectionHeading(labels.contact, 'fa-address-book', { ...ctx, spec }, isDarkSide)}
+                        <div style="display:flex;flex-direction:column;gap:5.5px;">${contactHtml}</div>
+                    </div>
+                    <div>${sideSections}</div>
+                    ${qrBlock}`;
+
+                const asideHtml = sTheme === 'floating-card'
+                    ? `<aside style="width:${sidebarW};padding:14px 0 14px ${layoutMode === 'sidebar-right' ? '0' : '16px'};${layoutMode === 'sidebar-right' ? 'padding-right:16px;' : ''}box-sizing:border-box;display:flex;flex-direction:column;">
+                        <div style="flex:1;padding:16px;border-radius:14px;background:${tintBg};border:1px solid ${escapeHtml(tintBorder)};display:flex;flex-direction:column;gap:12px;">${asideCardInner}</div>
+                    </aside>`
+                    : `<aside style="width:${sidebarW};background:${sideBg};padding:${dens.padSidebar};${sideBorderStyle}display:flex;flex-direction:column;gap:14px;box-sizing:border-box;">${asideCardInner}</aside>`;
+
+                const mainHtml = `<div style="width:${mainW};padding:${dens.padPage};box-sizing:border-box;">${mainHeaderHtml}${mainSections}</div>`;
+                const colsRow = layoutMode === 'sidebar-right' ? (mainHtml + asideHtml) : (asideHtml + mainHtml);
+
+                if (isBannerHeader) {
+                    bodyResult = `
+                        <div style="min-height:${ctx.innerMinHeight}px;background:#ffffff;display:flex;flex-direction:column;">
+                            ${buildFullHeaderHtml(ctx, spec)}
+                            <div style="flex:1;display:flex;">${colsRow}</div>
+                        </div>`;
+                } else {
+                    const bgGradient = sTheme === 'floating-card' || sTheme === 'clean-white' || sTheme === 'dark-slate' || sTheme === 'solid-accent'
+                        ? '#ffffff'
+                        : (layoutMode === 'sidebar-right'
+                            ? `linear-gradient(to left, ${tintBg} ${sidebarW}, #ffffff ${sidebarW})`
+                            : `linear-gradient(to right, ${tintBg} ${sidebarW}, #ffffff ${sidebarW})`);
+                    bodyResult = `<div style="display:flex;min-height:${ctx.innerMinHeight}px;background:${bgGradient};">${colsRow}</div>`;
+                }
+            } else if (layoutMode === 'editorial-split') {
+                const fullHdr = buildFullHeaderHtml(ctx, spec);
+                const usePillLabel = spec.sidebarTheme === 'floating-card';
+                const rowsHtml = order
+                    .filter(k => vis[k] !== false)
+                    .map(k => {
+                        const secBody = renderSectionContent(k, { ...ctx, spec }, { suppressHeading: true });
+                        if (!secBody) return '';
+                        const sm = getSectionMeta(k);
+                        const labelHtml = usePillLabel
+                            ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:${tintBg};color:${escapeHtml(accent)};border:1px solid ${escapeHtml(tintBorder)};font-size:11px;font-weight:700;"><i class="fa-solid ${sm.icon}"></i><span>${escapeHtml(sm.title)}</span></span>`
+                            : `<div style="font-size:11.5px;font-weight:800;color:${escapeHtml(accent)};line-height:1.35;text-transform:uppercase;letter-spacing:0.02em;">${escapeHtml(sm.title)}</div>`;
+                        return `
+                            <div style="display:flex;gap:14px;padding:9px 0;border-bottom:1px solid #e2e8f0;align-items:flex-start;">
+                                <div style="width:${sidebarW};flex-shrink:0;">${labelHtml}</div>
+                                <div style="flex:1;min-width:0;">${secBody}</div>
+                            </div>`;
+                    }).join('');
+                bodyResult = `
+                    <div style="min-height:${ctx.innerMinHeight}px;background:#ffffff;display:flex;flex-direction:column;">
+                        ${fullHdr}
+                        <div style="padding:${dens.padPage};flex:1;">${rowsHtml}</div>
+                    </div>`;
+            } else if (layoutMode === 'two-col-balanced') {
+                const fullHdr = buildFullHeaderHtml(ctx, spec);
+                const summaryHtml = vis.summary !== false ? renderSectionContent('summary', { ...ctx, spec }, {}) : '';
+                const leftSet = new Set(['experience', 'education', 'projects']);
+                const leftHtml = order
+                    .filter(k => k !== 'summary' && leftSet.has(k) && vis[k] !== false)
+                    .map(k => renderSectionContent(k, { ...ctx, spec }, { narrowCol: true }))
+                    .join('');
+                const rightHtml = order
+                    .filter(k => k !== 'summary' && !leftSet.has(k) && vis[k] !== false)
+                    .map(k => renderSectionContent(k, { ...ctx, spec }, { narrowCol: true }))
+                    .join('');
+                bodyResult = `
+                    <div style="min-height:${ctx.innerMinHeight}px;background:#ffffff;display:flex;flex-direction:column;">
+                        ${fullHdr}
+                        <div style="padding:${dens.padPage};flex:1;">
+                            ${summaryHtml}
+                            <div style="display:grid;grid-template-columns:1.08fr 0.92fr;gap:18px;align-items:start;">
+                                <div style="min-width:0;">${leftHtml}</div>
+                                <div style="min-width:0;">${rightHtml}</div>
+                            </div>
+                        </div>
+                    </div>`;
+            } else {
+                const fullHdr = buildFullHeaderHtml(ctx, spec);
+                const bodyHtml = order
+                    .filter(k => vis[k] !== false)
+                    .map(k => renderSectionContent(k, { ...ctx, spec }, {}))
+                    .join('');
+                bodyResult = `
+                    <div style="min-height:${ctx.innerMinHeight}px;background:#ffffff;display:flex;flex-direction:column;">
+                        ${fullHdr}
+                        <div style="padding:${dens.padPage};flex:1;">${bodyHtml}</div>
+                    </div>`;
+            }
+
+            return wrapWithPageFrame(bodyResult, ctx, spec);
         }
 
         function renderResumePreview() {
@@ -2200,9 +2962,11 @@
             const scaleFactor = (Number(d.fontScale || 96)) / 100;
             sheet.style.zoom = '1';
 
+            const spec = resolveActiveTemplateSpec();
             const ctx = {
                 p,
                 d,
+                spec,
                 labels: getLabels(),
                 accent,
                 tintBg: hexToSoftTint(accent, 0.08),
@@ -2212,17 +2976,7 @@
                 innerMinHeight: Math.round(A4_HEIGHT_PX / scaleFactor)
             };
 
-            let html = '';
-            if (d.template === 'executive-classic') {
-                html = renderTemplateSingleColumn(ctx, 'classic');
-            } else if (d.template === 'tech-minimal') {
-                html = renderTemplateSingleColumn(ctx, 'tech');
-            } else if (d.template === 'portfolio-showcase') {
-                html = renderTemplateSingleColumn(ctx, 'portfolio');
-            } else {
-                html = renderTemplateModernSidebar(ctx);
-            }
-
+            const html = renderParametricTemplate(ctx, spec);
             sheet.innerHTML = `<div style="zoom:${scaleFactor};width:100%;">${html}</div>`;
             updatePageMetricsAndScale();
         }
@@ -2510,21 +3264,6 @@
         function toggleTheme() {
             applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
         }
-
-        function toggleSubAppSwitcher(forceState) {
-            const menu = document.getElementById('app-switcher-menu');
-            if (!menu) return;
-            if (typeof forceState === 'boolean') menu.classList.toggle('hidden', !forceState);
-            else menu.classList.toggle('hidden');
-        }
-
-        document.addEventListener('click', (e) => {
-            const btn = document.getElementById('app-switcher-btn');
-            const menu = document.getElementById('app-switcher-menu');
-            if (menu && !menu.classList.contains('hidden') && !menu.contains(e.target) && (!btn || !btn.contains(e.target))) {
-                menu.classList.add('hidden');
-            }
-        });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') toggleSubAppSwitcher(false);

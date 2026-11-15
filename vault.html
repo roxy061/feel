@@ -99,6 +99,8 @@
         ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
         .dark ::-webkit-scrollbar-thumb { background: #444746; }
     </style>
+    <link rel="stylesheet" href="assets/feel-shell.css">
+    <script src="assets/feel-shell.js"></script>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-teal-600 selection:text-white">
 
@@ -116,9 +118,9 @@
     <!-- ========================================== -->
     <!-- TOP NAVIGATION BAR                         -->
     <!-- ========================================== -->
-    <header class="h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+    <header class="feel-header-refined h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
         <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-3 py-2 min-h-[40px] rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
                 <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
                 <span class="hidden sm:inline">หน้าหลัก</span>
             </a>
@@ -132,196 +134,21 @@
                         <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
                             คลังฝากไฟล์ &amp; รูปภาพต้นฉบับ (SafeBox)
                         </h1>
-                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-100 dark:bg-teal-950/70 text-teal-800 dark:text-teal-300 text-[10px] font-bold whitespace-nowrap shrink-0">
-                            <i class="fa-solid fa-shield-halved"></i> ชัด 100%
-                        </span>
-                    </div>
-                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
-                        เก็บข้อมูลไบนารีต้นฉบับ + ตรวจ SHA-256 + แชร์ PIN 6 หลัก • นายภคพล สมัยแก้ว (ฟีล)
-                    </p>
-                </div>
+                        
+                    </div>                </div>
             </div>
         </div>
 
         <div class="flex items-center gap-2 shrink-0">
-            <!-- Unified Clean 9-Apps Switcher Dropdown -->
-            <div class="relative shrink-0">
-                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (21 ระบบ)">
-                    <i class="fa-solid fa-layer-group text-sky-600 dark:text-sky-400"></i>
-                    <span class="hidden sm:inline">สลับเว็บแอป</span>
-                    <span class="px-1.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 text-[10px] font-bold leading-none">21</span>
-                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
-                </button>
-                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
-                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
-                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
-                        </div>
-                    </a>
-                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
-                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (21 ระบบ)</div>
-                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
-                        </div>
-                        
-                    </a>
-                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
-                        </div>
-                        
-                    </a>
-                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
-                        </div>
-                        
-                    </a>
-                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ & พายุ</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
-                        </div>
-                        
-                    </a>
-                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble & สูตร CFOP</div>
-                        </div>
-                        
-                    </a>
-                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง & ถาม-ตอบ</div>
-                        </div>
-                        
-                    </a>
-                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-sky-50 dark:bg-sky-950/60 border border-sky-300 dark:border-sky-700 transition">
-                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ & แชร์ PIN 6 หลัก</div>
-                        </div>
-                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-sky-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
-                    </a>
-                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง & รูปติดบัตร</div>
-                        </div>
-                        
-                    </a>
-                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI & โฮสต์ฟรี</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI & รันไฟล์</div>
-                        </div>
-                        
-                    </a>
-                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON • JWT • Base64 • Timestamp</div>
-                        </div>
-                        
-                    </a>
-                    <a href="subnet.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-blue-600 bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-network-wired"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">11. IP &amp; Subnet Calculator</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CIDR • Host Range • VLAN • Netplan</div>
-                        </div>
-                    </a>
-                    <a href="regex.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-fuchsia-600 bg-fuchsia-50 dark:bg-fuchsia-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">12. Regex Tester &amp; Cheatsheet</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Live Match • Presets • Replace</div>
-                        </div>
-                    </a>
-                    <a href="diff.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code-compare"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">13. Diff Checker &amp; Code Compare</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Side-by-Side • Patch • Word Diff</div>
-                        </div>
-                    </a>
-                    <a href="keygen.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-rose-600 bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">14. Password &amp; Key Generator</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CSPRNG • API Key • UUID • Hash</div>
-                        </div>
-                    </a>
-                    <a href="pdf-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-red-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">15. PDF Merge &amp; Split</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวมไฟล์ • แยกหน้า • หมุน &amp; ลบหน้า</div>
-                        </div>
-                    </a>
-                    <a href="image-converter.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-images"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">16. Image Compressor &amp; Converter</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JPG • PNG • WebP • Batch ZIP</div>
-                        </div>
-                    </a>
-                    <a href="qr-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-qrcode"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">17. Custom QR Code Studio</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">URL • Wi-Fi • PromptPay • PNG/SVG</div>
-                        </div>
-                    </a>
-                    <a href="ocr.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-purple-600 bg-purple-50 dark:bg-purple-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-lines"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">18. OCR Image-to-Text</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">สแกนไทย/อังกฤษจากภาพ &amp; สไลด์</div>
-                        </div>
-                    </a>
-                    <a href="resume-builder.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-address-card"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">19. Resume &amp; Portfolio PDF</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">เทมเพลต A4 &bull; Export PDF พร้อมพิมพ์</div>
-                        </div>
-                    </a>
-                    <a href="hardware-tester.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-display"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">20. Screen &amp; Mic Hardware Tester</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Dead Pixel &bull; ไมค์ &bull; คีย์บอร์ด &bull; กล้อง</div>
-                        </div>
-                    </a>
-                    <a href="web-cloner.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
-                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-arrow-down"></i></div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">21. Web Source Cloner &amp; ZIP</div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดึงซอร์ส HTML/CSS/JS/รูปภาพ &bull; .ZIP</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle transition-all shadow-xs cursor-pointer shrink-0" title="สลับโหมดสว่าง / โหมดมืด">
+                        <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" aria-expanded="false" aria-controls="feel-app-hub" class="feel-hub-trigger bg-white dark:bg-google-dark-surface hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-slate-200 shadow-xs" title="เปิดศูนย์รวมเว็บแอป 21 ระบบ (Ctrl+K)">
+                <i class="fa-solid fa-grip text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">สลับแอป</span>
+                <span class="hidden xl:inline feel-kbd">Ctrl+K</span>
+            </button>
+            <button type="button" class="feel-icon-btn w-10 h-10 bg-white dark:bg-google-dark-surface hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-slate-300 shadow-xs" title="วิธีใช้งานและข้อมูลเครื่องมือ" aria-label="วิธีใช้งานและข้อมูลเครื่องมือ" data-feel-info-title="ตู้เซฟฝากไฟล์ต้นฉบับ (SafeBox)" data-feel-info="จัดเก็บไฟล์และรูปภาพแบบ Bit-for-Bit ไม่บีบอัดลดคุณภาพ พร้อมตรวจความสมบูรณ์ด้วย SHA-256 Checksum|รองรับสร้างรหัส PIN 6 หลักสำหรับส่งข้ามเครื่อง และสามารถสำรอง/กู้คืนไฟล์ทั้งหมดเป็น .JSON ได้ตลอดเวลา">
+                <i class="fa-solid fa-circle-info text-sm"></i>
+            </button>
+            <button onclick="toggleTheme()" class="feel-icon-btn w-10 h-10 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle transition-all shadow-xs cursor-pointer shrink-0" title="สลับโหมดสว่าง / โหมดมืด">
                 <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
             </button>
         </div>
@@ -332,34 +159,22 @@
     <!-- ========================================== -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6">
 
-        <!-- Compact Purpose Strip & Backup Actions -->
-        <section class="g-card px-4 py-3.5 bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-sky-500/5 border-teal-200/80 dark:border-teal-900/50 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-            <div class="space-y-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-600 text-white whitespace-nowrap">เว็บแอปที่ 7 • ตู้เซฟดิจิทัล 100%</span>
-                    <span id="storage-status-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 whitespace-nowrap">
-                        🛡️ IndexedDB + SHA-256 ทำงานปกติ
-                    </span>
-                </div>
-                <h2 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading">
-                    ฝากไฟล์ รูปภาพความชัดต้นฉบับ ลิงก์ และโน้ต แชร์ข้ามเครื่องด้วย PIN 6 หลัก
-                </h2>
-                <details class="text-xs text-google-text-muted dark:text-google-dark-text-muted">
-                    <summary class="cursor-pointer font-semibold text-teal-700 dark:text-teal-400 select-none">ดูหลักการเก็บไฟล์ต้นฉบับ (Bit-for-Bit + SHA-256)</summary>
-                    <p class="mt-1.5 leading-relaxed max-w-3xl">แก้ปัญหาส่งรูปแล้วถูกลดความละเอียด (Compression Loss) ระบบจัดเก็บข้อมูลในรูปแบบไบนารีต้นฉบับแท้พร้อมตรวจ SHA-256 Checksum รับประกันไฟล์ที่โหลดกลับมามีขนาดและคุณภาพเท่าเดิม 100%</p>
-                </details>
+        <!-- Slim Vault Status & Backup Bar -->
+        <section class="feel-compact-bar shadow-xs">
+            <div class="flex flex-wrap items-center gap-2 min-w-0">
+                <span id="storage-status-badge" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 whitespace-nowrap">
+                    🛡️ IndexedDB + SHA-256 ทำงานปกติ
+                </span>
             </div>
-
-            <!-- Full Backup Export / Import Actions -->
             <div class="flex flex-wrap items-center gap-2 shrink-0">
-                <button type="button" onclick="verifyAllItemsIntegrity()" class="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-heading font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer" title="ตรวจสอบรหัส SHA-256 ของทุกไฟล์ว่าไม่เสียหาย">
-                    <i class="fa-solid fa-shield-check"></i> ตรวจสอบความสมบูรณ์ไฟล์
+                <button type="button" onclick="verifyAllItemsIntegrity()" class="px-3 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-heading font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer" title="ตรวจสอบรหัส SHA-256 ของทุกไฟล์ว่าไม่เสียหาย">
+                    <i class="fa-solid fa-shield-check"></i> ตรวจความสมบูรณ์
                 </button>
-                <button type="button" onclick="exportFullVaultBackup()" class="px-3.5 py-2 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-google-subtle border border-google-border dark:border-google-dark-border text-xs font-heading font-semibold text-google-text dark:text-white transition flex items-center gap-1.5 cursor-pointer" title="ดาวน์โหลดข้อมูลทั้งหมดเก็บเป็นไฟล์สำรอง .json">
-                    <i class="fa-solid fa-file-export text-teal-600"></i> สำรองข้อมูลทั้งหมด (.json)
+                <button type="button" onclick="exportFullVaultBackup()" class="px-3 py-2 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-google-subtle border border-google-border dark:border-google-dark-border text-xs font-heading font-semibold text-google-text dark:text-white transition flex items-center gap-1.5 cursor-pointer" title="ดาวน์โหลดข้อมูลทั้งหมดเก็บเป็นไฟล์สำรอง .json">
+                    <i class="fa-solid fa-file-export text-teal-600"></i> สำรอง (.json)
                 </button>
-                <label class="px-3.5 py-2 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-google-subtle border border-google-border dark:border-google-dark-border text-xs font-heading font-semibold text-google-text dark:text-white transition flex items-center gap-1.5 cursor-pointer" title="นำเข้าไฟล์สำรอง .json เพื่อกู้คืนข้อมูล">
-                    <i class="fa-solid fa-file-import text-google-blue"></i> กู้คืนไฟล์สำรอง
+                <label class="px-3 py-2 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-google-subtle border border-google-border dark:border-google-dark-border text-xs font-heading font-semibold text-google-text dark:text-white transition flex items-center gap-1.5 cursor-pointer" title="นำเข้าไฟล์สำรอง .json เพื่อกู้คืนข้อมูล">
+                    <i class="fa-solid fa-file-import text-google-blue"></i> กู้คืน
                     <input type="file" accept=".json" onchange="importVaultBackup(event)" class="hidden">
                 </label>
             </div>
@@ -651,30 +466,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="mt-8 border-t border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-surface py-5 px-4 sm:px-6 text-xs text-google-text-muted dark:text-google-dark-text-muted">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div class="flex flex-wrap items-center gap-2">
-                <a href="index.html" class="hover:text-google-blue font-semibold">หน้าหลัก Portfolio</a>
-                <span>•</span>
-                <a href="wheel.html" class="hover:text-google-blue">1. วงล้อผลงาน 3D</a>
-                <span>•</span>
-                <a href="southern-food.html" class="hover:text-google-blue">2. สุ่มร้านอาหารนครฯ</a>
-                <span>•</span>
-                <a href="cctv.html" class="hover:text-google-blue">3. กล้อง CCTV สด</a>
-                <span>•</span>
-                <a href="weather.html" class="hover:text-google-blue">4. เรดาร์อากาศสด</a>
-                <span>•</span>
-                <a href="rubik.html" class="hover:text-google-blue">5. รูบิค 3x3</a>
-                <span>•</span>
-                <a href="ai-assistant.html" class="hover:text-google-blue">6. ผู้ช่วย AI</a>
-            </div>
-            <div>
-                พัฒนาโดย <strong class="text-google-text dark:text-white">นายภคพล สมัยแก้ว (ฟีล)</strong> • วิทยาลัยอาชีวศึกษานครศรีธรรมราช
-            </div>
-        </div>
-    </footer>
-
-    <script>
+<script>
         // ==================== LOSSLESS INDEXEDDB + SHA-256 VAULT ENGINE ====================
         const DB_NAME = 'FeelSafeBoxVaultDB';
         const DB_VERSION = 1;
@@ -2739,20 +2531,6 @@
     </script>
 
     <script>
-        function toggleSubAppSwitcher(forceState) {
-            const menu = document.getElementById('app-switcher-menu');
-            if (!menu) return;
-            const willOpen = typeof forceState === 'boolean' ? forceState : menu.classList.contains('hidden');
-            menu.classList.toggle('hidden', !willOpen);
-        }
-        document.addEventListener('click', (e) => {
-            const btn = document.getElementById('app-switcher-btn');
-            const menu = document.getElementById('app-switcher-menu');
-            if (!menu || menu.classList.contains('hidden')) return;
-            if ((!btn || !btn.contains(e.target)) && !menu.contains(e.target)) {
-                menu.classList.add('hidden');
-            }
-        });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') toggleSubAppSwitcher(false);
         });

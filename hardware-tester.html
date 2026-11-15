@@ -1,0 +1,2304 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen &amp; Mic Hardware Tester — เช็กหน้าจอ Dead Pixel, ไมโครโฟน, คีย์บอร์ด &amp; เว็บแคมในคลิกเดียว | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="เว็บแอปเช็กความพร้อมของฮาร์ดแวร์ในคลิกเดียว: เช็ก Dead Pixel หน้าจอด้วยสีเต็มจอ, ทดสอบไมโครโฟนพร้อมกราฟคลื่นเสียง & FFT, ทดสอบปุ่มคีย์บอร์ด/เมาส์ และทดสอบเว็บแคม ใช้งานในเบราว์เซอร์ 100% ปลอดภัยไร้กังวล">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html, body {
+            overflow-x: clip;
+        }
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.15rem;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.10), 0 1px 3px 1px rgba(60, 64, 67, 0.06);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+
+        /* Keyboard key tiles */
+        .kbd-key {
+            user-select: none;
+            transition: transform 0.06s ease, background-color 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+            border-bottom-width: 3px;
+        }
+        .kbd-key.is-tested {
+            background-color: #ecfdf5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .dark .kbd-key.is-tested {
+            background-color: rgba(16, 185, 129, 0.18);
+            border-color: #10b981;
+            color: #6ee7b7;
+        }
+        .kbd-key.is-active {
+            transform: translateY(1px);
+            border-bottom-width: 1px;
+            background-color: #10b981 !important;
+            border-color: #059669 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.28);
+        }
+        .kbd-key.is-chatter {
+            box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.45);
+            border-color: #e11d48 !important;
+        }
+
+        /* Screen Pixel Check Patterns */
+        .pattern-gradient-bars {
+            background: linear-gradient(
+                to bottom,
+                #ff0000 0%, #ff0000 14%,
+                #00ff00 14%, #00ff00 28%,
+                #0000ff 28%, #0000ff 42%,
+                #ffffff 42%, #ffffff 56%,
+                #000000 56%, #000000 70%,
+                #00ffff 70%, #ff00ff 85%, #ffff00 100%
+            );
+        }
+        .pattern-color-ramp {
+            background:
+                linear-gradient(to right, #000000, #ffffff),
+                linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            background-size: 100% 50%, 100% 50%;
+            background-position: 0 0, 0 100%;
+            background-repeat: no-repeat;
+        }
+        .pattern-checker-pixel {
+            background-color: #111827;
+            background-image:
+                linear-gradient(45deg, #f9fafb 25%, transparent 25%),
+                linear-gradient(-45deg, #f9fafb 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f9fafb 75%),
+                linear-gradient(-45deg, transparent 75%, #f9fafb 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-emerald-600 selection:text-white min-h-screen flex flex-col">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Centered Bottom Toast Notification (Single Active Cap) -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[10000] flex flex-col items-center gap-2 w-[92vw] max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- UNIFIED SINGLE-ROW NAVIGATION HEADER       -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก</span>
+            </a>
+
+            <div class="flex items-center gap-2.5 sm:border-l border-google-border dark:border-google-dark-border sm:pl-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-display"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            Screen &amp; Mic Hardware Tester
+                        </h1>
+                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold whitespace-nowrap shrink-0">
+                            100% Client-Side
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        เช็ก Dead Pixel เต็มจอ &bull; กราฟคลื่นเสียงไมค์ &bull; คีย์บอร์ด &amp; เว็บแคม ก่อนประชุมหรือซื้อมือสอง
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <a href="photo-studio.html" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-50 dark:bg-violet-950/60 border border-violet-200 dark:border-violet-800 text-xs font-semibold text-violet-700 dark:text-violet-300 hover:bg-violet-100 transition whitespace-nowrap">
+                <i class="fa-solid fa-scissors"></i>
+                <span>แต่งรูป/ลบพื้นหลัง</span>
+            </a>
+
+            <!-- App Switcher Dropdown (20 Apps) -->
+            <div class="relative shrink-0">
+                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (20 ระบบ)">
+                    <i class="fa-solid fa-layer-group text-emerald-600 dark:text-emerald-400"></i>
+                    <span class="hidden sm:inline">สลับเว็บแอป</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold leading-none">20</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                </button>
+                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
+                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
+                        </div>
+                    </a>
+                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
+                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (20 ระบบ)</div>
+                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
+                        </div>
+                    </a>
+                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
+                        </div>
+                    </a>
+                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
+                        </div>
+                    </a>
+                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ &amp; พายุ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
+                        </div>
+                    </a>
+                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble &amp; สูตร CFOP</div>
+                        </div>
+                    </a>
+                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง &amp; ถาม-ตอบ</div>
+                        </div>
+                    </a>
+                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ &amp; แชร์ PIN 6 หลัก</div>
+                        </div>
+                    </a>
+                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง &amp; รูปติดบัตร</div>
+                        </div>
+                    </a>
+                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI &amp; โฮสต์ฟรี</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI &amp; รันไฟล์</div>
+                        </div>
+                    </a>
+                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON &bull; JWT &bull; Base64 &bull; Timestamp</div>
+                        </div>
+                    </a>
+                    <a href="subnet.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-blue-600 bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-network-wired"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">11. IP &amp; Subnet Calculator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CIDR &bull; Host Range &bull; VLAN &bull; Netplan</div>
+                        </div>
+                    </a>
+                    <a href="regex.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-fuchsia-600 bg-fuchsia-50 dark:bg-fuchsia-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">12. Regex Tester &amp; Cheatsheet</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Live Match &bull; Presets &bull; Replace</div>
+                        </div>
+                    </a>
+                    <a href="diff.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code-compare"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">13. Diff Checker &amp; Code Compare</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Side-by-Side &bull; Patch &bull; Word Diff</div>
+                        </div>
+                    </a>
+                    <a href="keygen.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-rose-600 bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">14. Password &amp; Key Generator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CSPRNG &bull; API Key &bull; UUID &bull; Hash</div>
+                        </div>
+                    </a>
+                    <a href="pdf-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-red-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">15. PDF Merge &amp; Split</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวมไฟล์ &bull; แยกหน้า &bull; หมุน &amp; ลบหน้า</div>
+                        </div>
+                    </a>
+                    <a href="image-converter.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-images"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">16. Image Compressor &amp; Converter</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JPG &bull; PNG &bull; WebP &bull; Batch ZIP</div>
+                        </div>
+                    </a>
+                    <a href="qr-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-qrcode"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">17. Custom QR Code Studio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">URL &bull; Wi-Fi &bull; PromptPay &bull; PNG/SVG</div>
+                        </div>
+                    </a>
+                    <a href="ocr.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-purple-600 bg-purple-50 dark:bg-purple-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-lines"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">18. OCR Image-to-Text</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">สแกนไทย/อังกฤษจากภาพ &bull; สไลด์</div>
+                        </div>
+                    </a>
+                    <a href="resume-builder.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-address-card"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">19. Resume &amp; Portfolio PDF</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">เทมเพลต A4 &bull; Export PDF พร้อมพิมพ์</div>
+                        </div>
+                    </a>
+                    <a href="hardware-tester.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-display"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">20. Screen &amp; Mic Hardware Tester</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Dead Pixel &bull; ไมค์ &bull; คีย์บอร์ด &bull; กล้อง</div>
+                        </div>
+                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Theme Switcher -->
+            <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN HARDWARE WORKSPACE                    -->
+    <!-- ========================================== -->
+    <main class="max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-5 flex-1">
+
+        <!-- 1. ONE-CLICK ACTION BAR + SCORECARD -->
+        <section class="g-card p-4 sm:p-5 space-y-4">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" id="btn-quick-scan" onclick="runOneClickHardwareScan()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold inline-flex items-center gap-2 shadow-xs transition cursor-pointer">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>สแกนความพร้อมในคลิกเดียว</span>
+                    </button>
+                    <button type="button" id="btn-premeeting-check" onclick="startAvPrecheck()" class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold inline-flex items-center gap-1.5 shadow-xs transition cursor-pointer">
+                        <i class="fa-solid fa-headset"></i>
+                        <span>เช็กไมค์ &amp; กล้องก่อนประชุม</span>
+                    </button>
+                    <button type="button" id="btn-fullscreen-deadpixel" onclick="startFullscreenScreenTest(0)" class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold inline-flex items-center gap-1.5 shadow-xs transition cursor-pointer">
+                        <i class="fa-solid fa-expand"></i>
+                        <span>เช็ก Dead Pixel เต็มจอ</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>ไม่มีการอัดหรืออัปโหลดเสียง/วิดีโอขึ้นเซิร์ฟเวอร์</span>
+                    </span>
+                    <button type="button" id="btn-copy-report" onclick="copyHardwareReport()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-google-border dark:border-google-dark-border text-xs font-semibold inline-flex items-center gap-1.5 transition cursor-pointer">
+                        <i class="fa-solid fa-copy text-sky-600"></i>
+                        <span>คัดลอกสรุป</span>
+                    </button>
+                    <button type="button" id="btn-download-report" onclick="downloadHardwareReport()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-bold inline-flex items-center gap-1.5 transition cursor-pointer">
+                        <i class="fa-solid fa-download"></i>
+                        <span>รายงาน .TXT</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 5 Subsystem Status Tiles + Overall Meter -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+                <button type="button" onclick="focusModuleTab('screen')" class="text-left p-3 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50/80 dark:bg-zinc-800/60 hover:border-rose-400 transition cursor-pointer">
+                    <div class="flex items-center justify-between gap-1 mb-1">
+                        <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1"><i class="fa-solid fa-desktop text-rose-500"></i> หน้าจอ</span>
+                        <span id="badge-status-screen" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-slate-200">พร้อมตรวจ</span>
+                    </div>
+                    <div id="tile-info-screen" class="text-xs font-bold text-slate-900 dark:text-white truncate">-</div>
+                </button>
+
+                <button type="button" onclick="focusModuleTab('mic')" class="text-left p-3 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50/80 dark:bg-zinc-800/60 hover:border-emerald-400 transition cursor-pointer">
+                    <div class="flex items-center justify-between gap-1 mb-1">
+                        <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1"><i class="fa-solid fa-microphone text-emerald-500"></i> ไมโครโฟน</span>
+                        <span id="badge-status-mic" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-slate-200">รอทดสอบ</span>
+                    </div>
+                    <div id="tile-info-mic" class="text-xs font-bold text-slate-900 dark:text-white truncate">คลิกเพื่อเช็กเสียง</div>
+                </button>
+
+                <button type="button" onclick="focusModuleTab('mic')" class="text-left p-3 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50/80 dark:bg-zinc-800/60 hover:border-amber-400 transition cursor-pointer">
+                    <div class="flex items-center justify-between gap-1 mb-1">
+                        <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1"><i class="fa-solid fa-volume-high text-amber-500"></i> ลำโพง L/R</span>
+                        <span id="badge-status-speaker" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-slate-200">รอทดสอบ</span>
+                    </div>
+                    <div id="tile-info-speaker" class="text-xs font-bold text-slate-900 dark:text-white truncate">คลิกทดสอบซ้าย/ขวา</div>
+                </button>
+
+                <button type="button" onclick="focusModuleTab('keyboard')" class="text-left p-3 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50/80 dark:bg-zinc-800/60 hover:border-indigo-400 transition cursor-pointer">
+                    <div class="flex items-center justify-between gap-1 mb-1">
+                        <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1"><i class="fa-solid fa-keyboard text-indigo-500"></i> คีย์บอร์ด</span>
+                        <span id="badge-status-keyboard" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-slate-200">รอทดสอบ</span>
+                    </div>
+                    <div id="tile-info-keyboard" class="text-xs font-bold text-slate-900 dark:text-white truncate">0 ปุ่มที่ตรวจแล้ว</div>
+                </button>
+
+                <button type="button" onclick="focusModuleTab('webcam')" class="text-left p-3 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50/80 dark:bg-zinc-800/60 hover:border-blue-400 transition cursor-pointer">
+                    <div class="flex items-center justify-between gap-1 mb-1">
+                        <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1"><i class="fa-solid fa-camera text-blue-500"></i> เว็บแคม</span>
+                        <span id="badge-status-webcam" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-slate-200">รอทดสอบ</span>
+                    </div>
+                    <div id="tile-info-webcam" class="text-xs font-bold text-slate-900 dark:text-white truncate">คลิกเพื่อเปิดกล้อง</div>
+                </button>
+
+                <div class="p-3 rounded-xl border border-emerald-200 dark:border-emerald-800/70 bg-emerald-50/70 dark:bg-emerald-950/30 flex flex-col justify-between">
+                    <div class="flex items-center justify-between gap-1 mb-1">
+                        <span class="text-[11px] font-bold text-emerald-800 dark:text-emerald-300">ผลตรวจรวม</span>
+                        <span id="overall-score-pct" class="text-xs font-bold text-emerald-700 dark:text-emerald-300">0/5</span>
+                    </div>
+                    <div class="w-full h-2 rounded-full bg-emerald-200/70 dark:bg-emerald-950 overflow-hidden">
+                        <div id="overall-score-bar" class="h-full bg-emerald-600 transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module View Filter Tabs -->
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1 border-t border-slate-200 dark:border-zinc-700">
+                <button type="button" data-modtab="all" onclick="switchTesterTab('all')" class="modtab-btn px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold whitespace-nowrap cursor-pointer">
+                    <i class="fa-solid fa-grip mr-1"></i> แสดงครบทุกตัว
+                </button>
+                <button type="button" data-modtab="screen" onclick="switchTesterTab('screen')" class="modtab-btn px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-xs font-semibold whitespace-nowrap cursor-pointer">
+                    <i class="fa-solid fa-desktop text-rose-500 mr-1"></i> 1. หน้าจอ &amp; Dead Pixel
+                </button>
+                <button type="button" data-modtab="webcam" onclick="switchTesterTab('webcam')" class="modtab-btn px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-xs font-semibold whitespace-nowrap cursor-pointer">
+                    <i class="fa-solid fa-camera text-blue-500 mr-1"></i> 2. เว็บแคม &amp; FPS
+                </button>
+                <button type="button" data-modtab="mic" onclick="switchTesterTab('mic')" class="modtab-btn px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-xs font-semibold whitespace-nowrap cursor-pointer">
+                    <i class="fa-solid fa-microphone text-emerald-500 mr-1"></i> 3. ไมโครโฟน &amp; ลำโพง
+                </button>
+                <button type="button" data-modtab="keyboard" onclick="switchTesterTab('keyboard')" class="modtab-btn px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-xs font-semibold whitespace-nowrap cursor-pointer">
+                    <i class="fa-solid fa-keyboard text-indigo-500 mr-1"></i> 4. คีย์บอร์ด &amp; เมาส์
+                </button>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TOP ROW: SCREEN + WEBCAM                   -->
+        <!-- ========================================== -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+            <!-- 1. SCREEN & DEAD PIXEL TESTER -->
+            <section id="panel-screen" data-module="screen" class="lg:col-span-6 g-card p-4 sm:p-5 space-y-4 min-w-0">
+                <div class="flex flex-wrap items-start justify-between gap-2">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-desktop"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm sm:text-base font-bold font-heading">1. เช็กหน้าจอ &amp; Dead Pixel เต็มจอ</h2>
+                            <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">คลิกเลือกสีหรือเปิดเต็มจอเพื่อตรวจจุดเสีย แสงรั่ว และ Refresh Rate</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="markModuleStatus('screen', 'pass')" class="px-2 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold cursor-pointer hover:bg-emerald-100">
+                            <i class="fa-solid fa-check mr-0.5"></i> จอปกติ
+                        </button>
+                        <button type="button" onclick="markModuleStatus('screen', 'issue')" class="px-2 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-[11px] font-bold cursor-pointer hover:bg-rose-100">
+                            <i class="fa-solid fa-triangle-exclamation mr-0.5"></i> พบจุดเสีย
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Display Hardware Telemetry Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                    <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200 dark:border-zinc-700">
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400">ความละเอียดจริง</div>
+                        <div id="scr-phys-res" class="text-xs font-bold font-mono text-slate-800 dark:text-slate-100 mt-0.5">-</div>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200 dark:border-zinc-700">
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400">CSS / Scale (DPR)</div>
+                        <div id="scr-css-dpr" class="text-xs font-bold font-mono text-slate-800 dark:text-slate-100 mt-0.5">-</div>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200 dark:border-zinc-700">
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400">ขอบเขตสี &amp; Bit</div>
+                        <div id="scr-gamut-depth" class="text-xs font-bold font-mono text-slate-800 dark:text-slate-100 mt-0.5">-</div>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200 dark:border-zinc-700">
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400">Refresh Rate</div>
+                        <div id="scr-refresh-hz" class="text-xs font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">กำลังวัด...</div>
+                    </div>
+                </div>
+
+                <!-- Interactive Swatch Palette -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-700 dark:text-slate-200">เลือกสี/แพตเทิร์นเพื่อเข้าสู่โหมดเต็มจอ (คลิก/ปุ่มลูกศรเปลี่ยนสีได้ทันที)</span>
+                        <button type="button" onclick="measureRefreshRate(true)" class="text-[11px] font-semibold text-blue-600 dark:text-sky-400 hover:underline cursor-pointer">
+                            <i class="fa-solid fa-gauge-high mr-0.5"></i> วัด Hz ใหม่
+                        </button>
+                    </div>
+                    <div id="screen-pattern-swatches" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
+                </div>
+
+                <!-- Preview Card + Fullscreen Controls -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200 dark:border-zinc-700">
+                    <div id="scr-inline-preview" onclick="startFullscreenScreenTest(screenState.index)" class="flex-1 min-w-[180px] h-14 rounded-xl border border-slate-300 dark:border-zinc-600 flex items-center justify-between px-3 cursor-pointer shadow-inner transition" style="background:#ff0000; color:#ffffff;">
+                        <div>
+                            <div id="scr-preview-name" class="text-xs font-bold">แดงล้วน (Pure Red)</div>
+                            <div id="scr-preview-tip" class="text-[10px] opacity-90">เช็ก Subpixel แดง &amp; จุดดำ</div>
+                        </div>
+                        <span class="px-2 py-1 rounded-lg bg-black/45 text-white text-[10px] font-bold backdrop-blur-xs">เต็มจอ <i class="fa-solid fa-expand ml-1"></i></span>
+                    </div>
+                    <button type="button" onclick="startFullscreenScreenTest(0, true)" class="px-3.5 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-bold inline-flex items-center gap-1.5 transition cursor-pointer shrink-0">
+                        <i class="fa-solid fa-play"></i>
+                        <span>สไลด์สีอัตโนมัติ (2.5 วิ)</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 3. WEBCAM LIVE PREVIEW & FRAMING -->
+            <section id="panel-webcam" data-module="webcam" class="lg:col-span-6 g-card p-4 sm:p-5 space-y-4 min-w-0">
+                <div class="flex flex-wrap items-start justify-between gap-2">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm sm:text-base font-bold font-heading">2. ทดสอบเว็บแคม &amp; มุมกล้องประชุม</h2>
+                            <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">ดูภาพสด, ความละเอียดจริง, FPS, กลับด้านกระจก, เส้นกริด และถ่ายรูปเช็กความคมชัด</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="markModuleStatus('webcam', 'pass')" class="px-2 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold cursor-pointer hover:bg-emerald-100">
+                            <i class="fa-solid fa-check mr-0.5"></i> กล้องชัด
+                        </button>
+                        <button type="button" onclick="markModuleStatus('webcam', 'issue')" class="px-2 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-[11px] font-bold cursor-pointer hover:bg-rose-100">
+                            <i class="fa-solid fa-triangle-exclamation mr-0.5"></i> มีปัญหา
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Camera Controls -->
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                    <select id="cam-device-select" class="sm:col-span-5 px-2.5 py-2 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs font-medium min-w-0">
+                        <option value="">กล้องเริ่มต้นของเครื่อง</option>
+                    </select>
+                    <select id="cam-res-select" class="sm:col-span-3 px-2.5 py-2 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs font-medium">
+                        <option value="auto">Auto</option>
+                        <option value="720p" selected>HD 720p</option>
+                        <option value="1080p">Full HD 1080p</option>
+                        <option value="4k">4K UHD</option>
+                    </select>
+                    <div class="sm:col-span-4 flex items-center gap-1.5">
+                        <button type="button" id="btn-cam-start" onclick="startWebcamTest()" class="flex-1 px-2.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold inline-flex items-center justify-center gap-1 cursor-pointer transition">
+                            <i class="fa-solid fa-video"></i>
+                            <span>เปิดกล้อง</span>
+                        </button>
+                        <button type="button" id="btn-cam-stop" onclick="stopWebcamTest()" class="px-2.5 py-2 rounded-xl bg-slate-200 dark:bg-zinc-700 hover:bg-rose-600 hover:text-white text-slate-700 dark:text-slate-200 text-xs font-bold cursor-pointer transition disabled:opacity-40" disabled title="ปิดกล้องทันที">
+                            <i class="fa-solid fa-stop"></i>
+                        </button>
+                        <button type="button" id="btn-cam-demo" onclick="startDemoWebcam()" class="px-2.5 py-2 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-600 text-xs font-semibold cursor-pointer transition" title="เปิดภาพทดสอบจำลองกรณีไม่มีเว็บแคม">
+                            Demo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Video Preview Box -->
+                <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-950 border border-slate-300 dark:border-zinc-700 flex items-center justify-center">
+                    <video id="webcam-video" autoplay playsinline muted class="w-full h-full object-contain hidden"></video>
+                    <canvas id="webcam-demo-canvas" width="960" height="540" class="w-full h-full object-contain hidden"></canvas>
+
+                    <!-- Empty / Idle Placeholder -->
+                    <div id="webcam-placeholder" class="text-center p-4 space-y-2 text-slate-300">
+                        <div class="w-12 h-12 rounded-2xl bg-slate-800/90 text-blue-400 flex items-center justify-center text-xl mx-auto">
+                            <i class="fa-solid fa-video-slash"></i>
+                        </div>
+                        <p class="text-xs font-bold">ยังไม่ได้เปิดกล้องเว็บแคม</p>
+                        <p class="text-[11px] text-slate-400 max-w-xs mx-auto">กด "เปิดกล้อง" เพื่ออนุญาตเข้าถึงกล้องชั่วคราว หรือกด "Demo" เพื่อทดสอบเครื่องมือปรับมุมกล้อง</p>
+                    </div>
+
+                    <!-- Rule of Thirds Grid Overlay -->
+                    <div id="webcam-grid-overlay" class="hidden absolute inset-0 pointer-events-none">
+                        <div class="w-full h-full grid grid-cols-3 grid-rows-3">
+                            <div class="border-r border-b border-white/30"></div>
+                            <div class="border-r border-b border-white/30"></div>
+                            <div class="border-b border-white/30"></div>
+                            <div class="border-r border-b border-white/30"></div>
+                            <div class="border-r border-b border-white/30"></div>
+                            <div class="border-b border-white/30"></div>
+                            <div class="border-r border-white/30"></div>
+                            <div class="border-r border-white/30"></div>
+                            <div></div>
+                        </div>
+                    </div>
+
+                    <!-- Telemetry Overlay Badges -->
+                    <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 pointer-events-none">
+                        <span id="cam-live-badge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/65 text-slate-300 text-[10px] font-bold backdrop-blur-xs">
+                            <span id="cam-live-dot" class="w-2 h-2 rounded-full bg-slate-400"></span>
+                            <span id="cam-live-text">OFFLINE</span>
+                        </span>
+                        <span id="cam-res-badge" class="px-2 py-0.5 rounded-full bg-black/65 text-sky-300 text-[10px] font-mono font-bold backdrop-blur-xs">-</span>
+                        <span id="cam-fps-badge" class="px-2 py-0.5 rounded-full bg-black/65 text-emerald-300 text-[10px] font-mono font-bold backdrop-blur-xs">0 FPS</span>
+                    </div>
+                </div>
+
+                <!-- Framing Controls + Snapshot Preview -->
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button type="button" id="btn-cam-mirror" onclick="toggleCamMirror()" class="px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-semibold cursor-pointer">
+                            <i class="fa-solid fa-left-right mr-1"></i> กระจก (Mirror: ON)
+                        </button>
+                        <button type="button" id="btn-cam-grid" onclick="toggleCamGrid()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-xs font-semibold cursor-pointer">
+                            <i class="fa-solid fa-border-all mr-1"></i> เส้นกริด 9 ช่อง
+                        </button>
+                        <button type="button" id="btn-cam-snap" onclick="captureWebcamSnapshot()" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer disabled:opacity-40" disabled>
+                            <i class="fa-solid fa-camera-retro mr-1"></i> ถ่ายภาพตัวอย่าง
+                        </button>
+                    </div>
+                    <div id="cam-snapshot-box" class="hidden items-center gap-2">
+                        <img id="cam-snapshot-img" alt="Webcam snapshot" class="w-12 h-8 object-cover rounded-lg border border-slate-300 dark:border-zinc-600">
+                        <a id="cam-snapshot-dl" download="webcam-check.png" class="px-2.5 py-1.5 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold inline-flex items-center gap-1">
+                            <i class="fa-solid fa-download"></i> PNG
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MIDDLE ROW: MICROPHONE + SPEAKER STEREO     -->
+        <!-- ========================================== -->
+        <section id="panel-mic" data-module="mic" class="g-card p-4 sm:p-5 space-y-4">
+            <div class="flex flex-wrap items-start justify-between gap-2">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-microphone-lines"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-bold font-heading">3. ทดสอบไมโครโฟน กราฟคลื่นเสียง &amp; ลำโพงสเตอริโอ L/R</h2>
+                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">วิเคราะห์ความดัง dBFS Real-time, กราฟ Oscilloscope + ความถี่ FFT และอัดเสียงฟังเช็กคุณภาพก่อนประชุม</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="markModuleStatus('mic', 'pass')" class="px-2 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold cursor-pointer hover:bg-emerald-100">
+                        <i class="fa-solid fa-check mr-0.5"></i> ไมค์ปกติ
+                    </button>
+                    <button type="button" onclick="markModuleStatus('mic', 'issue')" class="px-2 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-[11px] font-bold cursor-pointer hover:bg-rose-100">
+                        <i class="fa-solid fa-triangle-exclamation mr-0.5"></i> เสียงเบา/จี่
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mic Controls Row -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2">
+                    <select id="mic-device-select" class="px-2.5 py-2 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs font-medium max-w-[260px]">
+                        <option value="">ไมโครโฟนเริ่มต้นของเครื่อง</option>
+                    </select>
+                    <button type="button" id="btn-mic-start" onclick="startMicTest()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer transition">
+                        <i class="fa-solid fa-microphone"></i>
+                        <span>เริ่มจับเสียงไมค์</span>
+                    </button>
+                    <button type="button" id="btn-mic-stop" onclick="stopMicTest()" class="px-3 py-2 rounded-xl bg-slate-200 dark:bg-zinc-700 hover:bg-rose-600 hover:text-white text-slate-700 dark:text-slate-200 text-xs font-bold cursor-pointer transition disabled:opacity-40" disabled>
+                        <i class="fa-solid fa-stop mr-1"></i> หยุด
+                    </button>
+                    <button type="button" id="btn-mic-demo" onclick="startMicDemoTone()" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-600 text-xs font-semibold cursor-pointer transition" title="จำลองสัญญาณคลื่นเสียงเข้า Web Audio Analyser">
+                        <i class="fa-solid fa-wave-square mr-1 text-emerald-600"></i> สัญญาณจำลอง (Demo)
+                    </button>
+                </div>
+
+                <!-- DSP Checkboxes -->
+                <div class="flex flex-wrap items-center gap-3 text-xs">
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                        <input id="mic-opt-echo" type="checkbox" checked class="accent-emerald-600">
+                        <span>Echo Cancel</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                        <input id="mic-opt-noise" type="checkbox" checked class="accent-emerald-600">
+                        <span>Noise Suppress</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                        <input id="mic-opt-agc" type="checkbox" checked class="accent-emerald-600">
+                        <span>Auto Gain</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Dual Real-Time Canvases -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div class="rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-950 p-3 space-y-2">
+                    <div class="flex items-center justify-between text-[11px] text-slate-300">
+                        <span class="font-bold"><i class="fa-solid fa-wave-square text-emerald-400 mr-1"></i> กราฟคลื่นเสียง Real-time (Waveform / Oscilloscope)</span>
+                        <span id="mic-status-text" class="font-mono text-slate-400">IDLE</span>
+                    </div>
+                    <canvas id="mic-waveform-canvas" width="640" height="150" class="w-full h-36 rounded-lg bg-slate-900/90 block"></canvas>
+                </div>
+                <div class="rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-950 p-3 space-y-2">
+                    <div class="flex items-center justify-between text-[11px] text-slate-300">
+                        <span class="font-bold"><i class="fa-solid fa-chart-simple text-cyan-400 mr-1"></i> สเปกตรัมความถี่เสียง (Frequency Spectrum FFT)</span>
+                        <span id="mic-sr-label" class="font-mono text-slate-400">- Hz</span>
+                    </div>
+                    <canvas id="mic-spectrum-canvas" width="640" height="150" class="w-full h-36 rounded-lg bg-slate-900/90 block"></canvas>
+                </div>
+            </div>
+
+            <!-- VU Meter + Record/Playback + Stereo Speaker Test -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center pt-1">
+                <!-- Live dBFS Meter -->
+                <div class="lg:col-span-5 p-3 rounded-xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200 dark:border-zinc-700 space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold">ความดังเสียงเข้า (dBFS)</span>
+                        <div class="flex items-center gap-2 font-mono">
+                            <span id="mic-db-label" class="font-bold text-emerald-600 dark:text-emerald-400">-60.0 dB</span>
+                            <span id="mic-peak-label" class="text-[11px] text-slate-500">Peak: -60.0</span>
+                            <span id="mic-clip-badge" class="hidden px-1.5 py-0.5 rounded bg-rose-600 text-white text-[10px] font-bold">CLIP!</span>
+                        </div>
+                    </div>
+                    <div class="w-full h-3 rounded-full bg-slate-200 dark:bg-zinc-900 overflow-hidden">
+                        <div id="mic-vu-bar" class="h-full rounded-full transition-all duration-75 bg-gradient-to-r from-emerald-500 via-amber-400 to-rose-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Record & Hear Yourself Loopback -->
+                <div class="lg:col-span-4 p-3 rounded-xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200 dark:border-zinc-700 flex flex-wrap items-center justify-between gap-2">
+                    <button type="button" id="btn-mic-record" onclick="toggleMicRecording()" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-40" disabled>
+                        <i class="fa-solid fa-circle-dot"></i>
+                        <span id="btn-mic-record-label">อัดเสียงฟังเช็ก (5 วิ)</span>
+                    </button>
+                    <audio id="mic-playback-audio" controls class="h-8 max-w-full hidden"></audio>
+                    <span id="mic-rec-hint" class="text-[11px] text-slate-500 dark:text-slate-400">เปิดไมค์ก่อนเพื่ออัดเสียงฟังกลับ</span>
+                </div>
+
+                <!-- Stereo Speaker Test -->
+                <div class="lg:col-span-3 p-3 rounded-xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200 dark:border-zinc-700 space-y-1.5">
+                    <div class="flex items-center justify-between text-[11px]">
+                        <span class="font-bold text-slate-700 dark:text-slate-200"><i class="fa-solid fa-headphones text-amber-500 mr-1"></i> เทสลำโพง ซ้าย/ขวา</span>
+                        <span id="spk-active-ch" class="font-mono text-amber-600 dark:text-amber-400 font-bold">พร้อม</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button type="button" onclick="playSpeakerTest(-1, 'L ซ้าย')" class="py-1.5 rounded-lg bg-white dark:bg-zinc-800 hover:bg-amber-50 dark:hover:bg-amber-950/50 border border-slate-200 dark:border-zinc-600 text-xs font-bold cursor-pointer">L ซ้าย</button>
+                        <button type="button" onclick="playSpeakerTest(0, 'L+R คู่')" class="py-1.5 rounded-lg bg-white dark:bg-zinc-800 hover:bg-amber-50 dark:hover:bg-amber-950/50 border border-slate-200 dark:border-zinc-600 text-xs font-bold cursor-pointer">สเตอริโอ</button>
+                        <button type="button" onclick="playSpeakerTest(1, 'R ขวา')" class="py-1.5 rounded-lg bg-white dark:bg-zinc-800 hover:bg-amber-50 dark:hover:bg-amber-950/50 border border-slate-200 dark:border-zinc-600 text-xs font-bold cursor-pointer">R ขวา</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- BOTTOM ROW: KEYBOARD MATRIX & MOUSE PAD    -->
+        <!-- ========================================== -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+            <!-- 4. KEYBOARD TESTER -->
+            <section id="panel-keyboard" data-module="keyboard" class="lg:col-span-9 g-card p-4 sm:p-5 space-y-4 min-w-0">
+                <div class="flex flex-wrap items-start justify-between gap-2">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-keyboard"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm sm:text-base font-bold font-heading">4. ทดสอบปุ่มคีย์บอร์ด NKRO &amp; เช็กปุ่มเบิ้ล (Chattering)</h2>
+                            <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">ลองกดทุกปุ่มบนคีย์บอร์ด (อิงตามตำแหน่ง Physical Code จึงใช้ได้ทั้งแป้นไทย-อังกฤษ)</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 text-[11px] font-semibold cursor-pointer select-none" title="ป้องกันไม่ให้ Space / Tab / ลูกศร เลื่อนหน้าเว็บระหว่างเทสปุ่ม">
+                            <input id="kbd-lock-keys" type="checkbox" checked class="accent-indigo-600">
+                            <span>ล็อกปุ่มไม่ให้เลื่อนจอ</span>
+                        </label>
+                        <button type="button" onclick="resetKeyboardTest()" class="px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-[11px] font-bold cursor-pointer">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> รีเซ็ตปุ่ม
+                        </button>
+                        <button type="button" onclick="markModuleStatus('keyboard', 'pass')" class="px-2 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold cursor-pointer">
+                            <i class="fa-solid fa-check mr-0.5"></i> ครบทุกปุ่ม
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Telemetry Strip -->
+                <div class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200 dark:border-zinc-700 text-xs">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span>ตรวจแล้ว: <strong id="kbd-tested-count" class="text-emerald-600 dark:text-emerald-400">0 / 0 ปุ่ม</strong></span>
+                        <span>กดพร้อมกันสูงสุด (NKRO): <strong id="kbd-nkro-max" class="text-indigo-600 dark:text-indigo-400">0</strong></span>
+                        <span>ปุ่มล่าสุด: <code id="kbd-last-code" class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-zinc-700 font-mono text-[11px]">-</code></span>
+                    </div>
+                    <span id="kbd-chatter-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">
+                        <i class="fa-solid fa-shield-halved"></i> ปุ่มเบิ้ล (Chatter): 0 ครั้ง
+                    </span>
+                </div>
+
+                <!-- Scrollable Keyboard Matrix Wrapper (prevents mobile 390px overflow) -->
+                <div class="w-full overflow-x-auto pb-1">
+                    <div id="keyboard-matrix" class="min-w-[740px] p-3 rounded-xl bg-slate-100/90 dark:bg-zinc-900/90 border border-slate-200 dark:border-zinc-700 space-y-1.5 font-mono text-[11px]"></div>
+                </div>
+            </section>
+
+            <!-- 5. MOUSE, SCROLL & REPORT CARD -->
+            <section id="panel-mouse" data-module="keyboard" class="lg:col-span-3 g-card p-4 sm:p-5 flex flex-col justify-between space-y-4 min-w-0">
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-computer-mouse"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold font-heading">เช็กปุ่มเมาส์ &amp; Scroll</h2>
+                            <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">คลิกซ้าย/กลาง/ขวา/ข้าง และหมุนลูกกลิ้งในช่องด้านล่าง</p>
+                        </div>
+                    </div>
+
+                    <div id="mouse-test-pad" tabindex="0" class="rounded-xl border-2 border-dashed border-teal-300 dark:border-teal-800 bg-teal-50/40 dark:bg-teal-950/20 p-4 text-center space-y-2.5 select-none cursor-crosshair focus:outline-none focus:border-teal-500">
+                        <div class="text-xs font-bold text-teal-800 dark:text-teal-300">พื้นที่ทดสอบเมาส์ / Touchpad</div>
+                        <div class="grid grid-cols-3 gap-1.5 text-[11px] font-mono">
+                            <div id="mouse-btn-0" class="p-2 rounded-lg bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">ซ้าย (0)</div>
+                            <div id="mouse-btn-1" class="p-2 rounded-lg bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">กลาง (0)</div>
+                            <div id="mouse-btn-2" class="p-2 rounded-lg bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">ขวา (0)</div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-1.5 text-[11px] font-mono">
+                            <div id="mouse-wheel-up" class="p-1.5 rounded-lg bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">เลื่อนขึ้น: 0</div>
+                            <div id="mouse-wheel-down" class="p-1.5 rounded-lg bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">เลื่อนลง: 0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Inspection Notes -->
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200 dark:border-zinc-700 space-y-2">
+                    <div class="text-xs font-bold flex items-center justify-between">
+                        <span>บันทึกตรวจสภาพเครื่อง</span>
+                        <button type="button" onclick="resetMouseAndStatuses()" class="text-[11px] text-rose-600 hover:underline cursor-pointer">ล้างค่าทั้งหมด</button>
+                    </div>
+                    <textarea id="audit-note-input" rows="2" placeholder="เช่น ซื้อโน้ตบุ๊กมือสอง / เช็กก่อนประชุม Zoom..." class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs resize-none"></textarea>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">ทิปซื้อมือสอง: ลองเปิดสีดำเต็มจอเพื่อหาแสงรั่ว และเปิดสีขาวหาจุด Dead Pixel + กดเช็กทุกปุ่มคีย์บอร์ดครับ</p>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- FULLSCREEN DEAD PIXEL OVERLAY              -->
+    <!-- ========================================== -->
+    <div id="screen-fullscreen-overlay" class="hidden fixed inset-0 z-[9999] cursor-pointer select-none" style="background-color: #ff0000;">
+        <div id="screen-fs-hud" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-10 max-w-[94vw] px-4 py-2.5 rounded-2xl bg-slate-950/85 text-white border border-white/15 shadow-2xl backdrop-blur-md flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs">
+            <span id="fs-pattern-badge" class="font-bold text-emerald-300">1/11 &bull; แดงล้วน (Pure Red)</span>
+            <span class="hidden sm:inline text-white/40">|</span>
+            <span class="text-[11px] text-slate-300 hidden md:inline">คลิกหรือกด <kbd class="px-1 py-0.5 rounded bg-white/15">Space</kbd> เปลี่ยนสี &bull; <kbd class="px-1 py-0.5 rounded bg-white/15">H</kbd> ซ่อนแถบ &bull; <kbd class="px-1 py-0.5 rounded bg-white/15">Esc</kbd> ออก</span>
+            <div class="flex items-center gap-1.5">
+                <button type="button" id="fs-prev-btn" class="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 font-semibold cursor-pointer">ก่อนหน้า</button>
+                <button type="button" id="fs-next-btn" class="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 font-semibold cursor-pointer">สีถัดไป</button>
+                <button type="button" id="fs-autocycle-btn" class="px-2.5 py-1 rounded-lg bg-amber-500/80 hover:bg-amber-500 text-slate-950 font-bold cursor-pointer">Auto: OFF</button>
+                <button type="button" id="fs-hidehud-btn" class="px-2 py-1 rounded-lg bg-white/15 hover:bg-white/25 cursor-pointer" title="ซ่อนแถบเมนู (กด H เพื่อเปิดกลับ)">H</button>
+                <button type="button" id="fs-exit-btn" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 font-bold cursor-pointer">✕ ออก</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. UTILITIES & TOAST / ESCAPE
+        // ==========================================
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function showToast(msg, type = 'success') {
+            const c = document.getElementById('toast-container');
+            if (!c) return;
+            while (c.children.length > 0) {
+                c.removeChild(c.firstElementChild);
+            }
+            const icon = type === 'error'
+                ? 'fa-circle-exclamation text-rose-400'
+                : type === 'warning'
+                    ? 'fa-triangle-exclamation text-amber-400'
+                    : 'fa-circle-check text-emerald-400';
+            const el = document.createElement('div');
+            el.className = 'pointer-events-auto px-4 py-2.5 rounded-2xl bg-slate-900/95 dark:bg-zinc-950/95 text-white border border-white/10 shadow-2xl text-xs sm:text-sm font-medium flex items-center gap-2.5 max-w-full cursor-pointer backdrop-blur-md';
+            el.innerHTML = `<i class="fa-solid ${icon} shrink-0"></i><span>${escapeHtml(msg)}</span>`;
+            el.onclick = () => el.remove();
+            c.appendChild(el);
+            setTimeout(() => { if (el.parentNode) el.remove(); }, 3400);
+        }
+
+        // ==========================================
+        // 2. OVERALL HARDWARE READINESS STATE
+        // ==========================================
+        const hardwareStatus = {
+            screen: 'idle',    // idle | testing | pass | issue
+            mic: 'idle',
+            speaker: 'idle',
+            keyboard: 'idle',
+            webcam: 'idle'
+        };
+
+        const STATUS_LABELS = {
+            idle: { text: 'รอทดสอบ', cls: 'bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-slate-200' },
+            testing: { text: 'กำลังเช็ก', cls: 'bg-blue-100 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300' },
+            pass: { text: 'พร้อมใช้', cls: 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300' },
+            issue: { text: 'พบปัญหา', cls: 'bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300' }
+        };
+
+        function markModuleStatus(mod, status, detailText) {
+            if (!Object.prototype.hasOwnProperty.call(hardwareStatus, mod)) return;
+            hardwareStatus[mod] = status;
+            const badge = document.getElementById(`badge-status-${mod}`);
+            const infoEl = document.getElementById(`tile-info-${mod}`);
+            const meta = STATUS_LABELS[status] || STATUS_LABELS.idle;
+            if (badge) {
+                badge.textContent = meta.text;
+                badge.className = `px-1.5 py-0.5 rounded-full text-[10px] font-bold ${meta.cls}`;
+            }
+            if (detailText && infoEl) {
+                infoEl.textContent = detailText;
+            }
+            updateOverallScore();
+        }
+
+        function updateOverallScore() {
+            const keys = Object.keys(hardwareStatus);
+            const passed = keys.filter(k => hardwareStatus[k] === 'pass').length;
+            const pct = Math.round((passed / keys.length) * 100);
+            const pctEl = document.getElementById('overall-score-pct');
+            const barEl = document.getElementById('overall-score-bar');
+            if (pctEl) pctEl.textContent = `${passed}/${keys.length}`;
+            if (barEl) barEl.style.width = `${pct}%`;
+        }
+
+        function switchTesterTab(tab) {
+            document.querySelectorAll('.modtab-btn').forEach(btn => {
+                const active = btn.dataset.modtab === tab;
+                btn.className = active
+                    ? 'modtab-btn px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold whitespace-nowrap cursor-pointer'
+                    : 'modtab-btn px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-xs font-semibold whitespace-nowrap cursor-pointer';
+            });
+            document.querySelectorAll('[data-module]').forEach(sec => {
+                if (tab === 'all' || sec.dataset.module === tab) {
+                    sec.classList.remove('hidden');
+                } else {
+                    sec.classList.add('hidden');
+                }
+            });
+        }
+
+        function focusModuleTab(tab) {
+            switchTesterTab(tab);
+            const el = document.getElementById(`panel-${tab}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ==========================================
+        // 3. SCREEN & DEAD PIXEL FULLSCREEN ENGINE
+        // ==========================================
+        const SCREEN_PATTERNS = [
+            { id: 'red', name: 'แดงล้วน (Pure Red)', tip: 'เช็ก Subpixel แดง & จุดดำ', color: '#ff0000', text: '#ffffff', cls: '' },
+            { id: 'green', name: 'เขียวล้วน (Pure Green)', tip: 'เช็ก Subpixel เขียว', color: '#00ff00', text: '#0f172a', cls: '' },
+            { id: 'blue', name: 'น้ำเงินล้วน (Pure Blue)', tip: 'เช็ก Subpixel น้ำเงิน', color: '#0000ff', text: '#ffffff', cls: '' },
+            { id: 'black', name: 'ดำสนิท (Pure Black)', tip: 'เช็กแสงรั่วขอบจอ & Hot Pixel', color: '#000000', text: '#ffffff', cls: '' },
+            { id: 'white', name: 'ขาวล้วน (Pure White)', tip: 'เช็ก Dead Pixel ดับถาวร & จอเหลือง', color: '#ffffff', text: '#0f172a', cls: '' },
+            { id: 'gray50', name: 'เทา 50% (Uniformity)', tip: 'เช็กจอเบิร์น & ความสม่ำเสมอแสง', color: '#808080', text: '#ffffff', cls: '' },
+            { id: 'cyan', name: 'ฟ้าอมเขียว (Cyan)', tip: 'เช็กความสม่ำเสมอ G+B', color: '#00ffff', text: '#0f172a', cls: '' },
+            { id: 'magenta', name: 'บานเย็น (Magenta)', tip: 'เช็กความสม่ำเสมอ R+B', color: '#ff00ff', text: '#ffffff', cls: '' },
+            { id: 'yellow', name: 'เหลือง (Yellow)', tip: 'เช็กความสม่ำเสมอ R+G', color: '#ffff00', text: '#0f172a', cls: '' },
+            { id: 'bars', name: 'แถบสี RGBCMY', tip: 'เช็กแยกแยะเฉดสีและขอบจอ', color: '#111827', text: '#ffffff', cls: 'pattern-gradient-bars' },
+            { id: 'ramp', name: 'ไล่ระดับเกรเดียนต์ (Banding)', tip: 'เช็กการไล่ระดับสีและ Gamma', color: '#111827', text: '#ffffff', cls: 'pattern-color-ramp' },
+            { id: 'checker', name: 'ตารางความคมชัดพิกเซล', tip: 'เช็กความคมขอบจอ & Pixel Grid', color: '#111827', text: '#ffffff', cls: 'pattern-checker-pixel' }
+        ];
+
+        const screenState = {
+            index: 0,
+            active: false,
+            hudHidden: false,
+            autoTimer: null,
+            measuredHz: 60
+        };
+
+        function populateDisplayMetrics() {
+            const dpr = window.devicePixelRatio || 1;
+            const cssW = window.screen.width;
+            const cssH = window.screen.height;
+            const physW = Math.round(cssW * dpr);
+            const physH = Math.round(cssH * dpr);
+            const colorDepth = window.screen.colorDepth || 24;
+            let gamut = 'sRGB';
+            try {
+                if (window.matchMedia('(color-gamut: rec2020)').matches) gamut = 'Rec.2020';
+                else if (window.matchMedia('(color-gamut: p3)').matches) gamut = 'Display P3';
+            } catch (_) {}
+
+            document.getElementById('scr-phys-res').textContent = `${physW}×${physH}`;
+            document.getElementById('scr-css-dpr').textContent = `${cssW}×${cssH} (${Number(dpr.toFixed(2))}x)`;
+            document.getElementById('scr-gamut-depth').textContent = `${gamut} • ${colorDepth}-bit`;
+
+            const tileInfo = document.getElementById('tile-info-screen');
+            if (tileInfo) tileInfo.textContent = `${physW}×${physH} (${screenState.measuredHz} Hz)`;
+        }
+
+        function measureRefreshRate(showNotice = false) {
+            const el = document.getElementById('scr-refresh-hz');
+            if (el && (showNotice || el.textContent === 'กำลังวัด...')) {
+                el.textContent = 'กำลังวัด...';
+            }
+            return new Promise((resolve) => {
+                const deltas = [];
+                let prev = 0;
+                let count = 0;
+                let settled = false;
+                const finish = () => {
+                    if (settled) return;
+                    settled = true;
+                    deltas.sort((a, b) => a - b);
+                    const medianDt = deltas.length ? deltas[Math.floor(deltas.length / 2)] : 16.67;
+                    const rawHz = Math.round(1000 / medianDt);
+                    const standard = [60, 75, 90, 100, 120, 144, 165, 240, 360];
+                    const snapped = standard.find(s => Math.abs(s - rawHz) <= 4) || rawHz;
+                    screenState.measuredHz = snapped;
+                    if (el) el.textContent = `~${snapped} Hz`;
+                    populateDisplayMetrics();
+                    if (showNotice) showToast(`วัดอัตราการรีเฟรชหน้าจอได้ประมาณ ${snapped} Hz`);
+                    resolve(snapped);
+                };
+                const fallbackTimer = setTimeout(finish, 750);
+                function step(ts) {
+                    if (settled) return;
+                    if (prev > 0) {
+                        const dt = ts - prev;
+                        if (dt > 2 && dt < 100) deltas.push(dt);
+                    }
+                    prev = ts;
+                    count += 1;
+                    if (count < 18) {
+                        requestAnimationFrame(step);
+                    } else {
+                        clearTimeout(fallbackTimer);
+                        finish();
+                    }
+                }
+                requestAnimationFrame(step);
+            });
+        }
+
+        function renderScreenSwatches() {
+            const wrap = document.getElementById('screen-pattern-swatches');
+            if (!wrap) return;
+            wrap.innerHTML = SCREEN_PATTERNS.map((p, i) => `
+                <button type="button" onclick="startFullscreenScreenTest(${i})" class="p-2 rounded-xl border border-slate-200 dark:border-zinc-700 hover:border-rose-500 transition flex items-center gap-2 text-left cursor-pointer bg-white dark:bg-zinc-800/80">
+                    <span class="w-6 h-6 rounded-lg border border-black/15 shrink-0 ${p.cls}" style="${p.cls ? '' : `background:${p.color};`}"></span>
+                    <span class="text-[11px] font-bold truncate text-slate-800 dark:text-slate-100">${escapeHtml(p.name.split(' (')[0])}</span>
+                </button>
+            `).join('');
+            applyPatternIndex(0);
+        }
+
+        function applyPatternIndex(idx) {
+            const len = SCREEN_PATTERNS.length;
+            screenState.index = ((idx % len) + len) % len;
+            const p = SCREEN_PATTERNS[screenState.index];
+
+            // Inline preview card
+            const inlineEl = document.getElementById('scr-inline-preview');
+            if (inlineEl) {
+                inlineEl.className = `flex-1 min-w-[180px] h-14 rounded-xl border border-slate-300 dark:border-zinc-600 flex items-center justify-between px-3 cursor-pointer shadow-inner transition ${p.cls}`;
+                inlineEl.style.backgroundColor = p.color;
+                inlineEl.style.color = p.text;
+            }
+            const nameEl = document.getElementById('scr-preview-name');
+            const tipEl = document.getElementById('scr-preview-tip');
+            if (nameEl) nameEl.textContent = p.name;
+            if (tipEl) tipEl.textContent = p.tip;
+
+            // Fullscreen overlay
+            const ov = document.getElementById('screen-fullscreen-overlay');
+            if (ov) {
+                ov.className = `${screenState.active ? 'fixed inset-0 z-[9999] cursor-pointer select-none' : 'hidden fixed inset-0 z-[9999] cursor-pointer select-none'} ${p.cls}`;
+                ov.style.backgroundColor = p.color;
+            }
+            const badge = document.getElementById('fs-pattern-badge');
+            if (badge) badge.textContent = `${screenState.index + 1}/${len} • ${p.name}`;
+        }
+
+        function startFullscreenScreenTest(startIdx = 0, autoCycle = false) {
+            screenState.active = true;
+            screenState.hudHidden = false;
+            document.getElementById('screen-fs-hud')?.classList.remove('hidden');
+            applyPatternIndex(startIdx);
+            const ov = document.getElementById('screen-fullscreen-overlay');
+            if (ov) {
+                ov.classList.remove('hidden');
+                if (typeof ov.requestFullscreen === 'function') {
+                    ov.requestFullscreen().catch(() => {});
+                }
+            }
+            if (hardwareStatus.screen === 'idle') {
+                markModuleStatus('screen', 'testing');
+            }
+            setScreenAutoCycle(Boolean(autoCycle));
+        }
+
+        function setScreenAutoCycle(enable) {
+            if (screenState.autoTimer) {
+                clearInterval(screenState.autoTimer);
+                screenState.autoTimer = null;
+            }
+            const btn = document.getElementById('fs-autocycle-btn');
+            if (enable && screenState.active) {
+                screenState.autoTimer = setInterval(() => applyPatternIndex(screenState.index + 1), 2500);
+                if (btn) btn.textContent = 'Auto: ON';
+            } else {
+                if (btn) btn.textContent = 'Auto: OFF';
+            }
+        }
+
+        function exitFullscreenScreenTest() {
+            screenState.active = false;
+            setScreenAutoCycle(false);
+            const ov = document.getElementById('screen-fullscreen-overlay');
+            if (ov) ov.classList.add('hidden');
+            if (document.fullscreenElement && typeof document.exitFullscreen === 'function') {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        function toggleFsHud() {
+            screenState.hudHidden = !screenState.hudHidden;
+            const hud = document.getElementById('screen-fs-hud');
+            if (hud) hud.classList.toggle('hidden', screenState.hudHidden);
+        }
+
+        // ==========================================
+        // 4. MICROPHONE WAVEFORM, FFT & SPEAKER TEST
+        // ==========================================
+        const audioState = {
+            ctx: null,
+            stream: null,
+            source: null,
+            analyser: null,
+            silentSink: null,
+            rafId: null,
+            demoOsc: null,
+            demoLfo: null,
+            demoGain: null,
+            peakDb: -60,
+            peakTimer: 0,
+            isDemo: false,
+            recorder: null,
+            recChunks: [],
+            recStopTimer: null
+        };
+
+        function getOrCreateAudioContext() {
+            if (!audioState.ctx || audioState.ctx.state === 'closed') {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                audioState.ctx = new AC();
+            }
+            if (audioState.ctx.state === 'suspended') {
+                audioState.ctx.resume().catch(() => {});
+            }
+            return audioState.ctx;
+        }
+
+        function drawIdleAudioCanvases() {
+            const wf = document.getElementById('mic-waveform-canvas');
+            if (wf) {
+                const ctx = wf.getContext('2d');
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, wf.width, wf.height);
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(0, wf.height / 2);
+                ctx.lineTo(wf.width, wf.height / 2);
+                ctx.stroke();
+            }
+            const sp = document.getElementById('mic-spectrum-canvas');
+            if (sp) {
+                const ctx = sp.getContext('2d');
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, sp.width, sp.height);
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.2)';
+                for (let i = 0; i < 40; i += 1) {
+                    const x = i * (sp.width / 40) + 2;
+                    ctx.fillRect(x, sp.height - 8, (sp.width / 40) - 4, 4);
+                }
+            }
+        }
+
+        function stopMicTest(silent = false) {
+            if (audioState.rafId) {
+                cancelAnimationFrame(audioState.rafId);
+                audioState.rafId = null;
+            }
+            if (audioState.recStopTimer) {
+                clearTimeout(audioState.recStopTimer);
+                audioState.recStopTimer = null;
+            }
+            if (audioState.recorder && audioState.recorder.state === 'recording') {
+                try { audioState.recorder.stop(); } catch (_) {}
+            }
+            if (audioState.demoOsc) {
+                try { audioState.demoOsc.stop(); audioState.demoOsc.disconnect(); } catch (_) {}
+                audioState.demoOsc = null;
+            }
+            if (audioState.demoLfo) {
+                try { audioState.demoLfo.stop(); audioState.demoLfo.disconnect(); } catch (_) {}
+                audioState.demoLfo = null;
+            }
+            if (audioState.demoGain) {
+                try { audioState.demoGain.disconnect(); } catch (_) {}
+                audioState.demoGain = null;
+            }
+            if (audioState.silentSink) {
+                try { audioState.silentSink.disconnect(); } catch (_) {}
+                audioState.silentSink = null;
+            }
+            if (audioState.source) {
+                try { audioState.source.disconnect(); } catch (_) {}
+                audioState.source = null;
+            }
+            if (audioState.stream) {
+                audioState.stream.getTracks().forEach(t => t.stop());
+                audioState.stream = null;
+            }
+            audioState.analyser = null;
+            audioState.isDemo = false;
+
+            const stopBtn = document.getElementById('btn-mic-stop');
+            const recBtn = document.getElementById('btn-mic-record');
+            const stEl = document.getElementById('mic-status-text');
+            if (stopBtn) stopBtn.disabled = true;
+            if (recBtn) recBtn.disabled = true;
+            if (stEl) stEl.textContent = 'STOPPED';
+            const vu = document.getElementById('mic-vu-bar');
+            if (vu) vu.style.width = '0%';
+            drawIdleAudioCanvases();
+            if (!silent) showToast('หยุดจับสัญญาณไมโครโฟนแล้ว');
+        }
+
+        async function startMicTest() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showToast('เบราว์เซอร์นี้ไม่รองรับ getUserMedia ลองใช้โหมด Demo แทนได้ครับ', 'error');
+                return;
+            }
+            stopMicTest(true);
+            const deviceId = document.getElementById('mic-device-select')?.value || '';
+            const echoCancellation = Boolean(document.getElementById('mic-opt-echo')?.checked);
+            const noiseSuppression = Boolean(document.getElementById('mic-opt-noise')?.checked);
+            const autoGainControl = Boolean(document.getElementById('mic-opt-agc')?.checked);
+
+            try {
+                const constraints = {
+                    audio: {
+                        ...(deviceId ? { deviceId: { exact: deviceId } } : {}),
+                        echoCancellation,
+                        noiseSuppression,
+                        autoGainControl
+                    }
+                };
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                audioState.stream = stream;
+                const ctx = getOrCreateAudioContext();
+                if (ctx.state === 'suspended') {
+                    await ctx.resume().catch(() => {});
+                }
+                audioState.source = ctx.createMediaStreamSource(stream);
+                audioState.analyser = ctx.createAnalyser();
+                audioState.analyser.fftSize = 2048;
+                audioState.analyser.smoothingTimeConstant = 0.82;
+                audioState.silentSink = ctx.createGain();
+                audioState.silentSink.gain.setValueAtTime(0, ctx.currentTime);
+                audioState.source.connect(audioState.analyser);
+                audioState.analyser.connect(audioState.silentSink);
+                audioState.silentSink.connect(ctx.destination);
+
+                const trackLabel = stream.getAudioTracks()[0]?.label || 'ไมโครโฟนใช้งานได้';
+                document.getElementById('mic-status-text').textContent = 'LIVE MIC';
+                document.getElementById('mic-sr-label').textContent = `${ctx.sampleRate} Hz`;
+                document.getElementById('btn-mic-stop').disabled = false;
+                document.getElementById('btn-mic-record').disabled = false;
+                markModuleStatus('mic', 'pass', trackLabel);
+                refreshMediaDevices();
+                startAudioRenderLoop();
+                showToast('เปิดไมโครโฟนสำเร็จ กำลังวิเคราะห์คลื่นเสียงแบบเรียลไทม์');
+            } catch (err) {
+                markModuleStatus('mic', 'issue', 'ไม่อนุญาต/ไม่พบไมค์');
+                showToast(`ไม่สามารถเปิดไมโครโฟนได้ (${err.name || 'Permission Denied'}) — สามารถทดสอบด้วยปุ่ม "สัญญาณจำลอง (Demo)" ได้ครับ`, 'warning');
+            }
+        }
+
+        async function startMicDemoTone() {
+            stopMicTest(true);
+            const ctx = getOrCreateAudioContext();
+            if (ctx.state === 'suspended') {
+                await ctx.resume().catch(() => {});
+            }
+            const analyser = ctx.createAnalyser();
+            analyser.fftSize = 2048;
+            analyser.smoothingTimeConstant = 0.8;
+
+            const osc = ctx.createOscillator();
+            osc.type = 'sawtooth';
+            osc.frequency.value = 261.63;
+
+            const lfo = ctx.createOscillator();
+            lfo.type = 'sine';
+            lfo.frequency.value = 2.6;
+            const lfoDepth = ctx.createGain();
+            lfoDepth.gain.value = 110;
+            lfo.connect(lfoDepth);
+            lfoDepth.connect(osc.frequency);
+
+            const gain = ctx.createGain();
+            gain.gain.value = 0.35;
+
+            const silentSink = ctx.createGain();
+            silentSink.gain.setValueAtTime(0, ctx.currentTime);
+
+            const mediaDest = typeof ctx.createMediaStreamDestination === 'function'
+                ? ctx.createMediaStreamDestination()
+                : null;
+
+            osc.connect(gain);
+            gain.connect(analyser);
+            analyser.connect(silentSink);
+            silentSink.connect(ctx.destination);
+            if (mediaDest) gain.connect(mediaDest);
+
+            osc.start();
+            lfo.start();
+
+            audioState.analyser = analyser;
+            audioState.silentSink = silentSink;
+            audioState.demoOsc = osc;
+            audioState.demoLfo = lfo;
+            audioState.demoGain = gain;
+            audioState.stream = mediaDest ? mediaDest.stream : null;
+            audioState.isDemo = true;
+
+            document.getElementById('mic-status-text').textContent = 'DEMO SIGNAL';
+            document.getElementById('mic-sr-label').textContent = `${ctx.sampleRate} Hz`;
+            document.getElementById('btn-mic-stop').disabled = false;
+            document.getElementById('btn-mic-record').disabled = !mediaDest;
+            markModuleStatus('mic', 'pass', 'ทดสอบสัญญาณจำลองแล้ว');
+            startAudioRenderLoop();
+            showToast('เปิดสัญญาณเสียงจำลองเข้า Analyzer แล้ว (ไม่ได้ปล่อยเสียงออกลำโพง)');
+        }
+
+        function startAudioRenderLoop() {
+            const analyser = audioState.analyser;
+            if (!analyser) return;
+
+            const timeData = new Uint8Array(analyser.fftSize);
+            const freqData = new Uint8Array(analyser.frequencyBinCount);
+            const wfCanvas = document.getElementById('mic-waveform-canvas');
+            const spCanvas = document.getElementById('mic-spectrum-canvas');
+            const wfCtx = wfCanvas?.getContext('2d');
+            const spCtx = spCanvas?.getContext('2d');
+
+            audioState.peakDb = -60;
+
+            function frame(now) {
+                if (!audioState.analyser) return;
+
+                analyser.getByteTimeDomainData(timeData);
+                analyser.getByteFrequencyData(freqData);
+
+                if (audioState.isDemo && audioState.ctx && audioState.ctx.currentTime === 0 && timeData[0] === 128 && timeData[128] === 128) {
+                    // Fallback synthesis when host OS has no active audio endpoint to tick Web Audio clock
+                    const t = now * 0.005;
+                    const amp = 0.42 + 0.22 * Math.sin(t * 0.9);
+                    for (let i = 0; i < timeData.length; i += 1) {
+                        const s = amp * (0.65 * Math.sin((i * 0.045) + t) + 0.35 * Math.sin((i * 0.11) - t * 1.3));
+                        timeData[i] = Math.max(0, Math.min(255, Math.round(128 + s * 127)));
+                    }
+                    for (let k = 0; k < freqData.length; k += 1) {
+                        const env = Math.exp(-Math.pow((k - (24 + Math.sin(t) * 10)) / 36, 2));
+                        freqData[k] = Math.min(255, Math.round((env * 215) + (k < 180 ? 35 : 0)));
+                    }
+                }
+
+                let sumSq = 0;
+                let maxSample = 0;
+                for (let i = 0; i < timeData.length; i += 1) {
+                    const norm = (timeData[i] - 128) / 128;
+                    sumSq += norm * norm;
+                    const abs = Math.abs(norm);
+                    if (abs > maxSample) maxSample = abs;
+                }
+                const rms = Math.sqrt(sumSq / timeData.length);
+                const db = Math.max(-60, Math.min(0, 20 * Math.log10(Math.max(rms, 1e-4))));
+                if (db > audioState.peakDb || now - audioState.peakTimer > 1500) {
+                    audioState.peakDb = db;
+                    audioState.peakTimer = now;
+                }
+
+                const pct = Math.max(0, Math.min(100, ((db + 60) / 60) * 100));
+                const vuBar = document.getElementById('mic-vu-bar');
+                const dbLbl = document.getElementById('mic-db-label');
+                const pkLbl = document.getElementById('mic-peak-label');
+                const clipBadge = document.getElementById('mic-clip-badge');
+                if (vuBar) vuBar.style.width = `${pct.toFixed(1)}%`;
+                if (dbLbl) dbLbl.textContent = `${db.toFixed(1)} dB`;
+                if (pkLbl) pkLbl.textContent = `Peak: ${audioState.peakDb.toFixed(1)}`;
+                if (clipBadge) clipBadge.classList.toggle('hidden', maxSample < 0.94);
+
+                // Draw Waveform
+                if (wfCtx && wfCanvas) {
+                    wfCtx.fillStyle = '#0f172a';
+                    wfCtx.fillRect(0, 0, wfCanvas.width, wfCanvas.height);
+                    wfCtx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+                    wfCtx.beginPath();
+                    wfCtx.moveTo(0, wfCanvas.height / 2);
+                    wfCtx.lineTo(wfCanvas.width, wfCanvas.height / 2);
+                    wfCtx.stroke();
+
+                    wfCtx.lineWidth = 2.2;
+                    wfCtx.strokeStyle = '#34d399';
+                    wfCtx.beginPath();
+                    const slice = wfCanvas.width / timeData.length;
+                    for (let i = 0; i < timeData.length; i += 2) {
+                        const v = timeData[i] / 128.0;
+                        const y = (v * wfCanvas.height) / 2;
+                        const x = i * slice;
+                        if (i === 0) wfCtx.moveTo(x, y);
+                        else wfCtx.lineTo(x, y);
+                    }
+                    wfCtx.stroke();
+                }
+
+                // Draw FFT Spectrum (48 bars)
+                if (spCtx && spCanvas) {
+                    spCtx.fillStyle = '#0f172a';
+                    spCtx.fillRect(0, 0, spCanvas.width, spCanvas.height);
+                    const bars = 48;
+                    const barW = spCanvas.width / bars;
+                    for (let b = 0; b < bars; b += 1) {
+                        const binStart = Math.floor((b / bars) * (freqData.length * 0.45));
+                        const val = freqData[binStart] / 255;
+                        const h = Math.max(4, val * (spCanvas.height - 14));
+                        const hue = 165 + (b / bars) * 45;
+                        spCtx.fillStyle = `hsl(${hue}, 82%, 56%)`;
+                        spCtx.fillRect(b * barW + 2, spCanvas.height - h, Math.max(3, barW - 4), h);
+                    }
+                }
+
+                audioState.rafId = requestAnimationFrame(frame);
+            }
+
+            audioState.rafId = requestAnimationFrame(frame);
+        }
+
+        function toggleMicRecording() {
+            const btn = document.getElementById('btn-mic-record');
+            const lbl = document.getElementById('btn-mic-record-label');
+            const audioEl = document.getElementById('mic-playback-audio');
+            const hint = document.getElementById('mic-rec-hint');
+
+            if (audioState.recorder && audioState.recorder.state === 'recording') {
+                audioState.recorder.stop();
+                return;
+            }
+            if (!audioState.stream || typeof MediaRecorder === 'undefined') {
+                showToast('กรุณาเปิดไมค์ก่อนอัดเสียงทดสอบครับ', 'warning');
+                return;
+            }
+
+            try {
+                audioState.recChunks = [];
+                const recorder = new MediaRecorder(audioState.stream);
+                recorder.ondataavailable = (ev) => {
+                    if (ev.data && ev.data.size > 0) audioState.recChunks.push(ev.data);
+                };
+                recorder.onstop = () => {
+                    if (audioState.recStopTimer) {
+                        clearTimeout(audioState.recStopTimer);
+                        audioState.recStopTimer = null;
+                    }
+                    if (lbl) lbl.textContent = 'อัดเสียงฟังเช็ก (5 วิ)';
+                    if (btn) btn.classList.remove('animate-pulse');
+                    const blob = new Blob(audioState.recChunks, { type: recorder.mimeType || 'audio/webm' });
+                    if (blob.size > 0 && audioEl) {
+                        const url = URL.createObjectURL(blob);
+                        audioEl.src = url;
+                        audioEl.classList.remove('hidden');
+                        if (hint) hint.classList.add('hidden');
+                        showToast('บันทึกเสียงเสร็จแล้ว กดเล่นเพื่อฟังคุณภาพเสียงได้เลย');
+                    }
+                };
+                audioState.recorder = recorder;
+                recorder.start();
+                if (lbl) lbl.textContent = 'กำลังอัด... กดเพื่อหยุด';
+                if (btn) btn.classList.add('animate-pulse');
+                audioState.recStopTimer = setTimeout(() => {
+                    if (audioState.recorder && audioState.recorder.state === 'recording') {
+                        audioState.recorder.stop();
+                    }
+                }, 5000);
+            } catch (err) {
+                showToast(`ไม่สามารถอัดเสียงได้: ${err.message}`, 'error');
+            }
+        }
+
+        function playSpeakerTest(panValue, label) {
+            try {
+                const ctx = getOrCreateAudioContext();
+                const now = ctx.currentTime;
+                const notes = [440, 554.37, 659.25];
+                const chEl = document.getElementById('spk-active-ch');
+                if (chEl) chEl.textContent = `กำลังเล่น: ${label}`;
+
+                notes.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.14);
+
+                    gain.gain.setValueAtTime(0.0001, now + idx * 0.14);
+                    gain.gain.exponentialRampToValueAtTime(0.18, now + idx * 0.14 + 0.03);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.14 + 0.22);
+
+                    if (typeof ctx.createStereoPanner === 'function') {
+                        const panner = ctx.createStereoPanner();
+                        panner.pan.setValueAtTime(panValue, now);
+                        osc.connect(gain);
+                        gain.connect(panner);
+                        panner.connect(ctx.destination);
+                    } else {
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                    }
+
+                    osc.start(now + idx * 0.14);
+                    osc.stop(now + idx * 0.14 + 0.24);
+                });
+
+                markModuleStatus('speaker', 'pass', `ทดสอบช่อง ${label} แล้ว`);
+                setTimeout(() => {
+                    if (chEl) chEl.textContent = `ทดสอบ ${label} แล้ว`;
+                }, 650);
+            } catch (err) {
+                markModuleStatus('speaker', 'issue', 'เสียงไม่ทำงาน');
+                showToast(`ทดสอบลำโพงไม่สำเร็จ: ${err.message}`, 'error');
+            }
+        }
+
+        // ==========================================
+        // 5. WEBCAM LIVE PREVIEW & SNAPSHOT
+        // ==========================================
+        const camState = {
+            stream: null,
+            mirror: true,
+            grid: false,
+            isDemo: false,
+            demoRaf: null,
+            fpsFrames: 0,
+            fpsLastTime: 0,
+            fpsRaf: null
+        };
+
+        function stopWebcamTest(silent = false) {
+            if (camState.demoRaf) {
+                cancelAnimationFrame(camState.demoRaf);
+                camState.demoRaf = null;
+            }
+            if (camState.fpsRaf) {
+                cancelAnimationFrame(camState.fpsRaf);
+                camState.fpsRaf = null;
+            }
+            if (camState.stream) {
+                camState.stream.getTracks().forEach(t => t.stop());
+                camState.stream = null;
+            }
+            camState.isDemo = false;
+
+            const video = document.getElementById('webcam-video');
+            if (video) {
+                video.srcObject = null;
+                video.classList.add('hidden');
+            }
+            const demoCanvas = document.getElementById('webcam-demo-canvas');
+            if (demoCanvas) {
+                demoCanvas.classList.add('hidden');
+            }
+            document.getElementById('webcam-placeholder')?.classList.remove('hidden');
+            document.getElementById('btn-cam-stop').disabled = true;
+            document.getElementById('btn-cam-snap').disabled = true;
+
+            const dot = document.getElementById('cam-live-dot');
+            const txt = document.getElementById('cam-live-text');
+            if (dot) dot.className = 'w-2 h-2 rounded-full bg-slate-400';
+            if (txt) txt.textContent = 'OFFLINE';
+            document.getElementById('cam-res-badge').textContent = '-';
+            document.getElementById('cam-fps-badge').textContent = '0 FPS';
+
+            if (!silent) showToast('ปิดกล้องเว็บแคมและคืนสิทธิ์เรียบร้อย');
+        }
+
+        function applyCamMirror() {
+            const video = document.getElementById('webcam-video');
+            const demoCanvas = document.getElementById('webcam-demo-canvas');
+            const btn = document.getElementById('btn-cam-mirror');
+            const tf = camState.mirror ? 'scaleX(-1)' : 'none';
+            if (video) video.style.transform = tf;
+            if (demoCanvas) demoCanvas.style.transform = tf;
+            if (btn) btn.innerHTML = `<i class="fa-solid fa-left-right mr-1"></i> กระจก (Mirror: ${camState.mirror ? 'ON' : 'OFF'})`;
+        }
+
+        function toggleCamMirror() {
+            camState.mirror = !camState.mirror;
+            applyCamMirror();
+        }
+
+        function toggleCamGrid() {
+            camState.grid = !camState.grid;
+            const gridEl = document.getElementById('webcam-grid-overlay');
+            if (gridEl) gridEl.classList.toggle('hidden', !camState.grid);
+        }
+
+        function bindVideoTelemetry(video, labelText) {
+            video.classList.remove('hidden');
+            document.getElementById('webcam-placeholder')?.classList.add('hidden');
+            document.getElementById('btn-cam-stop').disabled = false;
+            document.getElementById('btn-cam-snap').disabled = false;
+            applyCamMirror();
+
+            const dot = document.getElementById('cam-live-dot');
+            const txt = document.getElementById('cam-live-text');
+            if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+            if (txt) txt.textContent = camState.isDemo ? 'DEMO CAM' : 'LIVE';
+
+            const updateDims = () => {
+                const w = video.videoWidth || 1280;
+                const h = video.videoHeight || 720;
+                document.getElementById('cam-res-badge').textContent = `${w}×${h}`;
+                markModuleStatus('webcam', 'pass', `${w}×${h} • ${labelText}`);
+            };
+            video.onloadedmetadata = updateDims;
+            if (video.videoWidth > 0) updateDims();
+
+            // Live FPS sampler
+            camState.fpsFrames = 0;
+            camState.fpsLastTime = performance.now();
+            if (typeof video.requestVideoFrameCallback === 'function') {
+                const onVFrame = (now) => {
+                    if (!camState.stream) return;
+                    camState.fpsFrames += 1;
+                    if (now - camState.fpsLastTime >= 750) {
+                        const fps = Math.round((camState.fpsFrames * 1000) / (now - camState.fpsLastTime));
+                        const fpsEl = document.getElementById('cam-fps-badge');
+                        if (fpsEl) fpsEl.textContent = `${fps} FPS`;
+                        camState.fpsFrames = 0;
+                        camState.fpsLastTime = now;
+                    }
+                    video.requestVideoFrameCallback(onVFrame);
+                };
+                video.requestVideoFrameCallback(onVFrame);
+            } else {
+                const tickFps = (now) => {
+                    if (!camState.stream) return;
+                    camState.fpsFrames += 1;
+                    if (now - camState.fpsLastTime >= 1000) {
+                        const fpsEl = document.getElementById('cam-fps-badge');
+                        if (fpsEl) fpsEl.textContent = `~${Math.min(60, camState.fpsFrames)} FPS`;
+                        camState.fpsFrames = 0;
+                        camState.fpsLastTime = now;
+                    }
+                    camState.fpsRaf = requestAnimationFrame(tickFps);
+                };
+                camState.fpsRaf = requestAnimationFrame(tickFps);
+            }
+        }
+
+        async function startWebcamTest() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showToast('เบราว์เซอร์ไม่รองรับการเปิดกล้อง ลองใช้ปุ่ม "Demo" เพื่อทดสอบอินเทอร์เฟซได้ครับ', 'error');
+                return;
+            }
+            stopWebcamTest(true);
+            const deviceId = document.getElementById('cam-device-select')?.value || '';
+            const resMode = document.getElementById('cam-res-select')?.value || '720p';
+            const resConstraints = resMode === '4k'
+                ? { width: { ideal: 3840 }, height: { ideal: 2160 } }
+                : resMode === '1080p'
+                    ? { width: { ideal: 1920 }, height: { ideal: 1080 } }
+                    : resMode === '720p'
+                        ? { width: { ideal: 1280 }, height: { ideal: 720 } }
+                        : {};
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        ...(deviceId ? { deviceId: { exact: deviceId } } : {}),
+                        ...resConstraints
+                    }
+                });
+                camState.stream = stream;
+                camState.isDemo = false;
+                const video = document.getElementById('webcam-video');
+                video.srcObject = stream;
+                await video.play().catch(() => {});
+                const label = stream.getVideoTracks()[0]?.label || 'Webcam พร้อมใช้';
+                bindVideoTelemetry(video, label);
+                refreshMediaDevices();
+                showToast('เปิดกล้องเว็บแคมสำเร็จ เช็กมุมกล้องและแสงได้เลย');
+            } catch (err) {
+                markModuleStatus('webcam', 'issue', 'ไม่อนุญาต/ไม่พบกล้อง');
+                showToast(`ไม่สามารถเปิดเว็บแคมได้ (${err.name || 'No Camera'}) — สามารถใช้ปุ่ม "Demo" ทดสอบได้ครับ`, 'warning');
+            }
+        }
+
+        function startDemoWebcam() {
+            stopWebcamTest(true);
+            const canvas = document.getElementById('webcam-demo-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = 960;
+            canvas.height = 540;
+            canvas.classList.remove('hidden');
+            document.getElementById('webcam-video')?.classList.add('hidden');
+            document.getElementById('webcam-placeholder')?.classList.add('hidden');
+            document.getElementById('btn-cam-stop').disabled = false;
+            document.getElementById('btn-cam-snap').disabled = false;
+
+            camState.isDemo = true;
+            camState.stream = typeof canvas.captureStream === 'function' ? canvas.captureStream(30) : { getTracks: () => [] };
+            applyCamMirror();
+
+            const dot = document.getElementById('cam-live-dot');
+            const txt = document.getElementById('cam-live-text');
+            if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+            if (txt) txt.textContent = 'DEMO CAM';
+            document.getElementById('cam-res-badge').textContent = '960×540';
+            markModuleStatus('webcam', 'pass', '960×540 • กล้องทดสอบจำลอง');
+
+            let t = 0;
+            camState.fpsFrames = 0;
+            camState.fpsLastTime = performance.now();
+            function drawFrame(now) {
+                if (!camState.isDemo) return;
+                t += 0.05;
+                camState.fpsFrames += 1;
+                if (now - camState.fpsLastTime >= 500) {
+                    const fps = Math.round((camState.fpsFrames * 1000) / (now - camState.fpsLastTime));
+                    const fpsEl = document.getElementById('cam-fps-badge');
+                    if (fpsEl) fpsEl.textContent = `${fps} FPS`;
+                    camState.fpsFrames = 0;
+                    camState.fpsLastTime = now;
+                }
+
+                const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                grad.addColorStop(0, '#0f172a');
+                grad.addColorStop(1, '#1e3a8a');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.strokeStyle = 'rgba(16, 185, 129, 0.5)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(canvas.width / 2 + Math.cos(t) * 28, canvas.height / 2 + Math.sin(t) * 14, 110, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 34px Kanit, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('DEMO WEBCAM TEST SIGNAL', canvas.width / 2, canvas.height / 2 - 12);
+                ctx.fillStyle = '#34d399';
+                ctx.font = '18px monospace';
+                ctx.fillText('960x540 • Framing & Snapshot Ready', canvas.width / 2, canvas.height / 2 + 24);
+
+                camState.demoRaf = requestAnimationFrame(drawFrame);
+            }
+            drawFrame(performance.now());
+            showToast('เปิดสัญญาณกล้องทดสอบจำลอง (Demo Cam) แล้ว');
+        }
+
+        function captureWebcamSnapshot() {
+            const video = document.getElementById('webcam-video');
+            const demoCanvas = document.getElementById('webcam-demo-canvas');
+            const useDemo = camState.isDemo || !video || video.videoWidth === 0;
+            const sourceEl = useDemo ? demoCanvas : video;
+            if (!sourceEl || (!camState.stream && !camState.isDemo)) return;
+            const w = useDemo ? (demoCanvas?.width || 960) : (video.videoWidth || 1280);
+            const h = useDemo ? (demoCanvas?.height || 540) : (video.videoHeight || 720);
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            if (camState.mirror) {
+                ctx.translate(w, 0);
+                ctx.scale(-1, 1);
+            }
+            ctx.drawImage(sourceEl, 0, 0, w, h);
+            const url = canvas.toDataURL('image/png');
+            const img = document.getElementById('cam-snapshot-img');
+            const dl = document.getElementById('cam-snapshot-dl');
+            const box = document.getElementById('cam-snapshot-box');
+            if (img) img.src = url;
+            if (dl) dl.href = url;
+            if (box) {
+                box.classList.remove('hidden');
+                box.classList.add('flex');
+            }
+            showToast(`ถ่ายภาพตัวอย่างขนาด ${w}×${h} px เรียบร้อย`);
+        }
+
+        // ==========================================
+        // 6. KEYBOARD MATRIX & MOUSE TESTER
+        // ==========================================
+        const KEYBOARD_ROWS = [
+            [
+                { code: 'Escape', label: 'Esc', w: 'w-12' },
+                { code: 'F1', label: 'F1' }, { code: 'F2', label: 'F2' }, { code: 'F3', label: 'F3' }, { code: 'F4', label: 'F4' },
+                { code: 'F5', label: 'F5' }, { code: 'F6', label: 'F6' }, { code: 'F7', label: 'F7' }, { code: 'F8', label: 'F8' },
+                { code: 'F9', label: 'F9' }, { code: 'F10', label: 'F10' }, { code: 'F11', label: 'F11' }, { code: 'F12', label: 'F12' },
+                { code: 'PrintScreen', label: 'PrtSc' }, { code: 'Delete', label: 'Del', w: 'w-12' }
+            ],
+            [
+                { code: 'Backquote', label: '~ `' },
+                { code: 'Digit1', label: '1' }, { code: 'Digit2', label: '2' }, { code: 'Digit3', label: '3' },
+                { code: 'Digit4', label: '4' }, { code: 'Digit5', label: '5' }, { code: 'Digit6', label: '6' },
+                { code: 'Digit7', label: '7' }, { code: 'Digit8', label: '8' }, { code: 'Digit9', label: '9' },
+                { code: 'Digit0', label: '0' }, { code: 'Minus', label: '-' }, { code: 'Equal', label: '=' },
+                { code: 'Backspace', label: 'Backspace', w: 'flex-1 min-w-[78px]' }
+            ],
+            [
+                { code: 'Tab', label: 'Tab', w: 'w-16' },
+                { code: 'KeyQ', label: 'Q' }, { code: 'KeyW', label: 'W' }, { code: 'KeyE', label: 'E' },
+                { code: 'KeyR', label: 'R' }, { code: 'KeyT', label: 'T' }, { code: 'KeyY', label: 'Y' },
+                { code: 'KeyU', label: 'U' }, { code: 'KeyI', label: 'I' }, { code: 'KeyO', label: 'O' },
+                { code: 'KeyP', label: 'P' }, { code: 'BracketLeft', label: '[' }, { code: 'BracketRight', label: ']' },
+                { code: 'Backslash', label: '\\', w: 'flex-1 min-w-[54px]' }
+            ],
+            [
+                { code: 'CapsLock', label: 'Caps', w: 'w-20' },
+                { code: 'KeyA', label: 'A' }, { code: 'KeyS', label: 'S' }, { code: 'KeyD', label: 'D' },
+                { code: 'KeyF', label: 'F' }, { code: 'KeyG', label: 'G' }, { code: 'KeyH', label: 'H' },
+                { code: 'KeyJ', label: 'J' }, { code: 'KeyK', label: 'K' }, { code: 'KeyL', label: 'L' },
+                { code: 'Semicolon', label: ';' }, { code: 'Quote', label: "'" },
+                { code: 'Enter', label: 'Enter', w: 'flex-1 min-w-[82px]' }
+            ],
+            [
+                { code: 'ShiftLeft', label: 'Shift L', w: 'w-24' },
+                { code: 'KeyZ', label: 'Z' }, { code: 'KeyX', label: 'X' }, { code: 'KeyC', label: 'C' },
+                { code: 'KeyV', label: 'V' }, { code: 'KeyB', label: 'B' }, { code: 'KeyN', label: 'N' },
+                { code: 'KeyM', label: 'M' }, { code: 'Comma', label: ',' }, { code: 'Period', label: '.' },
+                { code: 'Slash', label: '/' },
+                { code: 'ShiftRight', label: 'Shift R', w: 'flex-1 min-w-[86px]' }
+            ],
+            [
+                { code: 'ControlLeft', label: 'Ctrl', w: 'w-14' },
+                { code: 'MetaLeft', label: 'Win', w: 'w-12' },
+                { code: 'AltLeft', label: 'Alt', w: 'w-12' },
+                { code: 'Space', label: 'Spacebar', w: 'flex-1 min-w-[180px]' },
+                { code: 'AltRight', label: 'Alt', w: 'w-12' },
+                { code: 'ControlRight', label: 'Ctrl', w: 'w-14' },
+                { code: 'ArrowLeft', label: '←', w: 'w-10' },
+                { code: 'ArrowUp', label: '↑', w: 'w-10' },
+                { code: 'ArrowDown', label: '↓', w: 'w-10' },
+                { code: 'ArrowRight', label: '→', w: 'w-10' }
+            ]
+        ];
+
+        const kbdState = {
+            totalKeys: 0,
+            tested: new Set(),
+            active: new Set(),
+            maxNkro: 0,
+            lastDownTime: {},
+            chatterCount: 0
+        };
+
+        const mouseCounts = { 0: 0, 1: 0, 2: 0, wheelUp: 0, wheelDown: 0 };
+
+        function renderKeyboardMatrix() {
+            const container = document.getElementById('keyboard-matrix');
+            if (!container) return;
+            kbdState.totalKeys = 0;
+            container.innerHTML = KEYBOARD_ROWS.map(row => {
+                const keysHtml = row.map(k => {
+                    kbdState.totalKeys += 1;
+                    const widthCls = k.w || 'w-10';
+                    return `<button type="button" data-keycode="${escapeHtml(k.code)}" onclick="simulateVirtualKeyPress('${escapeHtml(k.code)}', '${escapeHtml(k.label)}')" class="kbd-key ${widthCls} h-9 px-1.5 rounded-lg bg-white dark:bg-zinc-800 border border-slate-300 dark:border-zinc-600 font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-center shrink-0 cursor-pointer">${escapeHtml(k.label)}</button>`;
+                }).join('');
+                return `<div class="flex items-center gap-1.5">${keysHtml}</div>`;
+            }).join('');
+            updateKeyboardTelemetry();
+        }
+
+        function simulateVirtualKeyPress(code, label) {
+            recordKeyPress(code, label, false);
+            setTimeout(() => recordKeyRelease(code), 120);
+        }
+
+        function recordKeyPress(code, displayKey, isRepeat) {
+            const now = performance.now();
+            const tile = document.querySelector(`.kbd-key[data-keycode="${CSS.escape(code)}"]`);
+
+            if (!isRepeat && kbdState.lastDownTime[code] && (now - kbdState.lastDownTime[code]) < 45) {
+                kbdState.chatterCount += 1;
+                if (tile) tile.classList.add('is-chatter');
+            }
+            if (!isRepeat) kbdState.lastDownTime[code] = now;
+
+            kbdState.tested.add(code);
+            kbdState.active.add(code);
+            if (kbdState.active.size > kbdState.maxNkro) {
+                kbdState.maxNkro = kbdState.active.size;
+            }
+            if (tile) {
+                tile.classList.add('is-tested', 'is-active');
+            }
+
+            const lastCodeEl = document.getElementById('kbd-last-code');
+            if (lastCodeEl) lastCodeEl.textContent = `${code} (${displayKey || code})`;
+
+            if (hardwareStatus.keyboard === 'idle' || hardwareStatus.keyboard === 'testing') {
+                markModuleStatus('keyboard', kbdState.chatterCount > 0 ? 'issue' : 'pass', `${kbdState.tested.size} ปุ่ม (NKRO ${kbdState.maxNkro})`);
+            }
+            updateKeyboardTelemetry();
+        }
+
+        function recordKeyRelease(code) {
+            kbdState.active.delete(code);
+            const tile = document.querySelector(`.kbd-key[data-keycode="${CSS.escape(code)}"]`);
+            if (tile) tile.classList.remove('is-active');
+        }
+
+        function updateKeyboardTelemetry() {
+            const countEl = document.getElementById('kbd-tested-count');
+            const nkroEl = document.getElementById('kbd-nkro-max');
+            const chatEl = document.getElementById('kbd-chatter-badge');
+            const tileInfo = document.getElementById('tile-info-keyboard');
+            if (countEl) countEl.textContent = `${kbdState.tested.size} / ${kbdState.totalKeys} ปุ่ม`;
+            if (nkroEl) nkroEl.textContent = String(kbdState.maxNkro);
+            if (tileInfo) tileInfo.textContent = `${kbdState.tested.size} ปุ่ม (NKRO ${kbdState.maxNkro})`;
+
+            if (chatEl) {
+                if (kbdState.chatterCount > 0) {
+                    chatEl.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 text-[11px] font-bold';
+                    chatEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> พบอาการปุ่มเบิ้ล: ${kbdState.chatterCount} ครั้ง`;
+                } else {
+                    chatEl.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold';
+                    chatEl.innerHTML = `<i class="fa-solid fa-shield-halved"></i> ปุ่มเบิ้ล (Chatter): 0 ครั้ง`;
+                }
+            }
+        }
+
+        function resetKeyboardTest() {
+            kbdState.tested.clear();
+            kbdState.active.clear();
+            kbdState.maxNkro = 0;
+            kbdState.lastDownTime = {};
+            kbdState.chatterCount = 0;
+            document.querySelectorAll('.kbd-key').forEach(el => el.classList.remove('is-tested', 'is-active', 'is-chatter'));
+            const lastCodeEl = document.getElementById('kbd-last-code');
+            if (lastCodeEl) lastCodeEl.textContent = '-';
+            markModuleStatus('keyboard', 'idle', '0 ปุ่มที่ตรวจแล้ว');
+            updateKeyboardTelemetry();
+            showToast('รีเซ็ตสถานะปุ่มคีย์บอร์ดเรียบร้อย');
+        }
+
+        function initMousePad() {
+            const pad = document.getElementById('mouse-test-pad');
+            if (!pad) return;
+            pad.addEventListener('contextmenu', (e) => e.preventDefault());
+            pad.addEventListener('mousedown', (e) => {
+                if (e.button === 0 || e.button === 1 || e.button === 2) {
+                    e.preventDefault();
+                    mouseCounts[e.button] += 1;
+                    const names = { 0: 'ซ้าย', 1: 'กลาง', 2: 'ขวา' };
+                    const cell = document.getElementById(`mouse-btn-${e.button}`);
+                    if (cell) {
+                        cell.textContent = `${names[e.button]} (${mouseCounts[e.button]})`;
+                        cell.className = 'p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/70 border border-emerald-400 text-emerald-800 dark:text-emerald-300 font-bold';
+                    }
+                }
+            });
+            pad.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                if (e.deltaY < 0) {
+                    mouseCounts.wheelUp += 1;
+                    const el = document.getElementById('mouse-wheel-up');
+                    if (el) el.textContent = `เลื่อนขึ้น: ${mouseCounts.wheelUp}`;
+                } else if (e.deltaY > 0) {
+                    mouseCounts.wheelDown += 1;
+                    const el = document.getElementById('mouse-wheel-down');
+                    if (el) el.textContent = `เลื่อนลง: ${mouseCounts.wheelDown}`;
+                }
+            }, { passive: false });
+        }
+
+        // ==========================================
+        // 7. DEVICE ENUMERATION, QUICK CHECK & REPORT
+        // ==========================================
+        async function refreshMediaDevices() {
+            if (!navigator.mediaDevices || typeof navigator.mediaDevices.enumerateDevices !== 'function') {
+                return { mics: 0, cams: 0 };
+            }
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const mics = devices.filter(d => d.kind === 'audioinput');
+                const cams = devices.filter(d => d.kind === 'videoinput');
+
+                const micSel = document.getElementById('mic-device-select');
+                if (micSel) {
+                    const prev = micSel.value;
+                    micSel.innerHTML = mics.length
+                        ? mics.map((d, i) => `<option value="${escapeHtml(d.deviceId)}">${escapeHtml(d.label || `ไมโครโฟน #${i + 1}`)}</option>`).join('')
+                        : '<option value="">ไม่พบไมโครโฟนในระบบ</option>';
+                    if (prev && [...micSel.options].some(o => o.value === prev)) micSel.value = prev;
+                }
+
+                const camSel = document.getElementById('cam-device-select');
+                if (camSel) {
+                    const prev = camSel.value;
+                    camSel.innerHTML = cams.length
+                        ? cams.map((d, i) => `<option value="${escapeHtml(d.deviceId)}">${escapeHtml(d.label || `เว็บแคม #${i + 1}`)}</option>`).join('')
+                        : '<option value="">ไม่พบกล้องเว็บแคมในระบบ</option>';
+                    if (prev && [...camSel.options].some(o => o.value === prev)) camSel.value = prev;
+                }
+
+                return { mics: mics.length, cams: cams.length };
+            } catch (_) {
+                return { mics: 0, cams: 0 };
+            }
+        }
+
+        async function runOneClickHardwareScan() {
+            populateDisplayMetrics();
+            await measureRefreshRate(false);
+            const devs = await refreshMediaDevices();
+            const dpr = window.devicePixelRatio || 1;
+            const res = `${Math.round(window.screen.width * dpr)}×${Math.round(window.screen.height * dpr)}`;
+            markModuleStatus('screen', 'pass', `${res} (${screenState.measuredHz} Hz)`);
+
+            if (devs.mics > 0) {
+                document.getElementById('tile-info-mic').textContent = `พบ ${devs.mics} อุปกรณ์ (กดเริ่มจับเสียง)`;
+            } else {
+                document.getElementById('tile-info-mic').textContent = 'ยังไม่อนุญาตหรือใช้ Demo';
+            }
+
+            if (devs.cams > 0) {
+                document.getElementById('tile-info-webcam').textContent = `พบ ${devs.cams} กล้อง (กดเปิดกล้อง)`;
+            } else {
+                document.getElementById('tile-info-webcam').textContent = 'ยังไม่อนุญาตหรือใช้ Demo';
+            }
+
+            showToast(`สแกนเบื้องต้นแล้ว: จอ ${res} (${screenState.measuredHz} Hz) • พบ ${devs.mics} ไมค์ / ${devs.cams} กล้อง`);
+        }
+
+        async function startAvPrecheck() {
+            switchTesterTab('all');
+            await Promise.allSettled([startMicTest(), startWebcamTest()]);
+        }
+
+        function resetMouseAndStatuses() {
+            mouseCounts[0] = mouseCounts[1] = mouseCounts[2] = mouseCounts.wheelUp = mouseCounts.wheelDown = 0;
+            const btnNames = { 0: 'ซ้าย (0)', 1: 'กลาง (0)', 2: 'ขวา (0)' };
+            [0, 1, 2].forEach(b => {
+                const cell = document.getElementById(`mouse-btn-${b}`);
+                if (cell) {
+                    cell.textContent = btnNames[b];
+                    cell.className = 'p-2 rounded-lg bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700';
+                }
+            });
+            document.getElementById('mouse-wheel-up').textContent = 'เลื่อนขึ้น: 0';
+            document.getElementById('mouse-wheel-down').textContent = 'เลื่อนลง: 0';
+            resetKeyboardTest();
+            markModuleStatus('screen', 'idle', document.getElementById('scr-phys-res')?.textContent || '-');
+            markModuleStatus('mic', 'idle', 'คลิกเพื่อเช็กเสียง');
+            markModuleStatus('speaker', 'idle', 'คลิกทดสอบซ้าย/ขวา');
+            markModuleStatus('webcam', 'idle', 'คลิกเพื่อเปิดกล้อง');
+            const noteEl = document.getElementById('audit-note-input');
+            if (noteEl) noteEl.value = '';
+            showToast('รีเซ็ตผลตรวจทั้งหมดเรียบร้อย');
+        }
+
+        function buildHardwareReportText() {
+            const nowStr = new Date().toLocaleString('th-TH');
+            const physRes = document.getElementById('scr-phys-res')?.textContent || '-';
+            const hz = document.getElementById('scr-refresh-hz')?.textContent || '-';
+            const camRes = document.getElementById('cam-res-badge')?.textContent || '-';
+            const note = document.getElementById('audit-note-input')?.value?.trim() || '-';
+            const lines = [
+                '=== รายงานเช็กความพร้อมฮาร์ดแวร์ (Screen & Mic Hardware Tester) ===',
+                `เวลาตรวจสอบ: ${nowStr}`,
+                `หน้าจอ & Dead Pixel: ${STATUS_LABELS[hardwareStatus.screen].text} | ความละเอียด ${physRes} | รีเฟรช ${hz}`,
+                `ไมโครโฟน: ${STATUS_LABELS[hardwareStatus.mic].text} | ความดังล่าสุด ${document.getElementById('mic-db-label')?.textContent || '-'}`,
+                `ลำโพง L/R: ${STATUS_LABELS[hardwareStatus.speaker].text}`,
+                `คีย์บอร์ด: ${STATUS_LABELS[hardwareStatus.keyboard].text} | กดตรวจแล้ว ${kbdState.tested.size}/${kbdState.totalKeys} ปุ่ม | NKRO ${kbdState.maxNkro} | ปุ่มเบิ้ล ${kbdState.chatterCount}`,
+                `เว็บแคม: ${STATUS_LABELS[hardwareStatus.webcam].text} | ความละเอียดวิดีโอ ${camRes}`,
+                `เมาส์ (ซ้าย/กลาง/ขวา): ${mouseCounts[0]} / ${mouseCounts[1]} / ${mouseCounts[2]} (Scroll Up ${mouseCounts.wheelUp}, Down ${mouseCounts.wheelDown})`,
+                `หมายเหตุผู้ตรวจ: ${note}`
+            ];
+            return lines.join('\n');
+        }
+
+        async function copyHardwareReport() {
+            const text = buildHardwareReportText();
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(text);
+                } else {
+                    const ta = document.createElement('textarea');
+                    ta.value = text;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    ta.remove();
+                }
+                showToast('คัดลอกรายงานผลตรวจลง Clipboard แล้ว');
+            } catch (_) {
+                showToast('คัดลอกไม่สำเร็จ กรุณากดดาวน์โหลดรายงาน .TXT', 'warning');
+            }
+        }
+
+        function downloadHardwareReport() {
+            const text = buildHardwareReportText();
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `hardware-check-${new Date().toISOString().slice(0, 10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            showToast('ดาวน์โหลดรายงานสภาพอุปกรณ์ (.TXT) เรียบร้อย');
+        }
+
+        // ==========================================
+        // 8. GLOBAL KEYBOARD / OVERLAY / THEME / SWITCHER
+        // ==========================================
+        function handleGlobalKeyDown(e) {
+            if (screenState.active) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    exitFullscreenScreenTest();
+                    return;
+                }
+                if (e.key === ' ' || e.key === 'ArrowRight' || e.key === 'Enter') {
+                    e.preventDefault();
+                    applyPatternIndex(screenState.index + 1);
+                    return;
+                }
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    applyPatternIndex(screenState.index - 1);
+                    return;
+                }
+                if (e.key === 'h' || e.key === 'H') {
+                    e.preventDefault();
+                    toggleFsHud();
+                    return;
+                }
+            }
+
+            if (e.key === 'Escape') {
+                toggleSubAppSwitcher(false);
+            }
+
+            // Ignore typing in textarea/input/select
+            const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+            if (tag === 'textarea' || tag === 'input' || tag === 'select') return;
+
+            if (document.getElementById('kbd-lock-keys')?.checked) {
+                if (['Space', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code) || /^F\d+$/.test(e.code)) {
+                    e.preventDefault();
+                }
+            }
+
+            recordKeyPress(e.code || e.key, e.key, e.repeat);
+        }
+
+        function handleGlobalKeyUp(e) {
+            const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+            if (tag === 'textarea' || tag === 'input' || tag === 'select') return;
+            recordKeyRelease(e.code || e.key);
+        }
+
+        function applyTheme(theme) {
+            const isDark = theme === 'dark';
+            document.documentElement.classList.toggle('dark', isDark);
+            const icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.className = isDark ? 'fa-solid fa-sun text-xs text-amber-400' : 'fa-solid fa-moon text-xs';
+            }
+            try { localStorage.setItem('feel_portfolio_theme', isDark ? 'dark' : 'light'); } catch (_) {}
+        }
+
+        function initTheme() {
+            let saved = 'light';
+            try {
+                saved = localStorage.getItem('feel_portfolio_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            } catch (_) {}
+            applyTheme(saved);
+        }
+
+        function toggleTheme() {
+            applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
+        }
+
+        function toggleSubAppSwitcher(forceState) {
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu) return;
+            if (typeof forceState === 'boolean') menu.classList.toggle('hidden', !forceState);
+            else menu.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('app-switcher-btn');
+            const menu = document.getElementById('app-switcher-menu');
+            if (menu && !menu.classList.contains('hidden') && !menu.contains(e.target) && (!btn || !btn.contains(e.target))) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && screenState.active) {
+                exitFullscreenScreenTest();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            renderScreenSwatches();
+            populateDisplayMetrics();
+            measureRefreshRate(false);
+            drawIdleAudioCanvases();
+            renderKeyboardMatrix();
+            initMousePad();
+            refreshMediaDevices();
+
+            // Fullscreen overlay controls
+            const ov = document.getElementById('screen-fullscreen-overlay');
+            const hud = document.getElementById('screen-fs-hud');
+            if (ov) {
+                ov.addEventListener('click', (e) => {
+                    if (hud && hud.contains(e.target)) return;
+                    applyPatternIndex(screenState.index + 1);
+                });
+            }
+            document.getElementById('fs-prev-btn')?.addEventListener('click', () => applyPatternIndex(screenState.index - 1));
+            document.getElementById('fs-next-btn')?.addEventListener('click', () => applyPatternIndex(screenState.index + 1));
+            document.getElementById('fs-autocycle-btn')?.addEventListener('click', () => setScreenAutoCycle(!screenState.autoTimer));
+            document.getElementById('fs-hidehud-btn')?.addEventListener('click', () => toggleFsHud());
+            document.getElementById('fs-exit-btn')?.addEventListener('click', () => exitFullscreenScreenTest());
+
+            document.addEventListener('keydown', handleGlobalKeyDown);
+            document.addEventListener('keyup', handleGlobalKeyUp);
+            window.addEventListener('beforeunload', () => {
+                stopMicTest(true);
+                stopWebcamTest(true);
+            });
+        });
+    </script>
+</body>
+</html>

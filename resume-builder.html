@@ -1,0 +1,2534 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume &amp; Portfolio PDF Builder — สร้างเรซูเม่ขนาด A4 &amp; Export PDF พร้อมพิมพ์ | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="ฟอร์มกรอกประวัติส่วนตัว การศึกษา ประสบการณ์ ทักษะ ผลงาน และเกียรติบัตร แล้วจัดเรียงลงเทมเพลต Resume ขนาด A4 อัตโนมัติ พร้อมสั่งพิมพ์และ Export เป็นไฟล์ PDF ที่สวยงามในเบราว์เซอร์ 100%">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Client-Side PDF & Inline QR Vector Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html, body {
+            overflow-x: clip;
+        }
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.15rem;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.10), 0 1px 3px 1px rgba(60, 64, 67, 0.06);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+
+        .preview-desk {
+            background-color: #e8edf5;
+            background-image: radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+        .dark .preview-desk {
+            background-color: #141619;
+            background-image: radial-gradient(rgba(226, 232, 240, 0.07) 1px, transparent 1px);
+        }
+
+        /* A4 Paper Exact Dimensions (96dpi reference: 794 x 1123 px = 210 x 297 mm) */
+        #resume-sheet {
+            width: 794px;
+            min-height: 1123px;
+            background: #ffffff;
+            color: #1e293b;
+            box-shadow: 0 16px 40px -12px rgba(15, 23, 42, 0.28);
+            position: relative;
+            box-sizing: border-box;
+            text-rendering: geometricPrecision;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .resume-block {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .resume-section-head {
+            break-after: avoid;
+            page-break-after: avoid;
+        }
+
+        .page-break-guide {
+            position: absolute;
+            left: 0;
+            right: 0;
+            border-top: 2px dashed rgba(225, 29, 72, 0.55);
+            pointer-events: none;
+            z-index: 20;
+        }
+        .page-break-label {
+            position: absolute;
+            right: 12px;
+            top: -11px;
+            background: #be123c;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: 9999px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Dedicated A4 Vector Print Styles */
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+        @media print {
+            html, body {
+                background: #ffffff !important;
+                color: #1e293b !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 210mm !important;
+                height: auto !important;
+                overflow: visible !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            main,
+            #workspace-grid,
+            #preview-column,
+            #preview-card,
+            #preview-desk,
+            #resume-scale-viewport,
+            #resume-scale-wrap {
+                display: block !important;
+                position: static !important;
+                width: 210mm !important;
+                max-width: none !important;
+                height: auto !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                background: #ffffff !important;
+                transform: none !important;
+                overflow: visible !important;
+            }
+            #resume-sheet {
+                width: 210mm !important;
+                min-height: 297mm !important;
+                box-shadow: none !important;
+                transform: none !important;
+                margin: 0 !important;
+            }
+            .page-break-guide {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-sky-600 selection:text-white min-h-screen flex flex-col">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="no-print fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Centered Bottom Toast Notification -->
+    <div id="toast-container" class="no-print fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 w-[92vw] max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- UNIFIED SINGLE-ROW NAVIGATION HEADER       -->
+    <!-- ========================================== -->
+    <header class="no-print h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก</span>
+            </a>
+
+            <div class="flex items-center gap-2.5 sm:border-l border-google-border dark:border-google-dark-border sm:pl-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-600 via-blue-600 to-indigo-600 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-address-card"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            Resume &amp; Portfolio PDF Builder
+                        </h1>
+                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/70 text-sky-800 dark:text-sky-300 text-[10px] font-bold whitespace-nowrap shrink-0">
+                            A4 Auto Layout &bull; PDF Export
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        กรอกประวัติ ทักษะ &amp; เกียรติบัตร จัดหน้าลงเทมเพลต A4 อัตโนมัติ พร้อมสั่งพิมพ์และส่งออก PDF
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <a href="pdf-tools.html" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 text-xs font-semibold text-red-700 dark:text-red-300 hover:bg-red-100 transition whitespace-nowrap">
+                <i class="fa-solid fa-file-pdf"></i>
+                <span>รวม/แยกไฟล์ PDF</span>
+            </a>
+
+            <!-- App Switcher Dropdown (19 Apps) -->
+            <div class="relative shrink-0">
+                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (19 ระบบ)">
+                    <i class="fa-solid fa-layer-group text-sky-600 dark:text-sky-400"></i>
+                    <span class="hidden sm:inline">สลับเว็บแอป</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 text-[10px] font-bold leading-none">19</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                </button>
+                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
+                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
+                        </div>
+                    </a>
+                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
+                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (19 ระบบ)</div>
+                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
+                        </div>
+                    </a>
+                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
+                        </div>
+                    </a>
+                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
+                        </div>
+                    </a>
+                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ &amp; พายุ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
+                        </div>
+                    </a>
+                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble &amp; สูตร CFOP</div>
+                        </div>
+                    </a>
+                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง &amp; ถาม-ตอบ</div>
+                        </div>
+                    </a>
+                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ &amp; แชร์ PIN 6 หลัก</div>
+                        </div>
+                    </a>
+                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง &amp; รูปติดบัตร</div>
+                        </div>
+                    </a>
+                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI &amp; โฮสต์ฟรี</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI &amp; รันไฟล์</div>
+                        </div>
+                    </a>
+                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON &bull; JWT &bull; Base64 &bull; Timestamp</div>
+                        </div>
+                    </a>
+                    <a href="subnet.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-blue-600 bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-network-wired"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">11. IP &amp; Subnet Calculator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CIDR &bull; Host Range &bull; VLAN &bull; Netplan</div>
+                        </div>
+                    </a>
+                    <a href="regex.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-fuchsia-600 bg-fuchsia-50 dark:bg-fuchsia-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">12. Regex Tester &amp; Cheatsheet</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Live Match &bull; Presets &bull; Replace</div>
+                        </div>
+                    </a>
+                    <a href="diff.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code-compare"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">13. Diff Checker &amp; Code Compare</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Side-by-Side &bull; Patch &bull; Word Diff</div>
+                        </div>
+                    </a>
+                    <a href="keygen.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-rose-600 bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">14. Password &amp; Key Generator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CSPRNG &bull; API Key &bull; UUID &bull; Hash</div>
+                        </div>
+                    </a>
+                    <a href="pdf-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-red-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">15. PDF Merge &amp; Split</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวมไฟล์ &bull; แยกหน้า &bull; หมุน &amp; ลบหน้า</div>
+                        </div>
+                    </a>
+                    <a href="image-converter.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-images"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">16. Image Compressor &amp; Converter</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JPG &bull; PNG &bull; WebP &bull; Batch ZIP</div>
+                        </div>
+                    </a>
+                    <a href="qr-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-qrcode"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">17. Custom QR Code Studio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">URL &bull; Wi-Fi &bull; PromptPay &bull; PNG/SVG</div>
+                        </div>
+                    </a>
+                    <a href="ocr.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-purple-600 bg-purple-50 dark:bg-purple-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-lines"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">18. OCR Image-to-Text</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">สแกนไทย/อังกฤษจากภาพ &bull; สไลด์</div>
+                        </div>
+                    </a>
+                    <a href="resume-builder.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-sky-50 dark:bg-sky-950/60 border border-sky-300 dark:border-sky-700 transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-100 dark:bg-sky-950 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-address-card"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">19. Resume &amp; Portfolio PDF</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">เทมเพลต A4 &bull; Export PDF พร้อมพิมพ์</div>
+                        </div>
+                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-sky-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Theme Switcher -->
+            <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN WORKSPACE                             -->
+    <!-- ========================================== -->
+    <main class="flex-1 w-full max-w-[1440px] mx-auto px-3 sm:px-6 py-4 space-y-4">
+
+        <!-- Top Action Bar -->
+        <div class="no-print g-card p-2.5 sm:px-3.5 sm:py-3 flex flex-col xl:flex-row xl:items-center justify-between gap-2.5 border-t-4 border-t-sky-600">
+            <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-[11px] font-bold text-google-text-muted dark:text-google-dark-text-muted mr-0.5">
+                    <i class="fa-solid fa-wand-magic-sparkles text-sky-600 mr-1"></i>ตั้งต้น:
+                </span>
+                <button type="button" id="preset-portfolio-btn" onclick="loadPreset('portfolio')" class="px-2.5 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 text-[11px] font-semibold transition cursor-pointer whitespace-nowrap">
+                    <i class="fa-solid fa-user-graduate mr-1"></i>ตัวอย่างคุณภคพล
+                </button>
+                <button type="button" id="sync-portfolio-btn" onclick="syncFromPortfolioStorage()" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-semibold transition cursor-pointer whitespace-nowrap" title="ดึงข้อมูลล่าสุดจากหน้าหลัก Portfolio ที่คุณแก้ไขไว้">
+                    <i class="fa-solid fa-rotate mr-1"></i>ซิงค์ Portfolio
+                </button>
+                <button type="button" id="preset-dev-btn" onclick="loadPreset('developer')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-google-dark-subtle hover:bg-slate-200 dark:hover:bg-zinc-700 text-google-text-body dark:text-google-dark-text text-[11px] font-semibold transition cursor-pointer whitespace-nowrap">
+                    <i class="fa-solid fa-laptop-code mr-1"></i>Dev/IT
+                </button>
+                <button type="button" id="preset-blank-btn" onclick="loadPreset('blank')" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-google-text-muted dark:text-google-dark-text-muted border border-google-border dark:border-google-dark-border text-[11px] font-semibold transition cursor-pointer whitespace-nowrap">
+                    <i class="fa-regular fa-file mr-1"></i>ฟอร์มเปล่า
+                </button>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-1.5">
+                <span id="autosave-status" class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-semibold whitespace-nowrap">
+                    <i class="fa-solid fa-check-circle mr-1"></i>บันทึกอัตโนมัติแล้ว
+                </span>
+
+                <button type="button" id="export-json-btn" onclick="exportResumeJson()" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg hover:bg-slate-100 dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-[11px] font-semibold text-google-text dark:text-google-dark-text transition cursor-pointer whitespace-nowrap" title="บันทึกข้อมูลเป็นไฟล์สำรอง .json">
+                    <i class="fa-solid fa-file-export mr-1 text-indigo-600"></i>บันทึก .JSON
+                </button>
+                <label class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg hover:bg-slate-100 dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-[11px] font-semibold text-google-text dark:text-google-dark-text transition cursor-pointer whitespace-nowrap" title="เปิดไฟล์สำรอง .json ที่เคยบันทึกไว้">
+                    <i class="fa-solid fa-file-import mr-1 text-amber-600"></i>นำเข้า .JSON
+                    <input type="file" id="import-json-input" accept=".json,application/json" class="hidden" onchange="importResumeJson(event)">
+                </label>
+
+                <button type="button" id="print-pdf-btn" onclick="triggerVectorPrint()" class="px-3 py-1.5 rounded-xl bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 text-white text-[11px] font-bold shadow-xs transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap" title="สั่งพิมพ์หรือบันทึกเป็น Vector PDF (ตัวอักษรคมชัด 100% เลือกคัดลอกข้อความได้)">
+                    <i class="fa-solid fa-print"></i>
+                    <span>พิมพ์ / Save Vector PDF</span>
+                </button>
+
+                <button type="button" id="download-pdf-btn" onclick="exportDirectPdf()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white text-[11px] font-bold shadow-sm transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                    <span id="download-pdf-label">ดาวน์โหลด .PDF ทันที</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile View Switcher (helps navigate between editor and live A4 preview on narrow screens) -->
+        <div class="no-print flex xl:hidden items-center justify-between gap-2 g-card p-2">
+            <button type="button" id="mobile-jump-editor" onclick="scrollToSection('editor-column')" class="flex-1 py-2 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 text-xs font-bold text-center cursor-pointer">
+                <i class="fa-solid fa-pen-to-square mr-1"></i>กรอก/แก้ไขข้อมูล
+            </button>
+            <button type="button" id="mobile-jump-preview" onclick="scrollToSection('preview-column')" class="flex-1 py-2 rounded-xl bg-slate-100 dark:bg-google-dark-subtle text-google-text dark:text-google-dark-text text-xs font-bold text-center cursor-pointer">
+                <i class="fa-solid fa-file-lines mr-1"></i>ดูหน้ากระดาษ A4
+            </button>
+        </div>
+
+        <!-- Two-Column Builder & Live A4 Preview -->
+        <div id="workspace-grid" class="grid grid-cols-1 xl:grid-cols-12 gap-4 items-start">
+
+            <!-- ========================================== -->
+            <!-- LEFT: STRUCTURED RESUME EDITOR (5 cols)    -->
+            <!-- ========================================== -->
+            <section id="editor-column" class="no-print xl:col-span-5 g-card overflow-hidden">
+                <!-- Editor Section Tabs -->
+                <div class="p-2.5 bg-slate-50 dark:bg-google-dark-bg border-b border-google-border dark:border-google-dark-border flex flex-wrap gap-1.5">
+                    <button type="button" id="tab-btn-profile" onclick="switchEditorTab('profile')" class="editor-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 bg-sky-600 text-white shadow-xs">
+                        <i class="fa-solid fa-id-card"></i><span>1. ข้อมูลส่วนตัว</span>
+                    </button>
+                    <button type="button" id="tab-btn-eduexp" onclick="switchEditorTab('eduexp')" class="editor-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 bg-white dark:bg-google-dark-surface text-google-text-body dark:text-google-dark-text-body border border-google-border dark:border-google-dark-border">
+                        <i class="fa-solid fa-graduation-cap"></i><span>2. การศึกษา &amp; งาน</span>
+                    </button>
+                    <button type="button" id="tab-btn-skills" onclick="switchEditorTab('skills')" class="editor-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 bg-white dark:bg-google-dark-surface text-google-text-body dark:text-google-dark-text-body border border-google-border dark:border-google-dark-border">
+                        <i class="fa-solid fa-screwdriver-wrench"></i><span>3. ทักษะ &amp; ภาษา</span>
+                    </button>
+                    <button type="button" id="tab-btn-portfolio" onclick="switchEditorTab('portfolio')" class="editor-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 bg-white dark:bg-google-dark-surface text-google-text-body dark:text-google-dark-text-body border border-google-border dark:border-google-dark-border">
+                        <i class="fa-solid fa-award"></i><span>4. ผลงาน &amp; เกียรติบัตร</span>
+                    </button>
+                    <button type="button" id="tab-btn-design" onclick="switchEditorTab('design')" class="editor-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 bg-white dark:bg-google-dark-surface text-google-text-body dark:text-google-dark-text-body border border-google-border dark:border-google-dark-border">
+                        <i class="fa-solid fa-palette"></i><span>5. ดีไซน์ A4</span>
+                    </button>
+                </div>
+
+                <!-- Tab Panels Container -->
+                <div class="p-4 space-y-4 max-h-[82vh] overflow-y-auto" id="editor-scroll-body">
+
+                    <!-- TAB 1: PROFILE -->
+                    <div id="tab-panel-profile" class="space-y-4">
+                        <!-- Photo & Avatar Controls -->
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border flex flex-wrap items-center gap-3">
+                            <img id="editor-photo-thumb" src="./ตัวเอง.jpg" alt="รูปโปรไฟล์" class="w-16 h-16 rounded-xl object-cover border border-google-border dark:border-google-dark-border bg-white shrink-0">
+                            <div class="flex-1 min-w-[180px] space-y-2">
+                                <div class="text-xs font-bold text-google-text dark:text-google-dark-text">รูปถ่ายประจำตัวในเรซูเม่</div>
+                                <div class="flex flex-wrap gap-1.5">
+                                    <label class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-semibold cursor-pointer">
+                                        <i class="fa-solid fa-upload mr-1"></i>อัปโหลดรูปใหม่
+                                        <input type="file" id="profile-photo-input" accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
+                                    </label>
+                                    <button type="button" onclick="useDefaultPortfolioPhoto()" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-[11px] font-semibold text-google-text dark:text-google-dark-text hover:bg-slate-100 cursor-pointer">
+                                        ใช้รูป Portfolio
+                                    </button>
+                                    <button type="button" onclick="clearProfilePhoto()" class="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-[11px] font-semibold cursor-pointer">
+                                        ไม่ใส่รูป
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="sm:col-span-2">
+                                <label for="field-fullName" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">ชื่อ - นามสกุล</label>
+                                <input id="field-fullName" type="text" oninput="updateProfileField('fullName', this.value)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-sm text-google-text dark:text-google-dark-text focus:outline-none focus:border-sky-500">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label for="field-headline" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">ตำแหน่งงานเป้าหมาย / สถานะปัจจุบัน</label>
+                                <input id="field-headline" type="text" oninput="updateProfileField('headline', this.value)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-sm text-google-text dark:text-google-dark-text focus:outline-none focus:border-sky-500">
+                            </div>
+                            <div>
+                                <label for="field-nicknameBirth" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">ชื่อเล่น / วันเกิด (ตัวเลือก)</label>
+                                <input id="field-nicknameBirth" type="text" oninput="updateProfileField('nicknameBirth', this.value)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text focus:outline-none focus:border-sky-500">
+                            </div>
+                            <div>
+                                <label for="field-phone" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">เบอร์โทรศัพท์</label>
+                                <input id="field-phone" type="text" oninput="updateProfileField('phone', this.value)" placeholder="เช่น 062-xxx-xxxx" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text focus:outline-none focus:border-sky-500">
+                            </div>
+                            <div>
+                                <label for="field-email" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">อีเมล</label>
+                                <input id="field-email" type="email" oninput="updateProfileField('email', this.value)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text focus:outline-none focus:border-sky-500">
+                            </div>
+                            <div>
+                                <label for="field-lineText" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">LINE ID / ช่องทางแชท</label>
+                                <input id="field-lineText" type="text" oninput="updateProfileField('lineText', this.value)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text focus:outline-none focus:border-sky-500">
+                            </div>
+                            <div>
+                                <label for="field-website" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">เว็บไซต์ / Portfolio / GitHub</label>
+                                <input id="field-website" type="text" oninput="updateProfileField('website', this.value)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text focus:outline-none focus:border-sky-500">
+                            </div>
+                            <div>
+                                <label for="field-location" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">ที่อยู่ / จังหวัด</label>
+                                <input id="field-location" type="text" oninput="updateProfileField('location', this.value)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text focus:outline-none focus:border-sky-500">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label for="field-summary" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">สรุปจุดเด่น / เป้าหมายอาชีพ (Career Summary)</label>
+                                <textarea id="field-summary" rows="4" oninput="updateProfileField('summary', this.value)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs leading-relaxed text-google-text dark:text-google-dark-text focus:outline-none focus:border-sky-500"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Portfolio QR Code Block -->
+                        <div class="p-3 rounded-xl bg-sky-50/70 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 space-y-2">
+                            <label class="flex items-center gap-2 text-xs font-bold text-sky-800 dark:text-sky-300 cursor-pointer">
+                                <input type="checkbox" id="field-showQr" onchange="updateDesignField('showQr', this.checked)" class="rounded text-sky-600">
+                                <span><i class="fa-solid fa-qrcode mr-1"></i>แสดง QR Code สแกนเข้าเว็บ Portfolio ในกระดาษ A4</span>
+                            </label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <input id="field-qrUrl" type="text" oninput="updateProfileField('qrUrl', this.value)" placeholder="URL สำหรับสแกน QR" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text">
+                                <input id="field-qrLabel" type="text" oninput="updateProfileField('qrLabel', this.value)" placeholder="คำอธิบายใต้ QR" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: EDUCATION & EXPERIENCE -->
+                    <div id="tab-panel-eduexp" class="hidden space-y-5">
+                        <!-- Education List -->
+                        <div class="space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                                    <i class="fa-solid fa-graduation-cap mr-1"></i>ประวัติการศึกษา (Education)
+                                </h3>
+                                <button type="button" id="add-edu-btn" onclick="addListItem('education')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer">
+                                    <i class="fa-solid fa-plus mr-1"></i>เพิ่มวุฒิการศึกษา
+                                </button>
+                            </div>
+                            <div id="education-editor-list" class="space-y-2.5"></div>
+                        </div>
+
+                        <div class="border-t border-google-border dark:border-google-dark-border pt-4 space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-sky-400">
+                                    <i class="fa-solid fa-briefcase mr-1"></i>ประสบการณ์ทำงาน / ฝึกงาน (Experience)
+                                </h3>
+                                <button type="button" id="add-exp-btn" onclick="addListItem('experience')" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold cursor-pointer">
+                                    <i class="fa-solid fa-plus mr-1"></i>เพิ่มประสบการณ์
+                                </button>
+                            </div>
+                            <div id="experience-editor-list" class="space-y-2.5"></div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: SKILLS & LANGUAGES -->
+                    <div id="tab-panel-skills" class="hidden space-y-5">
+                        <div class="space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">
+                                    <i class="fa-solid fa-microchip mr-1"></i>หมวดทักษะความสามารถ (Skills)
+                                </h3>
+                                <button type="button" id="add-skill-btn" onclick="addListItem('skillGroups')" class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold cursor-pointer">
+                                    <i class="fa-solid fa-plus mr-1"></i>เพิ่มหมวดทักษะ
+                                </button>
+                            </div>
+                            <div id="skills-editor-list" class="space-y-2.5"></div>
+                        </div>
+
+                        <div class="border-t border-google-border dark:border-google-dark-border pt-4 space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">
+                                    <i class="fa-solid fa-language mr-1"></i>ทักษะด้านภาษา (Languages)
+                                </h3>
+                                <button type="button" id="add-lang-btn" onclick="addListItem('languages')" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold cursor-pointer">
+                                    <i class="fa-solid fa-plus mr-1"></i>เพิ่มภาษา
+                                </button>
+                            </div>
+                            <div id="languages-editor-list" class="space-y-2"></div>
+                        </div>
+
+                        <div class="border-t border-google-border dark:border-google-dark-border pt-4">
+                            <label for="field-interests" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">
+                                <i class="fa-solid fa-star text-amber-500 mr-1"></i>จุดเด่นเพิ่มเติม / กิจกรรมยามว่าง (คั่นด้วยจุลภาค ,)
+                            </label>
+                            <input id="field-interests" type="text" oninput="updateProfileField('interests', this.value)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text focus:outline-none focus:border-sky-500">
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: PROJECTS & CERTIFICATES -->
+                    <div id="tab-panel-portfolio" class="hidden space-y-5">
+                        <div class="p-2.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-800 dark:text-amber-300">
+                            <i class="fa-solid fa-lightbulb mr-1"></i>เก็บรายการผลงานและเกียรติบัตรทั้งหมดไว้ที่นี่ได้ แล้วติ๊กถูกเปิด/ปิดเฉพาะรายการที่ต้องการให้ปรากฏในเรซูเม่ฉบับที่จะพิมพ์!
+                        </div>
+
+                        <div class="space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-teal-700 dark:text-teal-400">
+                                    <i class="fa-solid fa-laptop-code mr-1"></i>โครงงาน &amp; ผลงานเด่น (Projects)
+                                </h3>
+                                <button type="button" id="add-project-btn" onclick="addListItem('projects')" class="px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-[11px] font-bold cursor-pointer">
+                                    <i class="fa-solid fa-plus mr-1"></i>เพิ่มผลงาน
+                                </button>
+                            </div>
+                            <div id="projects-editor-list" class="space-y-2.5"></div>
+                        </div>
+
+                        <div class="border-t border-google-border dark:border-google-dark-border pt-4 space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                                    <i class="fa-solid fa-award mr-1"></i>เกียรติบัตร &amp; รางวัล (Certificates &amp; Honors)
+                                </h3>
+                                <button type="button" id="add-cert-btn" onclick="addListItem('certificates')" class="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold cursor-pointer">
+                                    <i class="fa-solid fa-plus mr-1"></i>เพิ่มเกียรติบัตร
+                                </button>
+                            </div>
+                            <div id="certificates-editor-list" class="space-y-2.5"></div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: DESIGN & A4 SETTINGS -->
+                    <div id="tab-panel-design" class="hidden space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-2">1. เลือกรูปแบบเทมเพลต A4 (4 ดีไซน์)</label>
+                            <div class="grid grid-cols-2 gap-2" id="template-selector-grid">
+                                <button type="button" data-tpl="modern-sidebar" onclick="updateDesignField('template', 'modern-sidebar')" class="tpl-choice p-2.5 rounded-xl border text-left transition cursor-pointer">
+                                    <div class="text-xs font-bold">Modern Sidebar</div>
+                                    <div class="text-[11px] opacity-75">แถบข้างซ้าย + คอลัมน์หลัก</div>
+                                </button>
+                                <button type="button" data-tpl="executive-classic" onclick="updateDesignField('template', 'executive-classic')" class="tpl-choice p-2.5 rounded-xl border text-left transition cursor-pointer">
+                                    <div class="text-xs font-bold">Executive Classic</div>
+                                    <div class="text-[11px] opacity-75">ทางการ คอลัมน์เดี่ยวกึ่งกลาง</div>
+                                </button>
+                                <button type="button" data-tpl="tech-minimal" onclick="updateDesignField('template', 'tech-minimal')" class="tpl-choice p-2.5 rounded-xl border text-left transition cursor-pointer">
+                                    <div class="text-xs font-bold">Tech Minimal ATS</div>
+                                    <div class="text-[11px] opacity-75">อ่านง่ายสำหรับสาย IT &amp; วิศวะ</div>
+                                </button>
+                                <button type="button" data-tpl="portfolio-showcase" onclick="updateDesignField('template', 'portfolio-showcase')" class="tpl-choice p-2.5 rounded-xl border text-left transition cursor-pointer">
+                                    <div class="text-xs font-bold">Portfolio Showcase</div>
+                                    <div class="text-[11px] opacity-75">เน้นโชว์โครงงาน &amp; เกียรติบัตร</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label for="design-labelLang" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">2. ภาษาหัวข้อเรซูเม่</label>
+                                <select id="design-labelLang" onchange="updateDesignField('labelLang', this.value)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text">
+                                    <option value="both">สองภาษา (ไทย / English)</option>
+                                    <option value="th">ภาษาไทยล้วน</option>
+                                    <option value="en">English Headings</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="design-fontFamily" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">3. ฟอนต์ตัวอักษร A4</label>
+                                <select id="design-fontFamily" onchange="updateDesignField('fontFamily', this.value)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text">
+                                    <option value="Sarabun">Sarabun (ทางการ อ่านสบาย)</option>
+                                    <option value="Kanit">Kanit (โมเดิร์น สะอาด)</option>
+                                    <option value="Inter">Inter + Sarabun (Tech Look)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1.5">4. สีธีมหลักของเรซูเม่</label>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button type="button" onclick="updateDesignField('accentColor', '#1a73e8')" class="w-7 h-7 rounded-full border-2 border-white shadow-xs cursor-pointer" style="background:#1a73e8" title="Google Blue"></button>
+                                <button type="button" onclick="updateDesignField('accentColor', '#0f766e')" class="w-7 h-7 rounded-full border-2 border-white shadow-xs cursor-pointer" style="background:#0f766e" title="Teal Emerald"></button>
+                                <button type="button" onclick="updateDesignField('accentColor', '#4338ca')" class="w-7 h-7 rounded-full border-2 border-white shadow-xs cursor-pointer" style="background:#4338ca" title="Royal Indigo"></button>
+                                <button type="button" onclick="updateDesignField('accentColor', '#1e293b')" class="w-7 h-7 rounded-full border-2 border-white shadow-xs cursor-pointer" style="background:#1e293b" title="Slate Navy"></button>
+                                <button type="button" onclick="updateDesignField('accentColor', '#be123c')" class="w-7 h-7 rounded-full border-2 border-white shadow-xs cursor-pointer" style="background:#be123c" title="Crimson Rose"></button>
+                                <button type="button" onclick="updateDesignField('accentColor', '#b45309')" class="w-7 h-7 rounded-full border-2 border-white shadow-xs cursor-pointer" style="background:#b45309" title="Warm Amber"></button>
+                                <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-[11px] font-semibold cursor-pointer">
+                                    <span>กำหนดเอง</span>
+                                    <input type="color" id="design-accentColor" oninput="updateDesignField('accentColor', this.value)" class="w-5 h-5 border-0 bg-transparent cursor-pointer">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label for="design-density" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">5. ความโปร่งหน้ากระดาษ</label>
+                                <select id="design-density" onchange="updateDesignField('density', this.value)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text">
+                                    <option value="compact">กระชับ (Compact — จุข้อมูลเยอะ)</option>
+                                    <option value="normal">สมดุลมาตรฐาน (Normal)</option>
+                                    <option value="relaxed">โปร่งสบาย (Relaxed)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="design-photoShape" class="block text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">6. กรอบรูปถ่าย</label>
+                                <select id="design-photoShape" onchange="updateDesignField('photoShape', this.value)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs text-google-text dark:text-google-dark-text">
+                                    <option value="rounded">สี่เหลี่ยมมุมโค้ง (Recommended)</option>
+                                    <option value="circle">วงกลม (Circle)</option>
+                                    <option value="square">สี่เหลี่ยมทางการ</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1">
+                                <label for="design-fontScale">7. ขนาดตัวอักษรรวม (<span id="font-scale-val">100%</span>)</label>
+                                <button type="button" id="fit-one-page-btn" onclick="autoFitOnePage()" class="text-[11px] font-bold text-sky-600 hover:underline cursor-pointer">
+                                    <i class="fa-solid fa-compress mr-1"></i>ปรับพอดี 1 หน้าอัตโนมัติ
+                                </button>
+                            </div>
+                            <input id="design-fontScale" type="range" min="84" max="110" step="1" oninput="updateDesignField('fontScale', Number(this.value))" class="w-full accent-sky-600 cursor-pointer">
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-bold text-google-text-body dark:text-google-dark-text-body mb-1.5">8. ลำดับ &amp; เปิด-ปิดหมวดหมู่ในหน้า A4</div>
+                            <div id="section-order-list" class="space-y-1.5"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- RIGHT: LIVE A4 PAPER PREVIEW (7 cols)      -->
+            <!-- ========================================== -->
+            <section id="preview-column" class="xl:col-span-7">
+                <div id="preview-card" class="g-card overflow-hidden">
+                    <!-- Preview Top Bar -->
+                    <div class="no-print px-3 sm:px-4 py-2.5 bg-slate-50 dark:bg-google-dark-bg border-b border-google-border dark:border-google-dark-border flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs font-bold text-google-text dark:text-google-dark-text">
+                                <i class="fa-regular fa-file-lines text-sky-600 mr-1"></i>A4 Preview (210 &times; 297 mm)
+                            </span>
+                            <span id="page-fit-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                                1 หน้า A4
+                            </span>
+                            <button type="button" id="quick-autofit-btn" onclick="autoFitOnePage()" class="hidden px-2 py-0.5 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-800 text-[11px] font-bold cursor-pointer">
+                                <i class="fa-solid fa-compress mr-1"></i>ย่อพอดี 1 หน้า
+                            </button>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <label class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-google-text-body dark:text-google-dark-text-body cursor-pointer">
+                                <input type="checkbox" id="toggle-page-guides" checked onchange="togglePageGuides(this.checked)" class="rounded text-sky-600">
+                                <span>เส้นแบ่งหน้า</span>
+                            </label>
+                            <div class="inline-flex items-center rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border p-0.5 text-[11px] font-semibold">
+                                <button type="button" onclick="setPreviewZoom('fit')" id="zoom-btn-fit" class="zoom-btn px-2 py-0.5 rounded-md bg-sky-600 text-white cursor-pointer">พอดีจอ</button>
+                                <button type="button" onclick="setPreviewZoom('0.7')" id="zoom-btn-0.7" class="zoom-btn px-2 py-0.5 rounded-md text-google-text-body dark:text-google-dark-text-body cursor-pointer">70%</button>
+                                <button type="button" onclick="setPreviewZoom('0.85')" id="zoom-btn-0.85" class="zoom-btn px-2 py-0.5 rounded-md text-google-text-body dark:text-google-dark-text-body cursor-pointer">85%</button>
+                                <button type="button" onclick="setPreviewZoom('1')" id="zoom-btn-1" class="zoom-btn px-2 py-0.5 rounded-md text-google-text-body dark:text-google-dark-text-body cursor-pointer">100%</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Backdrop & Scaled A4 Sheet -->
+                    <div id="preview-desk" class="preview-desk p-2 sm:p-5 overflow-x-auto">
+                        <div id="resume-scale-viewport" class="w-full overflow-hidden flex justify-center">
+                            <div id="resume-scale-wrap" style="transform-origin: top left;">
+                                <article id="resume-sheet" aria-label="ตัวอย่างหน้ากระดาษเรซูเม่ขนาด A4"></article>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <script>
+        // ==========================================
+        // 1. STATE, STORAGE & PRESET DATA
+        // ==========================================
+        const STORAGE_KEY = 'feel_resume_builder_v1';
+        const PORTFOLIO_SYNC_KEY = 'feel_portfolio_data_v6';
+        const A4_WIDTH_PX = 794;
+        const A4_HEIGHT_PX = 1123;
+
+        const DEFAULT_LABELS = {
+            th: {
+                summary: 'บทสรุปแนะนำตัว',
+                education: 'ประวัติการศึกษา',
+                experience: 'ประสบการณ์ฝึกงานและการทำงาน',
+                projects: 'โครงงานและผลงานเด่น',
+                certificates: 'เกียรติบัตรและรางวัล',
+                skills: 'ทักษะและความสามารถ',
+                languages: 'ภาษา',
+                interests: 'ความสนใจเพิ่มเติม',
+                contact: 'ข้อมูลติดต่อ',
+                present: 'ปัจจุบัน'
+            },
+            en: {
+                summary: 'Profile Summary',
+                education: 'Education',
+                experience: 'Experience & Internship',
+                projects: 'Featured Projects',
+                certificates: 'Certificates & Honors',
+                skills: 'Core Skills',
+                languages: 'Languages',
+                interests: 'Interests',
+                contact: 'Contact',
+                present: 'Present'
+            },
+            both: {
+                summary: 'บทสรุปแนะนำตัว / Profile Summary',
+                education: 'ประวัติการศึกษา / Education',
+                experience: 'ประสบการณ์ / Experience',
+                projects: 'โครงงานและผลงาน / Projects',
+                certificates: 'เกียรติบัตรและรางวัล / Honors',
+                skills: 'ทักษะความสามารถ / Skills',
+                languages: 'ภาษา / Languages',
+                interests: 'จุดเด่น & ความสนใจ / Interests',
+                contact: 'ติดต่อ / Contact',
+                present: 'ปัจจุบัน'
+            }
+        };
+
+        const SECTION_NAMES_TH = {
+            summary: 'บทสรุปแนะนำตัว',
+            experience: 'ประสบการณ์ / ฝึกงาน',
+            education: 'ประวัติการศึกษา',
+            projects: 'โครงงาน & ผลงานเด่น',
+            certificates: 'เกียรติบัตร & รางวัล',
+            skills: 'ทักษะความสามารถ',
+            languages: 'ทักษะภาษา',
+            interests: 'จุดเด่นเพิ่มเติม'
+        };
+
+        function createPortfolioPreset() {
+            return {
+                profile: {
+                    fullName: 'นายภคพล สมัยแก้ว (ฟีล)',
+                    headline: 'นักศึกษา ปวส.1 เทคโนโลยีสารสนเทศ • ระบบสมองกลฝังตัว (ESP32/IoT) & AI Workflow',
+                    nicknameBirth: 'เกิด 10 ธันวาคม 2550 (อายุ 18 ปี)',
+                    phone: 'ติดต่อทาง LINE / Email',
+                    email: 'feel0627546143@gmail.com',
+                    lineText: 'LINE ID: CdqbkYbcUv',
+                    website: 'https://feel-ochre.vercel.app/',
+                    location: 'อ.เมือง จ.นครศรีธรรมราช',
+                    photo: './ตัวเอง.jpg',
+                    summary: 'นักศึกษาระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1) วิทยาลัยอาชีวศึกษานครศรีธรรมราช มุ่งมั่นพัฒนาทักษะด้านระบบสมองกลฝังตัวและอินเทอร์เน็ตของสรรพสิ่ง (ESP32 / ESP8266), การประยุกต์ใช้ Generative AI ร่วมกับงานพัฒนาเว็บ (HTML/Tailwind/JS) และการซ่อมบำรุงระบบสื่อสาร มีความรับผิดชอบ เรียนรู้ไว และผ่านการแข่งขันทักษะวิชาการถึงระดับภาคใต้',
+                    interests: 'แก้รูบิค 3x3 (CFOP Method), ตัดต่อวิดีโอนำเสนอ, สร้างเครื่องมือเว็บแอปพลิเคชัน',
+                    qrUrl: 'https://feel-ochre.vercel.app/',
+                    qrLabel: 'สแกนชม Portfolio ฉบับเต็ม (19 เว็บแอป)'
+                },
+                education: [
+                    {
+                        id: 'edu-1',
+                        visible: true,
+                        level: 'ประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.1)',
+                        institution: 'วิทยาลัยอาชีวศึกษานครศรีธรรมราช',
+                        period: 'พ.ศ. 2567 – ปัจจุบัน',
+                        gpax: '',
+                        details: 'ศึกษาด้านเทคโนโลยีคอมพิวเตอร์และระบบสารสนเทศ เน้นปฏิบัติจริง พัฒนาโครงงานสิ่งประดิษฐ์ และประยุกต์ใช้ AI ในการทำงาน'
+                    },
+                    {
+                        id: 'edu-2',
+                        visible: true,
+                        level: 'ประกาศนียบัตรวิชาชีพ (ปวช.3)',
+                        institution: 'วิทยาลัยอาชีวศึกษานครศรีธรรมราช',
+                        period: 'สำเร็จการศึกษา พ.ศ. 2567',
+                        gpax: '',
+                        details: 'โครงงานจบการศึกษา: ตู้กดผ้าอนามัยอัตโนมัติระบบหยอดเหรียญ & สแกน QR Code ด้วยไมโครคอนโทรลเลอร์ ESP32'
+                    }
+                ],
+                experience: [
+                    {
+                        id: 'exp-1',
+                        visible: true,
+                        role: 'นักศึกษาฝึกงาน (สายงานเทคนิคและสื่อสาร)',
+                        company: 'บริษัท เชียร์ คอมมูนิเคชั่น จำกัด',
+                        period: 'พ.ศ. 2567',
+                        highlights: 'ฝึกปฏิบัติงานจริงร่วมกับทีมช่างเทคนิคในการดูแล ตรวจสอบ และบำรุงรักษาระบบสื่อสารโทรคมนาคม\nตรวจเช็กอุปกรณ์เครือข่าย ระบบสายสัญญาณ และการประสานงานหน้างานอย่างเป็นระบบ'
+                    }
+                ],
+                skillGroups: [
+                    {
+                        id: 'sk-1',
+                        visible: true,
+                        category: 'ระบบสมองกลฝังตัว & IoT',
+                        items: 'ESP32 / ESP8266, Arduino IDE, Servo MG996R, IR Sensor, I2C LCD',
+                        level: 90
+                    },
+                    {
+                        id: 'sk-2',
+                        visible: true,
+                        category: 'Web & AI Productivity',
+                        items: 'HTML5, JavaScript, Tailwind CSS, AI-Assisted Coding, Prompt Engineering',
+                        level: 85
+                    },
+                    {
+                        id: 'sk-3',
+                        visible: true,
+                        category: 'สื่อดิจิทัล & ออกแบบ',
+                        items: 'CapCut, Canva, การจัดหน้าเอกสาร A4, การนำเสนอผลงานวิชาการ',
+                        level: 85
+                    },
+                    {
+                        id: 'sk-4',
+                        visible: true,
+                        category: 'Network & Systems Basics',
+                        items: 'การตรวจเช็กเครือข่าย LAN, การวิเคราะห์ปัญหาระบบ, ความคิดเชิงตรรกะ (Rubik 3x3)',
+                        level: 80
+                    }
+                ],
+                languages: [
+                    { id: 'lang-1', visible: true, name: 'ภาษาไทย (Thai)', level: 'เจ้าของภาษา (Native)' },
+                    { id: 'lang-2', visible: true, name: 'ภาษาอังกฤษ (English)', level: 'สื่อสารพื้นฐาน / อ่านเอกสารเทคนิค' }
+                ],
+                projects: [
+                    {
+                        id: 'prj-1',
+                        visible: true,
+                        title: 'โครงงานตู้กดผ้าอนามัยอัตโนมัติ (ระบบหยอดเหรียญ & สแกน QR Code)',
+                        period: 'โครงงาน ปวช.3',
+                        tags: 'ESP32/ESP8266, Servo MG996R, IR Sensor, QR Payment',
+                        description: 'สิ่งประดิษฐ์ 2 ระบบควบคุมด้วยไมโครคอนโทรลเลอร์ ขับเคลื่อนกลไกจ่ายสินค้าด้วย Servo พร้อมเซนเซอร์อินฟราเรดตรวจจับการจ่ายและจอ LCD แสดงสถานะสำหรับใช้งานจริงในสถานศึกษา',
+                        url: 'https://feel-ochre.vercel.app/#projects'
+                    },
+                    {
+                        id: 'prj-2',
+                        visible: true,
+                        title: 'แพลตฟอร์มแฟ้มสะสมผลงานออนไลน์ & 19 เว็บแอปสารพัดประโยชน์ (Client-Side Suite)',
+                        period: '2567 – ปัจจุบัน',
+                        tags: 'HTML5, Tailwind CSS, JavaScript, Tesseract.js, PDF-lib',
+                        description: 'พัฒนาเว็บไซต์ Portfolio ส่วนตัวแบบ Responsive (Light/Dark Mode) พร้อมชุดเว็บแอปใช้งานจริง 19 ระบบ อาทิ ระบบ OCR ไทย/อังกฤษ, จัดการไฟล์ PDF, แปลงภาพ, QR Studio และ Subnet Calculator',
+                        url: 'https://feel-ochre.vercel.app/'
+                    }
+                ],
+                certificates: [
+                    {
+                        id: 'cert-1',
+                        visible: true,
+                        title: 'เกียรติบัตรรางวัล "คนเก่งอาชีวศึกษา" (ผู้มีผลงานและทักษะดีเด่น)',
+                        issuer: 'วิทยาลัยอาชีวศึกษานครศรีธรรมราช',
+                        level: 'รางวัลดีเด่น',
+                        year: '2567',
+                        description: 'ยกย่องเชิดชูเกียรตินักศึกษาผู้มีความรู้ความสามารถและมีผลงานดีเด่น'
+                    },
+                    {
+                        id: 'cert-2',
+                        visible: true,
+                        title: 'การแข่งขันทักษะวิชาการ ด้านโครงงานวิทยาศาสตร์และสิ่งประดิษฐ์ (ระดับจังหวัด)',
+                        issuer: 'อาชีวศึกษาจังหวัดนครศรีธรรมราช',
+                        level: 'ระดับจังหวัด',
+                        year: '2567',
+                        description: 'นำเสนอผลงานสิ่งประดิษฐ์และนวัตกรรมระดับสถานศึกษาสู่การประกวดระดับจังหวัด'
+                    },
+                    {
+                        id: 'cert-3',
+                        visible: true,
+                        title: 'การประกวดโครงงานวิทยาศาสตร์และสิ่งประดิษฐ์อาชีวศึกษา (ระดับภาคใต้)',
+                        issuer: 'องค์การนักวิชาชีพในอนาคตแห่งประเทศไทย (ภาคใต้)',
+                        level: 'ระดับภาคใต้',
+                        year: '2567',
+                        description: 'ตัวแทนเข้าแข่งขันทักษะทางวิทยาศาสตร์และสิ่งประดิษฐ์ระดับภาคใต้'
+                    }
+                ],
+                design: {
+                    template: 'modern-sidebar',
+                    labelLang: 'both',
+                    accentColor: '#1a73e8',
+                    fontFamily: 'Sarabun',
+                    density: 'compact',
+                    photoShape: 'rounded',
+                    fontScale: 92,
+                    showQr: true,
+                    showPageGuides: true,
+                    sectionOrder: ['summary', 'experience', 'education', 'projects', 'certificates', 'skills', 'languages', 'interests'],
+                    sectionVisibility: {
+                        summary: true,
+                        experience: true,
+                        education: true,
+                        projects: true,
+                        certificates: true,
+                        skills: true,
+                        languages: true,
+                        interests: true
+                    }
+                }
+            };
+        }
+
+        function createDeveloperPreset() {
+            return {
+                profile: {
+                    fullName: 'Somchai Pattana (สมชาย พัฒนา)',
+                    headline: 'Full-Stack Web Developer & Network Infrastructure Engineer',
+                    nicknameBirth: '',
+                    phone: '089-123-4567',
+                    email: 'somchai.dev@example.com',
+                    lineText: 'github.com/somchai-dev',
+                    website: 'https://portfolio.example.com',
+                    location: 'Bangkok, Thailand',
+                    photo: '',
+                    summary: 'Results-driven Full-Stack Developer with 3+ years building responsive web platforms, REST/GraphQL APIs, and Ubuntu Linux server deployments. Focused on clean client-side performance, cybersecurity hygiene, and automated CI/CD workflows.',
+                    interests: 'Open-Source Tools, Homelab Networking, Technical Blogging',
+                    qrUrl: 'https://portfolio.example.com',
+                    qrLabel: 'Scan for GitHub & Live Demos'
+                },
+                education: [
+                    {
+                        id: 'edu-dev-1',
+                        visible: true,
+                        level: 'B.Sc. in Computer Science (GPA 3.68)',
+                        institution: 'Prince of Songkla University',
+                        period: '2019 – 2023',
+                        gpax: '3.68',
+                        details: 'Senior Project: Real-time IoT Telemetry Dashboard with MQTT & TimescaleDB'
+                    }
+                ],
+                experience: [
+                    {
+                        id: 'exp-dev-1',
+                        visible: true,
+                        role: 'Full-Stack Web Developer',
+                        company: 'Andaman Digital Solutions Co., Ltd.',
+                        period: '2023 – Present',
+                        highlights: 'Architected client-side document & image optimization tools reducing upload bandwidth by 64%\nMaintained Ubuntu Nginx reverse proxies, VLAN segmentation, and automated backups'
+                    },
+                    {
+                        id: 'exp-dev-2',
+                        visible: true,
+                        role: 'Backend Developer Intern',
+                        company: 'Siam Cloud Tech',
+                        period: 'Summer 2022',
+                        highlights: 'Built JWT authentication middleware, API rate limiters, and automated Jest integration suites'
+                    }
+                ],
+                skillGroups: [
+                    { id: 'sk-d1', visible: true, category: 'Frontend & UI', items: 'TypeScript, React, Next.js, Tailwind CSS, Canvas/WebGL', level: 92 },
+                    { id: 'sk-d2', visible: true, category: 'Backend & Infra', items: 'Node.js, PHP, PostgreSQL, Docker, Ubuntu Linux, Nginx', level: 88 },
+                    { id: 'sk-d3', visible: true, category: 'Security & Testing', items: 'Headless Chrome CDP, OWASP Basics, JWT/OAuth2, Git CI', level: 82 }
+                ],
+                languages: [
+                    { id: 'lang-d1', visible: true, name: 'Thai', level: 'Native' },
+                    { id: 'lang-d2', visible: true, name: 'English', level: 'Upper-Intermediate (TOEIC 810)' }
+                ],
+                projects: [
+                    {
+                        id: 'prj-d1',
+                        visible: true,
+                        title: 'Zero-Upload Client-Side PDF & OCR Suite',
+                        period: '2025',
+                        tags: 'JavaScript, pdf-lib, Tesseract.js, Web Workers',
+                        description: 'Privacy-first browser toolset for merging PDFs, Thai/English OCR extraction, and QR EMVCo generation with zero backend transmission.',
+                        url: 'https://github.com/example/pdf-suite'
+                    }
+                ],
+                certificates: [
+                    {
+                        id: 'cert-d1',
+                        visible: true,
+                        title: 'AWS Certified Cloud Practitioner',
+                        issuer: 'Amazon Web Services',
+                        level: 'Verified',
+                        year: '2024',
+                        description: 'Cloud architecture, IAM security best practices, and cost optimization'
+                    }
+                ],
+                design: {
+                    template: 'tech-minimal',
+                    labelLang: 'en',
+                    accentColor: '#0f766e',
+                    fontFamily: 'Inter',
+                    density: 'normal',
+                    photoShape: 'rounded',
+                    fontScale: 98,
+                    showQr: true,
+                    showPageGuides: true,
+                    sectionOrder: ['summary', 'experience', 'projects', 'skills', 'education', 'certificates', 'languages', 'interests'],
+                    sectionVisibility: {
+                        summary: true,
+                        experience: true,
+                        education: true,
+                        projects: true,
+                        certificates: true,
+                        skills: true,
+                        languages: true,
+                        interests: true
+                    }
+                }
+            };
+        }
+
+        function createBlankPreset() {
+            return {
+                profile: {
+                    fullName: 'ชื่อ-นามสกุลของคุณ',
+                    headline: 'ตำแหน่งงานที่สมัคร / สาขาวิชา',
+                    nicknameBirth: '',
+                    phone: '',
+                    email: '',
+                    lineText: '',
+                    website: '',
+                    location: '',
+                    photo: '',
+                    summary: 'สรุปจุดเด่น ความเชี่ยวชาญ และเป้าหมายในการทำงานของคุณอย่างกระชับ...',
+                    interests: '',
+                    qrUrl: '',
+                    qrLabel: 'Scan Portfolio'
+                },
+                education: [
+                    { id: 'edu-b1', visible: true, level: 'วุฒิการศึกษา / สาขา', institution: 'ชื่อสถาบันการศึกษา', period: 'พ.ศ. 2566 – ปัจจุบัน', gpax: '', details: '' }
+                ],
+                experience: [],
+                skillGroups: [
+                    { id: 'sk-b1', visible: true, category: 'ทักษะหลัก', items: 'ทักษะ 1, ทักษะ 2, ทักษะ 3', level: 80 }
+                ],
+                languages: [
+                    { id: 'lang-b1', visible: true, name: 'ภาษาไทย', level: 'เจ้าของภาษา' }
+                ],
+                projects: [],
+                certificates: [],
+                design: {
+                    template: 'executive-classic',
+                    labelLang: 'th',
+                    accentColor: '#1e293b',
+                    fontFamily: 'Sarabun',
+                    density: 'normal',
+                    photoShape: 'rounded',
+                    fontScale: 100,
+                    showQr: false,
+                    showPageGuides: true,
+                    sectionOrder: ['summary', 'education', 'experience', 'projects', 'certificates', 'skills', 'languages', 'interests'],
+                    sectionVisibility: {
+                        summary: true,
+                        experience: true,
+                        education: true,
+                        projects: true,
+                        certificates: true,
+                        skills: true,
+                        languages: true,
+                        interests: true
+                    }
+                }
+            };
+        }
+
+        let resumeData = null;
+        let currentEditorTab = 'profile';
+        let previewZoomMode = 'fit';
+        let activeToastEl = null;
+        let qrRenderError = false;
+
+        // ==========================================
+        // 2. HELPERS (XSS ESCAPE, TOAST, PERSIST)
+        // ==========================================
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            if (activeToastEl && activeToastEl.parentNode === container) {
+                activeToastEl.remove();
+            }
+            const toast = document.createElement('div');
+            const styles = {
+                success: 'bg-emerald-600 text-white border-emerald-500',
+                error: 'bg-rose-600 text-white border-rose-500',
+                info: 'bg-slate-800 text-white border-slate-700'
+            };
+            toast.className = `pointer-events-auto px-4 py-2.5 rounded-2xl border shadow-xl text-xs font-semibold flex items-center gap-2 transition-all duration-300 ${styles[type] || styles.info}`;
+            const icon = type === 'error' ? 'fa-circle-exclamation' : (type === 'info' ? 'fa-circle-info' : 'fa-circle-check');
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${escapeHtml(msg)}</span>`;
+            container.appendChild(toast);
+            activeToastEl = toast;
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 250);
+                }
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function sanitizeUrl(raw) {
+            const val = String(raw || '').trim();
+            if (!val) return '';
+            if (/^(https?:\/\/|mailto:|tel:|\.?\/)/i.test(val)) return val;
+            if (/^[a-z0-9.-]+\.[a-z]{2,}/i.test(val)) return 'https://' + val;
+            return '';
+        }
+
+        function sanitizePhotoSrc(raw) {
+            const val = String(raw || '').trim();
+            if (!val) return '';
+            if (/^(data:image\/|blob:|\.?\/|https?:\/\/)/i.test(val)) return val;
+            return '';
+        }
+
+        function generateId(prefix) {
+            return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+        }
+
+        function deepMergeWithDefaults(loaded) {
+            const base = createPortfolioPreset();
+            if (!loaded || typeof loaded !== 'object') return base;
+            const out = {
+                profile: { ...base.profile, ...(loaded.profile || {}) },
+                education: Array.isArray(loaded.education) ? loaded.education : [],
+                experience: Array.isArray(loaded.experience) ? loaded.experience : [],
+                skillGroups: Array.isArray(loaded.skillGroups) ? loaded.skillGroups : [],
+                languages: Array.isArray(loaded.languages) ? loaded.languages : [],
+                projects: Array.isArray(loaded.projects) ? loaded.projects : [],
+                certificates: Array.isArray(loaded.certificates) ? loaded.certificates : [],
+                design: {
+                    ...base.design,
+                    ...(loaded.design || {}),
+                    sectionVisibility: {
+                        ...base.design.sectionVisibility,
+                        ...((loaded.design && loaded.design.sectionVisibility) || {})
+                    }
+                }
+            };
+            const validKeys = Object.keys(SECTION_NAMES_TH);
+            const savedOrder = Array.isArray(out.design.sectionOrder) ? out.design.sectionOrder.filter(k => validKeys.includes(k)) : [];
+            for (const k of validKeys) {
+                if (!savedOrder.includes(k)) savedOrder.push(k);
+            }
+            out.design.sectionOrder = savedOrder;
+            return out;
+        }
+
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(resumeData));
+                const badge = document.getElementById('autosave-status');
+                if (badge) {
+                    const now = new Date();
+                    const hh = String(now.getHours()).padStart(2, '0');
+                    const mm = String(now.getMinutes()).padStart(2, '0');
+                    badge.innerHTML = `<i class="fa-solid fa-check-circle mr-1"></i>บันทึกอัตโนมัติ (${hh}:${mm})`;
+                }
+            } catch (err) {
+                console.warn('LocalStorage save failed', err);
+            }
+        }
+
+        function loadInitialState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    resumeData = deepMergeWithDefaults(JSON.parse(raw));
+                    return;
+                }
+            } catch (err) {
+                console.warn('Could not parse saved resume data', err);
+            }
+            resumeData = createPortfolioPreset();
+            saveToLocalStorage();
+        }
+
+        function loadPreset(kind) {
+            if (kind === 'developer') {
+                resumeData = createDeveloperPreset();
+                showToast('โหลดเทมเพลตตัวอย่างสายงาน Dev/IT เรียบร้อย', 'info');
+            } else if (kind === 'blank') {
+                resumeData = createBlankPreset();
+                showToast('เริ่มแบบฟอร์มเรซูเม่เปล่าเรียบร้อย', 'info');
+            } else {
+                resumeData = createPortfolioPreset();
+                showToast('โหลดข้อมูลคุณภคพล สมัยแก้ว จาก Portfolio เรียบร้อย', 'success');
+            }
+            saveToLocalStorage();
+            syncAllFormsFromState();
+            renderResumePreview();
+        }
+
+        function syncFromPortfolioStorage() {
+            try {
+                const raw = localStorage.getItem(PORTFOLIO_SYNC_KEY);
+                if (!raw) {
+                    resumeData = createPortfolioPreset();
+                    saveToLocalStorage();
+                    syncAllFormsFromState();
+                    renderResumePreview();
+                    showToast('ซิงค์ข้อมูล Official Portfolio ล่าสุดเข้ามาแล้ว', 'success');
+                    return;
+                }
+                const pData = JSON.parse(raw);
+                const merged = createPortfolioPreset();
+                if (pData.hero) {
+                    merged.profile.fullName = `${pData.hero.name || merged.profile.fullName} ${pData.hero.nickname || ''}`.trim();
+                    if (pData.hero.bio) merged.profile.summary = pData.hero.bio;
+                    if (Array.isArray(pData.hero.slides) && pData.hero.slides[0]?.src) {
+                        merged.profile.photo = pData.hero.slides[0].src;
+                    }
+                }
+                if (pData.about) {
+                    if (pData.about.birthdate) merged.profile.nicknameBirth = `เกิด ${pData.about.birthdate}`;
+                    if (pData.about.location) merged.profile.location = pData.about.location;
+                }
+                if (pData.contact) {
+                    if (pData.contact.email) merged.profile.email = pData.contact.email;
+                    if (pData.contact.lineId) merged.profile.lineText = `LINE ID: ${pData.contact.lineId}`;
+                }
+                if (pData.experience && Array.isArray(pData.experience.education) && pData.experience.education.length) {
+                    merged.education = pData.experience.education.map((e, i) => ({
+                        id: `edu-sync-${i}`,
+                        visible: true,
+                        level: e.level || '',
+                        institution: e.institution || '',
+                        period: e.year || '',
+                        gpax: '',
+                        details: e.desc || ''
+                    }));
+                }
+                if (pData.experience && Array.isArray(pData.experience.work) && pData.experience.work.length) {
+                    merged.experience = pData.experience.work.map((w, i) => ({
+                        id: `exp-sync-${i}`,
+                        visible: true,
+                        role: w.role || '',
+                        company: w.company || '',
+                        period: w.year || '',
+                        highlights: w.desc || ''
+                    }));
+                }
+                if (Array.isArray(pData.skills) && pData.skills.length) {
+                    merged.skillGroups = pData.skills.map((s, i) => ({
+                        id: `sk-sync-${i}`,
+                        visible: true,
+                        category: s.title || 'Skill',
+                        items: Array.isArray(s.tags) ? s.tags.join(', ') : '',
+                        level: 85
+                    }));
+                }
+                if (Array.isArray(pData.projects) && pData.projects.length) {
+                    const syncedProjects = [];
+                    const syncedCerts = [];
+                    pData.projects.forEach((item, idx) => {
+                        if (String(item.category || '').includes('เกียรติบัตร')) {
+                            syncedCerts.push({
+                                id: item.id || `cert-sync-${idx}`,
+                                visible: true,
+                                title: item.title || '',
+                                issuer: (item.tags && item.tags[2]) || 'วิทยาลัยอาชีวศึกษานครศรีธรรมราช',
+                                level: (item.tags && item.tags[1]) || 'เกียรติบัตร',
+                                year: '2567',
+                                description: item.description || ''
+                            });
+                        } else {
+                            syncedProjects.push({
+                                id: item.id || `prj-sync-${idx}`,
+                                visible: true,
+                                title: item.title || '',
+                                period: (item.tags && item.tags[0]) || 'ผลงานเด่น',
+                                tags: Array.isArray(item.tags) ? item.tags.slice(1).join(', ') : '',
+                                description: item.description || '',
+                                url: item.github || item.driveFolder || ''
+                            });
+                        }
+                    });
+                    if (syncedProjects.length) merged.projects = syncedProjects;
+                    if (syncedCerts.length) merged.certificates = syncedCerts;
+                }
+                resumeData = merged;
+                saveToLocalStorage();
+                syncAllFormsFromState();
+                renderResumePreview();
+                showToast('ซิงค์ประวัติ ทักษะ และเกียรติบัตรจาก Portfolio หลักสำเร็จ!', 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('ไม่สามารถซิงค์ข้อมูลจาก LocalStorage ได้ โหลดค่าเริ่มต้นแทน', 'error');
+            }
+        }
+
+        // ==========================================
+        // 3. EDITOR FORM SYNC & ITEM MUTATIONS
+        // ==========================================
+        function switchEditorTab(tabName) {
+            currentEditorTab = tabName;
+            const tabs = ['profile', 'eduexp', 'skills', 'portfolio', 'design'];
+            for (const t of tabs) {
+                const panel = document.getElementById(`tab-panel-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (!panel || !btn) continue;
+                const active = t === tabName;
+                panel.classList.toggle('hidden', !active);
+                btn.className = active
+                    ? 'editor-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 bg-sky-600 text-white shadow-xs'
+                    : 'editor-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 bg-white dark:bg-google-dark-surface text-google-text-body dark:text-google-dark-text-body border border-google-border dark:border-google-dark-border';
+            }
+        }
+
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function updateProfileField(key, val) {
+            resumeData.profile[key] = val;
+            saveToLocalStorage();
+            renderResumePreview();
+        }
+
+        function updateDesignField(key, val) {
+            resumeData.design[key] = val;
+            if (key === 'fontScale') {
+                const lbl = document.getElementById('font-scale-val');
+                if (lbl) lbl.textContent = `${val}%`;
+            }
+            if (key === 'template') {
+                highlightTemplateButtons();
+            }
+            if (key === 'accentColor') {
+                const picker = document.getElementById('design-accentColor');
+                if (picker && picker.value !== val) picker.value = val;
+            }
+            saveToLocalStorage();
+            renderResumePreview();
+        }
+
+        function handlePhotoUpload(ev) {
+            const file = ev.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                resumeData.profile.photo = reader.result;
+                updatePhotoThumb();
+                saveToLocalStorage();
+                renderResumePreview();
+                showToast('อัปเดตรูปโปรไฟล์ในเรซูเม่แล้ว', 'success');
+            };
+            reader.readAsDataURL(file);
+            ev.target.value = '';
+        }
+
+        function useDefaultPortfolioPhoto() {
+            resumeData.profile.photo = './ตัวเอง.jpg';
+            updatePhotoThumb();
+            saveToLocalStorage();
+            renderResumePreview();
+            showToast('ใช้รูปประจำตัวจาก Portfolio แล้ว', 'info');
+        }
+
+        function clearProfilePhoto() {
+            resumeData.profile.photo = '';
+            updatePhotoThumb();
+            saveToLocalStorage();
+            renderResumePreview();
+            showToast('ซ่อนรูปโปรไฟล์เรียบร้อย', 'info');
+        }
+
+        function updatePhotoThumb() {
+            const img = document.getElementById('editor-photo-thumb');
+            if (!img) return;
+            const safe = sanitizePhotoSrc(resumeData.profile.photo);
+            if (safe) {
+                img.src = safe;
+                img.classList.remove('opacity-30');
+            } else {
+                img.src = buildInitialsAvatarDataUri(resumeData.profile.fullName, resumeData.design.accentColor);
+                img.classList.add('opacity-30');
+            }
+        }
+
+        function buildInitialsAvatarDataUri(name, color) {
+            const clean = String(name || 'CV').replace(/^(นาย|นางสาว|นาง)\s*/g, '').trim();
+            const ch = escapeHtml((clean[0] || 'F').toUpperCase());
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" rx="24" fill="${escapeHtml(color || '#1a73e8')}"/><text x="64" y="79" text-anchor="middle" font-family="Kanit,Sarabun,sans-serif" font-size="54" font-weight="700" fill="#ffffff">${ch}</text></svg>`;
+            return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        }
+
+        function highlightTemplateButtons() {
+            const current = resumeData.design.template;
+            document.querySelectorAll('.tpl-choice').forEach(btn => {
+                const active = btn.getAttribute('data-tpl') === current;
+                btn.className = active
+                    ? 'tpl-choice p-2.5 rounded-xl border-2 border-sky-600 bg-sky-50 dark:bg-sky-950/50 text-sky-900 dark:text-sky-100 text-left transition cursor-pointer'
+                    : 'tpl-choice p-2.5 rounded-xl border border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-bg text-google-text dark:text-google-dark-text text-left hover:border-sky-400 transition cursor-pointer';
+            });
+        }
+
+        const NEW_ITEM_TEMPLATES = {
+            education: () => ({ id: generateId('edu'), visible: true, level: 'ระดับการศึกษา / สาขา', institution: 'ชื่อสถาบันการศึกษา', period: 'พ.ศ. 2568', gpax: '', details: '' }),
+            experience: () => ({ id: generateId('exp'), visible: true, role: 'ตำแหน่ง / บทบาท', company: 'ชื่อบริษัท / องค์กร', period: 'พ.ศ. 2568', highlights: 'อธิบายผลงานหรือหน้าที่รับผิดชอบสำคัญ' }),
+            skillGroups: () => ({ id: generateId('sk'), visible: true, category: 'หมวดทักษะใหม่', items: 'Skill A, Skill B, Skill C', level: 80 }),
+            languages: () => ({ id: generateId('lang'), visible: true, name: 'ภาษาเพิ่มเติม', level: 'ระดับพื้นฐาน' }),
+            projects: () => ({ id: generateId('prj'), visible: true, title: 'ชื่อโครงงาน / ผลงานใหม่', period: '2568', tags: 'Technology, Tool', description: 'สรุปแนวคิดและผลลัพธ์ของโครงงานอย่างกระชับ', url: '' }),
+            certificates: () => ({ id: generateId('cert'), visible: true, title: 'ชื่อเกียรติบัตร / รางวัลใหม่', issuer: 'หน่วยงานที่มอบ', level: 'ดีเด่น', year: '2568', description: 'รายละเอียดความสำเร็จหรือการแข่งขัน' })
+        };
+
+        function addListItem(listKey) {
+            const factory = NEW_ITEM_TEMPLATES[listKey];
+            if (!factory) return;
+            resumeData[listKey].push(factory());
+            saveToLocalStorage();
+            renderAllDynamicEditors();
+            renderResumePreview();
+            showToast('เพิ่มรายการใหม่แล้ว', 'success');
+        }
+
+        function updateListItem(listKey, index, field, value) {
+            if (!resumeData[listKey]?.[index]) return;
+            resumeData[listKey][index][field] = value;
+            saveToLocalStorage();
+            renderResumePreview();
+        }
+
+        function moveListItem(listKey, index, delta) {
+            const arr = resumeData[listKey];
+            const next = index + delta;
+            if (!arr || next < 0 || next >= arr.length) return;
+            [arr[index], arr[next]] = [arr[next], arr[index]];
+            saveToLocalStorage();
+            renderAllDynamicEditors();
+            renderResumePreview();
+        }
+
+        function removeListItem(listKey, index) {
+            const arr = resumeData[listKey];
+            if (!arr || !arr[index]) return;
+            arr.splice(index, 1);
+            saveToLocalStorage();
+            renderAllDynamicEditors();
+            renderResumePreview();
+            showToast('ลบรายการออกจากเรซูเม่แล้ว', 'info');
+        }
+
+        function toggleSectionVisible(sectionKey, checked) {
+            resumeData.design.sectionVisibility[sectionKey] = checked;
+            saveToLocalStorage();
+            renderResumePreview();
+        }
+
+        function moveSectionOrder(index, delta) {
+            const arr = resumeData.design.sectionOrder;
+            const next = index + delta;
+            if (next < 0 || next >= arr.length) return;
+            [arr[index], arr[next]] = [arr[next], arr[index]];
+            saveToLocalStorage();
+            renderSectionOrderEditor();
+            renderResumePreview();
+        }
+
+        function buildItemActionControls(listKey, index, total, itemVisible) {
+            return `
+                <div class="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-slate-200 dark:border-zinc-700">
+                    <label class="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer">
+                        <input type="checkbox" ${itemVisible ? 'checked' : ''} onchange="updateListItem('${listKey}', ${index}, 'visible', this.checked)" class="rounded text-sky-600">
+                        <span>แสดงใน PDF (#${index + 1})</span>
+                    </label>
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="moveListItem('${listKey}', ${index}, -1)" ${index === 0 ? 'disabled' : ''} class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-zinc-800 text-[10px] disabled:opacity-30 cursor-pointer" title="เลื่อนขึ้น"><i class="fa-solid fa-chevron-up"></i></button>
+                        <button type="button" onclick="moveListItem('${listKey}', ${index}, 1)" ${index === total - 1 ? 'disabled' : ''} class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-zinc-800 text-[10px] disabled:opacity-30 cursor-pointer" title="เลื่อนลง"><i class="fa-solid fa-chevron-down"></i></button>
+                        <button type="button" onclick="removeListItem('${listKey}', ${index})" class="px-1.5 py-0.5 rounded bg-rose-50 dark:bg-rose-950/60 text-rose-600 text-[10px] cursor-pointer" title="ลบรายการ"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>`;
+        }
+
+        function renderEducationEditor() {
+            const host = document.getElementById('education-editor-list');
+            if (!host) return;
+            const list = resumeData.education;
+            if (!list.length) {
+                host.innerHTML = '<div class="text-xs text-slate-400 italic py-2">ยังไม่มีประวัติการศึกษา — กด "เพิ่มวุฒิการศึกษา" ด้านบน</div>';
+                return;
+            }
+            host.innerHTML = list.map((item, i) => `
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2">
+                    ${buildItemActionControls('education', i, list.length, item.visible !== false)}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <input type="text" value="${escapeHtml(item.level)}" oninput="updateListItem('education', ${i}, 'level', this.value)" placeholder="ระดับการศึกษา / สาขา" class="sm:col-span-2 px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                        <input type="text" value="${escapeHtml(item.institution)}" oninput="updateListItem('education', ${i}, 'institution', this.value)" placeholder="สถานศึกษา" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                        <input type="text" value="${escapeHtml(item.period)}" oninput="updateListItem('education', ${i}, 'period', this.value)" placeholder="ช่วงปี (เช่น พ.ศ. 2567 – ปัจจุบัน)" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                        <input type="text" value="${escapeHtml(item.gpax)}" oninput="updateListItem('education', ${i}, 'gpax', this.value)" placeholder="เกรดเฉลี่ย GPAX (ไม่บังคับ)" class="sm:col-span-2 px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                        <textarea rows="2" oninput="updateListItem('education', ${i}, 'details', this.value)" placeholder="รายละเอียดเพิ่มเติม / วิชาเอก" class="sm:col-span-2 px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">${escapeHtml(item.details)}</textarea>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderExperienceEditor() {
+            const host = document.getElementById('experience-editor-list');
+            if (!host) return;
+            const list = resumeData.experience;
+            if (!list.length) {
+                host.innerHTML = '<div class="text-xs text-slate-400 italic py-2">ยังไม่มีประสบการณ์ — กด "เพิ่มประสบการณ์" ด้านบน</div>';
+                return;
+            }
+            host.innerHTML = list.map((item, i) => `
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2">
+                    ${buildItemActionControls('experience', i, list.length, item.visible !== false)}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <input type="text" value="${escapeHtml(item.role)}" oninput="updateListItem('experience', ${i}, 'role', this.value)" placeholder="ตำแหน่ง / บทบาท" class="sm:col-span-2 px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                        <input type="text" value="${escapeHtml(item.company)}" oninput="updateListItem('experience', ${i}, 'company', this.value)" placeholder="บริษัท / สถานประกอบการ" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                        <input type="text" value="${escapeHtml(item.period)}" oninput="updateListItem('experience', ${i}, 'period', this.value)" placeholder="ช่วงเวลา" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                        <textarea rows="3" oninput="updateListItem('experience', ${i}, 'highlights', this.value)" placeholder="หน้าที่และผลงาน (ขึ้นบรรทัดใหม่เพื่อแยกข้อ Bullet)" class="sm:col-span-2 px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">${escapeHtml(item.highlights)}</textarea>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderSkillsEditor() {
+            const host = document.getElementById('skills-editor-list');
+            if (!host) return;
+            const list = resumeData.skillGroups;
+            if (!list.length) {
+                host.innerHTML = '<div class="text-xs text-slate-400 italic py-2">ยังไม่มีหมวดทักษะ — กด "เพิ่มหมวดทักษะ" ด้านบน</div>';
+                return;
+            }
+            host.innerHTML = list.map((item, i) => `
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2">
+                    ${buildItemActionControls('skillGroups', i, list.length, item.visible !== false)}
+                    <div class="space-y-2">
+                        <div class="flex gap-2 items-center">
+                            <input type="text" value="${escapeHtml(item.category)}" oninput="updateListItem('skillGroups', ${i}, 'category', this.value)" placeholder="ชื่อหมวดทักษะ" class="flex-1 px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                            <input type="number" min="20" max="100" value="${Number(item.level || 80)}" oninput="updateListItem('skillGroups', ${i}, 'level', Number(this.value))" title="ระดับความชำนาญ (%)" class="w-16 px-2 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs text-center">
+                        </div>
+                        <input type="text" value="${escapeHtml(item.items)}" oninput="updateListItem('skillGroups', ${i}, 'items', this.value)" placeholder="รายการทักษะ คั่นด้วยจุลภาค (,)" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderLanguagesEditor() {
+            const host = document.getElementById('languages-editor-list');
+            if (!host) return;
+            const list = resumeData.languages;
+            if (!list.length) {
+                host.innerHTML = '<div class="text-xs text-slate-400 italic py-1">ยังไม่มีรายการภาษา</div>';
+                return;
+            }
+            host.innerHTML = list.map((item, i) => `
+                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2">
+                    ${buildItemActionControls('languages', i, list.length, item.visible !== false)}
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" value="${escapeHtml(item.name)}" oninput="updateListItem('languages', ${i}, 'name', this.value)" placeholder="ภาษา" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                        <input type="text" value="${escapeHtml(item.level)}" oninput="updateListItem('languages', ${i}, 'level', this.value)" placeholder="ระดับ" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderProjectsEditor() {
+            const host = document.getElementById('projects-editor-list');
+            if (!host) return;
+            const list = resumeData.projects;
+            if (!list.length) {
+                host.innerHTML = '<div class="text-xs text-slate-400 italic py-2">ยังไม่มีโครงงาน — กด "เพิ่มผลงาน" ด้านบน</div>';
+                return;
+            }
+            host.innerHTML = list.map((item, i) => `
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2">
+                    ${buildItemActionControls('projects', i, list.length, item.visible !== false)}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <input type="text" value="${escapeHtml(item.title)}" oninput="updateListItem('projects', ${i}, 'title', this.value)" placeholder="ชื่อโครงงาน / ผลงาน" class="sm:col-span-2 px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                        <input type="text" value="${escapeHtml(item.period)}" oninput="updateListItem('projects', ${i}, 'period', this.value)" placeholder="ปี / ประเภทโครงงาน" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                        <input type="text" value="${escapeHtml(item.tags)}" oninput="updateListItem('projects', ${i}, 'tags', this.value)" placeholder="เทคโนโลยี / แท็ก (คั่นด้วย ,)" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                        <textarea rows="2" oninput="updateListItem('projects', ${i}, 'description', this.value)" placeholder="คำอธิบายผลงาน" class="sm:col-span-2 px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">${escapeHtml(item.description)}</textarea>
+                        <input type="text" value="${escapeHtml(item.url)}" oninput="updateListItem('projects', ${i}, 'url', this.value)" placeholder="ลิงก์ผลงาน / Demo (ไม่บังคับ)" class="sm:col-span-2 px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCertificatesEditor() {
+            const host = document.getElementById('certificates-editor-list');
+            if (!host) return;
+            const list = resumeData.certificates;
+            if (!list.length) {
+                host.innerHTML = '<div class="text-xs text-slate-400 italic py-2">ยังไม่มีเกียรติบัตร — กด "เพิ่มเกียรติบัตร" ด้านบน</div>';
+                return;
+            }
+            host.innerHTML = list.map((item, i) => `
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2">
+                    ${buildItemActionControls('certificates', i, list.length, item.visible !== false)}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <input type="text" value="${escapeHtml(item.title)}" oninput="updateListItem('certificates', ${i}, 'title', this.value)" placeholder="ชื่อเกียรติบัตร / รางวัล" class="sm:col-span-2 px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs font-semibold">
+                        <input type="text" value="${escapeHtml(item.issuer)}" oninput="updateListItem('certificates', ${i}, 'issuer', this.value)" placeholder="หน่วยงานที่ออกให้" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <input type="text" value="${escapeHtml(item.level)}" oninput="updateListItem('certificates', ${i}, 'level', this.value)" placeholder="ระดับรางวัล" class="px-2 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                            <input type="text" value="${escapeHtml(item.year)}" oninput="updateListItem('certificates', ${i}, 'year', this.value)" placeholder="ปี" class="px-2 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                        </div>
+                        <input type="text" value="${escapeHtml(item.description)}" oninput="updateListItem('certificates', ${i}, 'description', this.value)" placeholder="คำอธิบายสั้นๆ" class="sm:col-span-2 px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderSectionOrderEditor() {
+            const host = document.getElementById('section-order-list');
+            if (!host) return;
+            const order = resumeData.design.sectionOrder;
+            const vis = resumeData.design.sectionVisibility;
+            host.innerHTML = order.map((key, i) => `
+                <div class="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border">
+                    <label class="inline-flex items-center gap-2 text-xs font-semibold text-google-text dark:text-google-dark-text cursor-pointer">
+                        <input type="checkbox" ${vis[key] !== false ? 'checked' : ''} onchange="toggleSectionVisible('${key}', this.checked)" class="rounded text-sky-600">
+                        <span>${escapeHtml(SECTION_NAMES_TH[key] || key)}</span>
+                    </label>
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="moveSectionOrder(${i}, -1)" ${i === 0 ? 'disabled' : ''} class="px-1.5 py-0.5 rounded bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-[10px] disabled:opacity-30 cursor-pointer"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button type="button" onclick="moveSectionOrder(${i}, 1)" ${i === order.length - 1 ? 'disabled' : ''} class="px-1.5 py-0.5 rounded bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-[10px] disabled:opacity-30 cursor-pointer"><i class="fa-solid fa-arrow-down"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAllDynamicEditors() {
+            renderEducationEditor();
+            renderExperienceEditor();
+            renderSkillsEditor();
+            renderLanguagesEditor();
+            renderProjectsEditor();
+            renderCertificatesEditor();
+            renderSectionOrderEditor();
+        }
+
+        function syncAllFormsFromState() {
+            const p = resumeData.profile;
+            const d = resumeData.design;
+            const setVal = (id, v) => {
+                const el = document.getElementById(id);
+                if (el) el.value = v ?? '';
+            };
+            setVal('field-fullName', p.fullName);
+            setVal('field-headline', p.headline);
+            setVal('field-nicknameBirth', p.nicknameBirth);
+            setVal('field-phone', p.phone);
+            setVal('field-email', p.email);
+            setVal('field-lineText', p.lineText);
+            setVal('field-website', p.website);
+            setVal('field-location', p.location);
+            setVal('field-summary', p.summary);
+            setVal('field-interests', p.interests);
+            setVal('field-qrUrl', p.qrUrl);
+            setVal('field-qrLabel', p.qrLabel);
+
+            const qrChk = document.getElementById('field-showQr');
+            if (qrChk) qrChk.checked = d.showQr !== false;
+            const guideChk = document.getElementById('toggle-page-guides');
+            if (guideChk) guideChk.checked = d.showPageGuides !== false;
+
+            setVal('design-labelLang', d.labelLang || 'both');
+            setVal('design-fontFamily', d.fontFamily || 'Sarabun');
+            setVal('design-accentColor', d.accentColor || '#1a73e8');
+            setVal('design-density', d.density || 'compact');
+            setVal('design-photoShape', d.photoShape || 'rounded');
+            setVal('design-fontScale', d.fontScale || 96);
+            const lbl = document.getElementById('font-scale-val');
+            if (lbl) lbl.textContent = `${d.fontScale || 96}%`;
+
+            updatePhotoThumb();
+            highlightTemplateButtons();
+            renderAllDynamicEditors();
+        }
+
+        // ==========================================
+        // 4. A4 TEMPLATE RENDERING ENGINE
+        // ==========================================
+        function buildQrSvg(url, accentColor) {
+            if (!url || typeof window.qrcode !== 'function') return '';
+            try {
+                qrRenderError = false;
+                const qr = window.qrcode(0, 'M');
+                qr.addData(url);
+                qr.make();
+                const count = qr.getModuleCount();
+                let cells = '';
+                for (let r = 0; r < count; r++) {
+                    for (let c = 0; c < count; c++) {
+                        if (qr.isDark(r, c)) {
+                            cells += `<rect x="${c}" y="${r}" width="1" height="1" fill="${escapeHtml(accentColor || '#0f172a')}"/>`;
+                        }
+                    }
+                }
+                return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 ${count + 4} ${count + 4}" class="w-full h-full block bg-white rounded-md">${cells}</svg>`;
+            } catch (e) {
+                qrRenderError = true;
+                return '';
+            }
+        }
+
+        function getLabels() {
+            return DEFAULT_LABELS[resumeData.design.labelLang] || DEFAULT_LABELS.both;
+        }
+
+        function getDensityTokens(density) {
+            if (density === 'compact') {
+                return { padPage: '24px 28px', padSidebar: '24px 20px', secGap: '12px', itemGap: '8px', headPad: '20px 28px' };
+            }
+            if (density === 'relaxed') {
+                return { padPage: '38px 40px', padSidebar: '34px 26px', secGap: '20px', itemGap: '13px', headPad: '30px 40px' };
+            }
+            return { padPage: '30px 34px', padSidebar: '28px 22px', secGap: '15px', itemGap: '10px', headPad: '24px 34px' };
+        }
+
+        function hexToSoftTint(hex, alpha = 0.08) {
+            const clean = String(hex || '#1a73e8').replace('#', '');
+            if (clean.length !== 6) return `rgba(26, 115, 232, ${alpha})`;
+            const r = parseInt(clean.slice(0, 2), 16) || 26;
+            const g = parseInt(clean.slice(2, 4), 16) || 115;
+            const b = parseInt(clean.slice(4, 6), 16) || 232;
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function buildPhotoElement(sizePx = 98, shape = 'rounded', borderColor = '#ffffff') {
+            const p = resumeData.profile;
+            const src = sanitizePhotoSrc(p.photo);
+            if (!src) return '';
+            const radius = shape === 'circle' ? '9999px' : (shape === 'square' ? '4px' : '14px');
+            const fallback = buildInitialsAvatarDataUri(p.fullName, resumeData.design.accentColor);
+            return `
+                <div style="width:${sizePx}px;height:${sizePx}px;border-radius:${radius};overflow:hidden;border:3px solid ${escapeHtml(borderColor)};background:#f8fafc;flex-shrink:0;box-shadow:0 4px 12px rgba(15,23,42,0.12);">
+                    <img src="${escapeHtml(src)}" onerror="this.onerror=null;this.src='${escapeHtml(fallback)}'" alt="${escapeHtml(p.fullName)}" style="width:100%;height:100%;object-fit:cover;display:block;">
+                </div>`;
+        }
+
+        function buildContactListHtml(accentColor, compact = false) {
+            const p = resumeData.profile;
+            const entries = [
+                { icon: 'fa-phone', text: p.phone },
+                { icon: 'fa-envelope', text: p.email },
+                { icon: 'fa-comment-dots', text: p.lineText },
+                { icon: 'fa-globe', text: p.website },
+                { icon: 'fa-location-dot', text: p.location },
+                { icon: 'fa-cake-candles', text: p.nicknameBirth }
+            ].filter(e => String(e.text || '').trim().length > 0);
+
+            if (!entries.length) return '';
+            return entries.map(e => `
+                <div style="display:flex;align-items:flex-start;gap:7px;font-size:${compact ? '11px' : '11.5px'};line-height:1.4;color:#334155;word-break:break-word;">
+                    <i class="fa-solid ${e.icon}" style="color:${escapeHtml(accentColor)};width:13px;margin-top:3px;text-align:center;flex-shrink:0;"></i>
+                    <span>${escapeHtml(e.text)}</span>
+                </div>`).join('');
+        }
+
+        function renderSectionContent(sectionKey, ctx) {
+            const { labels, accent, tintBg, tintBorder, dens, barStyle = false } = ctx;
+            const p = resumeData.profile;
+
+            if (sectionKey === 'summary') {
+                if (!String(p.summary || '').trim()) return '';
+                return `
+                    <div class="resume-block" style="margin-bottom:${dens.secGap};">
+                        ${buildSectionHeading(labels.summary, 'fa-user-tie', accent)}
+                        <p style="margin:0;font-size:12px;line-height:1.62;color:#334155;">${escapeHtml(p.summary)}</p>
+                    </div>`;
+            }
+
+            if (sectionKey === 'education') {
+                const items = resumeData.education.filter(x => x.visible !== false);
+                if (!items.length) return '';
+                return `
+                    <div style="margin-bottom:${dens.secGap};">
+                        ${buildSectionHeading(labels.education, 'fa-graduation-cap', accent)}
+                        <div style="display:flex;flex-direction:column;gap:${dens.itemGap};">
+                            ${items.map(item => `
+                                <div class="resume-block" style="border-left:2.5px solid ${escapeHtml(tintBorder)};padding-left:10px;">
+                                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+                                        <div style="font-size:12.8px;font-weight:700;color:#0f172a;">${escapeHtml(item.level)}</div>
+                                        <span style="font-size:10.5px;font-weight:700;color:${escapeHtml(accent)};white-space:nowrap;">${escapeHtml(item.period)}</span>
+                                    </div>
+                                    <div style="font-size:11.6px;font-weight:600;color:#475569;margin-top:1px;">
+                                        ${escapeHtml(item.institution)}
+                                        ${item.gpax ? `<span style="margin-left:6px;padding:1px 6px;border-radius:4px;background:${tintBg};color:${escapeHtml(accent)};font-size:10.5px;">GPAX ${escapeHtml(item.gpax)}</span>` : ''}
+                                    </div>
+                                    ${item.details ? `<p style="margin:3px 0 0;font-size:11.3px;line-height:1.5;color:#475569;">${escapeHtml(item.details)}</p>` : ''}
+                                </div>`).join('')}
+                        </div>
+                    </div>`;
+            }
+
+            if (sectionKey === 'experience') {
+                const items = resumeData.experience.filter(x => x.visible !== false);
+                if (!items.length) return '';
+                return `
+                    <div style="margin-bottom:${dens.secGap};">
+                        ${buildSectionHeading(labels.experience, 'fa-briefcase', accent)}
+                        <div style="display:flex;flex-direction:column;gap:${dens.itemGap};">
+                            ${items.map(item => {
+                                const bullets = String(item.highlights || '').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+                                return `
+                                <div class="resume-block" style="border-left:2.5px solid ${escapeHtml(accent)};padding-left:10px;">
+                                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+                                        <div style="font-size:12.8px;font-weight:700;color:#0f172a;">${escapeHtml(item.role)}</div>
+                                        <span style="font-size:10.5px;font-weight:700;color:${escapeHtml(accent)};white-space:nowrap;">${escapeHtml(item.period)}</span>
+                                    </div>
+                                    <div style="font-size:11.6px;font-weight:600;color:#475569;">${escapeHtml(item.company)}</div>
+                                    ${bullets.length ? `
+                                        <ul style="margin:3px 0 0;padding-left:15px;font-size:11.3px;line-height:1.52;color:#334155;">
+                                            ${bullets.map(b => `<li style="margin-bottom:1.5px;">${escapeHtml(b)}</li>`).join('')}
+                                        </ul>` : ''}
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>`;
+            }
+
+            if (sectionKey === 'projects') {
+                const items = resumeData.projects.filter(x => x.visible !== false);
+                if (!items.length) return '';
+                return `
+                    <div style="margin-bottom:${dens.secGap};">
+                        ${buildSectionHeading(labels.projects, 'fa-laptop-code', accent)}
+                        <div style="display:flex;flex-direction:column;gap:${dens.itemGap};">
+                            ${items.map(item => {
+                                const tags = String(item.tags || '').split(',').map(s => s.trim()).filter(Boolean);
+                                return `
+                                <div class="resume-block" style="padding:7px 10px;border-radius:8px;background:#f8fafc;border:1px solid #e2e8f0;">
+                                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+                                        <div style="font-size:12.4px;font-weight:700;color:#0f172a;">${escapeHtml(item.title)}</div>
+                                        ${item.period ? `<span style="font-size:10px;font-weight:700;color:${escapeHtml(accent)};white-space:nowrap;">${escapeHtml(item.period)}</span>` : ''}
+                                    </div>
+                                    ${item.description ? `<p style="margin:3px 0 0;font-size:11.2px;line-height:1.48;color:#334155;">${escapeHtml(item.description)}</p>` : ''}
+                                    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:4px;">
+                                        ${tags.map(tg => `<span style="font-size:9.8px;font-weight:600;padding:1px 6px;border-radius:999px;background:${tintBg};color:${escapeHtml(accent)};border:1px solid ${escapeHtml(tintBorder)};">${escapeHtml(tg)}</span>`).join('')}
+                                        ${item.url ? `<span style="font-size:9.8px;color:#64748b;margin-left:auto;">${escapeHtml(item.url)}</span>` : ''}
+                                    </div>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>`;
+            }
+
+            if (sectionKey === 'certificates') {
+                const items = resumeData.certificates.filter(x => x.visible !== false);
+                if (!items.length) return '';
+                return `
+                    <div style="margin-bottom:${dens.secGap};">
+                        ${buildSectionHeading(labels.certificates, 'fa-award', accent)}
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                            ${items.map(item => `
+                                <div class="resume-block" style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:6px 9px;border-radius:7px;border:1px solid #e2e8f0;background:#ffffff;">
+                                    <div style="min-width:0;flex:1;">
+                                        <div style="font-size:12px;font-weight:700;color:#0f172a;">${escapeHtml(item.title)}</div>
+                                        <div style="font-size:11px;color:#475569;margin-top:1px;">
+                                            ${escapeHtml(item.issuer)}${item.description ? ` — ${escapeHtml(item.description)}` : ''}
+                                        </div>
+                                    </div>
+                                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;shrink:0;">
+                                        ${item.level ? `<span style="font-size:9.8px;font-weight:700;padding:1px 7px;border-radius:999px;background:${tintBg};color:${escapeHtml(accent)};white-space:nowrap;">${escapeHtml(item.level)}</span>` : ''}
+                                        ${item.year ? `<span style="font-size:10px;color:#64748b;font-weight:600;">${escapeHtml(item.year)}</span>` : ''}
+                                    </div>
+                                </div>`).join('')}
+                        </div>
+                    </div>`;
+            }
+
+            if (sectionKey === 'skills') {
+                const items = resumeData.skillGroups.filter(x => x.visible !== false);
+                if (!items.length) return '';
+                return `
+                    <div style="margin-bottom:${dens.secGap};">
+                        ${buildSectionHeading(labels.skills, 'fa-screwdriver-wrench', accent)}
+                        <div style="display:grid;grid-template-columns:${barStyle ? '1fr' : '1fr 1fr'};gap:7px;">
+                            ${items.map(sg => {
+                                const tags = String(sg.items || '').split(',').map(s => s.trim()).filter(Boolean);
+                                const pct = Math.max(20, Math.min(100, Number(sg.level || 80)));
+                                return `
+                                <div class="resume-block" style="padding:6px 8px;border-radius:7px;border:1px solid #e2e8f0;background:#ffffff;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;font-size:11.4px;font-weight:700;color:#0f172a;margin-bottom:3px;">
+                                        <span>${escapeHtml(sg.category)}</span>
+                                        ${barStyle ? `<span style="font-size:10px;color:${escapeHtml(accent)};">${pct}%</span>` : ''}
+                                    </div>
+                                    ${barStyle ? `<div style="height:4px;border-radius:999px;background:#e2e8f0;overflow:hidden;margin-bottom:4px;"><div style="width:${pct}%;height:100%;background:${escapeHtml(accent)};"></div></div>` : ''}
+                                    <div style="font-size:10.6px;line-height:1.45;color:#475569;">${escapeHtml(tags.join(' • '))}</div>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>`;
+            }
+
+            if (sectionKey === 'languages') {
+                const items = resumeData.languages.filter(x => x.visible !== false);
+                if (!items.length) return '';
+                return `
+                    <div class="resume-block" style="margin-bottom:${dens.secGap};">
+                        ${buildSectionHeading(labels.languages, 'fa-language', accent)}
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                            ${items.map(l => `
+                                <div style="padding:4px 9px;border-radius:7px;background:#f8fafc;border:1px solid #e2e8f0;font-size:11px;">
+                                    <strong style="color:#0f172a;">${escapeHtml(l.name)}</strong>
+                                    <span style="color:#64748b;"> — ${escapeHtml(l.level)}</span>
+                                </div>`).join('')}
+                        </div>
+                    </div>`;
+            }
+
+            if (sectionKey === 'interests') {
+                const items = String(p.interests || '').split(',').map(s => s.trim()).filter(Boolean);
+                if (!items.length) return '';
+                return `
+                    <div class="resume-block" style="margin-bottom:${dens.secGap};">
+                        ${buildSectionHeading(labels.interests, 'fa-star', accent)}
+                        <div style="display:flex;flex-wrap:wrap;gap:5px;">
+                            ${items.map(tag => `<span style="font-size:10.8px;padding:2px 8px;border-radius:999px;background:${tintBg};color:${escapeHtml(accent)};font-weight:600;">${escapeHtml(tag)}</span>`).join('')}
+                        </div>
+                    </div>`;
+            }
+
+            return '';
+        }
+
+        function buildSectionHeading(title, iconClass, accentColor) {
+            return `
+                <div class="resume-section-head" style="display:flex;align-items:center;gap:7px;border-bottom:1.5px solid ${escapeHtml(accentColor)};padding-bottom:3px;margin-bottom:7px;">
+                    <i class="fa-solid ${iconClass}" style="color:${escapeHtml(accentColor)};font-size:12px;"></i>
+                    <span style="font-size:13px;font-weight:700;color:#0f172a;letter-spacing:0.01em;">${escapeHtml(title)}</span>
+                </div>`;
+        }
+
+        function renderTemplateModernSidebar(ctx) {
+            const { p, d, labels, accent, tintBg, tintBorder, dens, qrSvg } = ctx;
+            const sidebarSet = new Set(['skills', 'languages', 'interests']);
+            const vis = d.sectionVisibility;
+            const order = d.sectionOrder;
+
+            const mainSections = order
+                .filter(k => !sidebarSet.has(k) && vis[k] !== false)
+                .map(k => renderSectionContent(k, { ...ctx, barStyle: false }))
+                .join('');
+
+            const sideSections = order
+                .filter(k => sidebarSet.has(k) && vis[k] !== false)
+                .map(k => renderSectionContent(k, { ...ctx, barStyle: k === 'skills' }))
+                .join('');
+
+            const photoHtml = buildPhotoElement(104, d.photoShape, '#ffffff');
+            const contactHtml = buildContactListHtml(accent, true);
+
+            return `
+                <div style="display:flex;min-height:${ctx.innerMinHeight}px;background:linear-gradient(to right, ${tintBg} 33.5%, #ffffff 33.5%);">
+                    <aside style="width:33.5%;padding:${dens.padSidebar};border-right:1px solid ${escapeHtml(tintBorder)};display:flex;flex-direction:column;gap:14px;box-sizing:border-box;">
+                        ${photoHtml ? `<div style="display:flex;justify-content:center;">${photoHtml}</div>` : ''}
+                        <div>
+                            ${buildSectionHeading(labels.contact, 'fa-address-book', accent)}
+                            <div style="display:flex;flex-direction:column;gap:5.5px;">${contactHtml}</div>
+                        </div>
+                        <div>${sideSections}</div>
+                        ${qrSvg ? `
+                            <div class="resume-block" style="margin-top:auto;padding:8px;border-radius:10px;background:#ffffff;border:1px solid ${escapeHtml(tintBorder)};display:flex;align-items:center;gap:8px;">
+                                <div style="width:52px;height:52px;shrink:0;">${qrSvg}</div>
+                                <div style="font-size:10px;line-height:1.35;color:#334155;">
+                                    <div style="font-weight:700;color:${escapeHtml(accent)};">Portfolio QR</div>
+                                    <div>${escapeHtml(p.qrLabel || p.qrUrl)}</div>
+                                </div>
+                            </div>` : ''}
+                    </aside>
+                    <div style="width:66.5%;padding:${dens.padPage};box-sizing:border-box;">
+                        <header style="border-bottom:2px solid ${escapeHtml(accent)};padding-bottom:10px;margin-bottom:${dens.secGap};">
+                            <h2 style="margin:0;font-size:23px;font-weight:800;line-height:1.2;color:#0f172a;">${escapeHtml(p.fullName)}</h2>
+                            ${p.headline ? `<div style="margin-top:3px;font-size:12.5px;font-weight:600;color:${escapeHtml(accent)};">${escapeHtml(p.headline)}</div>` : ''}
+                        </header>
+                        ${mainSections}
+                    </div>
+                </div>`;
+        }
+
+        function renderTemplateSingleColumn(ctx, variant) {
+            const { p, d, accent, tintBg, tintBorder, dens, qrSvg } = ctx;
+            const vis = d.sectionVisibility;
+            const order = d.sectionOrder;
+            const photoHtml = buildPhotoElement(variant === 'portfolio' ? 88 : 80, d.photoShape, variant === 'portfolio' ? '#ffffff' : accent);
+
+            const contactInline = [p.phone, p.email, p.lineText, p.website, p.location, p.nicknameBirth]
+                .map(s => String(s || '').trim())
+                .filter(Boolean)
+                .map(s => `<span>${escapeHtml(s)}</span>`)
+                .join('<span style="opacity:0.4;margin:0 6px;">|</span>');
+
+            let headerHtml = '';
+            if (variant === 'portfolio') {
+                headerHtml = `
+                    <header style="background:${escapeHtml(accent)};color:#ffffff;padding:${dens.headPad};display:flex;align-items:center;gap:16px;">
+                        ${photoHtml}
+                        <div style="flex:1;min-width:0;">
+                            <h2 style="margin:0;font-size:22px;font-weight:800;line-height:1.2;">${escapeHtml(p.fullName)}</h2>
+                            ${p.headline ? `<div style="margin-top:3px;font-size:12px;opacity:0.95;font-weight:500;">${escapeHtml(p.headline)}</div>` : ''}
+                            <div style="margin-top:7px;font-size:10.6px;opacity:0.92;line-height:1.5;display:flex;flex-wrap:wrap;gap:2px 0;">${contactInline}</div>
+                        </div>
+                        ${qrSvg ? `<div style="width:62px;height:62px;padding:3px;background:#ffffff;border-radius:8px;flex-shrink:0;">${qrSvg}</div>` : ''}
+                    </header>`;
+            } else if (variant === 'classic') {
+                headerHtml = `
+                    <header style="padding:${dens.headPad};padding-bottom:12px;text-align:center;border-bottom:2px solid ${escapeHtml(accent)};background:${tintBg};">
+                        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+                            ${photoHtml}
+                            <h2 style="margin:0;font-size:23px;font-weight:800;color:#0f172a;">${escapeHtml(p.fullName)}</h2>
+                            ${p.headline ? `<div style="font-size:12.5px;font-weight:600;color:${escapeHtml(accent)};">${escapeHtml(p.headline)}</div>` : ''}
+                            <div style="font-size:11px;color:#334155;line-height:1.5;">${contactInline}</div>
+                        </div>
+                    </header>`;
+            } else {
+                // tech-minimal
+                headerHtml = `
+                    <header style="padding:${dens.headPad};padding-bottom:12px;border-bottom:2.5px solid ${escapeHtml(accent)};display:flex;align-items:center;justify-content:space-between;gap:14px;">
+                        <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0;">
+                            ${photoHtml}
+                            <div style="min-width:0;">
+                                <h2 style="margin:0;font-size:22px;font-weight:800;color:#0f172a;">${escapeHtml(p.fullName)}</h2>
+                                ${p.headline ? `<div style="margin-top:2px;font-size:12px;font-weight:700;font-family:'JetBrains Mono','Sarabun',monospace;color:${escapeHtml(accent)};">${escapeHtml(p.headline)}</div>` : ''}
+                                <div style="margin-top:5px;font-size:10.8px;color:#475569;line-height:1.5;">${contactInline}</div>
+                            </div>
+                        </div>
+                        ${qrSvg ? `<div style="width:56px;height:56px;padding:3px;border:1px solid ${escapeHtml(tintBorder)};border-radius:8px;flex-shrink:0;">${qrSvg}</div>` : ''}
+                    </header>`;
+            }
+
+            const bodyHtml = order
+                .filter(k => vis[k] !== false)
+                .map(k => renderSectionContent(k, { ...ctx, barStyle: false }))
+                .join('');
+
+            return `
+                <div style="min-height:${ctx.innerMinHeight}px;background:#ffffff;display:flex;flex-direction:column;">
+                    ${headerHtml}
+                    <div style="padding:${dens.padPage};flex:1;">${bodyHtml}</div>
+                </div>`;
+        }
+
+        function renderResumePreview() {
+            const sheet = document.getElementById('resume-sheet');
+            if (!sheet || !resumeData) return;
+
+            const d = resumeData.design;
+            const p = resumeData.profile;
+            const accent = d.accentColor || '#1a73e8';
+            const fontMap = {
+                Sarabun: "'Sarabun', 'Inter', sans-serif",
+                Kanit: "'Kanit', 'Sarabun', sans-serif",
+                Inter: "'Inter', 'Sarabun', sans-serif"
+            };
+            sheet.style.fontFamily = fontMap[d.fontFamily] || fontMap.Sarabun;
+            const scaleFactor = (Number(d.fontScale || 96)) / 100;
+            sheet.style.zoom = '1';
+
+            const ctx = {
+                p,
+                d,
+                labels: getLabels(),
+                accent,
+                tintBg: hexToSoftTint(accent, 0.08),
+                tintBorder: hexToSoftTint(accent, 0.25),
+                dens: getDensityTokens(d.density || 'compact'),
+                qrSvg: d.showQr !== false ? buildQrSvg(p.qrUrl, accent) : '',
+                innerMinHeight: Math.round(A4_HEIGHT_PX / scaleFactor)
+            };
+
+            let html = '';
+            if (d.template === 'executive-classic') {
+                html = renderTemplateSingleColumn(ctx, 'classic');
+            } else if (d.template === 'tech-minimal') {
+                html = renderTemplateSingleColumn(ctx, 'tech');
+            } else if (d.template === 'portfolio-showcase') {
+                html = renderTemplateSingleColumn(ctx, 'portfolio');
+            } else {
+                html = renderTemplateModernSidebar(ctx);
+            }
+
+            sheet.innerHTML = `<div style="zoom:${scaleFactor};width:100%;">${html}</div>`;
+            updatePageMetricsAndScale();
+        }
+
+        function updatePageMetricsAndScale() {
+            const sheet = document.getElementById('resume-sheet');
+            if (!sheet) return;
+
+            // Remove old page guides before measuring
+            sheet.querySelectorAll('.page-break-guide').forEach(el => el.remove());
+
+            const naturalHeight = Math.round(sheet.scrollHeight);
+            const pageCount = Math.max(1, Math.ceil((naturalHeight - 4) / A4_HEIGHT_PX));
+            const pctPage1 = Math.round((naturalHeight / A4_HEIGHT_PX) * 100);
+
+            // Inject visual non-print page break guides
+            if (resumeData.design.showPageGuides !== false && pageCount >= 1) {
+                for (let pg = 1; pg <= Math.max(1, pageCount); pg++) {
+                    const guideY = pg * A4_HEIGHT_PX;
+                    if (guideY <= naturalHeight + 12) {
+                        const guide = document.createElement('div');
+                        guide.className = 'page-break-guide no-print';
+                        guide.style.top = `${guideY}px`;
+                        guide.innerHTML = `<span class="page-break-label">สิ้นสุดหน้า ${pg} (A4 &bull; 297mm)</span>`;
+                        sheet.appendChild(guide);
+                    }
+                }
+            }
+
+            const badge = document.getElementById('page-fit-badge');
+            const quickFit = document.getElementById('quick-autofit-btn');
+            if (badge) {
+                if (pageCount === 1) {
+                    badge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200';
+                    badge.textContent = `1 หน้า A4 (ใช้งาน ${pctPage1}%)`;
+                    if (quickFit) quickFit.classList.add('hidden');
+                } else {
+                    const overPx = naturalHeight - A4_HEIGHT_PX;
+                    badge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200';
+                    badge.textContent = `ประมาณ ${pageCount} หน้า A4 (ล้นหน้าแรก +${overPx}px)`;
+                    if (quickFit) quickFit.classList.remove('hidden');
+                }
+            }
+
+            applyPreviewViewportScale();
+        }
+
+        function applyPreviewViewportScale() {
+            const viewport = document.getElementById('resume-scale-viewport');
+            const wrap = document.getElementById('resume-scale-wrap');
+            const sheet = document.getElementById('resume-sheet');
+            if (!viewport || !wrap || !sheet) return;
+
+            const visualWidth = A4_WIDTH_PX;
+            const visualHeight = Math.max(A4_HEIGHT_PX, Math.round(sheet.scrollHeight));
+
+            const availWidth = Math.max(260, viewport.clientWidth - 4);
+            let scale = previewZoomMode === 'fit'
+                ? Math.min(1, availWidth / visualWidth)
+                : Number(previewZoomMode);
+
+            if (previewZoomMode !== 'fit' && scale * visualWidth > availWidth && window.innerWidth < 768) {
+                scale = availWidth / visualWidth;
+            }
+
+            wrap.style.width = `${Math.round(visualWidth * scale)}px`;
+            wrap.style.height = `${Math.round(visualHeight * scale)}px`;
+            wrap.style.transform = 'none';
+            sheet.style.transform = `scale(${scale})`;
+            sheet.style.transformOrigin = 'top left';
+        }
+
+        function setPreviewZoom(mode) {
+            previewZoomMode = mode;
+            document.querySelectorAll('.zoom-btn').forEach(btn => {
+                const active = btn.id === `zoom-btn-${mode}`;
+                btn.className = active
+                    ? 'zoom-btn px-2 py-0.5 rounded-md bg-sky-600 text-white cursor-pointer'
+                    : 'zoom-btn px-2 py-0.5 rounded-md text-google-text-body dark:text-google-dark-text-body cursor-pointer';
+            });
+            applyPreviewViewportScale();
+        }
+
+        function togglePageGuides(checked) {
+            resumeData.design.showPageGuides = checked;
+            saveToLocalStorage();
+            updatePageMetricsAndScale();
+        }
+
+        function autoFitOnePage() {
+            resumeData.design.density = 'compact';
+            let scale = 96;
+            const sheet = document.getElementById('resume-sheet');
+            const densitySel = document.getElementById('design-density');
+            if (densitySel) densitySel.value = 'compact';
+
+            for (let s = 100; s >= 82; s -= 2) {
+                resumeData.design.fontScale = s;
+                renderResumePreview();
+                if (sheet.scrollHeight <= A4_HEIGHT_PX) {
+                    scale = s;
+                    break;
+                }
+                scale = s;
+            }
+            resumeData.design.fontScale = scale;
+            const slider = document.getElementById('design-fontScale');
+            const lbl = document.getElementById('font-scale-val');
+            if (slider) slider.value = scale;
+            if (lbl) lbl.textContent = `${scale}%`;
+            saveToLocalStorage();
+            renderResumePreview();
+            showToast(`ปรับขนาดอัตโนมัติ (${scale}% / Compact) เพื่อลงหน้า A4 เรียบร้อย`, 'success');
+        }
+
+        // ==========================================
+        // 5. EXPORT TO PDF, PRINT & JSON BACKUP
+        // ==========================================
+        function buildSafeFilename(ext) {
+            const rawName = String(resumeData.profile.fullName || 'Resume').replace(/[<>:"/\\|?*]+/g, '').trim();
+            const clean = rawName.replace(/\s+/g, '_').slice(0, 48) || 'Resume';
+            return `Resume_${clean}.${ext}`;
+        }
+
+        function triggerVectorPrint() {
+            const origTitle = document.title;
+            document.title = buildSafeFilename('pdf').replace(/\.pdf$/i, '');
+            showToast('เลือกปลายทางเป็น "Save as PDF" (ขนาดกระดาษ A4, ติ๊ก Background graphics)', 'info');
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => { document.title = origTitle; }, 600);
+            }, 120);
+        }
+
+        async function exportDirectPdf() {
+            if (typeof window.html2canvas !== 'function' || !window.jspdf?.jsPDF) {
+                showToast('ไลบรารี PDF กำลังโหลด หรือใช้งานปุ่ม "พิมพ์ / Save Vector PDF" แทนได้ทันที', 'error');
+                return;
+            }
+            const btn = document.getElementById('download-pdf-btn');
+            const label = document.getElementById('download-pdf-label');
+            const sheet = document.getElementById('resume-sheet');
+            if (!sheet) return;
+
+            btn.disabled = true;
+            if (label) label.textContent = 'กำลังสร้างไฟล์ PDF...';
+
+            const mount = document.createElement('div');
+            mount.style.cssText = 'position:fixed;left:-99999px;top:0;width:794px;background:#ffffff;z-index:-1;';
+            try {
+                if (document.fonts && document.fonts.ready) {
+                    await document.fonts.ready;
+                }
+                const clone = sheet.cloneNode(true);
+                clone.removeAttribute('id');
+                clone.querySelectorAll('.page-break-guide').forEach(el => el.remove());
+                clone.style.transform = 'none';
+                clone.style.boxShadow = 'none';
+                clone.style.margin = '0';
+                clone.style.width = `${A4_WIDTH_PX}px`;
+                mount.appendChild(clone);
+                document.body.appendChild(mount);
+
+                await Promise.all([...clone.querySelectorAll('img')].map(img => {
+                    if (img.complete) return Promise.resolve();
+                    return new Promise(res => {
+                        img.addEventListener('load', res, { once: true });
+                        img.addEventListener('error', res, { once: true });
+                    });
+                }));
+
+                const canvas = await window.html2canvas(clone, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: false,
+                    backgroundColor: '#ffffff',
+                    width: A4_WIDTH_PX,
+                    windowWidth: A4_WIDTH_PX,
+                    logging: false
+                });
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+                const pageSliceHeight = Math.round(canvas.width * (297 / 210));
+                const pageCount = Math.max(1, Math.ceil((canvas.height - 8) / pageSliceHeight));
+
+                for (let pg = 0; pg < pageCount; pg++) {
+                    const srcY = pg * pageSliceHeight;
+                    const srcH = Math.min(pageSliceHeight, canvas.height - srcY);
+                    if (srcH <= 0) break;
+
+                    const sliceCanvas = document.createElement('canvas');
+                    sliceCanvas.width = canvas.width;
+                    sliceCanvas.height = pageSliceHeight;
+                    const sctx = sliceCanvas.getContext('2d');
+                    sctx.fillStyle = '#ffffff';
+                    sctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+                    sctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
+
+                    if (pg > 0) doc.addPage('a4', 'portrait');
+                    doc.addImage(sliceCanvas.toDataURL('image/jpeg', 0.96), 'JPEG', 0, 0, 210, 297);
+                }
+
+                const filename = buildSafeFilename('pdf');
+                const blob = doc.output('blob');
+                window.__lastResumePdfExport = {
+                    filename,
+                    bytes: blob.size,
+                    pages: pageCount,
+                    template: resumeData.design.template,
+                    canvasWidth: canvas.width,
+                    canvasHeight: canvas.height
+                };
+                doc.save(filename);
+                showToast(`ดาวน์โหลด ${filename} (${pageCount} หน้า, ${(blob.size / 1024).toFixed(0)} KB) สำเร็จ!`, 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('สร้างไฟล์ PDF ไม่สำเร็จ กรุณาลองใช้ "พิมพ์ / Save Vector PDF"', 'error');
+            } finally {
+                mount.remove();
+                btn.disabled = false;
+                if (label) label.textContent = 'ดาวน์โหลด .PDF ทันที';
+            }
+        }
+
+        function exportResumeJson() {
+            const payload = JSON.stringify(resumeData, null, 2);
+            const filename = buildSafeFilename('json');
+            window.__lastResumeJsonExport = { filename, length: payload.length };
+            const blob = new Blob([payload], { type: 'application/json;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+                a.remove();
+            }, 300);
+            showToast(`บันทึกไฟล์ข้อมูล ${filename} สำเร็จ`, 'success');
+        }
+
+        function importResumeJson(ev) {
+            const file = ev.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const parsed = JSON.parse(reader.result);
+                    resumeData = deepMergeWithDefaults(parsed);
+                    saveToLocalStorage();
+                    syncAllFormsFromState();
+                    renderResumePreview();
+                    showToast(`นำเข้าข้อมูลจาก ${file.name} สำเร็จ!`, 'success');
+                } catch (err) {
+                    showToast('ไฟล์ .json ไม่ถูกต้อง หรือรูปแบบไม่รองรับ', 'error');
+                }
+            };
+            reader.readAsText(file, 'utf-8');
+            ev.target.value = '';
+        }
+
+        // ==========================================
+        // 6. THEME, APP SWITCHER & BOOTSTRAP
+        // ==========================================
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(saved);
+        }
+
+        function applyTheme(theme) {
+            const root = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                root.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-xs text-amber-400';
+            } else {
+                root.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        function toggleTheme() {
+            applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
+        }
+
+        function toggleSubAppSwitcher(forceState) {
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu) return;
+            if (typeof forceState === 'boolean') menu.classList.toggle('hidden', !forceState);
+            else menu.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('app-switcher-btn');
+            const menu = document.getElementById('app-switcher-menu');
+            if (menu && !menu.classList.contains('hidden') && !menu.contains(e.target) && (!btn || !btn.contains(e.target))) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleSubAppSwitcher(false);
+        });
+
+        window.addEventListener('resize', () => applyPreviewViewportScale());
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadInitialState();
+            syncAllFormsFromState();
+            renderResumePreview();
+
+            const vp = document.getElementById('resume-scale-viewport');
+            if (vp && typeof ResizeObserver === 'function') {
+                new ResizeObserver(() => applyPreviewViewportScale()).observe(vp);
+            }
+        });
+    </script>
+</body>
+</html>

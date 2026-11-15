@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Image-to-Text — ดึงข้อความจากรูปภาพ เอกสาร &amp; สไลด์ (ไทย/อังกฤษ) | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="ระบบ OCR ดึงข้อความออกจากรูปภาพ หนังสือ ชีทเรียน และสไลด์อาจารย์ด้วย Tesseract.js รองรับภาษาไทยและอังกฤษในเบราว์เซอร์ 100% พร้อมปรับความคมชัด หมุนภาพ ครอปพื้นที่ และแก้เว้นวรรคไทยอัตโนมัติ">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tesseract.js v5 Client-Side OCR Engine -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.15rem;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.10), 0 1px 3px 1px rgba(60, 64, 67, 0.06);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+        .dropzone-active {
+            border-color: #9333ea !important;
+            background-color: rgba(147, 51, 234, 0.08) !important;
+        }
+        .checker-bg {
+            background-color: #f1f5f9;
+            background-image:
+                linear-gradient(45deg, rgba(148, 163, 184, 0.18) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(148, 163, 184, 0.18) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(148, 163, 184, 0.18) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(148, 163, 184, 0.18) 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+        }
+        .dark .checker-bg {
+            background-color: #141517;
+            background-image:
+                linear-gradient(45deg, rgba(148, 163, 184, 0.10) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(148, 163, 184, 0.10) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(148, 163, 184, 0.10) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(148, 163, 184, 0.10) 75%);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-purple-600 selection:text-white min-h-screen flex flex-col">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Centered Bottom Toast Notification -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 w-[92vw] max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- UNIFIED SINGLE-ROW NAVIGATION HEADER       -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก</span>
+            </a>
+
+            <div class="flex items-center gap-2.5 sm:border-l border-google-border dark:border-google-dark-border sm:pl-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-600 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            OCR Image-to-Text
+                        </h1>
+                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/70 text-purple-800 dark:text-purple-300 text-[10px] font-bold whitespace-nowrap shrink-0">
+                            Thai &amp; English • Tesseract.js
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        ดึงข้อความจากรูปภาพ หนังสือ ชีทเรียน &amp; สไลด์อาจารย์ ในเบราว์เซอร์ 100%
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <a href="image-converter.html" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-xs font-semibold text-teal-700 dark:text-teal-300 hover:bg-teal-100 transition whitespace-nowrap">
+                <i class="fa-solid fa-images"></i>
+                <span>ย่อรูป/แปลงไฟล์</span>
+            </a>
+
+            <!-- App Switcher Dropdown (18 Apps) -->
+            <div class="relative shrink-0">
+                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (18 ระบบ)">
+                    <i class="fa-solid fa-layer-group text-purple-600 dark:text-purple-400"></i>
+                    <span class="hidden sm:inline">สลับเว็บแอป</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-[10px] font-bold leading-none">18</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                </button>
+                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
+                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
+                        </div>
+                    </a>
+                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
+                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (18 ระบบ)</div>
+                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
+                        </div>
+                    </a>
+                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
+                        </div>
+                    </a>
+                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
+                        </div>
+                    </a>
+                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ &amp; พายุ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
+                        </div>
+                    </a>
+                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble &amp; สูตร CFOP</div>
+                        </div>
+                    </a>
+                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง &amp; ถาม-ตอบ</div>
+                        </div>
+                    </a>
+                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ &amp; แชร์ PIN 6 หลัก</div>
+                        </div>
+                    </a>
+                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง &amp; รูปติดบัตร</div>
+                        </div>
+                    </a>
+                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI &amp; โฮสต์ฟรี</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI &amp; รันไฟล์</div>
+                        </div>
+                    </a>
+                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON • JWT • Base64 • Timestamp</div>
+                        </div>
+                    </a>
+                    <a href="subnet.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-blue-600 bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-network-wired"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">11. IP &amp; Subnet Calculator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CIDR • Host Range • VLAN • Netplan</div>
+                        </div>
+                    </a>
+                    <a href="regex.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-fuchsia-600 bg-fuchsia-50 dark:bg-fuchsia-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">12. Regex Tester &amp; Cheatsheet</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Live Match • Presets • Replace</div>
+                        </div>
+                    </a>
+                    <a href="diff.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code-compare"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">13. Diff Checker &amp; Code Compare</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Side-by-Side • Patch • Word Diff</div>
+                        </div>
+                    </a>
+                    <a href="keygen.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-rose-600 bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">14. Password &amp; Key Generator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CSPRNG • API Key • UUID • Hash</div>
+                        </div>
+                    </a>
+                    <a href="pdf-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-red-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">15. PDF Merge &amp; Split</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวมไฟล์ • แยกหน้า • หมุน &amp; ลบหน้า</div>
+                        </div>
+                    </a>
+                    <a href="image-converter.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-images"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">16. Image Compressor &amp; Converter</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JPG • PNG • WebP • Batch ZIP</div>
+                        </div>
+                    </a>
+                    <a href="qr-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-qrcode"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">17. Custom QR Code Studio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">URL • Wi-Fi • PromptPay • PNG/SVG</div>
+                        </div>
+                    </a>
+                    <a href="ocr.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-300 dark:border-purple-700 transition">
+                        <div class="w-8 h-8 rounded-lg text-purple-600 bg-purple-100 dark:bg-purple-950 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-lines"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">18. OCR Image-to-Text</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">สแกนไทย/อังกฤษจากภาพ &amp; สไลด์</div>
+                        </div>
+                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-purple-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Theme Switcher -->
+            <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN OCR STUDIO WORKSPACE                  -->
+    <!-- ========================================== -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+            <!-- LEFT COLUMN: Upload / Queue / Pre-processing & Interactive Preview Canvas -->
+            <div class="lg:col-span-6 space-y-4">
+
+                <!-- 1. Image Input & OCR Language Config -->
+                <div class="g-card p-4 space-y-3.5 border-t-4 border-t-purple-600">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <h2 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                            <i class="fa-solid fa-camera text-purple-600"></i>
+                            <span>1. นำเข้ารูปภาพ &amp; เลือกภาษา OCR</span>
+                        </h2>
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
+                            ประมวลผลในเครื่อง 100%
+                        </span>
+                    </div>
+
+                    <!-- Dropzone + Paste Prompt -->
+                    <div id="ocr-dropzone" class="rounded-2xl border-2 border-dashed border-google-border dark:border-google-dark-border bg-google-subtle/60 dark:bg-google-dark-bg/50 p-4 text-center transition cursor-pointer hover:border-purple-400">
+                        <input id="ocr-file-input" type="file" accept="image/*" multiple class="hidden">
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                            <div class="w-11 h-11 rounded-2xl bg-purple-100 dark:bg-purple-950/70 text-purple-600 dark:text-purple-400 flex items-center justify-center text-lg shrink-0">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                            </div>
+                            <div class="text-left min-w-0">
+                                <div class="text-xs sm:text-sm font-bold text-google-text dark:text-google-dark-text">
+                                    คลิกเลือกภาพ ถ่ายรูปชีทเรียน ลากวาง หรือกด <kbd class="px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-google-border dark:border-zinc-700 text-[10px] font-mono">Ctrl+V</kbd> วางภาพสไลด์
+                                </div>
+                                <div class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
+                                    รองรับ JPG, PNG, WebP, BMP เลือกได้หลายหน้าพร้อมกัน
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sample Quick Buttons + Language / Model Controls -->
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="text-[11px] font-bold text-google-text-muted dark:text-google-dark-text-muted mr-1">ตัวอย่างทดสอบ:</span>
+                        <button type="button" onclick="loadBuiltInSample('slide-th-en')" class="px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 text-purple-700 dark:text-purple-300 text-[11px] font-bold transition cursor-pointer">
+                            สไลด์ (ไทย+อังกฤษ)
+                        </button>
+                        <button type="button" onclick="loadBuiltInSample('dark-slide')" class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition cursor-pointer">
+                            สไลด์พื้นมืด (Auto Invert)
+                        </button>
+                        <button type="button" onclick="loadBuiltInSample('eng-doc')" class="px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-[11px] font-bold transition cursor-pointer">
+                            เอกสาร / Config (ENG)
+                        </button>
+                        <button type="button" onclick="clearAllPages()" class="ml-auto px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-700 dark:text-rose-300 text-[11px] font-bold transition cursor-pointer">
+                            ล้างคิวทั้งหมด
+                        </button>
+                    </div>
+
+                    <!-- Language + Model Quality Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div>
+                            <label for="ocr-lang" class="block text-[11px] font-bold text-google-text-muted dark:text-google-dark-text-muted mb-1">ภาษาในภาพ (OCR Language)</label>
+                            <select id="ocr-lang" onchange="onOcrEngineConfigChange()" class="w-full px-3 py-2 rounded-xl bg-google-subtle dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold text-google-text dark:text-google-dark-text focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="tha+eng" selected>ไทย + อังกฤษ (tha+eng • แนะนำ)</option>
+                                <option value="tha">ภาษาไทยล้วน (tha)</option>
+                                <option value="eng">ภาษาอังกฤษ / โค้ด (eng)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="ocr-model-mode" class="block text-[11px] font-bold text-google-text-muted dark:text-google-dark-text-muted mb-1">โหมดโมเดล Tesseract</label>
+                            <select id="ocr-model-mode" onchange="onOcrEngineConfigChange()" class="w-full px-3 py-2 rounded-xl bg-google-subtle dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-semibold text-google-text dark:text-google-dark-text focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="fast" selected>รวดเร็ว (Fast 4.0 • ~2.9MB)</option>
+                                <option value="standard">ความแม่นยำสูง (Standard 4.0 • ~11.8MB)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Multi-Page Thumbnail Strip -->
+                    <div id="page-queue" class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar"></div>
+                </div>
+
+                <!-- 2. Document Scan Pre-Processing & Crop Canvas -->
+                <div class="g-card p-4 space-y-3.5">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <h2 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-purple-600"></i>
+                            <span>2. ปรับคมชัด &amp; เลือกพื้นที่สแกน (Pre-Process)</span>
+                        </h2>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" id="btn-rotate-left" onclick="rotateActivePage(-90)" class="px-2.5 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-xs font-semibold transition cursor-pointer" title="หมุนทวนเข็ม 90 องศา">
+                                <i class="fa-solid fa-rotate-left"></i> -90°
+                            </button>
+                            <button type="button" id="btn-rotate-right" onclick="rotateActivePage(90)" class="px-2.5 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-xs font-semibold transition cursor-pointer" title="หมุนตามเข็ม 90 องศา">
+                                <i class="fa-solid fa-rotate-right"></i> +90°
+                            </button>
+                            <button type="button" id="btn-clear-crop" onclick="clearActiveCrop()" class="hidden px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 text-xs font-bold transition cursor-pointer">
+                                ล้างกรอบครอป
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Presets -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 rounded-xl bg-google-subtle dark:bg-google-dark-bg border border-google-border/70 dark:border-google-dark-border">
+                        <button type="button" id="filter-btn-original" onclick="setActiveFilter('original')" class="px-2 py-1.5 rounded-lg text-[11px] font-bold bg-white dark:bg-google-dark-surface text-purple-700 dark:text-purple-300 shadow-xs transition cursor-pointer">ต้นฉบับ</button>
+                        <button type="button" id="filter-btn-enhance" onclick="setActiveFilter('enhance')" class="px-2 py-1.5 rounded-lg text-[11px] font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer">คมชัดหนังสือ</button>
+                        <button type="button" id="filter-btn-binarize" onclick="setActiveFilter('binarize')" class="px-2 py-1.5 rounded-lg text-[11px] font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer">ขาวดำ (Otsu)</button>
+                        <button type="button" id="filter-btn-invert" onclick="setActiveFilter('invert')" class="px-2 py-1.5 rounded-lg text-[11px] font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer">กลับสีสไลด์มืด</button>
+                    </div>
+
+                    <!-- Binarize Slider + Upscale + Preview Overlays -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 items-center text-xs">
+                        <div class="sm:col-span-1">
+                            <div class="flex items-center justify-between text-[11px] font-bold mb-1">
+                                <span class="text-google-text-muted dark:text-google-dark-text-muted">Otsu Bias</span>
+                                <span id="otsu-bias-label" class="font-mono text-purple-600 dark:text-purple-400">0</span>
+                            </div>
+                            <input id="otsu-bias" type="range" min="-50" max="50" value="0" oninput="onOtsuBiasChange(this.value)" class="w-full accent-purple-600 cursor-pointer">
+                        </div>
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <input id="chk-upscale2x" type="checkbox" checked onchange="toggleUpscale2x(this.checked)" class="w-4 h-4 accent-purple-600 rounded">
+                            <span class="font-semibold text-[11px]">ขยายภาพเล็ก 2x (ตัวคมขึ้น)</span>
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none">
+                                <input id="chk-show-processed" type="checkbox" onchange="renderPreviewCanvas()" class="w-3.5 h-3.5 accent-purple-600 rounded">
+                                <span class="font-semibold text-[11px]">ดูภาพที่ปรับ</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none">
+                                <input id="chk-word-overlay" type="checkbox" checked onchange="renderPreviewCanvas()" class="w-3.5 h-3.5 accent-purple-600 rounded">
+                                <span class="font-semibold text-[11px]">กรอบคำ</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Canvas Container (Supports Drag-to-Crop & Confidence Overlay) -->
+                    <div class="relative rounded-2xl checker-bg border border-google-border dark:border-google-dark-border p-2 flex flex-col items-center justify-center min-h-[240px]">
+                        <canvas id="ocr-preview-canvas" class="w-auto h-auto max-w-full max-h-[380px] rounded-xl shadow-sm bg-white cursor-crosshair touch-none"></canvas>
+                        <div id="crop-hint-bar" class="mt-2 flex flex-wrap items-center justify-between gap-2 w-full px-1 text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
+                            <span id="active-page-meta">พร้อมสแกน</span>
+                            <span>ลากเมาส์บนรูปเพื่อครอปเฉพาะย่อหน้าได้</span>
+                        </div>
+                    </div>
+
+                    <!-- Primary Action Buttons -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button type="button" id="btn-run-ocr" onclick="runOcrActivePage()" class="py-2.5 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>ดึงข้อความจากภาพนี้ (OCR)</span>
+                        </button>
+                        <button type="button" id="btn-run-all-ocr" onclick="runOcrAllPages()" class="py-2.5 px-4 rounded-xl bg-slate-900 dark:bg-zinc-700 hover:bg-slate-800 dark:hover:bg-zinc-600 disabled:opacity-50 text-white text-xs sm:text-sm font-bold shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span>สแกนทั้งหมดในคิว</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Sticky OCR Progress + Extracted Editable Text + Cleanups + Export -->
+            <div class="lg:col-span-6 lg:sticky lg:top-20 space-y-4">
+
+                <!-- Status & Real-Time OCR Progress Card -->
+                <div class="g-card p-4 space-y-2.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span id="ocr-status-pill" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-100 dark:bg-purple-950/70 text-purple-800 dark:text-purple-300 text-xs font-bold whitespace-nowrap">
+                                <i class="fa-solid fa-circle-dot"></i>
+                                <span>พร้อมเริ่ม OCR</span>
+                            </span>
+                            <span id="ocr-confidence-badge" class="hidden px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-[11px] font-bold font-mono">
+                                Confidence --%
+                            </span>
+                        </div>
+                        <span id="ocr-metrics-line" class="text-[11px] font-mono text-google-text-muted dark:text-google-dark-text-muted truncate">
+                            0 คำ • 0 บรรทัด
+                        </span>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="space-y-1">
+                        <div class="h-2 w-full rounded-full bg-google-subtle dark:bg-google-dark-bg overflow-hidden">
+                            <div id="ocr-progress-bar" class="h-full bg-gradient-to-r from-purple-600 via-violet-500 to-indigo-500 transition-all duration-150" style="width: 0%"></div>
+                        </div>
+                        <div id="ocr-progress-label" class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted flex justify-between gap-2">
+                            <span>พร้อมดึงข้อความภาษาไทย/อังกฤษด้วย Tesseract.js</span>
+                            <span id="ocr-progress-pct" class="font-mono font-bold">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Extracted Text Result & Editing Card -->
+                <div class="g-card p-4 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <h2 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading flex items-center gap-2">
+                            <i class="fa-solid fa-align-left text-purple-600"></i>
+                            <span>ข้อความที่ดึงได้ (แก้ไขต่อได้ทันที)</span>
+                        </h2>
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <button type="button" id="btn-clean-thai-spaces" onclick="applyThaiSpaceClean()" class="px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 text-purple-700 dark:text-purple-300 text-[11px] font-bold transition cursor-pointer" title="รวมช่องว่างที่ขาดระหว่างคำภาษาไทย">
+                                แก้เว้นวรรคไทย
+                            </button>
+                            <button type="button" id="btn-join-lines" onclick="applyJoinBrokenLines()" class="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-[11px] font-bold transition cursor-pointer" title="รวมบรรทัดขาดให้เป็นย่อหน้าต่อเนื่อง">
+                                รวมบรรทัด
+                            </button>
+                            <button type="button" id="btn-undo-text" onclick="undoOcrText()" class="px-2.5 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-xs font-semibold transition cursor-pointer" title="ย้อนกลับข้อความก่อนหน้า">
+                                <i class="fa-solid fa-clock-rotate-left"></i> คืนค่า
+                            </button>
+                            <button type="button" id="btn-toggle-mono" onclick="toggleEditorFont()" class="px-2 py-1 rounded-lg bg-google-subtle dark:bg-google-dark-bg hover:bg-slate-200 dark:hover:bg-zinc-700 text-[11px] font-mono font-bold transition cursor-pointer" title="สลับฟอนต์ Mono / ปกติ">
+                                Mono
+                            </button>
+                        </div>
+                    </div>
+
+                    <textarea id="ocr-output" rows="13" oninput="onOutputEdited()" placeholder="กดปุ่ม 'ดึงข้อความจากภาพนี้ (OCR)' หรือวางภาพด้วย Ctrl+V เพื่อแปลงภาพเป็นข้อความที่แก้ไขและคัดลอกได้..." class="w-full p-3.5 rounded-xl bg-google-subtle/60 dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-sm leading-relaxed text-google-text dark:text-google-dark-text focus:outline-none focus:ring-2 focus:ring-purple-500 resize-y"></textarea>
+
+                    <!-- Low Confidence Hints -->
+                    <div id="low-conf-box" class="hidden rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 p-2.5 space-y-1.5">
+                        <div class="text-[11px] font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>คำที่ความมั่นใจต่ำ (&lt; 65%) ควรตรวจทานซ้ำ:</span>
+                        </div>
+                        <div id="low-conf-words" class="flex flex-wrap gap-1.5 text-[11px]"></div>
+                    </div>
+
+                    <!-- Actions: Copy + .TXT + .MD + Feel AI Assistant -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                        <button type="button" id="btn-copy-ocr" onclick="copyOcrText()" class="col-span-2 sm:col-span-2 py-2.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>คัดลอกข้อความ</span>
+                        </button>
+                        <button type="button" id="btn-download-txt" onclick="downloadOcrText('txt')" class="py-2.5 px-3 rounded-xl bg-slate-900 dark:bg-zinc-700 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-download"></i>
+                            <span>โหลด .TXT</span>
+                        </button>
+                        <button type="button" id="btn-download-md" onclick="downloadOcrText('md')" class="py-2.5 px-3 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-google-subtle border border-google-border dark:border-google-dark-border text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fa-brands fa-markdown"></i>
+                            <span>โหลด .MD</span>
+                        </button>
+                    </div>
+
+                    <div class="pt-1 border-t border-google-border/70 dark:border-google-dark-border flex flex-wrap items-center justify-between gap-2 text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
+                        <span>เคล็ดลับ: กดสลับ "คมชัดหนังสือ" หรือ "ขาวดำ (Otsu)" เมื่อภาพชีทเรียนมีเงา</span>
+                        <a href="ai-assistant.html" onclick="copyOcrText(true)" class="inline-flex items-center gap-1 font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> คัดลอกแล้วไปสรุปใน AI Assistant →
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 px-4 border-t border-google-border dark:border-google-dark-border text-center text-xs text-google-text-muted dark:text-google-dark-text-muted">
+        <span>OCR Image-to-Text (Tesseract.js Thai/English • Otsu Binarization • Client-Side 100%) — </span>
+        <a href="index.html" class="font-semibold text-google-blue dark:text-sky-400 hover:underline">Portfolio นายภคพล สมัยแก้ว</a>
+    </footer>
+
+    <script>
+        // ==================== GLOBAL STATE ====================
+        const ocrState = {
+            pages: [],
+            activePageId: null,
+            nextPageSeq: 1,
+            worker: null,
+            workerKey: '',
+            terminatingPromise: null,
+            isBusy: false,
+            monoFont: false,
+            undoStack: [],
+            lastDownloadUrl: null,
+            cropDrag: {
+                active: false,
+                startX: 0,
+                startY: 0,
+                curX: 0,
+                curY: 0
+            }
+        };
+
+        // Expose helper & test inspection safely
+        window.__lastOcrExport = null;
+
+        // ==================== TOAST (SINGLE CAP <= 1) ====================
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            while (container.firstChild) container.removeChild(container.firstChild);
+
+            const el = document.createElement('div');
+            const isErr = type === 'error';
+            el.className = `pointer-events-auto px-4 py-2.5 rounded-full shadow-xl border text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all duration-200 ${
+                isErr
+                    ? 'bg-rose-950/95 text-rose-100 border-rose-700'
+                    : 'bg-slate-900/95 dark:bg-zinc-800/95 text-white border-slate-700'
+            }`;
+            const icon = document.createElement('i');
+            icon.className = isErr ? 'fa-solid fa-circle-exclamation text-rose-400' : 'fa-solid fa-circle-check text-emerald-400';
+            const span = document.createElement('span');
+            span.textContent = msg;
+            el.appendChild(icon);
+            el.appendChild(span);
+            container.appendChild(el);
+
+            clearTimeout(el._timer);
+            el._timer = setTimeout(() => {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        // ==================== PURE TEXT CLEANUP ALGORITHMS ====================
+        function cleanThaiSpaces(input) {
+            const text = String(input ?? '');
+            // Collapse multiple horizontal spaces to single space first (preserve newlines)
+            let out = text.replace(/[ \t]{2,}/g, ' ');
+            // Remove stray horizontal spaces between adjacent Thai consonants/vowels/tone marks
+            // Keep spaces around Latin letters, digits, punctuation, 'ๆ' (\u0E46), and 'ฯ' (\u0E2F)
+            const thaiWordChar = '[\\u0E01-\\u0E2E\\u0E30-\\u0E3A\\u0E40-\\u0E45\\u0E47-\\u0E4E]';
+            const re = new RegExp(`(${thaiWordChar})[ \\t]+(?=${thaiWordChar})`, 'g');
+            // Run twice for overlapping single-char splits
+            out = out.replace(re, '$1').replace(re, '$1');
+            // Trim trailing spaces per line
+            return out.split('\n').map(l => l.trimEnd()).join('\n').trim();
+        }
+
+        function joinBrokenLines(input) {
+            const lines = String(input ?? '').replace(/\r\n/g, '\n').split('\n');
+            const paragraphs = [];
+            let buf = '';
+            const flush = () => {
+                if (buf) {
+                    paragraphs.push(buf);
+                    buf = '';
+                }
+            };
+            for (const rawLine of lines) {
+                const line = rawLine.trim();
+                if (!line) {
+                    flush();
+                    continue;
+                }
+                const isListOrHeading = /^(?:[-•*]|\d+[.)]|#{1,4}\s)/.test(line);
+                if (isListOrHeading) {
+                    flush();
+                    paragraphs.push(line);
+                    continue;
+                }
+                if (!buf) {
+                    buf = line;
+                } else {
+                    const lastChar = buf.slice(-1);
+                    const nextChar = line.slice(0, 1);
+                    const bothThai = /[\u0E00-\u0E7F]/.test(lastChar) && /[\u0E00-\u0E7F]/.test(nextChar);
+                    if (buf.endsWith('-') && /[A-Za-z]/.test(nextChar)) {
+                        buf = buf.slice(0, -1) + line;
+                    } else if (bothThai) {
+                        buf += line;
+                    } else {
+                        buf += ' ' + line;
+                    }
+                }
+            }
+            flush();
+            return paragraphs.join('\n\n');
+        }
+
+        // ==================== PURE IMAGE PRE-PROCESSING & OTSU BINARIZATION ====================
+        function computeOtsuThreshold(grayArr) {
+            const hist = new Uint32Array(256);
+            const total = grayArr.length;
+            for (let i = 0; i < total; i++) hist[grayArr[i]]++;
+
+            let sumAll = 0;
+            for (let t = 0; t < 256; t++) sumAll += t * hist[t];
+
+            let sumB = 0;
+            let wB = 0;
+            let maxBetween = -1;
+            let bestThresh = 128;
+
+            for (let t = 0; t < 256; t++) {
+                wB += hist[t];
+                if (wB === 0) continue;
+                const wF = total - wB;
+                if (wF === 0) break;
+
+                sumB += t * hist[t];
+                const mB = sumB / wB;
+                const mF = (sumAll - sumB) / wF;
+                const diff = mB - mF;
+                const between = wB * wF * diff * diff;
+                if (between > maxBetween) {
+                    maxBetween = between;
+                    bestThresh = t;
+                }
+            }
+            return bestThresh;
+        }
+
+        function createRotatedSourceCanvas(sourceCanvas, rotationDeg) {
+            const deg = ((rotationDeg % 360) + 360) % 360;
+            if (deg === 0) {
+                const c = document.createElement('canvas');
+                c.width = sourceCanvas.width;
+                c.height = sourceCanvas.height;
+                c.getContext('2d').drawImage(sourceCanvas, 0, 0);
+                return c;
+            }
+            const swap = deg === 90 || deg === 270;
+            const c = document.createElement('canvas');
+            c.width = swap ? sourceCanvas.height : sourceCanvas.width;
+            c.height = swap ? sourceCanvas.width : sourceCanvas.height;
+            const ctx = c.getContext('2d');
+            ctx.translate(c.width / 2, c.height / 2);
+            ctx.rotate((deg * Math.PI) / 180);
+            ctx.drawImage(sourceCanvas, -sourceCanvas.width / 2, -sourceCanvas.height / 2);
+            return c;
+        }
+
+        function buildProcessedCanvas(page, forOcr = true) {
+            const rotated = createRotatedSourceCanvas(page.originalCanvas, page.rotation || 0);
+            let sx = 0, sy = 0, sw = rotated.width, sh = rotated.height;
+
+            if (forOcr && page.cropNorm) {
+                sx = Math.max(0, Math.round(page.cropNorm.x * rotated.width));
+                sy = Math.max(0, Math.round(page.cropNorm.y * rotated.height));
+                sw = Math.max(16, Math.round(page.cropNorm.w * rotated.width));
+                sh = Math.max(16, Math.round(page.cropNorm.h * rotated.height));
+                if (sx + sw > rotated.width) sw = rotated.width - sx;
+                if (sy + sh > rotated.height) sh = rotated.height - sy;
+            }
+
+            const scale = (forOcr && page.upscale2x && sw < 1400) ? 2 : 1;
+            const outW = Math.round(sw * scale);
+            const outH = Math.round(sh * scale);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = outW;
+            canvas.height = outH;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(rotated, sx, sy, sw, sh, 0, 0, outW, outH);
+
+            const filter = page.filter || 'original';
+            if (filter === 'original') return canvas;
+
+            const imgData = ctx.getImageData(0, 0, outW, outH);
+            const data = imgData.data;
+            const n = outW * outH;
+            const gray = new Uint8Array(n);
+
+            for (let i = 0, p = 0; i < data.length; i += 4, p++) {
+                gray[p] = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
+            }
+
+            if (filter === 'enhance') {
+                // Linear contrast stretch centered at mid-gray
+                let minV = 255, maxV = 0;
+                for (let i = 0; i < n; i++) {
+                    if (gray[i] < minV) minV = gray[i];
+                    if (gray[i] > maxV) maxV = gray[i];
+                }
+                const span = Math.max(24, maxV - minV);
+                for (let i = 0, p = 0; i < data.length; i += 4, p++) {
+                    let v = ((gray[p] - minV) * 255) / span;
+                    v = (v - 128) * 1.25 + 128;
+                    const cVal = Math.max(0, Math.min(255, Math.round(v)));
+                    data[i] = data[i + 1] = data[i + 2] = cVal;
+                }
+            } else if (filter === 'binarize') {
+                const otsu = computeOtsuThreshold(gray);
+                const bias = parseInt(page.otsuBias ?? 0, 10) || 0;
+                const thresh = Math.max(10, Math.min(245, otsu + bias));
+                for (let i = 0, p = 0; i < data.length; i += 4, p++) {
+                    const v = gray[p] > thresh ? 255 : 0;
+                    data[i] = data[i + 1] = data[i + 2] = v;
+                }
+            } else if (filter === 'invert') {
+                for (let i = 0; i < data.length; i += 4) {
+                    const invR = 255 - data[i];
+                    const invG = 255 - data[i + 1];
+                    const invB = 255 - data[i + 2];
+                    const luma = Math.round(0.299 * invR + 0.587 * invG + 0.114 * invB);
+                    data[i] = data[i + 1] = data[i + 2] = luma;
+                }
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+            return canvas;
+        }
+
+        // ==================== SAMPLE GENERATOR (OFFLINE DETERMINISTIC CANVAS) ====================
+        function makeBuiltInSampleCanvas(kind) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            if (kind === 'dark-slide') {
+                canvas.width = 1280;
+                canvas.height = 720;
+                const grad = ctx.createLinearGradient(0, 0, 1280, 720);
+                grad.addColorStop(0, '#0f172a');
+                grad.addColorStop(1, '#1e1b4b');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, 1280, 720);
+
+                ctx.fillStyle = '#38bdf8';
+                ctx.font = 'bold 42px Kanit, Inter, sans-serif';
+                ctx.fillText('ESP32 Smart Farm Controller', 90, 130);
+
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = '600 34px "JetBrains Mono", Consolas, sans-serif';
+                ctx.fillText('GPIO 33 : Soil Moisture Sensor', 90, 240);
+                ctx.fillText('Threshold : Lower than 42%', 90, 320);
+                ctx.fillText('Wi-Fi IP  : 192.168.10.50/24', 90, 400);
+
+                ctx.fillStyle = '#fde047';
+                ctx.font = 'bold 34px Sarabun, Kanit, sans-serif';
+                ctx.fillText('โหมดกลับสีสไลด์มืดช่วยให้ OCR อ่านแม่นขึ้น', 90, 520);
+                return { canvas, title: 'dark-slide-esp32.png', recommendedFilter: 'invert' };
+            }
+
+            if (kind === 'eng-doc') {
+                canvas.width = 1200;
+                canvas.height = 680;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, 1200, 680);
+
+                ctx.fillStyle = '#0f172a';
+                ctx.font = 'bold 44px Inter, sans-serif';
+                ctx.fillText('Ubuntu Netplan Static IP Config', 80, 120);
+
+                ctx.fillStyle = '#1e293b';
+                ctx.font = '600 34px "JetBrains Mono", Consolas, monospace';
+                ctx.fillText('Interface: ens18.10 (VLAN 10)', 80, 230);
+                ctx.fillText('Address:   192.168.10.50/24', 80, 310);
+                ctx.fillText('Gateway:   192.168.10.1', 80, 390);
+                ctx.fillText('Status:    OK - Hello World 2026', 80, 470);
+                return { canvas, title: 'ubuntu-netplan-guide.png', recommendedFilter: 'original' };
+            }
+
+            // Default: 'slide-th-en'
+            canvas.width = 1280;
+            canvas.height = 720;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 1280, 720);
+
+            ctx.fillStyle = '#581c87';
+            ctx.font = 'bold 48px Kanit, Sarabun, sans-serif';
+            ctx.fillText('สรุปบทเรียน Computer Network', 88, 130);
+
+            ctx.fillStyle = '#111827';
+            ctx.font = '600 38px Sarabun, Kanit, sans-serif';
+            ctx.fillText('1. โปรโตคอล TCP/IP และ Subnet Mask /24', 88, 250);
+            ctx.fillText('2. การแบ่งวง LAN / VLAN บนระบบ Ubuntu Server', 88, 345);
+            ctx.fillText('3. ทดสอบระบบ OCR ภาษาไทยและ English ได้ทันที', 88, 440);
+
+            ctx.fillStyle = '#4b5563';
+            ctx.font = '500 30px Inter, Sarabun, sans-serif';
+            ctx.fillText('Client-Side Document Scanner - Portfolio 2026', 88, 580);
+
+            return { canvas, title: 'lecture-slide-th-en.png', recommendedFilter: 'original' };
+        }
+
+        function getActivePage() {
+            return ocrState.pages.find(p => p.id === ocrState.activePageId) || null;
+        }
+
+        function addCanvasPage(canvas, name, filter = 'original') {
+            const id = 'page-' + (ocrState.nextPageSeq++);
+            const page = {
+                id,
+                name,
+                originalCanvas: canvas,
+                rotation: 0,
+                filter,
+                upscale2x: true,
+                otsuBias: 0,
+                cropNorm: null,
+                text: '',
+                rawText: '',
+                words: [],
+                confidence: null,
+                durationMs: 0,
+                processedSize: { w: canvas.width, h: canvas.height }
+            };
+            ocrState.pages.push(page);
+            selectPage(id);
+            return page;
+        }
+
+        function loadBuiltInSample(kind) {
+            const { canvas, title, recommendedFilter } = makeBuiltInSampleCanvas(kind);
+            addCanvasPage(canvas, title, recommendedFilter);
+            const langSel = document.getElementById('ocr-lang');
+            const prevLang = langSel.value;
+            if (kind === 'eng-doc') {
+                langSel.value = 'eng';
+            } else {
+                langSel.value = 'tha+eng';
+            }
+            if (langSel.value !== prevLang) {
+                onOcrEngineConfigChange(true);
+            }
+            showToast(`โหลดตัวอย่าง "${title}" พร้อมตั้งค่า ${recommendedFilter === 'invert' ? 'กลับสีสไลด์มืด' : 'มาตรฐาน'} แล้ว`);
+        }
+
+        function loadImageFile(file) {
+            return new Promise((resolve, reject) => {
+                if (!file.type.startsWith('image/')) {
+                    reject(new Error(`ไฟล์ "${file.name}" ไม่ใช่รูปภาพที่รองรับ`));
+                    return;
+                }
+                const url = URL.createObjectURL(file);
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.naturalWidth || img.width;
+                    canvas.height = img.naturalHeight || img.height;
+                    canvas.getContext('2d').drawImage(img, 0, 0);
+                    URL.revokeObjectURL(url);
+                    resolve({ canvas, name: file.name || `image-${ocrState.nextPageSeq}.png` });
+                };
+                img.onerror = () => {
+                    URL.revokeObjectURL(url);
+                    reject(new Error(`ไม่สามารถอ่านรูป "${file.name}" ได้`));
+                };
+                img.src = url;
+            });
+        }
+
+        async function handleIncomingFiles(fileList) {
+            const files = Array.from(fileList || []);
+            if (!files.length) return;
+            let loaded = 0;
+            for (const f of files) {
+                try {
+                    const { canvas, name } = await loadImageFile(f);
+                    addCanvasPage(canvas, name, 'original');
+                    loaded++;
+                } catch (err) {
+                    showToast(err.message, 'error');
+                }
+            }
+            if (loaded > 0) {
+                showToast(`เพิ่มรูปเข้าคิวสแกนแล้ว ${loaded} ภาพ`);
+            }
+        }
+
+        function selectPage(pageId) {
+            ocrState.activePageId = pageId;
+            const page = getActivePage();
+            syncControlsFromActivePage();
+            renderPageQueue();
+            renderPreviewCanvas();
+            if (page) {
+                document.getElementById('ocr-output').value = page.text || '';
+                updateMetricsAndConfidence(page);
+            } else {
+                document.getElementById('ocr-output').value = '';
+                updateMetricsAndConfidence(null);
+            }
+        }
+
+        function removePage(pageId, ev) {
+            if (ev) ev.stopPropagation();
+            const idx = ocrState.pages.findIndex(p => p.id === pageId);
+            if (idx === -1) return;
+            ocrState.pages.splice(idx, 1);
+            if (ocrState.activePageId === pageId) {
+                const next = ocrState.pages[Math.min(idx, ocrState.pages.length - 1)] || null;
+                selectPage(next ? next.id : null);
+            } else {
+                renderPageQueue();
+            }
+            showToast('ลบรูปออกจากคิวแล้ว');
+        }
+
+        function clearAllPages() {
+            ocrState.pages = [];
+            ocrState.activePageId = null;
+            ocrState.undoStack = [];
+            selectPage(null);
+            showToast('ล้างคิวรูปภาพทั้งหมดแล้ว');
+        }
+
+        // ==================== PAGE CONTROLS & PREVIEW RENDERER ====================
+        function syncControlsFromActivePage() {
+            const page = getActivePage();
+            const filterNames = ['original', 'enhance', 'binarize', 'invert'];
+            const activeFilter = page ? page.filter : 'original';
+
+            for (const f of filterNames) {
+                const btn = document.getElementById(`filter-btn-${f}`);
+                if (!btn) continue;
+                const active = f === activeFilter;
+                btn.className = active
+                    ? 'px-2 py-1.5 rounded-lg text-[11px] font-bold bg-white dark:bg-google-dark-surface text-purple-700 dark:text-purple-300 shadow-xs transition cursor-pointer'
+                    : 'px-2 py-1.5 rounded-lg text-[11px] font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition cursor-pointer';
+            }
+
+            document.getElementById('otsu-bias').value = page ? String(page.otsuBias || 0) : '0';
+            document.getElementById('otsu-bias-label').textContent = page ? String(page.otsuBias || 0) : '0';
+            document.getElementById('chk-upscale2x').checked = page ? Boolean(page.upscale2x) : true;
+            document.getElementById('btn-clear-crop').classList.toggle('hidden', !(page && page.cropNorm));
+        }
+
+        function rotateActivePage(deltaDeg) {
+            const page = getActivePage();
+            if (!page) return;
+            page.rotation = ((page.rotation + deltaDeg) % 360 + 360) % 360;
+            page.cropNorm = null;
+            page.words = [];
+            syncControlsFromActivePage();
+            renderPreviewCanvas();
+        }
+
+        function setActiveFilter(filterName) {
+            const page = getActivePage();
+            if (!page) return;
+            page.filter = filterName;
+            syncControlsFromActivePage();
+            renderPreviewCanvas();
+        }
+
+        function onOtsuBiasChange(val) {
+            const bias = parseInt(val || '0', 10);
+            document.getElementById('otsu-bias-label').textContent = String(bias);
+            const page = getActivePage();
+            if (!page) return;
+            page.otsuBias = bias;
+            if (page.filter !== 'binarize') {
+                page.filter = 'binarize';
+                syncControlsFromActivePage();
+            }
+            renderPreviewCanvas();
+        }
+
+        function toggleUpscale2x(checked) {
+            const page = getActivePage();
+            if (!page) return;
+            page.upscale2x = Boolean(checked);
+            renderPreviewCanvas();
+        }
+
+        function clearActiveCrop() {
+            const page = getActivePage();
+            if (!page) return;
+            page.cropNorm = null;
+            page.words = [];
+            syncControlsFromActivePage();
+            renderPreviewCanvas();
+            showToast('ยกเลิกกรอบครอป — ใช้ภาพเต็มแผ่นแล้ว');
+        }
+
+        function renderPageQueue() {
+            const strip = document.getElementById('page-queue');
+            strip.innerHTML = '';
+            if (!ocrState.pages.length) {
+                const empty = document.createElement('div');
+                empty.className = 'text-[11px] text-google-text-muted dark:text-google-dark-text-muted py-1';
+                empty.textContent = 'ยังไม่มีรูปภาพในคิว — อัปโหลด กด Ctrl+V หรือเลือกตัวอย่างทดสอบด้านบน';
+                strip.appendChild(empty);
+                return;
+            }
+            ocrState.pages.forEach((p, idx) => {
+                const isActive = p.id === ocrState.activePageId;
+                const item = document.createElement('div');
+                item.onclick = () => selectPage(p.id);
+                item.className = `group relative flex items-center gap-2 pl-1.5 pr-6 py-1 rounded-xl border cursor-pointer shrink-0 transition ${
+                    isActive
+                        ? 'bg-purple-50 dark:bg-purple-950/60 border-purple-500 text-purple-900 dark:text-purple-100 shadow-xs'
+                        : 'bg-google-subtle/60 dark:bg-google-dark-bg border-google-border dark:border-google-dark-border hover:border-purple-300'
+                }`;
+
+                const badge = document.createElement('span');
+                badge.className = `w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                    p.text
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-purple-200 dark:bg-purple-900 text-purple-800 dark:text-purple-200'
+                }`;
+                badge.textContent = String(idx + 1);
+
+                const label = document.createElement('span');
+                label.className = 'text-[11px] font-semibold max-w-[125px] truncate';
+                label.textContent = p.name;
+
+                const rm = document.createElement('button');
+                rm.type = 'button';
+                rm.className = 'absolute right-1.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full hover:bg-rose-500 hover:text-white text-[10px] flex items-center justify-center opacity-70 group-hover:opacity-100';
+                rm.title = 'ลบหน้านี้';
+                rm.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                rm.onclick = (ev) => removePage(p.id, ev);
+
+                item.appendChild(badge);
+                item.appendChild(label);
+                item.appendChild(rm);
+                strip.appendChild(item);
+            });
+        }
+
+        function renderPreviewCanvas() {
+            const canvas = document.getElementById('ocr-preview-canvas');
+            const ctx = canvas.getContext('2d');
+            const page = getActivePage();
+
+            if (!page) {
+                canvas.width = 640;
+                canvas.height = 300;
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#64748b';
+                ctx.font = 'bold 18px Kanit, Sarabun, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('ยังไม่มีรูปภาพ — อัปโหลดหรือเลือกตัวอย่างด้านบน', 320, 150);
+                document.getElementById('active-page-meta').textContent = 'ยังไม่มีภาพ';
+                return;
+            }
+
+            const showProcessed = document.getElementById('chk-show-processed').checked;
+            const showOverlay = document.getElementById('chk-word-overlay').checked;
+
+            // Render base image (either full processed preview without crop, or rotated original)
+            const basePageView = showProcessed
+                ? buildProcessedCanvas({ ...page, cropNorm: null, upscale2x: false }, false)
+                : createRotatedSourceCanvas(page.originalCanvas, page.rotation || 0);
+
+            canvas.width = basePageView.width;
+            canvas.height = basePageView.height;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(basePageView, 0, 0);
+
+            // Overlay crop rectangle if defined
+            if (page.cropNorm) {
+                const cx = page.cropNorm.x * canvas.width;
+                const cy = page.cropNorm.y * canvas.height;
+                const cw = page.cropNorm.w * canvas.width;
+                const ch = page.cropNorm.h * canvas.height;
+
+                ctx.save();
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
+                ctx.fillRect(0, 0, canvas.width, cy);
+                ctx.fillRect(0, cy + ch, canvas.width, canvas.height - (cy + ch));
+                ctx.fillRect(0, cy, cx, ch);
+                ctx.fillRect(cx + cw, cy, canvas.width - (cx + cw), ch);
+                ctx.strokeStyle = '#a855f7';
+                ctx.lineWidth = Math.max(2, canvas.width * 0.004);
+                ctx.setLineDash([8, 4]);
+                ctx.strokeRect(cx, cy, cw, ch);
+                ctx.restore();
+            }
+
+            // Active drag box preview
+            if (ocrState.cropDrag.active) {
+                const x1 = Math.min(ocrState.cropDrag.startX, ocrState.cropDrag.curX);
+                const y1 = Math.min(ocrState.cropDrag.startY, ocrState.cropDrag.curY);
+                const w = Math.abs(ocrState.cropDrag.curX - ocrState.cropDrag.startX);
+                const h = Math.abs(ocrState.cropDrag.curY - ocrState.cropDrag.startY);
+                ctx.save();
+                ctx.strokeStyle = '#9333ea';
+                ctx.lineWidth = Math.max(2, canvas.width * 0.004);
+                ctx.fillStyle = 'rgba(147, 51, 234, 0.15)';
+                ctx.fillRect(x1, y1, w, h);
+                ctx.strokeRect(x1, y1, w, h);
+                ctx.restore();
+            }
+
+            // Word bounding boxes from last OCR run
+            if (showOverlay && page.words && page.words.length) {
+                const scaleBackX = (page.cropNorm ? page.cropNorm.w * canvas.width : canvas.width) / (page.processedSize?.w || canvas.width);
+                const scaleBackY = (page.cropNorm ? page.cropNorm.h * canvas.height : canvas.height) / (page.processedSize?.h || canvas.height);
+                const offX = page.cropNorm ? page.cropNorm.x * canvas.width : 0;
+                const offY = page.cropNorm ? page.cropNorm.y * canvas.height : 0;
+
+                ctx.save();
+                ctx.lineWidth = Math.max(1.5, canvas.width * 0.0022);
+                for (const w of page.words) {
+                    if (!w.bbox) continue;
+                    const x = offX + w.bbox.x0 * scaleBackX;
+                    const y = offY + w.bbox.y0 * scaleBackY;
+                    const bw = (w.bbox.x1 - w.bbox.x0) * scaleBackX;
+                    const bh = (w.bbox.y1 - w.bbox.y0) * scaleBackY;
+                    ctx.strokeStyle = w.confidence >= 80
+                        ? 'rgba(16, 185, 129, 0.78)'
+                        : (w.confidence >= 65 ? 'rgba(245, 158, 11, 0.85)' : 'rgba(244, 63, 94, 0.92)');
+                    ctx.strokeRect(x, y, bw, bh);
+                }
+                ctx.restore();
+            }
+
+            const filterTxt = page.filter === 'original' ? 'ต้นฉบับ' : page.filter;
+            document.getElementById('active-page-meta').textContent = `${basePageView.width}×${basePageView.height}px • หมุน ${page.rotation}° • ฟิลเตอร์: ${filterTxt}`;
+        }
+
+        function initPreviewCropEvents() {
+            const canvas = document.getElementById('ocr-preview-canvas');
+            const toCanvasCoords = (ev) => {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / Math.max(1, rect.width);
+                const scaleY = canvas.height / Math.max(1, rect.height);
+                return {
+                    x: Math.max(0, Math.min(canvas.width, (ev.clientX - rect.left) * scaleX)),
+                    y: Math.max(0, Math.min(canvas.height, (ev.clientY - rect.top) * scaleY))
+                };
+            };
+
+            canvas.addEventListener('pointerdown', (ev) => {
+                const page = getActivePage();
+                if (!page) return;
+                const pt = toCanvasCoords(ev);
+                ocrState.cropDrag = { active: true, startX: pt.x, startY: pt.y, curX: pt.x, curY: pt.y };
+                canvas.setPointerCapture(ev.pointerId);
+            });
+
+            canvas.addEventListener('pointermove', (ev) => {
+                if (!ocrState.cropDrag.active) return;
+                const pt = toCanvasCoords(ev);
+                ocrState.cropDrag.curX = pt.x;
+                ocrState.cropDrag.curY = pt.y;
+                renderPreviewCanvas();
+            });
+
+            canvas.addEventListener('pointerup', () => {
+                if (!ocrState.cropDrag.active) return;
+                const d = ocrState.cropDrag;
+                d.active = false;
+                const page = getActivePage();
+                if (!page) return;
+
+                const x1 = Math.min(d.startX, d.curX);
+                const y1 = Math.min(d.startY, d.curY);
+                const w = Math.abs(d.curX - d.startX);
+                const h = Math.abs(d.curY - d.startY);
+                if (w >= 24 && h >= 20) {
+                    page.cropNorm = {
+                        x: x1 / canvas.width,
+                        y: y1 / canvas.height,
+                        w: w / canvas.width,
+                        h: h / canvas.height
+                    };
+                    page.words = [];
+                    syncControlsFromActivePage();
+                    showToast('เลือกพื้นที่ครอปสำหรับสแกน OCR แล้ว');
+                }
+                renderPreviewCanvas();
+            });
+        }
+
+        // ==================== TESSERACT.JS WORKER LIFECYCLE & EXECUTION ====================
+        function getLangPath(mode) {
+            return mode === 'standard'
+                ? 'https://tessdata.projectnaptha.com/4.0.0'
+                : 'https://tessdata.projectnaptha.com/4.0.0_fast';
+        }
+
+        function mapStatusThai(rawStatus) {
+            if (!rawStatus) return 'กำลังประมวลผล OCR...';
+            if (rawStatus.includes('loading tesseract core')) return 'กำลังโหลด Tesseract Core (WASM)...';
+            if (rawStatus.includes('initializing tesseract')) return 'กำลังเตรียมเอนจิน OCR...';
+            if (rawStatus.includes('loading language')) return 'กำลังโหลดชุดภาษาไทย/อังกฤษ (แคชในเครื่อง)...';
+            if (rawStatus.includes('initializing api')) return 'กำลังตั้งค่าภาษา...';
+            if (rawStatus.includes('recognizing text')) return 'กำลังอ่านตัวอักษรในภาพ...';
+            return rawStatus;
+        }
+
+        function setProgressUI(statusText, pct, pillClass = null) {
+            const pClamped = Math.max(0, Math.min(100, Math.round(pct)));
+            document.getElementById('ocr-progress-bar').style.width = `${pClamped}%`;
+            document.getElementById('ocr-progress-label').firstElementChild.textContent = statusText;
+            document.getElementById('ocr-progress-pct').textContent = `${pClamped}%`;
+            if (pillClass) {
+                document.getElementById('ocr-status-pill').className = pillClass;
+            }
+        }
+
+        function getSelectedEngineKey() {
+            const lang = document.getElementById('ocr-lang').value || 'tha+eng';
+            const mode = document.getElementById('ocr-model-mode').value || 'fast';
+            return `${lang}|${mode}`;
+        }
+
+        async function terminateActiveWorker() {
+            if (ocrState.terminatingPromise) {
+                await ocrState.terminatingPromise;
+            }
+            const oldWorker = ocrState.worker;
+            ocrState.worker = null;
+            ocrState.workerKey = '';
+            if (!oldWorker) return;
+            const p = (async () => {
+                try { await oldWorker.terminate(); } catch {}
+            })();
+            ocrState.terminatingPromise = p;
+            try { await p; } finally {
+                if (ocrState.terminatingPromise === p) ocrState.terminatingPromise = null;
+            }
+        }
+
+        async function onOcrEngineConfigChange(silent = false) {
+            const nextKey = getSelectedEngineKey();
+            if (ocrState.workerKey && ocrState.workerKey !== nextKey) {
+                await terminateActiveWorker();
+            }
+            if (!silent) {
+                const lang = document.getElementById('ocr-lang').value;
+                showToast(`ตั้งค่าภาษา OCR เป็น "${lang}" แล้ว`);
+            }
+        }
+
+        async function ensureTesseractWorker() {
+            if (typeof window.Tesseract === 'undefined' || typeof window.Tesseract.createWorker !== 'function') {
+                throw new Error('ไม่สามารถโหลด Tesseract.js ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต');
+            }
+            if (ocrState.terminatingPromise) {
+                await ocrState.terminatingPromise;
+            }
+            const lang = document.getElementById('ocr-lang').value || 'tha+eng';
+            const mode = document.getElementById('ocr-model-mode').value || 'fast';
+            const key = `${lang}|${mode}`;
+
+            if (ocrState.worker && ocrState.workerKey === key) {
+                return ocrState.worker;
+            }
+            if (ocrState.worker) {
+                await terminateActiveWorker();
+            }
+
+            setProgressUI('กำลังดาวน์โหลด/เตรียมโมเดลภาษาครั้งแรก...', 8);
+            const worker = await Tesseract.createWorker(lang, 1, {
+                langPath: getLangPath(mode),
+                logger: (m) => {
+                    if (m && typeof m.progress === 'number') {
+                        setProgressUI(mapStatusThai(m.status), Math.round(m.progress * 100));
+                    }
+                }
+            });
+            ocrState.worker = worker;
+            ocrState.workerKey = key;
+            return worker;
+        }
+
+        function setBusyState(busy) {
+            ocrState.isBusy = busy;
+            document.getElementById('btn-run-ocr').disabled = busy;
+            document.getElementById('btn-run-all-ocr').disabled = busy;
+        }
+
+        async function recognizeSinglePage(page) {
+            const t0 = performance.now();
+            const ocrCanvas = buildProcessedCanvas(page, true);
+            page.processedSize = { w: ocrCanvas.width, h: ocrCanvas.height };
+
+            const worker = await ensureTesseractWorker();
+            setProgressUI(`กำลังอ่าน "${page.name}"...`, 20);
+            const result = await worker.recognize(ocrCanvas);
+            const durationMs = Math.round(performance.now() - t0);
+
+            const data = (result && result.data) ? result.data : {};
+            const extracted = (data.text || '').trim();
+            page.rawText = extracted;
+            page.text = extracted;
+            page.confidence = typeof data.confidence === 'number' ? Math.round(data.confidence) : null;
+            page.durationMs = durationMs;
+            page.words = Array.isArray(data.words)
+                ? data.words.map(w => ({
+                    text: w.text,
+                    confidence: Math.round(w.confidence || 0),
+                    bbox: w.bbox
+                }))
+                : [];
+            return page;
+        }
+
+        async function runOcrActivePage() {
+            const page = getActivePage();
+            if (!page) {
+                showToast('กรุณานำเข้ารูปภาพหรือเลือกตัวอย่างก่อนสแกน', 'error');
+                return;
+            }
+            if (ocrState.isBusy) return;
+
+            setBusyState(true);
+            document.getElementById('ocr-status-pill').innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>กำลังสแกนข้อความ...</span>`;
+            try {
+                await recognizeSinglePage(page);
+                ocrState.undoStack = [];
+                document.getElementById('ocr-output').value = page.text;
+                updateMetricsAndConfidence(page);
+                renderPageQueue();
+                renderPreviewCanvas();
+                setProgressUI(`เสร็จสิ้นภายใน ${(page.durationMs / 1000).toFixed(2)} วินาที`, 100);
+                document.getElementById('ocr-status-pill').className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-xs font-bold whitespace-nowrap';
+                document.getElementById('ocr-status-pill').innerHTML = `<i class="fa-solid fa-circle-check"></i><span>ดึงข้อความสำเร็จ</span>`;
+                showToast(`อ่านข้อความ "${page.name}" เสร็จแล้ว!`);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('ocr-status-pill').className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 text-xs font-bold whitespace-nowrap';
+                document.getElementById('ocr-status-pill').innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i><span>เกิดข้อผิดพลาด OCR</span>`;
+                showToast(err.message || 'สแกน OCR ไม่สำเร็จ', 'error');
+            } finally {
+                setBusyState(false);
+            }
+        }
+
+        async function runOcrAllPages() {
+            if (!ocrState.pages.length) {
+                showToast('ยังไม่มีรูปภาพในคิวสแกน', 'error');
+                return;
+            }
+            if (ocrState.pages.length === 1) {
+                return runOcrActivePage();
+            }
+            if (ocrState.isBusy) return;
+
+            setBusyState(true);
+            document.getElementById('ocr-status-pill').innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>กำลังสแกนทั้งหมด ${ocrState.pages.length} หน้า...</span>`;
+            try {
+                const combinedParts = [];
+                for (let i = 0; i < ocrState.pages.length; i++) {
+                    const p = ocrState.pages[i];
+                    setProgressUI(`กำลังสแกนหน้า ${i + 1}/${ocrState.pages.length}: ${p.name}`, Math.round(((i + 0.1) / ocrState.pages.length) * 100));
+                    await recognizeSinglePage(p);
+                    combinedParts.push(`--- หน้า ${i + 1}: ${p.name} ---\n${p.text}`);
+                }
+                const merged = combinedParts.join('\n\n');
+                const active = getActivePage();
+                if (active) active.text = merged;
+                document.getElementById('ocr-output').value = merged;
+                updateMetricsAndConfidence(active);
+                renderPageQueue();
+                renderPreviewCanvas();
+                setProgressUI(`สแกนครบทั้ง ${ocrState.pages.length} หน้าสำเร็จ`, 100);
+                document.getElementById('ocr-status-pill').className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-xs font-bold whitespace-nowrap';
+                document.getElementById('ocr-status-pill').innerHTML = `<i class="fa-solid fa-circle-check"></i><span>รวมครบ ${ocrState.pages.length} หน้าแล้ว</span>`;
+                showToast(`สแกนครบ ${ocrState.pages.length} หน้าเรียบร้อย!`);
+            } catch (err) {
+                showToast(err.message || 'สแกนคิวไม่สำเร็จ', 'error');
+            } finally {
+                setBusyState(false);
+            }
+        }
+
+        // ==================== POST-PROCESSING & METRICS ====================
+        function updateMetricsAndConfidence(page) {
+            const text = document.getElementById('ocr-output').value || '';
+            const trimmed = text.trim();
+            const chars = trimmed.length;
+            const words = trimmed ? trimmed.split(/\s+/).length : 0;
+            const lines = trimmed ? trimmed.split('\n').length : 0;
+            const sec = page && page.durationMs ? ` • ${(page.durationMs / 1000).toFixed(2)}s` : '';
+            document.getElementById('ocr-metrics-line').textContent = `${chars} อักษร • ${words} คำ • ${lines} บรรทัด${sec}`;
+
+            const confBadge = document.getElementById('ocr-confidence-badge');
+            const lowBox = document.getElementById('low-conf-box');
+            const lowWrap = document.getElementById('low-conf-words');
+
+            if (page && page.confidence !== null) {
+                confBadge.classList.remove('hidden');
+                confBadge.textContent = `ความแม่นยำ ~${page.confidence}%`;
+
+                const weak = (page.words || []).filter(w => w.text && w.text.trim() && w.confidence < 65).slice(0, 12);
+                if (weak.length > 0) {
+                    lowWrap.innerHTML = '';
+                    weak.forEach(w => {
+                        const chip = document.createElement('span');
+                        chip.className = 'px-2 py-0.5 rounded-md bg-white dark:bg-zinc-900 border border-amber-300 dark:border-amber-700 font-mono text-amber-900 dark:text-amber-200';
+                        chip.textContent = `${w.text.trim()} (${w.confidence}%)`;
+                        lowWrap.appendChild(chip);
+                    });
+                    lowBox.classList.remove('hidden');
+                } else {
+                    lowBox.classList.add('hidden');
+                }
+            } else {
+                confBadge.classList.add('hidden');
+                lowBox.classList.add('hidden');
+            }
+        }
+
+        function onOutputEdited() {
+            const page = getActivePage();
+            const val = document.getElementById('ocr-output').value;
+            if (page) page.text = val;
+            updateMetricsAndConfidence(page);
+        }
+
+        function pushUndo(prevText) {
+            ocrState.undoStack.push(prevText);
+            if (ocrState.undoStack.length > 20) ocrState.undoStack.shift();
+        }
+
+        function applyThaiSpaceClean() {
+            const area = document.getElementById('ocr-output');
+            const cur = area.value;
+            if (!cur.trim()) {
+                showToast('ยังไม่มีข้อความให้ปรับแต่ง', 'error');
+                return;
+            }
+            pushUndo(cur);
+            const cleaned = cleanThaiSpaces(cur);
+            area.value = cleaned;
+            onOutputEdited();
+            showToast('ปรับเว้นวรรคภาษาไทยเรียบร้อย');
+        }
+
+        function applyJoinBrokenLines() {
+            const area = document.getElementById('ocr-output');
+            const cur = area.value;
+            if (!cur.trim()) {
+                showToast('ยังไม่มีข้อความให้รวมบรรทัด', 'error');
+                return;
+            }
+            pushUndo(cur);
+            area.value = joinBrokenLines(cur);
+            onOutputEdited();
+            showToast('รวมบรรทัดที่ขาดเป็นย่อหน้าแล้ว');
+        }
+
+        function undoOcrText() {
+            const area = document.getElementById('ocr-output');
+            const page = getActivePage();
+            if (ocrState.undoStack.length > 0) {
+                area.value = ocrState.undoStack.pop();
+                onOutputEdited();
+                showToast('ย้อนกลับข้อความก่อนหน้าแล้ว');
+            } else if (page && page.rawText && area.value !== page.rawText) {
+                area.value = page.rawText;
+                onOutputEdited();
+                showToast('คืนค่าข้อความต้นฉบับจาก OCR แล้ว');
+            } else {
+                showToast('ไม่มีประวัติให้ย้อนกลับเพิ่มเติม');
+            }
+        }
+
+        function toggleEditorFont() {
+            ocrState.monoFont = !ocrState.monoFont;
+            const area = document.getElementById('ocr-output');
+            area.classList.toggle('font-mono', ocrState.monoFont);
+            document.getElementById('btn-toggle-mono').classList.toggle('text-purple-600', ocrState.monoFont);
+        }
+
+        // ==================== CLIPBOARD COPY & FILE EXPORTS ====================
+        async function copyOcrText(silentOnEmpty = false) {
+            const val = document.getElementById('ocr-output').value;
+            if (!val.trim()) {
+                if (!silentOnEmpty) showToast('ยังไม่มีข้อความให้คัดลอก', 'error');
+                return false;
+            }
+            try {
+                await navigator.clipboard.writeText(val);
+                showToast(`คัดลอกข้อความ ${val.length} อักษรลงคลิปบอร์ดแล้ว`);
+                return true;
+            } catch {
+                const area = document.getElementById('ocr-output');
+                area.select();
+                showToast('เลือกข้อความทั้งหมดให้แล้ว — กด Ctrl+C เพื่อคัดลอก');
+                return true;
+            }
+        }
+
+        function downloadOcrText(ext = 'txt') {
+            const val = document.getElementById('ocr-output').value;
+            if (!val.trim()) {
+                showToast('ยังไม่มีข้อความสำหรับบันทึกเป็นไฟล์', 'error');
+                return;
+            }
+            const safeExt = ext === 'md' ? 'md' : 'txt';
+            const content = safeExt === 'md'
+                ? `# OCR Extracted Text\n\n${val.trim()}\n`
+                : val;
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            if (ocrState.lastDownloadUrl) URL.revokeObjectURL(ocrState.lastDownloadUrl);
+            const url = URL.createObjectURL(blob);
+            ocrState.lastDownloadUrl = url;
+
+            const active = getActivePage();
+            const baseName = (active ? active.name.replace(/\.[^.]+$/, '') : 'ocr-text').replace(/[^A-Za-z0-9ก-๛_-]/g, '-');
+            const filename = `${baseName}-ocr.${safeExt}`;
+            window.__lastOcrExport = { type: safeExt, filename, byteLength: blob.size, content };
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            showToast(`ดาวน์โหลด "${filename}" (${blob.size} ไบต์) สำเร็จ`);
+        }
+
+        // ==================== DROPZONE, PASTE & THEME/SWITCHER ====================
+        function initDropzoneAndPaste() {
+            const dz = document.getElementById('ocr-dropzone');
+            const input = document.getElementById('ocr-file-input');
+
+            dz.addEventListener('click', () => input.click());
+            input.addEventListener('change', (e) => {
+                handleIncomingFiles(e.target.files);
+                e.target.value = '';
+            });
+
+            dz.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dz.classList.add('dropzone-active');
+            });
+            dz.addEventListener('dragleave', () => dz.classList.remove('dropzone-active'));
+            dz.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dz.classList.remove('dropzone-active');
+                if (e.dataTransfer && e.dataTransfer.files) {
+                    handleIncomingFiles(e.dataTransfer.files);
+                }
+            });
+
+            window.addEventListener('paste', (e) => {
+                const items = e.clipboardData && e.clipboardData.items;
+                if (!items) return;
+                const imgFiles = [];
+                for (const item of items) {
+                    if (item.type && item.type.startsWith('image/')) {
+                        const f = item.getAsFile();
+                        if (f) imgFiles.push(f);
+                    }
+                }
+                if (imgFiles.length > 0) {
+                    e.preventDefault();
+                    handleIncomingFiles(imgFiles);
+                }
+            });
+        }
+
+        function initTheme() {
+            const saved = localStorage.getItem('feel_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            localStorage.setItem('feel_theme', theme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+
+        function toggleSubAppSwitcher(forceState) {
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu) return;
+            const willOpen = typeof forceState === 'boolean' ? forceState : menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !willOpen);
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('app-switcher-btn');
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu || menu.classList.contains('hidden')) return;
+            if ((!btn || !btn.contains(e.target)) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleSubAppSwitcher(false);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initDropzoneAndPaste();
+            initPreviewCropEvents();
+            // Load clean initial Thai+English sample preview ready for instant click
+            const { canvas, title, recommendedFilter } = makeBuiltInSampleCanvas('slide-th-en');
+            addCanvasPage(canvas, title, recommendedFilter);
+        });
+    </script>
+</body>
+</html>

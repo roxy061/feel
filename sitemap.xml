@@ -126,4 +126,10 @@
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
+    <url>
+        <loc>https://feel-ochre.vercel.app/web-cloner.html</loc>
+        <lastmod>2026-11-15</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
 </urlset>

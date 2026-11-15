@@ -1,0 +1,2582 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Source Cloner &amp; ZIP Packer — ดึงซอร์สโค้ดเว็บ HTML/CSS/JS/รูปภาพ แพ็กโหลด .ZIP ในคลิกเดียว | นายภคพล สมัยแก้ว</title>
+    <meta name="description" content="เครื่องมือดึงซอร์สโค้ดหน้าเว็บจากลิงก์ (URL) แบบออนไลน์ แยก HTML, CSS, JavaScript และรายการรูปภาพ พร้อมระบบแพ็กไฟล์ดาวน์โหลดเป็น .ZIP ในคลิกเดียว ทำงานร่วมกับ Vercel Serverless Proxy และ Bookmarklet สำหรับดูดโค้ดเว็บที่ติดสิทธิ์ล็อกอิน">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        google: {
+                            blue: '#1a73e8',
+                            'blue-light': '#e8f0fe',
+                            red: '#d93025',
+                            yellow: '#f9ab00',
+                            green: '#1e8e3e',
+                            bg: '#f8fafd',
+                            surface: '#ffffff',
+                            subtle: '#f1f3f4',
+                            border: '#dadce0',
+                            text: '#202124',
+                            'text-body': '#3c4043',
+                            'text-muted': '#5f6368',
+                            'dark-bg': '#1e1f20',
+                            'dark-surface': '#282a2d',
+                            'dark-subtle': '#35373a',
+                            'dark-border': '#444746',
+                            'dark-text': '#e3e3e3',
+                            'dark-text-body': '#c4c7c5',
+                            'dark-text-muted': '#8e918f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Kanit', 'Inter', 'sans-serif'],
+                        heading: ['Kanit', 'Sarabun', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html, body {
+            overflow-x: clip;
+        }
+        body {
+            font-family: 'Sarabun', 'Kanit', 'Inter', sans-serif;
+            background-color: #f8fafd;
+            color: #202124;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .dark body {
+            background-color: #1e1f20;
+            color: #e3e3e3;
+        }
+        .g-card {
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 1.15rem;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.10), 0 1px 3px 1px rgba(60, 64, 67, 0.06);
+        }
+        .dark .g-card {
+            background-color: #282a2d;
+            border-color: #444746;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+        .g-navbar {
+            background-color: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #dadce0;
+        }
+        .dark .g-navbar {
+            background-color: rgba(30, 31, 32, 0.94);
+            border-bottom-color: #444746;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #444746; }
+        .code-viewer-pre {
+            tab-size: 2;
+            font-variant-ligatures: none;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-cyan-600 selection:text-white min-h-screen flex flex-col">
+
+    <!-- Google 4-Color Accent Bar -->
+    <div class="fixed top-0 left-0 right-0 h-[3.5px] z-50 flex pointer-events-none">
+        <div class="h-full flex-1 bg-google-blue"></div>
+        <div class="h-full flex-1 bg-google-red"></div>
+        <div class="h-full flex-1 bg-google-yellow"></div>
+        <div class="h-full flex-1 bg-google-green"></div>
+    </div>
+
+    <!-- Centered Bottom Toast Notification (Single Active Cap) -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[10000] flex flex-col items-center gap-2 w-[92vw] max-w-md pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- UNIFIED SINGLE-ROW NAVIGATION HEADER       -->
+    <!-- ========================================== -->
+    <header class="h-16 g-navbar sticky top-0 z-40 px-3 sm:px-6 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text shadow-xs transition-all shrink-0 whitespace-nowrap" title="กลับสู่หน้าหลัก Portfolio">
+                <i class="fa-solid fa-arrow-left text-google-blue dark:text-sky-400"></i>
+                <span class="hidden sm:inline">หน้าหลัก</span>
+            </a>
+
+            <div class="flex items-center gap-2.5 sm:border-l border-google-border dark:border-google-dark-border sm:pl-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-600 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-google-text dark:text-google-dark-text font-heading leading-tight truncate">
+                            Web Source Cloner &amp; ZIP Packer
+                        </h1>
+                        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950/70 text-cyan-800 dark:text-cyan-300 text-[10px] font-bold whitespace-nowrap shrink-0">
+                            Vercel Proxy + Bookmarklet
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted hidden md:block leading-none truncate">
+                        ดึงซอร์สโค้ด HTML / CSS / JS / รูปภาพจาก URL พร้อมแพ็กโหลด .ZIP ในคลิกเดียว
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <a href="dev-tools.html" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition whitespace-nowrap">
+                <i class="fa-solid fa-terminal"></i>
+                <span>Dev Utilities</span>
+            </a>
+
+            <!-- App Switcher Dropdown (21 Apps) -->
+            <div class="relative shrink-0">
+                <button type="button" id="app-switcher-btn" onclick="toggleSubAppSwitcher()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition cursor-pointer whitespace-nowrap" title="สลับไปยังเว็บแอปอื่นในโปรเจกต์ (21 ระบบ)">
+                    <i class="fa-solid fa-layer-group text-cyan-600 dark:text-cyan-400"></i>
+                    <span class="hidden sm:inline">สลับเว็บแอป</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 text-[10px] font-bold leading-none">21</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                </button>
+                <div id="app-switcher-menu" class="hidden absolute right-0 top-11 w-72 max-h-[75vh] overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 shadow-2xl p-2 z-50 space-y-1 text-left">
+                    <a href="index.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-house"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100">หน้าหลัก Portfolio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">ประวัติ ผลงาน &amp; ติดต่อคุณฟีล</div>
+                        </div>
+                    </a>
+                    <div class="my-1 border-t border-slate-200 dark:border-zinc-700"></div>
+                    <div class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">เว็บแอปเสริมทั้งหมด (21 ระบบ)</div>
+                    <a href="wheel.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">1. วงล้อผลงาน 3D</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">หมุนชมผลงานสรุป 6 ชิ้น</div>
+                        </div>
+                    </a>
+                    <a href="southern-food.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-orange-600 bg-orange-50 dark:bg-orange-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">2. สุ่มร้านอาหารนครฯ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">แนะนำ 48 ร้านเด็ดในเมือง</div>
+                        </div>
+                    </a>
+                    <a href="cctv.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-video"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">3. กล้อง CCTV เมืองสด</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดูกล้องเทศบาลนครฯ 222 จุด</div>
+                        </div>
+                    </a>
+                    <a href="weather.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-bolt"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">4. เรดาร์อากาศ &amp; พายุ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">พยากรณ์อากาศ 24 ชม. / 7 วัน</div>
+                        </div>
+                    </a>
+                    <a href="rubik.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cube"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">5. จับเวลารูบิค 3x3</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">WCA Scramble &amp; สูตร CFOP</div>
+                        </div>
+                    </a>
+                    <a href="ai-assistant.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">6. ผู้ช่วย AI อัจฉริยะ</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">อ่านเอกสารจริง &amp; ถาม-ตอบ</div>
+                        </div>
+                    </a>
+                    <a href="vault.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-vault"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">7. ตู้เซฟฝากไฟล์ (SafeBox)</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ฝากไฟล์ &amp; แชร์ PIN 6 หลัก</div>
+                        </div>
+                    </a>
+                    <a href="photo-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-violet-600 bg-violet-50 dark:bg-violet-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">8. สตูดิโอลบพื้นหลัง</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ลบฉากหลัง &amp; รูปติดบัตร</div>
+                        </div>
+                    </a>
+                    <a href="ai-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-compass"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">9. คลังเว็บ AI &amp; โฮสต์ฟรี</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวม 166+ เว็บ AI &amp; รันไฟล์</div>
+                        </div>
+                    </a>
+                    <a href="dev-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-terminal"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">10. Dev Utilities</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JSON &bull; JWT &bull; Base64 &bull; Timestamp</div>
+                        </div>
+                    </a>
+                    <a href="subnet.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-blue-600 bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-network-wired"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">11. IP &amp; Subnet Calculator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CIDR &bull; Host Range &bull; VLAN &bull; Netplan</div>
+                        </div>
+                    </a>
+                    <a href="regex.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-fuchsia-600 bg-fuchsia-50 dark:bg-fuchsia-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">12. Regex Tester &amp; Cheatsheet</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Live Match &bull; Presets &bull; Replace</div>
+                        </div>
+                    </a>
+                    <a href="diff.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-code-compare"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">13. Diff Checker &amp; Code Compare</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Side-by-Side &bull; Patch &bull; Word Diff</div>
+                        </div>
+                    </a>
+                    <a href="keygen.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-rose-600 bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">14. Password &amp; Key Generator</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">CSPRNG &bull; API Key &bull; UUID &bull; Hash</div>
+                        </div>
+                    </a>
+                    <a href="pdf-tools.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-red-600 bg-red-50 dark:bg-red-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">15. PDF Merge &amp; Split</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">รวมไฟล์ &bull; แยกหน้า &bull; หมุน &amp; ลบหน้า</div>
+                        </div>
+                    </a>
+                    <a href="image-converter.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-teal-600 bg-teal-50 dark:bg-teal-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-images"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">16. Image Compressor &amp; Converter</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">JPG &bull; PNG &bull; WebP &bull; Batch ZIP</div>
+                        </div>
+                    </a>
+                    <a href="qr-studio.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-qrcode"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">17. Custom QR Code Studio</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">URL &bull; Wi-Fi &bull; PromptPay &bull; PNG/SVG</div>
+                        </div>
+                    </a>
+                    <a href="ocr.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-purple-600 bg-purple-50 dark:bg-purple-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-lines"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">18. OCR Image-to-Text</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">สแกนไทย/อังกฤษจากภาพ &bull; สไลด์</div>
+                        </div>
+                    </a>
+                    <a href="resume-builder.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-sky-600 bg-sky-50 dark:bg-sky-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-address-card"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">19. Resume &amp; Portfolio PDF</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">เทมเพลต A4 &bull; Export PDF พร้อมพิมพ์</div>
+                        </div>
+                    </a>
+                    <a href="hardware-tester.html" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 border border-transparent transition">
+                        <div class="w-8 h-8 rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-display"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">20. Screen &amp; Mic Hardware Tester</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Dead Pixel &bull; ไมค์ &bull; คีย์บอร์ด &bull; กล้อง</div>
+                        </div>
+                    </a>
+                    <a href="web-cloner.html" class="flex items-center gap-2.5 p-2 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-300 dark:border-cyan-700 transition">
+                        <div class="w-8 h-8 rounded-lg text-cyan-600 bg-cyan-100 dark:bg-cyan-950 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">21. Web Source Cloner &amp; ZIP</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">ดึงซอร์ส HTML/CSS/JS/รูปภาพ &bull; .ZIP</div>
+                        </div>
+                        <span class="ml-auto px-1.5 py-0.5 rounded-md bg-cyan-600 text-white text-[10px] font-bold shrink-0">กำลังเปิด</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Theme Switcher -->
+            <button type="button" onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition shadow-xs cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN WORKSPACE                             -->
+    <!-- ========================================== -->
+    <main class="max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4 flex-1">
+
+        <!-- 1. URL FETCH BAR + PROXY CONFIG + PRESETS -->
+        <section class="g-card p-4 sm:p-5 space-y-3.5">
+            <form id="clone-url-form" onsubmit="event.preventDefault(); startUrlClone();" class="flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5">
+                <div class="relative flex-1 min-w-0">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-cyan-600 dark:text-cyan-400 text-sm">
+                        <i class="fa-solid fa-globe"></i>
+                    </span>
+                    <input id="clone-url-input" type="url" inputmode="url" placeholder="วางลิงก์หน้าเว็บที่ต้องการดึงซอร์สโค้ด เช่น https://example.com" class="w-full pl-10 pr-20 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 text-xs sm:text-sm font-mono text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500">
+                    <button type="button" onclick="clearUrlInput()" class="absolute right-2.5 top-1/2 -translate-y-1/2 px-2 py-1 rounded-lg text-[11px] font-semibold text-slate-500 hover:bg-slate-200/70 dark:hover:bg-zinc-800 cursor-pointer">ล้าง</button>
+                </div>
+
+                <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0">
+                    <select id="proxy-mode-select" onchange="onProxyModeChange()" class="px-3 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer" title="เลือกกลไก Proxy สำหรับดึงไฟล์ข้ามโดเมน">
+                        <option value="auto">Auto (Vercel / PHP / Direct)</option>
+                        <option value="vercel">Vercel Serverless (/api/proxy)</option>
+                        <option value="php">Local PHP (web_proxy.php)</option>
+                        <option value="direct">Direct Fetch (CORS)</option>
+                        <option value="custom">Custom Proxy Endpoint</option>
+                    </select>
+
+                    <button type="submit" id="btn-clone-url" class="px-4 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white text-xs sm:text-sm font-bold inline-flex items-center justify-center gap-2 shadow-xs transition cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                        <span>ดึงซอร์สโค้ด</span>
+                    </button>
+
+                    <button type="button" id="btn-download-zip-top" onclick="downloadClonedZip()" class="px-3.5 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 text-xs sm:text-sm font-bold inline-flex items-center justify-center gap-2 shadow-xs transition cursor-pointer whitespace-nowrap disabled:opacity-45" disabled>
+                        <i class="fa-solid fa-file-zipper text-amber-400 dark:text-amber-600"></i>
+                        <span>โหลด .ZIP</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Custom Proxy URL (shown only when custom mode is chosen) -->
+            <div id="custom-proxy-wrap" class="hidden flex flex-col sm:flex-row sm:items-center gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-zinc-900/70 border border-slate-200 dark:border-zinc-700">
+                <label for="custom-proxy-input" class="text-[11px] font-bold text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                    <i class="fa-solid fa-server text-cyan-600 mr-1"></i> URL ของ Proxy Endpoint:
+                </label>
+                <input id="custom-proxy-input" type="text" value="/api/proxy?url=" placeholder="เช่น https://your-app.vercel.app/api/proxy?url=" class="flex-1 px-2.5 py-1.5 rounded-lg bg-white dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 text-xs font-mono">
+            </div>
+
+            <!-- Options + Quick Sample Actions -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1 border-t border-slate-200/80 dark:border-zinc-700/80">
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs">
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                        <input id="opt-fetch-css" type="checkbox" checked class="rounded text-cyan-600 focus:ring-cyan-500">
+                        <span class="font-medium">ดึง CSS ภายนอก</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                        <input id="opt-fetch-js" type="checkbox" checked class="rounded text-cyan-600 focus:ring-cyan-500">
+                        <span class="font-medium">ดึง JavaScript</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                        <input id="opt-fetch-images" type="checkbox" checked class="rounded text-cyan-600 focus:ring-cyan-500">
+                        <span class="font-medium">ดึงรูปภาพลง .ZIP</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                        <input id="opt-rewrite-paths" type="checkbox" checked onchange="refreshRewrittenPreviewAndView()" class="rounded text-cyan-600 focus:ring-cyan-500">
+                        <span class="font-medium">แปลงลิงก์เป็นโฟลเดอร์ .ZIP (ออฟไลน์)</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 select-none">
+                        <span class="text-slate-500 dark:text-slate-400">สูงสุด:</span>
+                        <select id="opt-max-assets" class="px-2 py-0.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-[11px] font-bold">
+                            <option value="25">25 ไฟล์</option>
+                            <option value="40" selected>40 ไฟล์</option>
+                            <option value="80">80 ไฟล์</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <button type="button" id="btn-preset-portfolio" onclick="presetClonePortfolio()" class="px-2.5 py-1 rounded-lg bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 text-sky-700 dark:text-sky-300 text-[11px] font-bold border border-sky-200/70 dark:border-sky-800/60 cursor-pointer">
+                        <i class="fa-solid fa-house mr-1"></i> ลองดึง Portfolio หลัก
+                    </button>
+                    <button type="button" id="btn-load-demo" onclick="loadBuiltinDemoSite()" class="px-2.5 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 hover:bg-cyan-100 text-cyan-800 dark:text-cyan-300 text-[11px] font-bold border border-cyan-200/70 dark:border-cyan-800/60 cursor-pointer">
+                        <i class="fa-solid fa-bolt mr-1"></i> โหลดโปรเจกต์ตัวอย่าง
+                    </button>
+                    <button type="button" id="btn-open-paste" onclick="openPasteModal('html')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold border border-slate-200 dark:border-zinc-700 cursor-pointer">
+                        <i class="fa-solid fa-paste mr-1"></i> วาง HTML เอง
+                    </button>
+                </div>
+            </div>
+
+            <!-- Live Crawl Progress & Engine Info -->
+            <div id="clone-progress-wrap" class="hidden p-3 rounded-xl bg-cyan-50/70 dark:bg-cyan-950/30 border border-cyan-200 dark:border-cyan-800/60 space-y-2">
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <div class="flex items-center gap-2 font-bold text-cyan-900 dark:text-cyan-200">
+                        <i class="fa-solid fa-circle-notch fa-spin text-cyan-600"></i>
+                        <span id="clone-progress-text">กำลังเชื่อมต่อ...</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="clone-progress-count" class="font-mono text-[11px] font-bold text-cyan-700 dark:text-cyan-300">0/0</span>
+                        <button type="button" id="btn-cancel-clone" onclick="cancelActiveClone()" class="px-2 py-0.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold cursor-pointer">ยกเลิก</button>
+                    </div>
+                </div>
+                <div class="w-full h-1.5 rounded-full bg-cyan-200/70 dark:bg-cyan-950 overflow-hidden">
+                    <div id="clone-progress-bar" class="h-full bg-cyan-600 transition-all duration-200" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Alert Banner (Shown on Error/Blocked/Success Info) -->
+            <div id="clone-alert-banner" class="hidden p-3 rounded-xl border text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2"></div>
+        </section>
+
+        <!-- 2. BOOKMARKLET FOR LOGIN-PROTECTED PAGES -->
+        <section class="g-card p-3.5 sm:p-4 bg-gradient-to-r from-indigo-500/5 via-cyan-500/5 to-sky-500/5 border-l-4 border-l-indigo-600">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                <div class="flex items-start sm:items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 flex items-center justify-center text-sm shrink-0 mt-0.5 sm:mt-0">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <h2 class="text-xs sm:text-sm font-bold font-heading text-slate-900 dark:text-white">
+                                Bookmarklet ดูดโค้ดหน้าเว็บที่ติดสิทธิ์ล็อกอิน (Authenticated Capture)
+                            </h2>
+                            <span class="px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold">Bypass Login / Cloudflare</span>
+                        </div>
+                        <p class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
+                            ลากปุ่ม <strong>Bookmarklet</strong> ด้านขวาไปวางบนแถบ Bookmark แล้วคลิกขณะเปิดเว็บที่ล็อกอินไว้ — โค้ด DOM + CSS + รูปภาพจะถูกส่งกลับมาแพ็ก .ZIP ทันที
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                    <!-- Draggable Live Bookmarklet Link -->
+                    <a id="bookmarklet-drag-link" href="javascript:void(0)" onclick="handleBookmarkletLinkClick(event)" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-xs transition cursor-grab active:cursor-grabbing whitespace-nowrap" title="ลากปุ่มนี้ขึ้นไปวางบนแถบ Bookmarks Bar (Ctrl+Shift+B)">
+                        <i class="fa-solid fa-bookmark"></i>
+                        <span>ดึงซอร์สเข้า Web Cloner</span>
+                    </a>
+                    <button type="button" id="btn-copy-bookmarklet" onclick="copyBookmarkletCode()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-300 dark:border-zinc-700 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-copy text-indigo-600"></i>
+                        <span>คัดลอกโค้ด Bookmarklet</span>
+                    </button>
+                    <button type="button" id="btn-bookmarklet-guide" onclick="openBookmarkletModal()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-300 dark:border-zinc-700 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-terminal text-cyan-600"></i>
+                        <span>วิธีใช้ / Console &amp; วางโค้ด</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. KPI SUMMARY STRIP (5 TILES) -->
+        <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+            <div class="g-card p-3">
+                <div class="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
+                    <span>เป้าหมาย &amp; กลไก</span>
+                    <span id="kpi-engine-badge" class="px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-slate-300 text-[10px]">พร้อมใช้งาน</span>
+                </div>
+                <div id="kpi-domain" class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">-</div>
+            </div>
+
+            <div class="g-card p-3">
+                <div class="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
+                    <span><i class="fa-solid fa-file-code text-cyan-500 mr-1"></i> HTML หลัก</span>
+                    <span id="kpi-html-size" class="font-mono text-[10px] text-cyan-700 dark:text-cyan-300">0 KB</span>
+                </div>
+                <div id="kpi-html-title" class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">ยังไม่ได้ดึงข้อมูล</div>
+            </div>
+
+            <div class="g-card p-3">
+                <div class="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
+                    <span><i class="fa-solid fa-paintbrush text-sky-500 mr-1"></i> CSS Styles</span>
+                    <span id="kpi-css-size" class="font-mono text-[10px] text-sky-700 dark:text-sky-300">0 KB</span>
+                </div>
+                <div id="kpi-css-count" class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">0 ไฟล์</div>
+            </div>
+
+            <div class="g-card p-3">
+                <div class="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
+                    <span><i class="fa-solid fa-code text-amber-500 mr-1"></i> JavaScript</span>
+                    <span id="kpi-js-size" class="font-mono text-[10px] text-amber-700 dark:text-amber-300">0 KB</span>
+                </div>
+                <div id="kpi-js-count" class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">0 ไฟล์</div>
+            </div>
+
+            <div class="g-card p-3 col-span-2 sm:col-span-1">
+                <div class="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
+                    <span><i class="fa-solid fa-images text-emerald-500 mr-1"></i> รูปภาพ &amp; ไอคอน</span>
+                    <span id="kpi-img-size" class="font-mono text-[10px] text-emerald-700 dark:text-emerald-300">0 KB</span>
+                </div>
+                <div id="kpi-img-count" class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">0 รายการ</div>
+            </div>
+        </section>
+
+        <!-- 4. MAIN 2-COLUMN INSPECTOR & ZIP PACKER -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+            <!-- LEFT: FILE TREE & ZIP INCLUSION -->
+            <section class="lg:col-span-4 g-card p-4 flex flex-col justify-between space-y-3 min-w-0">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <h2 class="text-sm font-bold font-heading flex items-center gap-1.5">
+                            <i class="fa-solid fa-folder-tree text-cyan-600"></i>
+                            <span>โครงสร้างไฟล์ในหน้าเว็บ</span>
+                        </h2>
+                        <span id="asset-selected-count" class="px-2 py-0.5 rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 text-[11px] font-bold font-mono">0 ไฟล์</span>
+                    </div>
+
+                    <!-- Filter Type Tabs -->
+                    <div class="flex items-center gap-1 overflow-x-auto no-scrollbar pb-0.5">
+                        <button type="button" data-filter="all" onclick="setAssetFilter('all')" class="asset-filter-btn px-2.5 py-1 rounded-lg bg-cyan-600 text-white text-[11px] font-bold whitespace-nowrap cursor-pointer">ทั้งหมด</button>
+                        <button type="button" data-filter="html" onclick="setAssetFilter('html')" class="asset-filter-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 text-xs font-semibold whitespace-nowrap cursor-pointer">HTML</button>
+                        <button type="button" data-filter="css" onclick="setAssetFilter('css')" class="asset-filter-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 text-xs font-semibold whitespace-nowrap cursor-pointer">CSS</button>
+                        <button type="button" data-filter="js" onclick="setAssetFilter('js')" class="asset-filter-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 text-xs font-semibold whitespace-nowrap cursor-pointer">JS</button>
+                        <button type="button" data-filter="image" onclick="setAssetFilter('image')" class="asset-filter-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 text-xs font-semibold whitespace-nowrap cursor-pointer">รูปภาพ</button>
+                    </div>
+
+                    <!-- Search + Select All Controls -->
+                    <div class="flex items-center gap-2">
+                        <div class="relative flex-1 min-w-0">
+                            <i class="fa-solid fa-magnifying-glass text-[11px] text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2"></i>
+                            <input id="asset-search-input" type="text" oninput="renderAssetList()" placeholder="ค้นหาชื่อไฟล์หรือ URL..." class="w-full pl-8 pr-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 text-xs focus:outline-none focus:border-cyan-500">
+                        </div>
+                        <button type="button" onclick="toggleSelectAllAssets(true)" class="px-2 py-1.5 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-[11px] font-semibold cursor-pointer" title="เลือกไฟล์ที่พร้อมทั้งหมด">เลือกหมด</button>
+                        <button type="button" onclick="toggleSelectAllAssets(false)" class="px-2 py-1.5 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-[11px] font-semibold cursor-pointer" title="ยกเลิกทั้งหมด">ไม่เลือก</button>
+                    </div>
+
+                    <!-- Scrollable Asset List -->
+                    <div id="asset-list-container" class="space-y-1.5 max-h-[430px] overflow-y-auto pr-1">
+                        <div class="p-6 text-center rounded-xl border border-dashed border-slate-300 dark:border-zinc-700 text-xs text-slate-500 dark:text-slate-400 space-y-2">
+                            <i class="fa-solid fa-cloud-arrow-down text-2xl text-cyan-500/80"></i>
+                            <p class="font-semibold">วาง URL ด้านบนแล้วกด "ดึงซอร์สโค้ด" หรือเลือก "โหลดโปรเจกต์ตัวอย่าง"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sticky Bottom Pack ZIP Card -->
+                <div class="pt-3 border-t border-slate-200 dark:border-zinc-700 space-y-2">
+                    <div class="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-300">
+                        <span>ไฟล์พร้อมแพ็กลง .ZIP:</span>
+                        <span id="zip-summary-label" class="font-mono font-bold text-cyan-700 dark:text-cyan-300">0 ไฟล์ (0 KB)</span>
+                    </div>
+                    <button type="button" id="btn-download-zip" onclick="downloadClonedZip()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-bold inline-flex items-center justify-center gap-2 shadow-sm transition cursor-pointer disabled:opacity-45" disabled>
+                        <i class="fa-solid fa-file-zipper"></i>
+                        <span>แพ็กไฟล์ทั้งหมดดาวน์โหลด (.ZIP) ในคลิกเดียว</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- RIGHT: CODE INSPECTOR, IMAGE GALLERY, SANDBOXED PREVIEW & TECH STACK -->
+            <section class="lg:col-span-8 g-card p-4 flex flex-col space-y-3 min-w-0">
+
+                <!-- Inspector View Switcher + Actions -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-200 dark:border-zinc-700">
+                    <div class="flex items-center gap-1 overflow-x-auto no-scrollbar">
+                        <button type="button" data-viewtab="source" onclick="switchInspectorView('source')" class="viewtab-btn px-3 py-1.5 rounded-xl bg-cyan-600 text-white text-xs font-bold whitespace-nowrap cursor-pointer">
+                            <i class="fa-solid fa-code mr-1"></i> โค้ดซอร์ส
+                        </button>
+                        <button type="button" data-viewtab="gallery" onclick="switchInspectorView('gallery')" class="viewtab-btn px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-zinc-800 text-xs font-semibold whitespace-nowrap cursor-pointer">
+                            <i class="fa-solid fa-images mr-1"></i> แกลเลอรีรูปภาพ (<span id="gallery-tab-count">0</span>)
+                        </button>
+                        <button type="button" data-viewtab="preview" onclick="switchInspectorView('preview')" class="viewtab-btn px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-zinc-800 text-xs font-semibold whitespace-nowrap cursor-pointer">
+                            <i class="fa-solid fa-eye mr-1"></i> พรีวิว (Sandbox)
+                        </button>
+                        <button type="button" data-viewtab="tech" onclick="switchInspectorView('tech')" class="viewtab-btn px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-zinc-800 text-xs font-semibold whitespace-nowrap cursor-pointer">
+                            <i class="fa-solid fa-sitemap mr-1"></i> โครงสร้าง &amp; Tech
+                        </button>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span id="viewer-zip-badge" class="hidden sm:inline-block px-2 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 font-mono text-[11px] text-slate-600 dark:text-slate-300">-</span>
+                        <button type="button" id="btn-copy-current-code" onclick="copySelectedAssetCode()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold inline-flex items-center gap-1 cursor-pointer">
+                            <i class="fa-solid fa-copy text-cyan-600"></i>
+                            <span>คัดลอกโค้ด</span>
+                        </button>
+                        <button type="button" id="btn-download-current-asset" onclick="downloadSelectedAssetFile()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-xs font-semibold inline-flex items-center gap-1 cursor-pointer">
+                            <i class="fa-solid fa-download text-emerald-600"></i>
+                            <span>โหลดไฟล์นี้</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- VIEW 1: SOURCE / ASSET INSPECTOR -->
+                <div id="view-source" class="flex-1 flex flex-col space-y-2.5 min-w-0">
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span id="selected-asset-title" class="font-bold font-mono text-slate-800 dark:text-slate-100 truncate">index.html</span>
+                            <span id="selected-asset-meta" class="text-[11px] text-slate-500 dark:text-slate-400">0 bytes</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <select id="code-version-mode" onchange="renderSelectedAssetViewer()" class="hidden px-2 py-1 rounded-lg border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-[11px] font-semibold">
+                                <option value="rewritten">เวอร์ชัน Offline (.ZIP Path)</option>
+                                <option value="original">เวอร์ชันต้นฉบับ (Original URL)</option>
+                            </select>
+                            <button type="button" id="btn-pretty-code" onclick="togglePrettyCode()" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-[11px] font-semibold cursor-pointer">
+                                จัดย่อหน้า
+                            </button>
+                            <button type="button" id="btn-wrap-code" onclick="toggleWordWrap()" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-[11px] font-semibold cursor-pointer">
+                                ตัดบรรทัด
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Image Detail Card when an Image is selected -->
+                    <div id="selected-image-detail" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 flex flex-col md:flex-row items-center gap-4">
+                        <div class="w-full md:w-64 h-48 rounded-xl bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden p-2 shrink-0">
+                            <img id="selected-image-preview" src="" alt="Preview" class="max-w-full max-h-full object-contain">
+                        </div>
+                        <div class="flex-1 min-w-0 space-y-2 text-xs">
+                            <div class="font-bold text-sm text-slate-900 dark:text-white" id="selected-image-name">-</div>
+                            <div class="text-[11px] font-mono text-slate-500 dark:text-slate-400 break-all" id="selected-image-url">-</div>
+                            <div class="flex flex-wrap gap-2 text-[11px]">
+                                <span id="selected-image-dims" class="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold">-</span>
+                                <span id="selected-image-mime" class="px-2 py-0.5 rounded-md bg-slate-200 dark:bg-zinc-800 font-mono">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Code Viewer Container -->
+                    <div id="code-viewer-box" class="rounded-xl bg-slate-950 text-slate-100 border border-slate-800 overflow-auto max-h-[470px] min-h-[340px] p-3.5">
+                        <pre id="code-viewer-pre" class="code-viewer-pre font-mono text-xs leading-relaxed text-emerald-100 whitespace-pre">// ซอร์สโค้ดของไฟล์ที่เลือกจะปรากฏที่นี่...</pre>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: IMAGE GALLERY -->
+                <div id="view-gallery" class="hidden flex-1 space-y-3 min-w-0">
+                    <div id="image-gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-[500px] overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- VIEW 3: SANDBOXED LIVE PREVIEW -->
+                <div id="view-preview" class="hidden flex-1 flex flex-col space-y-2.5 min-w-0">
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-semibold border border-emerald-200 dark:border-emerald-800">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>Sandbox Mode: ปิดการทำงาน Script เพื่อความปลอดภัย</span>
+                        </span>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="setPreviewViewport('desktop')" id="prev-vp-desktop" class="px-2.5 py-1 rounded-lg bg-cyan-600 text-white text-[11px] font-bold cursor-pointer">
+                                <i class="fa-solid fa-desktop mr-1"></i> Desktop
+                            </button>
+                            <button type="button" onclick="setPreviewViewport('mobile')" id="prev-vp-mobile" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 text-[11px] font-semibold cursor-pointer">
+                                <i class="fa-solid fa-mobile-screen mr-1"></i> 390px Mobile
+                            </button>
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-100 dark:bg-zinc-900 p-2 flex justify-center overflow-auto min-h-[430px]">
+                        <iframe id="preview-iframe" sandbox="" title="Sandboxed Web Clone Preview" class="w-full h-[430px] bg-white rounded-lg border border-slate-200 transition-all duration-200"></iframe>
+                    </div>
+                </div>
+
+                <!-- VIEW 4: DOM & TECH STACK ANALYSIS -->
+                <div id="view-tech" class="hidden flex-1 space-y-3 overflow-y-auto max-h-[510px] pr-1 min-w-0">
+                    <div id="tech-analysis-container" class="space-y-3 text-xs">
+                        <div class="p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 text-slate-500 text-center">ยังไม่มีข้อมูลโครงสร้างหน้าเว็บ</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- PASTE HTML / BOOKMARKLET DATA MODAL        -->
+    <!-- ========================================== -->
+    <div id="paste-import-modal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
+        <div class="g-card w-full max-w-2xl max-h-[90vh] overflow-y-auto p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-zinc-700">
+                <h3 class="text-base font-bold font-heading flex items-center gap-2">
+                    <i class="fa-solid fa-paste text-cyan-600"></i>
+                    <span>วางโค้ด HTML หรือข้อมูล JSON จาก Bookmarklet</span>
+                </h3>
+                <button type="button" onclick="closePasteModal()" class="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-zinc-800 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-2.5 text-xs">
+                <div>
+                    <label for="paste-base-url" class="block font-bold mb-1">URL ต้นทาง (Base URL — สำหรับแปลงลิงก์รูป/CSS/JS แบบ Relative หากวางเฉพาะ HTML)</label>
+                    <input id="paste-base-url" type="url" placeholder="https://example.com/" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 font-mono text-xs">
+                </div>
+                <div>
+                    <label for="paste-raw-input" class="block font-bold mb-1">วางซอร์สโค้ด HTML (&lt;!DOCTYPE html&gt;...) หรือ JSON Payload ที่ได้จาก Bookmarklet / Console</label>
+                    <textarea id="paste-raw-input" rows="9" placeholder="<!DOCTYPE html>&#10;<html>... หรือ { &quot;__type&quot;: &quot;FEEL_WEB_CLONER_CAPTURE&quot;, ... }" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 font-mono text-xs resize-y"></textarea>
+                </div>
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                        <input id="paste-auto-fetch-assets" type="checkbox" checked class="rounded text-cyan-600">
+                        <span>พยายามดึงไฟล์ CSS/JS/รูปภาพที่ระบุในโค้ดเพิ่มเติมผ่าน Proxy</span>
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="closePasteModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 font-semibold cursor-pointer">ยกเลิก</button>
+                        <button type="button" id="btn-submit-paste" onclick="submitPasteImport()" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold cursor-pointer">นำเข้าและวิเคราะห์โค้ด</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- BOOKMARKLET GUIDE & CONSOLE SNIPPET MODAL  -->
+    <!-- ========================================== -->
+    <div id="bookmarklet-guide-modal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
+        <div class="g-card w-full max-w-2xl max-h-[90vh] overflow-y-auto p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-zinc-700">
+                <h3 class="text-base font-bold font-heading flex items-center gap-2">
+                    <i class="fa-solid fa-bookmark text-indigo-600"></i>
+                    <span>วิธีใช้ Bookmarklet ดูดซอร์สเว็บที่ติดสิทธิ์ล็อกอิน (หรือติด Cloudflare)</span>
+                </h3>
+                <button type="button" onclick="closeBookmarkletModal()" class="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-zinc-800 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
+                <div class="p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 space-y-1.5">
+                    <div class="font-bold text-indigo-800 dark:text-indigo-200">ขั้นตอนที่ 1: ติดตั้ง Bookmarklet ครั้งเดียว</div>
+                    <p>ลากปุ่ม <strong>"📌 ดึงซอร์สเข้า Web Cloner"</strong> ด้านบนขึ้นไปวางบนแถบ Bookmark Bar (กด <code>Ctrl+Shift+B</code> เพื่อเปิดแถบ) หรือกดปุ่ม <strong>คัดลอกโค้ด Bookmarklet</strong> แล้วสร้าง Bookmark ใหม่วางโค้ดในช่อง URL</p>
+                </div>
+                <div class="p-3 rounded-xl bg-cyan-50/70 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800 space-y-1.5">
+                    <div class="font-bold text-cyan-800 dark:text-cyan-200">ขั้นตอนที่ 2: คลิกขณะล็อกอินอยู่ในหน้าเว็บเป้าหมาย</div>
+                    <p>เมื่อเข้าหน้าเว็บที่ต้องการ (เช่น ระบบสมาชิก, Dashboard, หน้าเว็บเรนเดอร์จาก React/Vue) ให้คลิก Bookmark ที่บันทึกไว้ ระบบจะดูด DOM จริง + CSS Rules + JS + รายการรูปภาพ แล้วเปิดกลับมาที่หน้านี้อัตโนมัติ</p>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold">ทางเลือกสำหรับเว็บที่บล็อก Bookmarklet (Strict CSP) — รันใน Console (F12):</span>
+                        <button type="button" onclick="copyConsoleSnippet()" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold cursor-pointer">คัดลอกโค้ด Console</button>
+                    </div>
+                    <textarea id="bookmarklet-code-preview" readonly rows="4" class="w-full p-2.5 rounded-lg bg-slate-950 text-emerald-300 font-mono text-[11px] select-all"></textarea>
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <button type="button" onclick="closeBookmarkletModal(); openPasteModal('bookmarklet');" class="px-3 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold cursor-pointer">
+                            <i class="fa-solid fa-paste mr-1"></i> วางข้อมูลที่คัดลอกมาจาก Console
+                        </button>
+                        <button type="button" onclick="simulateBookmarkletCapture()" class="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 font-semibold cursor-pointer">
+                            <i class="fa-solid fa-flask mr-1"></i> ทดลองจำลอง Bookmarklet Payload
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. UTILITIES, SANITIZATION & TOAST
+        // ==========================================
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function showToast(msg, type = 'success') {
+            const c = document.getElementById('toast-container');
+            if (!c) return;
+            while (c.children.length > 0) {
+                c.removeChild(c.firstElementChild);
+            }
+            const icon = type === 'error'
+                ? 'fa-circle-exclamation text-rose-400'
+                : type === 'warning'
+                    ? 'fa-triangle-exclamation text-amber-400'
+                    : 'fa-circle-check text-emerald-400';
+            const el = document.createElement('div');
+            el.className = 'pointer-events-auto px-4 py-2.5 rounded-2xl bg-slate-900/95 dark:bg-zinc-950/95 text-white border border-white/10 shadow-2xl text-xs sm:text-sm font-medium flex items-center gap-2.5 max-w-full cursor-pointer backdrop-blur-md';
+            el.innerHTML = `<i class="fa-solid ${icon} shrink-0"></i><span>${escapeHtml(msg)}</span>`;
+            el.onclick = () => el.remove();
+            c.appendChild(el);
+            setTimeout(() => { if (el.parentNode) el.remove(); }, 3400);
+        }
+
+        function formatBytes(bytes) {
+            const n = Number(bytes || 0);
+            if (!Number.isFinite(n) || n <= 0) return '0 B';
+            if (n < 1024) return `${n} B`;
+            if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+            return `${(n / (1024 * 1024)).toFixed(2)} MB`;
+        }
+
+        function safeUrlForImg(url) {
+            const u = String(url || '').trim();
+            if (/^https?:\/\//i.test(u) || /^blob:/i.test(u) || /^data:image\/(png|jpeg|jpg|gif|webp|avif|x-icon|vnd\.microsoft\.icon);base64,/i.test(u)) {
+                return u;
+            }
+            return '';
+        }
+
+        function showAlertBanner(type, messageHtml, allowBookmarkletHint = false) {
+            const box = document.getElementById('clone-alert-banner');
+            if (!box) return;
+            const styles = type === 'error'
+                ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200'
+                : type === 'warning'
+                    ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200'
+                    : 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200';
+            box.className = `p-3 rounded-xl border text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${styles}`;
+            box.innerHTML = `
+                <div class="flex items-start sm:items-center gap-2 min-w-0">
+                    <i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : type === 'warning' ? 'fa-triangle-exclamation' : 'fa-circle-check'} shrink-0 mt-0.5 sm:mt-0"></i>
+                    <div class="min-w-0 break-words">${messageHtml}</div>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    ${allowBookmarkletHint ? '<button type="button" onclick="openBookmarkletModal()" class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[11px] cursor-pointer">ใช้ Bookmarklet แทน</button>' : ''}
+                    <button type="button" onclick="document.getElementById(\'clone-alert-banner\').classList.add(\'hidden\')" class="px-2 py-1 rounded-lg bg-black/5 dark:bg-white/10 text-[11px] font-semibold cursor-pointer">ปิด</button>
+                </div>
+            `;
+            box.classList.remove('hidden');
+        }
+
+        // ==========================================
+        // 2. APPLICATION STATE & OBJECT URL CLEANUP
+        // ==========================================
+        const clonerState = {
+            targetUrl: '',
+            finalUrl: '',
+            title: '',
+            engineUsed: '',
+            assets: [], // { id, type: 'html'|'css'|'js'|'image', url, zipPath, mime, status: 'ok'|'error'|'skipped', error?, text?, originalText?, base64?, bytes?: Uint8Array, size, include: boolean, blobUrl?, width?, height?, note? }
+            selectedAssetId: null,
+            filterType: 'all',
+            viewMode: 'source',
+            prettyCode: false,
+            wordWrap: false,
+            abortController: null,
+            crawling: false,
+            lastZipUrl: null,
+            lastCaptureStamp: '',
+            meta: null,
+            detectedTech: [],
+            headings: []
+        };
+
+        function revokeAssetBlobUrls() {
+            for (const a of clonerState.assets) {
+                if (a.blobUrl) {
+                    try { URL.revokeObjectURL(a.blobUrl); } catch {}
+                    a.blobUrl = null;
+                }
+            }
+        }
+
+        // ==========================================
+        // 3. PROXY CASCADE (VERCEL / PHP / DIRECT)
+        // ==========================================
+        function base64ToUint8Array(b64) {
+            const bin = atob(b64);
+            const out = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) {
+                out[i] = bin.charCodeAt(i);
+            }
+            return out;
+        }
+
+        function uint8ArrayToBase64(bytes) {
+            let bin = '';
+            const chunk = 0x8000;
+            for (let i = 0; i < bytes.length; i += chunk) {
+                bin += String.fromCharCode(...bytes.subarray(i, i + chunk));
+            }
+            return btoa(bin);
+        }
+
+        function isTextContentType(ct, targetUrl) {
+            const s = String(ct || '').toLowerCase();
+            if (
+                s.startsWith('text/') ||
+                s.includes('javascript') ||
+                s.includes('ecmascript') ||
+                s.includes('json') ||
+                s.includes('xml') ||
+                s.includes('image/svg+xml')
+            ) {
+                return true;
+            }
+            if (!s) {
+                return /\.(html?|css|m?js|json|svg|xml|txt)$/i.test(String(targetUrl || '').split('?')[0]);
+            }
+            return false;
+        }
+
+        async function fetchViaJsonProxyEndpoint(endpointBase, targetUrl, engineLabel, signal) {
+            const sep = endpointBase.includes('=') ? '' : (endpointBase.includes('?') ? '&url=' : '?url=');
+            const reqUrl = `${endpointBase}${sep}${encodeURIComponent(targetUrl)}`;
+            const res = await fetch(reqUrl, { signal, cache: 'no-store' });
+            const ct = (res.headers.get('content-type') || '').toLowerCase();
+            if (!ct.includes('application/json')) {
+                throw new Error(`${engineLabel} returned non-JSON (${res.status})`);
+            }
+            const data = await res.json();
+            if (!res.ok || !data || data.ok === false) {
+                const msg = (data && data.error) ? data.error : `HTTP ${res.status}`;
+                const err = new Error(msg);
+                err.statusCode = res.status;
+                err.fromProxy = true;
+                throw err;
+            }
+            const bytes = data.isBinary
+                ? base64ToUint8Array(data.base64 || '')
+                : new TextEncoder().encode(data.text || '');
+            return {
+                ok: true,
+                engine: data.engine || engineLabel,
+                url: data.url || targetUrl,
+                status: data.status || 200,
+                contentType: data.contentType || 'application/octet-stream',
+                isBinary: Boolean(data.isBinary),
+                text: data.isBinary ? null : (data.text || ''),
+                bytes,
+                size: bytes.length
+            };
+        }
+
+        async function fetchDirectBrowser(targetUrl, signal) {
+            const res = await fetch(targetUrl, { signal, mode: 'cors' });
+            if (!res.ok) {
+                throw Object.assign(new Error(`HTTP ${res.status}`), { statusCode: res.status, fromOrigin: true });
+            }
+            const ct = res.headers.get('content-type') || 'application/octet-stream';
+            const asText = isTextContentType(ct, targetUrl);
+            const buf = await res.arrayBuffer();
+            const bytes = new Uint8Array(buf);
+            const text = asText ? new TextDecoder().decode(bytes) : null;
+            return {
+                ok: true,
+                engine: 'direct-fetch',
+                url: res.url || targetUrl,
+                status: res.status,
+                contentType: ct,
+                isBinary: !asText,
+                text,
+                bytes,
+                size: bytes.length
+            };
+        }
+
+        async function smartFetchResource(targetUrl, signal) {
+            // Decode data URIs immediately offline without network
+            if (/^data:/i.test(targetUrl)) {
+                const match = /^data:([^;,]*)(;base64)?,(.*)$/is.exec(targetUrl);
+                if (!match) throw new Error('Invalid data URI');
+                const mime = match[1] || 'application/octet-stream';
+                const isB64 = Boolean(match[2]);
+                const rawPayload = match[3] || '';
+                const bytes = isB64 ? base64ToUint8Array(rawPayload) : new TextEncoder().encode(decodeURIComponent(rawPayload));
+                const asText = isTextContentType(mime, '');
+                return {
+                    ok: true,
+                    engine: 'data-uri',
+                    url: targetUrl,
+                    status: 200,
+                    contentType: mime,
+                    isBinary: !asText,
+                    text: asText ? new TextDecoder().decode(bytes) : null,
+                    bytes,
+                    size: bytes.length
+                };
+            }
+
+            const mode = document.getElementById('proxy-mode-select')?.value || 'auto';
+            const customEndpoint = (document.getElementById('custom-proxy-input')?.value || '').trim();
+
+            if (mode === 'custom') {
+                if (!customEndpoint) throw new Error('กรุณาระบุ URL ของ Custom Proxy');
+                return await fetchViaJsonProxyEndpoint(customEndpoint, targetUrl, 'custom-proxy', signal);
+            }
+            if (mode === 'vercel') {
+                return await fetchViaJsonProxyEndpoint('/api/proxy', targetUrl, 'vercel-serverless', signal);
+            }
+            if (mode === 'php') {
+                return await fetchViaJsonProxyEndpoint('web_proxy.php', targetUrl, 'php-proxy', signal);
+            }
+            if (mode === 'direct') {
+                return await fetchDirectBrowser(targetUrl, signal);
+            }
+
+            // AUTO MODE: Same-Origin Direct -> Vercel (/api/proxy) -> PHP (web_proxy.php) -> Direct CORS fallback
+            let sameOrigin = false;
+            try {
+                sameOrigin = new URL(targetUrl).origin === window.location.origin;
+            } catch {}
+
+            const errors = [];
+            if (sameOrigin) {
+                try {
+                    return await fetchDirectBrowser(targetUrl, signal);
+                } catch (e) {
+                    if (e.name === 'AbortError') throw e;
+                    errors.push(`Direct: ${e.message}`);
+                }
+            }
+
+            // Try Vercel Serverless Proxy (/api/proxy or root-relative /api/proxy)
+            for (const vercelEp of ['/api/proxy', 'api/proxy']) {
+                try {
+                    return await fetchViaJsonProxyEndpoint(vercelEp, targetUrl, 'vercel-serverless', signal);
+                } catch (e) {
+                    if (e.name === 'AbortError') throw e;
+                    // If proxy endpoint actually ran and returned upstream HTTP/SSRF status (e.g. 403 SSRF), don't mask unless 404/non-JSON
+                    if (e.fromProxy && e.statusCode === 403 && e.message.includes('blocked')) {
+                        throw e;
+                    }
+                    errors.push(`Vercel(${vercelEp}): ${e.message}`);
+                }
+            }
+
+            // Try local XAMPP PHP Proxy (web_proxy.php)
+            try {
+                return await fetchViaJsonProxyEndpoint('web_proxy.php', targetUrl, 'php-proxy', signal);
+            } catch (e) {
+                if (e.name === 'AbortError') throw e;
+                errors.push(`PHP: ${e.message}`);
+            }
+
+            // Final Direct CORS fallback for CORS-enabled APIs / CDNs
+            if (!sameOrigin) {
+                try {
+                    return await fetchDirectBrowser(targetUrl, signal);
+                } catch (e) {
+                    if (e.name === 'AbortError') throw e;
+                    errors.push(`Direct CORS: ${e.message}`);
+                }
+            }
+
+            throw new Error(errors.join(' | '));
+        }
+
+        // ==========================================
+        // 4. HTML/CSS EXTRACTION & PATH REWRITING
+        // ==========================================
+        function normalizeInputUrl(raw) {
+            let s = String(raw || '').trim();
+            if (!s) return '';
+            if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(s)) {
+                s = 'https://' + s;
+            }
+            return new URL(s).href;
+        }
+
+        function resolveRelativeUrl(ref, baseUrl) {
+            const raw = String(ref || '').trim();
+            if (!raw || raw.startsWith('#') || /^(javascript:|mailto:|tel:|vbscript:|about:)/i.test(raw)) {
+                return null;
+            }
+            if (/^data:/i.test(raw)) return raw;
+            try {
+                return new URL(raw, baseUrl).href;
+            } catch {
+                return null;
+            }
+        }
+
+        function parseSrcsetUrls(srcsetValue, baseUrl) {
+            const out = [];
+            const raw = String(srcsetValue || '').trim();
+            if (!raw) return out;
+            // Split srcset entries cleanly while tolerating data: URIs containing commas
+            const parts = raw.split(/,(?=\s*(?:https?:\/\/|\/|\.\/|\.\.\/|[a-zA-Z0-9_-]+|data:))/);
+            for (const part of parts) {
+                const tokens = part.trim().split(/\s+/);
+                if (tokens[0]) {
+                    const resolved = resolveRelativeUrl(tokens[0], baseUrl);
+                    if (resolved) out.push(resolved);
+                }
+            }
+            return out;
+        }
+
+        function extractCssUrlRefs(cssText, cssBaseUrl) {
+            const refs = [];
+            const imports = [];
+            const importRe = /@import\s+(?:url\(\s*(['"]?)(.*?)\1\s*\)|(['"])(.*?)\3)/gi;
+            let m;
+            while ((m = importRe.exec(cssText)) !== null) {
+                const target = m[2] || m[4] || '';
+                const resolved = resolveRelativeUrl(target, cssBaseUrl);
+                if (resolved) imports.push(resolved);
+            }
+
+            const urlRe = /url\(\s*(['"]?)([^)'"]+)\1\s*\)/gi;
+            while ((m = urlRe.exec(cssText)) !== null) {
+                const target = (m[2] || '').trim();
+                const resolved = resolveRelativeUrl(target, cssBaseUrl);
+                if (!resolved || imports.includes(resolved)) continue;
+                // Capture image/svg/icon URLs cleanly (skip fonts by default unless requested, keep png/jpg/webp/gif/svg/ico/avif)
+                if (/^data:image\//i.test(resolved) || /\.(png|jpe?g|webp|gif|svg|ico|avif)(\?|#|$)/i.test(resolved)) {
+                    refs.push({ originalRaw: m[2], resolved });
+                }
+            }
+            return { imports: [...new Set(imports)], images: refs };
+        }
+
+        function extFromMimeOrUrl(type, mime, rawUrl) {
+            const m = String(mime || '').toLowerCase();
+            if (m.includes('svg')) return 'svg';
+            if (m.includes('png')) return 'png';
+            if (m.includes('jpeg') || m.includes('jpg')) return 'jpg';
+            if (m.includes('webp')) return 'webp';
+            if (m.includes('gif')) return 'gif';
+            if (m.includes('avif')) return 'avif';
+            if (m.includes('icon')) return 'ico';
+            if (m.includes('css')) return 'css';
+            if (m.includes('javascript') || m.includes('ecmascript')) return 'js';
+
+            try {
+                const u = new URL(rawUrl);
+                const extMatch = /\.([a-zA-Z0-9]{2,6})$/.exec(u.pathname);
+                if (extMatch) return extMatch[1].toLowerCase();
+            } catch {}
+
+            if (type === 'css') return 'css';
+            if (type === 'js') return 'js';
+            if (type === 'image') return 'png';
+            return 'html';
+        }
+
+        function makeUniqueZipPath(type, rawUrl, mime, usedSet, indexHint = 1) {
+            const folder = type === 'css' ? 'css' : type === 'js' ? 'js' : type === 'image' ? 'images' : '';
+            let base = `${type}-${indexHint}`;
+            if (!/^data:/i.test(rawUrl)) {
+                try {
+                    const u = new URL(rawUrl);
+                    const lastSeg = decodeURIComponent(u.pathname.split('/').filter(Boolean).pop() || '');
+                    const noExt = lastSeg.replace(/\.[a-zA-Z0-9]{1,8}$/, '');
+                    const clean = noExt.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48);
+                    if (clean) base = clean;
+                } catch {}
+            } else {
+                base = `embedded-${type}-${indexHint}`;
+            }
+
+            const ext = extFromMimeOrUrl(type, mime, rawUrl).replace(/[^a-z0-9]/g, '') || 'bin';
+            let candidate = folder ? `${folder}/${base}.${ext}` : `${base}.${ext}`;
+            let n = 2;
+            while (usedSet.has(candidate.toLowerCase())) {
+                candidate = folder ? `${folder}/${base}-${n}.${ext}` : `${base}-${n}.${ext}`;
+                n++;
+            }
+            usedSet.add(candidate.toLowerCase());
+            return candidate;
+        }
+
+        function inspectHtmlStructure(htmlText, fallbackUrl) {
+            const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+            const baseEl = doc.querySelector('base[href]');
+            const effectiveBase = baseEl ? (resolveRelativeUrl(baseEl.getAttribute('href'), fallbackUrl) || fallbackUrl) : fallbackUrl;
+
+            const title = (doc.querySelector('title')?.textContent || '').trim();
+            const desc = doc.querySelector('meta[name="description"]')?.getAttribute('content') || '';
+            const ogTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute('content') || '';
+            const ogImageRaw = doc.querySelector('meta[property="og:image"]')?.getAttribute('content') || '';
+            const canonical = doc.querySelector('link[rel="canonical"]')?.getAttribute('href') || '';
+            const generator = doc.querySelector('meta[name="generator"]')?.getAttribute('content') || '';
+            const charset = doc.querySelector('meta[charset]')?.getAttribute('charset') || doc.characterSet || 'UTF-8';
+
+            const cssUrls = new Set();
+            doc.querySelectorAll('link[href]').forEach(el => {
+                const rel = (el.getAttribute('rel') || '').toLowerCase();
+                const asAttr = (el.getAttribute('as') || '').toLowerCase();
+                if (rel.includes('stylesheet') || (rel.includes('preload') && asAttr === 'style')) {
+                    const u = resolveRelativeUrl(el.getAttribute('href'), effectiveBase);
+                    if (u) cssUrls.add(u);
+                }
+            });
+
+            // Inline <style> @imports and url(...)
+            const inlineStyleImgUrls = new Set();
+            doc.querySelectorAll('style').forEach(st => {
+                const refs = extractCssUrlRefs(st.textContent || '', effectiveBase);
+                refs.imports.forEach(u => cssUrls.add(u));
+                refs.images.forEach(r => inlineStyleImgUrls.add(r.resolved));
+            });
+
+            const jsUrls = new Set();
+            doc.querySelectorAll('script[src]').forEach(el => {
+                const u = resolveRelativeUrl(el.getAttribute('src'), effectiveBase);
+                if (u) jsUrls.add(u);
+            });
+
+            const imageEntries = new Map(); // url -> { url, note }
+            const addImg = (u, note) => {
+                if (u && !imageEntries.has(u)) imageEntries.set(u, { url: u, note });
+            };
+
+            doc.querySelectorAll('img').forEach(img => {
+                for (const attr of ['src', 'data-src', 'data-lazy-src', 'data-original']) {
+                    const raw = img.getAttribute(attr);
+                    if (raw) addImg(resolveRelativeUrl(raw, effectiveBase), img.getAttribute('alt') || '<img>');
+                }
+                const ss = img.getAttribute('srcset') || img.getAttribute('data-srcset');
+                if (ss) parseSrcsetUrls(ss, effectiveBase).forEach(u => addImg(u, 'srcset'));
+            });
+
+            doc.querySelectorAll('picture source[srcset]').forEach(s => {
+                parseSrcsetUrls(s.getAttribute('srcset'), effectiveBase).forEach(u => addImg(u, '<picture>'));
+            });
+
+            doc.querySelectorAll('link[rel*="icon"][href]').forEach(el => {
+                addImg(resolveRelativeUrl(el.getAttribute('href'), effectiveBase), el.getAttribute('rel') || 'icon');
+            });
+
+            if (ogImageRaw) addImg(resolveRelativeUrl(ogImageRaw, effectiveBase), 'og:image');
+            inlineStyleImgUrls.forEach(u => addImg(u, '<style> url()'));
+            doc.querySelectorAll('[style*="url("]').forEach(el => {
+                const refs = extractCssUrlRefs(el.getAttribute('style') || '', effectiveBase);
+                refs.images.forEach(r => addImg(r.resolved, 'inline style'));
+            });
+
+            // Tech stack detection
+            const lower = htmlText.toLowerCase();
+            const tech = [];
+            const checks = [
+                ['Tailwind CSS', /tailwindcss|cdn\.tailwindcss\.com|class="[^"]*(?:sm:|md:|lg:|bg-slate-|text-xs)/i],
+                ['Bootstrap', /bootstrap(?:\.min)?\.(?:css|js)/i],
+                ['FontAwesome', /font-awesome|fontawesome|fa-solid|fa-brands/i],
+                ['Google Fonts', /fonts\.googleapis\.com/i],
+                ['React / Next.js', /__next_data__|react-dom|_next\/static|data-reactroot/i],
+                ['Vue / Nuxt', /__nuxt__|data-v-[a-f0-9]+|vue(?:\.global|\.min)?\.js/i],
+                ['jQuery', /jquery(?:-[0-9.]+)?(?:\.min)?\.js/i],
+                ['Alpine.js', /\bx-data=|\bx-show=|alpinejs/i],
+                ['GSAP', /gsap(?:\.min)?\.js|ScrollTrigger/i],
+                ['WordPress', /wp-content|wp-includes/i],
+                ['Vercel / Analytics', /vercel|_vercel\/insights/i]
+            ];
+            for (const [label, rx] of checks) {
+                if (rx.test(htmlText) || rx.test(lower)) tech.push(label);
+            }
+
+            const headings = [];
+            doc.querySelectorAll('h1, h2, h3').forEach(h => {
+                const txt = (h.textContent || '').replace(/\s+/g, ' ').trim();
+                if (txt && headings.length < 25) {
+                    headings.push({ tag: h.tagName, text: txt.slice(0, 140) });
+                }
+            });
+
+            const inlineScriptCount = [...doc.querySelectorAll('script:not([src])')].length;
+            const inlineSvgCount = doc.querySelectorAll('svg').length;
+
+            return {
+                effectiveBase,
+                title,
+                meta: { title, desc, ogTitle, ogImageRaw, canonical, generator, charset, inlineScriptCount, inlineSvgCount },
+                detectedTech: tech,
+                headings,
+                cssUrls: [...cssUrls],
+                jsUrls: [...jsUrls],
+                imageEntries: [...imageEntries.values()]
+            };
+        }
+
+        function rewriteAssetsInHtmlAndCss() {
+            const htmlAsset = clonerState.assets.find(a => a.type === 'html');
+            if (!htmlAsset) return;
+            const rewriteEnabled = Boolean(document.getElementById('opt-rewrite-paths')?.checked);
+            if (!rewriteEnabled) {
+                htmlAsset.text = htmlAsset.originalText;
+                htmlAsset.bytes = new TextEncoder().encode(htmlAsset.text);
+                htmlAsset.size = htmlAsset.bytes.length;
+                for (const cssA of clonerState.assets.filter(a => a.type === 'css' && a.status === 'ok')) {
+                    cssA.text = cssA.originalText;
+                    cssA.bytes = new TextEncoder().encode(cssA.text);
+                    cssA.size = cssA.bytes.length;
+                }
+                return;
+            }
+
+            const baseUrl = clonerState.finalUrl || clonerState.targetUrl || 'https://example.com/';
+            const mapByUrl = new Map();
+            for (const a of clonerState.assets) {
+                if (a.type !== 'html' && a.status === 'ok' && a.include && a.url && a.zipPath) {
+                    mapByUrl.set(a.url, a.zipPath);
+                }
+            }
+
+            // Rewrite CSS url(...) references to ../images/... inside packaged CSS files
+            for (const cssA of clonerState.assets.filter(a => a.type === 'css' && a.status === 'ok')) {
+                const cssBase = cssA.url || baseUrl;
+                const rewrittenCss = (cssA.originalText || '').replace(/url\(\s*(['"]?)([^)'"]+)\1\s*\)/gi, (full, q, rawRef) => {
+                    const resolved = resolveRelativeUrl(rawRef, cssBase);
+                    if (resolved && mapByUrl.has(resolved)) {
+                        const localZipPath = mapByUrl.get(resolved);
+                        const relFromCss = localZipPath.startsWith('css/') ? localZipPath.slice(4) : `../${localZipPath}`;
+                        return `url('${relFromCss}')`;
+                    }
+                    return full;
+                });
+                cssA.text = rewrittenCss;
+                cssA.bytes = new TextEncoder().encode(rewrittenCss);
+                cssA.size = cssA.bytes.length;
+            }
+
+            // Rewrite HTML document links cleanly via DOMParser
+            const doc = new DOMParser().parseFromString(htmlAsset.originalText || '', 'text/html');
+            const baseEl = doc.querySelector('base[href]');
+            const effectiveBase = baseEl ? (resolveRelativeUrl(baseEl.getAttribute('href'), baseUrl) || baseUrl) : baseUrl;
+            if (baseEl) baseEl.remove();
+
+            doc.querySelectorAll('link[href]').forEach(el => {
+                const resolved = resolveRelativeUrl(el.getAttribute('href'), effectiveBase);
+                if (resolved && mapByUrl.has(resolved)) {
+                    el.setAttribute('href', mapByUrl.get(resolved));
+                    el.removeAttribute('integrity');
+                    el.removeAttribute('crossorigin');
+                }
+            });
+            doc.querySelectorAll('script[src]').forEach(el => {
+                const resolved = resolveRelativeUrl(el.getAttribute('src'), effectiveBase);
+                if (resolved && mapByUrl.has(resolved)) {
+                    el.setAttribute('src', mapByUrl.get(resolved));
+                    el.removeAttribute('integrity');
+                    el.removeAttribute('crossorigin');
+                }
+            });
+            doc.querySelectorAll('img').forEach(el => {
+                const rawSrc = el.getAttribute('src') || el.getAttribute('data-src');
+                const resolved = resolveRelativeUrl(rawSrc, effectiveBase);
+                if (resolved && mapByUrl.has(resolved)) {
+                    el.setAttribute('src', mapByUrl.get(resolved));
+                    el.removeAttribute('srcset');
+                }
+            });
+            doc.querySelectorAll('style').forEach(st => {
+                st.textContent = (st.textContent || '').replace(/url\(\s*(['"]?)([^)'"]+)\1\s*\)/gi, (full, q, rawRef) => {
+                    const resolved = resolveRelativeUrl(rawRef, effectiveBase);
+                    return (resolved && mapByUrl.has(resolved)) ? `url('${mapByUrl.get(resolved)}')` : full;
+                });
+            });
+
+            htmlAsset.text = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+            htmlAsset.bytes = new TextEncoder().encode(htmlAsset.text);
+            htmlAsset.size = htmlAsset.bytes.length;
+        }
+
+        // ==========================================
+        // 5. CORE CLONE ORCHESTRATOR (URL & CAPTURE)
+        // ==========================================
+        function setProgress(show, text = '', done = 0, total = 0) {
+            const wrap = document.getElementById('clone-progress-wrap');
+            if (!wrap) return;
+            wrap.classList.toggle('hidden', !show);
+            if (!show) return;
+            document.getElementById('clone-progress-text').textContent = text;
+            document.getElementById('clone-progress-count').textContent = `${done}/${total}`;
+            const pct = total > 0 ? Math.min(100, Math.round((done / total) * 100)) : 20;
+            document.getElementById('clone-progress-bar').style.width = `${pct}%`;
+        }
+
+        function cancelActiveClone() {
+            if (clonerState.abortController) {
+                clonerState.abortController.abort();
+                clonerState.abortController = null;
+            }
+            clonerState.crawling = false;
+            setProgress(false);
+            showToast('ยกเลิกการดึงไฟล์แล้ว', 'warning');
+        }
+
+        async function runAssetCrawlFromHtml(htmlText, pageUrl, engineLabel, preloadedCssMap = new Map(), preloadedJsMap = new Map(), preloadedImagesMap = new Map(), fetchExternal = true) {
+            revokeAssetBlobUrls();
+            clonerState.assets = [];
+            clonerState.finalUrl = pageUrl;
+            clonerState.engineUsed = engineLabel;
+
+            const analysis = inspectHtmlStructure(htmlText, pageUrl);
+            clonerState.title = analysis.title || pageUrl;
+            clonerState.meta = analysis.meta;
+            clonerState.detectedTech = analysis.detectedTech;
+            clonerState.headings = analysis.headings;
+
+            const usedPaths = new Set(['index.html', 'manifest-cloner.json']);
+            const htmlBytes = new TextEncoder().encode(htmlText);
+            clonerState.assets.push({
+                id: 'asset-html-main',
+                type: 'html',
+                url: pageUrl,
+                zipPath: 'index.html',
+                mime: 'text/html',
+                status: 'ok',
+                originalText: htmlText,
+                text: htmlText,
+                bytes: htmlBytes,
+                size: htmlBytes.length,
+                include: true
+            });
+
+            const fetchCss = Boolean(document.getElementById('opt-fetch-css')?.checked);
+            const fetchJs = Boolean(document.getElementById('opt-fetch-js')?.checked);
+            const fetchImgs = Boolean(document.getElementById('opt-fetch-images')?.checked);
+            const maxAssets = Number(document.getElementById('opt-max-assets')?.value || 40);
+
+            const queue = [];
+            let idxCounter = 1;
+            if (fetchCss || preloadedCssMap.size > 0) {
+                for (const u of analysis.cssUrls) {
+                    if (queue.length < maxAssets) queue.push({ type: 'css', url: u, note: '<link>', idx: idxCounter++ });
+                }
+            }
+            if (fetchJs || preloadedJsMap.size > 0) {
+                for (const u of analysis.jsUrls) {
+                    if (queue.length < maxAssets) queue.push({ type: 'js', url: u, note: '<script>', idx: idxCounter++ });
+                }
+            }
+            const queuedUrls = new Set(queue.map(q => q.url));
+            if (fetchImgs || preloadedImagesMap.size > 0) {
+                for (const im of analysis.imageEntries) {
+                    if (!queuedUrls.has(im.url) && queue.length < maxAssets) {
+                        queuedUrls.add(im.url);
+                        queue.push({ type: 'image', url: im.url, note: im.note, idx: idxCounter++, w: im.w || 0, h: im.h || 0 });
+                    }
+                }
+            }
+
+            const totalTasks = queue.length;
+            let doneCount = 0;
+            if (totalTasks > 0) {
+                setProgress(true, 'กำลังดึงไฟล์ CSS / JS / รูปภาพ...', 0, totalTasks);
+            }
+
+            const signal = clonerState.abortController?.signal;
+            const discoveredCssImages = [];
+
+            async function processItem(item) {
+                if (signal && signal.aborted) return;
+
+                // Check preloaded captures first (offline demo or Bookmarklet CSSOM)
+                if (item.type === 'css' && preloadedCssMap.has(item.url)) {
+                    const txt = preloadedCssMap.get(item.url);
+                    const bytes = new TextEncoder().encode(txt);
+                    const zp = makeUniqueZipPath('css', item.url, 'text/css', usedPaths, item.idx);
+                    clonerState.assets.push({
+                        id: `asset-${item.idx}`,
+                        type: 'css',
+                        url: item.url,
+                        zipPath: zp,
+                        mime: 'text/css',
+                        status: 'ok',
+                        originalText: txt,
+                        text: txt,
+                        bytes,
+                        size: bytes.length,
+                        include: true,
+                        note: item.note
+                    });
+                    const refs = extractCssUrlRefs(txt, item.url);
+                    refs.images.forEach(r => discoveredCssImages.push({ url: r.resolved, note: `CSS ${zp}` }));
+                    doneCount++;
+                    setProgress(true, `ดึงไฟล์: ${zp}`, doneCount, totalTasks);
+                    return;
+                }
+
+                if (item.type === 'js' && preloadedJsMap.has(item.url)) {
+                    const txt = preloadedJsMap.get(item.url);
+                    const bytes = new TextEncoder().encode(txt);
+                    const zp = makeUniqueZipPath('js', item.url, 'application/javascript', usedPaths, item.idx);
+                    clonerState.assets.push({
+                        id: `asset-${item.idx}`,
+                        type: 'js',
+                        url: item.url,
+                        zipPath: zp,
+                        mime: 'application/javascript',
+                        status: 'ok',
+                        originalText: txt,
+                        text: txt,
+                        bytes,
+                        size: bytes.length,
+                        include: true,
+                        note: item.note
+                    });
+                    doneCount++;
+                    setProgress(true, `ดึงไฟล์: ${zp}`, doneCount, totalTasks);
+                    return;
+                }
+
+                if (item.type === 'image' && preloadedImagesMap.has(item.url)) {
+                    const pre = preloadedImagesMap.get(item.url);
+                    const bytes = pre.bytes;
+                    const zp = makeUniqueZipPath('image', item.url, pre.mime, usedPaths, item.idx);
+                    const blob = new Blob([bytes], { type: pre.mime });
+                    clonerState.assets.push({
+                        id: `asset-${item.idx}`,
+                        type: 'image',
+                        url: item.url,
+                        zipPath: zp,
+                        mime: pre.mime,
+                        status: 'ok',
+                        bytes,
+                        size: bytes.length,
+                        include: true,
+                        blobUrl: URL.createObjectURL(blob),
+                        width: pre.width || item.w || 0,
+                        height: pre.height || item.h || 0,
+                        note: item.note
+                    });
+                    doneCount++;
+                    setProgress(true, `ดึงรูปภาพ: ${zp}`, doneCount, totalTasks);
+                    return;
+                }
+
+                const shouldFetch = fetchExternal && (
+                    (item.type === 'css' && fetchCss) ||
+                    (item.type === 'js' && fetchJs) ||
+                    (item.type === 'image' && fetchImgs)
+                );
+                if (!shouldFetch) {
+                    const zp = makeUniqueZipPath(item.type, item.url, '', usedPaths, item.idx);
+                    clonerState.assets.push({
+                        id: `asset-${item.idx}`,
+                        type: item.type,
+                        url: item.url,
+                        zipPath: zp,
+                        mime: '',
+                        status: 'skipped',
+                        size: 0,
+                        include: false,
+                        width: item.w || 0,
+                        height: item.h || 0,
+                        note: item.note
+                    });
+                    doneCount++;
+                    return;
+                }
+
+                try {
+                    const res = await smartFetchResource(item.url, signal);
+                    const zp = makeUniqueZipPath(item.type, item.url, res.contentType, usedPaths, item.idx);
+                    const entry = {
+                        id: `asset-${item.idx}`,
+                        type: item.type,
+                        url: item.url,
+                        zipPath: zp,
+                        mime: res.contentType,
+                        status: 'ok',
+                        originalText: res.isBinary ? null : (res.text || ''),
+                        text: res.isBinary ? null : (res.text || ''),
+                        bytes: res.bytes,
+                        size: res.size,
+                        include: true,
+                        width: item.w || 0,
+                        height: item.h || 0,
+                        note: item.note
+                    };
+                    if (item.type === 'image') {
+                        entry.blobUrl = URL.createObjectURL(new Blob([res.bytes], { type: res.contentType || 'image/png' }));
+                    } else if (item.type === 'css' && res.text) {
+                        const refs = extractCssUrlRefs(res.text, item.url);
+                        refs.images.forEach(r => discoveredCssImages.push({ url: r.resolved, note: `CSS ${zp}` }));
+                    }
+                    clonerState.assets.push(entry);
+                } catch (err) {
+                    const zp = makeUniqueZipPath(item.type, item.url, '', usedPaths, item.idx);
+                    clonerState.assets.push({
+                        id: `asset-${item.idx}`,
+                        type: item.type,
+                        url: item.url,
+                        zipPath: zp,
+                        mime: '',
+                        status: 'error',
+                        error: err.message || 'Fetch error',
+                        size: 0,
+                        include: false,
+                        width: item.w || 0,
+                        height: item.h || 0,
+                        note: item.note
+                    });
+                } finally {
+                    doneCount++;
+                    setProgress(true, `กำลังดึงไฟล์ (${doneCount}/${totalTasks})`, doneCount, totalTasks);
+                }
+            }
+
+            // Concurrency pool of 4
+            const workers = Array.from({ length: Math.min(4, Math.max(1, queue.length)) }, async () => {
+                while (queue.length > 0 && !(signal && signal.aborted)) {
+                    const next = queue.shift();
+                    if (next) await processItem(next);
+                }
+            });
+            await Promise.all(workers);
+
+            // Second-pass fetch for images referenced inside downloaded CSS files
+            if (fetchImgs && (fetchExternal || preloadedImagesMap.size > 0) && discoveredCssImages.length > 0) {
+                const extraImgs = [];
+                for (const di of discoveredCssImages) {
+                    if (!queuedUrls.has(di.url) && clonerState.assets.length + extraImgs.length <= maxAssets + 10) {
+                        queuedUrls.add(di.url);
+                        extraImgs.push({ type: 'image', url: di.url, note: di.note, idx: idxCounter++ });
+                    }
+                }
+                for (const ex of extraImgs) {
+                    if (signal && signal.aborted) break;
+                    await processItem(ex);
+                }
+            }
+
+            rewriteAssetsInHtmlAndCss();
+            clonerState.selectedAssetId = clonerState.assets[0]?.id || null;
+            setProgress(false);
+            updateAllUiAfterClone();
+        }
+
+        async function startUrlClone() {
+            const raw = document.getElementById('clone-url-input')?.value;
+            let url;
+            try {
+                url = normalizeInputUrl(raw);
+            } catch {
+                showToast('กรุณากรอก URL ให้ถูกต้อง เช่น https://example.com', 'error');
+                return;
+            }
+            if (!/^https?:\/\//i.test(url)) {
+                showToast('รองรับเฉพาะ URL แบบ http:// และ https:// เท่านั้น', 'error');
+                return;
+            }
+
+            document.getElementById('clone-url-input').value = url;
+            document.getElementById('clone-alert-banner').classList.add('hidden');
+            clonerState.targetUrl = url;
+            clonerState.crawling = true;
+            clonerState.abortController = new AbortController();
+            setProgress(true, `กำลังดึง HTML จาก ${url}...`, 1, 5);
+
+            try {
+                const htmlRes = await smartFetchResource(url, clonerState.abortController.signal);
+                if (htmlRes.isBinary) {
+                    throw new Error('URL เป้าหมายไม่ใช่หน้า HTML (พบไฟล์ไบนารี: ' + htmlRes.contentType + ')');
+                }
+                await runAssetCrawlFromHtml(htmlRes.text || '', htmlRes.url || url, htmlRes.engine);
+                const okCount = clonerState.assets.filter(a => a.status === 'ok').length;
+                showAlertBanner('success', `ดึงหน้าเว็บสำเร็จผ่าน <strong>${escapeHtml(htmlRes.engine)}</strong> — ได้ไฟล์พร้อมแพ็ก .ZIP จำนวน <strong>${okCount}</strong> ไฟล์`);
+                showToast(`ดึงซอร์สโค้ดสำเร็จ (${okCount} ไฟล์)`);
+            } catch (err) {
+                if (err.name === 'AbortError') return;
+                setProgress(false);
+                showAlertBanner('error', `ไม่สามารถดึงลิงก์นี้ได้: <strong>${escapeHtml(err.message)}</strong> — หากเว็บติดสิทธิ์ล็อกอินหรือบล็อกบอท สามารถใช้ Bookmarklet ดูดซอร์สจากเบราว์เซอร์ได้ทันทีครับ`, true);
+                showToast('ดึงข้อมูล URL ไม่สำเร็จ', 'error');
+            } finally {
+                clonerState.crawling = false;
+            }
+        }
+
+        function presetClonePortfolio() {
+            const url = new URL('index.html', window.location.href).href;
+            document.getElementById('clone-url-input').value = url;
+            startUrlClone();
+        }
+
+        async function loadBuiltinDemoSite() {
+            const baseUrl = 'https://demo-template.local/';
+            document.getElementById('clone-url-input').value = `${baseUrl}index.html`;
+
+            const demoHtml = `<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Demo Starter Landing Page — Portfolio Template</title>
+  <meta name="description" content="ตัวอย่างหน้าเว็บ Landing Page พร้อมไฟล์ CSS, JS และรูปภาพสำหรับการแพ็กไฟล์ ZIP">
+  <meta property="og:title" content="Demo Starter Landing Page">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="icon" href="assets/logo-badge.svg">
+</head>
+<body>
+  <header class="hero">
+    <img src="assets/logo-badge.svg" alt="Brand Logo" width="64" height="64">
+    <h1>ตัวอย่างโครงสร้างเว็บต้นแบบ (Starter Template)</h1>
+    <p>พร้อมไฟล์ index.html, css/theme.css, js/main.js และรูปภาพในโฟลเดอร์ .ZIP</p>
+    <img src="assets/banner-preview.png" alt="Hero Banner">
+  </header>
+  <script src="js/main.js"><\/script>
+</body>
+</html>`;
+
+            const demoCss = `:root { --brand: #0891b2; --bg: #0f172a; }
+body { font-family: system-ui, sans-serif; margin: 0; padding: 32px; background: var(--bg); color: #f8fafc; }
+.hero { max-width: 720px; margin: 0 auto; padding: 32px; border-radius: 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); background-image: url('../assets/pattern.svg'); }
+h1 { color: #38bdf8; }`;
+
+            const demoJs = `document.addEventListener('DOMContentLoaded', () => {
+  console.log('Starter Template Ready!', window.location.href);
+});`;
+
+            const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#4f46e5"/></linearGradient></defs><rect width="96" height="96" rx="24" fill="url(#g)"/><path d="M28 50 L44 64 L68 32" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+            const patternSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><circle cx="20" cy="20" r="2" fill="rgba(56,189,248,0.22)"/></svg>`;
+
+            // Generate crisp real PNG banner via Canvas so ZIP contains real raster PNG + SVG
+            const c = document.createElement('canvas');
+            c.width = 480; c.height = 180;
+            const ctx = c.getContext('2d');
+            const grad = ctx.createLinearGradient(0, 0, 480, 180);
+            grad.addColorStop(0, '#0891b2');
+            grad.addColorStop(1, '#312e81');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 480, 180);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px sans-serif';
+            ctx.fillText('Web Source Cloner Demo', 28, 86);
+            ctx.fillStyle = '#bae6fd';
+            ctx.font = '15px sans-serif';
+            ctx.fillText('HTML + CSS + JS + Images -> 1-Click .ZIP', 28, 120);
+            const pngBlob = await new Promise(resolve => c.toBlob(resolve, 'image/png'));
+            const pngBytes = new Uint8Array(await pngBlob.arrayBuffer());
+
+            const preCss = new Map([[`${baseUrl}css/theme.css`, demoCss]]);
+            const preJs = new Map([[`${baseUrl}js/main.js`, demoJs]]);
+            const enc = new TextEncoder();
+            const preImg = new Map([
+                [`${baseUrl}assets/logo-badge.svg`, { bytes: enc.encode(logoSvg), mime: 'image/svg+xml', width: 96, height: 96 }],
+                [`${baseUrl}assets/banner-preview.png`, { bytes: pngBytes, mime: 'image/png', width: 480, height: 180 }],
+                [`${baseUrl}assets/pattern.svg`, { bytes: enc.encode(patternSvg), mime: 'image/svg+xml', width: 40, height: 40 }]
+            ]);
+
+            clonerState.targetUrl = `${baseUrl}index.html`;
+            clonerState.abortController = new AbortController();
+            await runAssetCrawlFromHtml(demoHtml, `${baseUrl}index.html`, 'builtin-demo', preCss, preJs, preImg, false);
+            showAlertBanner('success', 'โหลดโปรเจกต์ตัวอย่างออฟไลน์สำเร็จ — ลองสลับดูโค้ด HTML/CSS/JS, แกลเลอรีรูปภาพ, พรีวิว Sandbox และกดโหลด <strong>.ZIP</strong> ได้ทันทีครับ');
+            showToast('โหลดโปรเจกต์ตัวอย่างเรียบร้อย (6 ไฟล์)');
+        }
+
+        // ==========================================
+        // 6. UI RENDERING & INSPECTOR VIEWS
+        // ==========================================
+        function updateKpisAndZipSummary() {
+            const htmlAssets = clonerState.assets.filter(a => a.type === 'html');
+            const cssOk = clonerState.assets.filter(a => a.type === 'css' && a.status === 'ok');
+            const cssAll = clonerState.assets.filter(a => a.type === 'css');
+            const jsOk = clonerState.assets.filter(a => a.type === 'js' && a.status === 'ok');
+            const jsAll = clonerState.assets.filter(a => a.type === 'js');
+            const imgOk = clonerState.assets.filter(a => a.type === 'image' && a.status === 'ok');
+            const imgAll = clonerState.assets.filter(a => a.type === 'image');
+
+            let host = '-';
+            try { if (clonerState.finalUrl) host = new URL(clonerState.finalUrl).host; } catch {}
+            document.getElementById('kpi-domain').textContent = host;
+            document.getElementById('kpi-engine-badge').textContent = clonerState.engineUsed || 'พร้อมใช้งาน';
+
+            const htmlSize = htmlAssets.reduce((s, a) => s + a.size, 0);
+            document.getElementById('kpi-html-size').textContent = formatBytes(htmlSize);
+            document.getElementById('kpi-html-title').textContent = clonerState.title || (htmlAssets.length ? 'index.html' : 'ยังไม่ได้ดึงข้อมูล');
+
+            document.getElementById('kpi-css-count').textContent = `${cssOk.length} / ${cssAll.length} ไฟล์`;
+            document.getElementById('kpi-css-size').textContent = formatBytes(cssOk.reduce((s, a) => s + a.size, 0));
+
+            document.getElementById('kpi-js-count').textContent = `${jsOk.length} / ${jsAll.length} ไฟล์`;
+            document.getElementById('kpi-js-size').textContent = formatBytes(jsOk.reduce((s, a) => s + a.size, 0));
+
+            document.getElementById('kpi-img-count').textContent = `${imgOk.length} / ${imgAll.length} รูป`;
+            document.getElementById('kpi-img-size').textContent = formatBytes(imgOk.reduce((s, a) => s + a.size, 0));
+            document.getElementById('gallery-tab-count').textContent = String(imgAll.length);
+
+            const packable = clonerState.assets.filter(a => a.include && a.status === 'ok' && a.bytes);
+            const totalZipBytes = packable.reduce((s, a) => s + a.bytes.length, 0);
+            document.getElementById('asset-selected-count').textContent = `${packable.length} ไฟล์`;
+            document.getElementById('zip-summary-label').textContent = `${packable.length} ไฟล์ (${formatBytes(totalZipBytes)})`;
+
+            const dis = packable.length === 0;
+            const btn1 = document.getElementById('btn-download-zip');
+            const btn2 = document.getElementById('btn-download-zip-top');
+            if (btn1) btn1.disabled = dis;
+            if (btn2) btn2.disabled = dis;
+        }
+
+        function setAssetFilter(type) {
+            clonerState.filterType = type;
+            document.querySelectorAll('.asset-filter-btn').forEach(btn => {
+                const active = btn.dataset.filter === type;
+                btn.className = active
+                    ? 'asset-filter-btn px-2.5 py-1 rounded-lg bg-cyan-600 text-white text-[11px] font-bold whitespace-nowrap cursor-pointer'
+                    : 'asset-filter-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 text-xs font-semibold whitespace-nowrap cursor-pointer';
+            });
+            renderAssetList();
+        }
+
+        function toggleAssetInclude(assetId, checked) {
+            const target = clonerState.assets.find(a => a.id === assetId);
+            if (!target) return;
+            target.include = checked;
+            rewriteAssetsInHtmlAndCss();
+            updateKpisAndZipSummary();
+            if (clonerState.selectedAssetId === 'asset-html-main' || target.type === 'css') {
+                renderSelectedAssetViewer();
+            }
+        }
+
+        function toggleSelectAllAssets(flag) {
+            for (const a of clonerState.assets) {
+                if (a.type === 'html') { a.include = true; continue; }
+                if (a.status === 'ok') a.include = flag;
+            }
+            rewriteAssetsInHtmlAndCss();
+            renderAssetList();
+            updateKpisAndZipSummary();
+            renderSelectedAssetViewer();
+        }
+
+        function selectAsset(assetId) {
+            clonerState.selectedAssetId = assetId;
+            renderAssetList();
+            renderSelectedAssetViewer();
+            if (clonerState.viewMode !== 'source') {
+                switchInspectorView('source');
+            }
+        }
+
+        function renderAssetList() {
+            const container = document.getElementById('asset-list-container');
+            if (!container) return;
+            const query = (document.getElementById('asset-search-input')?.value || '').trim().toLowerCase();
+            const items = clonerState.assets.filter(a => {
+                if (clonerState.filterType !== 'all' && a.type !== clonerState.filterType) return false;
+                if (query) {
+                    return a.zipPath.toLowerCase().includes(query) || a.url.toLowerCase().includes(query);
+                }
+                return true;
+            });
+
+            if (items.length === 0) {
+                container.innerHTML = `<div class="p-5 text-center rounded-xl border border-dashed border-slate-300 dark:border-zinc-700 text-xs text-slate-500">ไม่พบไฟล์ในหมวดหมู่ที่เลือก</div>`;
+                return;
+            }
+
+            const iconColorByType = {
+                html: 'text-cyan-600 bg-cyan-50 dark:bg-cyan-950/70',
+                css: 'text-sky-600 bg-sky-50 dark:bg-sky-950/70',
+                js: 'text-amber-600 bg-amber-50 dark:bg-amber-950/70',
+                image: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/70'
+            };
+
+            container.innerHTML = items.map(a => {
+                const isSelected = a.id === clonerState.selectedAssetId;
+                const statusBadge = a.status === 'ok'
+                    ? `<span class="px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[10px] font-mono">${formatBytes(a.size)}</span>`
+                    : a.status === 'skipped'
+                        ? `<span class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-zinc-700 text-slate-600 dark:text-slate-300 text-[10px]">ข้าม</span>`
+                        : `<span class="px-1.5 py-0.5 rounded bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 text-[10px]" title="${escapeHtml(a.error || 'Error')}">โหลดไม่ได้</span>`;
+
+                const checkboxDisabled = a.status !== 'ok' || a.type === 'html' ? 'disabled' : '';
+                const rowCls = isSelected
+                    ? 'bg-cyan-50/90 dark:bg-cyan-950/50 border-cyan-400 dark:border-cyan-700'
+                    : 'bg-slate-50/60 dark:bg-zinc-800/50 border-slate-200 dark:border-zinc-700 hover:border-cyan-300';
+
+                return `
+                    <div onclick="selectAsset('${a.id}')" class="p-2 rounded-xl border ${rowCls} flex items-center gap-2 transition cursor-pointer">
+                        <input type="checkbox" ${a.include ? 'checked' : ''} ${checkboxDisabled} onclick="event.stopPropagation(); toggleAssetInclude('${a.id}', this.checked)" class="rounded text-cyan-600 shrink-0 cursor-pointer">
+                        <div class="w-7 h-7 rounded-lg ${iconColorByType[a.type] || 'text-slate-500 bg-slate-100'} flex items-center justify-center text-xs shrink-0">
+                            <i class="fa-solid ${a.type === 'html' ? 'fa-file-code' : a.type === 'css' ? 'fa-paintbrush' : a.type === 'js' ? 'fa-code' : 'fa-image'}"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold font-mono text-slate-800 dark:text-slate-100 truncate">${escapeHtml(a.zipPath)}</div>
+                            <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">${escapeHtml(a.url)}</div>
+                        </div>
+                        <div class="shrink-0">${statusBadge}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function formatSimpleCode(text, type) {
+            if (!text) return '';
+            if (type === 'html') {
+                return text.replace(/>\s*</g, '>\n<');
+            }
+            if (type === 'css') {
+                return text.replace(/\{\s*/g, ' {\n  ').replace(/;\s*/g, ';\n  ').replace(/\s*\}\s*/g, '\n}\n');
+            }
+            return text;
+        }
+
+        function renderSelectedAssetViewer() {
+            const asset = clonerState.assets.find(a => a.id === clonerState.selectedAssetId) || clonerState.assets[0];
+            const titleEl = document.getElementById('selected-asset-title');
+            const metaEl = document.getElementById('selected-asset-meta');
+            const badgeEl = document.getElementById('viewer-zip-badge');
+            const verSelect = document.getElementById('code-version-mode');
+            const imgBox = document.getElementById('selected-image-detail');
+            const codeBox = document.getElementById('code-viewer-box');
+            const pre = document.getElementById('code-viewer-pre');
+
+            if (!asset) {
+                titleEl.textContent = '-';
+                metaEl.textContent = '0 B';
+                badgeEl.textContent = '-';
+                imgBox.classList.add('hidden');
+                codeBox.classList.remove('hidden');
+                pre.textContent = '// วาง URL หน้าเว็บหรือกด "โหลดโปรเจกต์ตัวอย่าง" เพื่อเริ่มต้น';
+                return;
+            }
+
+            titleEl.textContent = asset.zipPath;
+            badgeEl.textContent = `ZIP: ${asset.zipPath}`;
+            metaEl.textContent = `${formatBytes(asset.size)} • ${asset.mime || asset.type.toUpperCase()}`;
+
+            if ((asset.type === 'html' || asset.type === 'css') && asset.originalText && asset.status === 'ok') {
+                verSelect.classList.remove('hidden');
+            } else {
+                verSelect.classList.add('hidden');
+            }
+
+            if (asset.type === 'image') {
+                imgBox.classList.remove('hidden');
+                document.getElementById('selected-image-name').textContent = asset.zipPath;
+                document.getElementById('selected-image-url').textContent = asset.url;
+                document.getElementById('selected-image-dims').textContent = asset.width && asset.height ? `${asset.width}×${asset.height} px` : (asset.status === 'ok' ? 'โหลดรูปภาพสำเร็จ' : 'โหลดรูปภาพไม่สำเร็จ');
+                document.getElementById('selected-image-mime').textContent = asset.mime || 'image/*';
+                const imgEl = document.getElementById('selected-image-preview');
+                const safeSrc = safeUrlForImg(asset.blobUrl || asset.url);
+                imgEl.onload = () => {
+                    if (imgEl.naturalWidth && imgEl.naturalHeight) {
+                        asset.width = imgEl.naturalWidth;
+                        asset.height = imgEl.naturalHeight;
+                        const dimsEl = document.getElementById('selected-image-dims');
+                        if (dimsEl) dimsEl.textContent = `${asset.width}×${asset.height} px`;
+                    }
+                };
+                imgEl.src = safeSrc || '';
+
+                if (asset.mime && asset.mime.includes('svg') && asset.text) {
+                    codeBox.classList.remove('hidden');
+                    pre.textContent = asset.text.slice(0, 120000);
+                } else {
+                    codeBox.classList.add('hidden');
+                }
+                return;
+            }
+
+            imgBox.classList.add('hidden');
+            codeBox.classList.remove('hidden');
+
+            if (asset.status !== 'ok') {
+                pre.textContent = `// ไม่สามารถดึงเนื้อหาไฟล์นี้ได้ (${asset.error || asset.status})\n// URL: ${asset.url}`;
+                return;
+            }
+
+            const verMode = verSelect.value || 'rewritten';
+            let txt = (verMode === 'original' && asset.originalText != null) ? asset.originalText : (asset.text || '');
+            if (clonerState.prettyCode) {
+                txt = formatSimpleCode(txt, asset.type);
+            }
+            const MAX_DISPLAY_CHARS = 180000;
+            if (txt.length > MAX_DISPLAY_CHARS) {
+                pre.textContent = txt.slice(0, MAX_DISPLAY_CHARS) + `\n\n/* ... แสดงตัวอย่าง ${MAX_DISPLAY_CHARS} อักษรแรกจากทั้งหมด ${txt.length} อักษร (ดาวน์โหลดไฟล์หรือ .ZIP จะได้ไฟล์เต็ม 100%) ... */`;
+            } else {
+                pre.textContent = txt;
+            }
+        }
+
+        function renderImageGallery() {
+            const grid = document.getElementById('image-gallery-grid');
+            if (!grid) return;
+            const imgs = clonerState.assets.filter(a => a.type === 'image');
+            if (imgs.length === 0) {
+                grid.innerHTML = `<div class="col-span-full p-8 text-center rounded-xl border border-dashed border-slate-300 dark:border-zinc-700 text-xs text-slate-500">ไม่พบรูปภาพในหน้าเว็บนี้</div>`;
+                return;
+            }
+            grid.innerHTML = imgs.map(im => {
+                const previewSrc = safeUrlForImg(im.blobUrl || im.url);
+                const ext = extFromMimeOrUrl('image', im.mime, im.url).toUpperCase();
+                return `
+                    <div class="rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50/70 dark:bg-zinc-900/70 p-2.5 flex flex-col justify-between space-y-2">
+                        <div class="h-32 rounded-lg bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden p-1.5 relative">
+                            ${previewSrc ? `<img src="${escapeHtml(previewSrc)}" alt="${escapeHtml(im.note || im.zipPath)}" class="max-w-full max-h-full object-contain" loading="lazy">` : '<i class="fa-solid fa-image text-2xl text-slate-400"></i>'}
+                            <span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-slate-900/80 text-white text-[10px] font-mono font-bold">${escapeHtml(ext)}</span>
+                            <span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded ${im.status === 'ok' ? 'bg-emerald-600' : 'bg-rose-600'} text-white text-[10px] font-mono">${im.status === 'ok' ? formatBytes(im.size) : 'Error'}</span>
+                        </div>
+                        <div class="min-w-0 space-y-1">
+                            <div class="text-xs font-bold font-mono truncate text-slate-800 dark:text-slate-100">${escapeHtml(im.zipPath)}</div>
+                            <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">${escapeHtml(im.url)}</div>
+                        </div>
+                        <div class="flex items-center justify-between gap-1.5 pt-1 border-t border-slate-200 dark:border-zinc-700 text-[11px]">
+                            <button type="button" onclick="copyAssetUrlById('${im.id}')" class="px-2 py-1 rounded-lg bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 font-semibold hover:bg-slate-100 cursor-pointer">
+                                <i class="fa-solid fa-copy text-cyan-600 mr-1"></i>ลิงก์
+                            </button>
+                            <button type="button" onclick="selectAsset('${im.id}')" class="px-2 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 font-bold cursor-pointer">
+                                ดูรายละเอียด
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderSandboxedPreview() {
+            const iframe = document.getElementById('preview-iframe');
+            const htmlAsset = clonerState.assets.find(a => a.type === 'html');
+            if (!iframe || !htmlAsset) return;
+
+            const doc = new DOMParser().parseFromString(htmlAsset.originalText || '', 'text/html');
+            // Strip script/iframe tags and inline event handlers inside preview for defense in depth
+            doc.querySelectorAll('script, noscript, iframe, object, embed').forEach(el => el.remove());
+            doc.querySelectorAll('*').forEach(el => {
+                for (const attr of [...el.attributes]) {
+                    if (/^on/i.test(attr.name) || (/^(href|src|action)$/i.test(attr.name) && /^\s*javascript:/i.test(attr.value))) {
+                        el.removeAttribute(attr.name);
+                    }
+                }
+            });
+
+            // Inline fetched CSS cleanly so sandboxed preview styles render offline too
+            const baseUrl = clonerState.finalUrl || clonerState.targetUrl || 'https://example.com/';
+            const cssByUrl = new Map(clonerState.assets.filter(a => a.type === 'css' && a.status === 'ok').map(a => [a.url, a.originalText || '']));
+            doc.querySelectorAll('link[rel*="stylesheet"][href]').forEach(link => {
+                const resolved = resolveRelativeUrl(link.getAttribute('href'), baseUrl);
+                if (resolved && cssByUrl.has(resolved)) {
+                    const st = doc.createElement('style');
+                    st.textContent = cssByUrl.get(resolved).replace(/<\/style/gi, '<\\/style');
+                    link.replaceWith(st);
+                }
+            });
+
+            // Map fetched images to blob URLs / safe URLs for preview
+            const imgMap = new Map(clonerState.assets.filter(a => a.type === 'image' && a.status === 'ok' && a.blobUrl).map(a => [a.url, a.blobUrl]));
+            doc.querySelectorAll('img').forEach(img => {
+                const rawSrc = img.getAttribute('src') || img.getAttribute('data-src');
+                const resolved = resolveRelativeUrl(rawSrc, baseUrl);
+                if (resolved && imgMap.has(resolved)) {
+                    img.setAttribute('src', imgMap.get(resolved));
+                }
+            });
+
+            iframe.srcdoc = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+        }
+
+        function renderTechAnalysis() {
+            const box = document.getElementById('tech-analysis-container');
+            if (!box) return;
+            const meta = clonerState.meta;
+            if (!meta) {
+                box.innerHTML = `<div class="p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 text-slate-500 text-center">ยังไม่มีข้อมูลโครงสร้างหน้าเว็บ</div>`;
+                return;
+            }
+
+            const techBadges = clonerState.detectedTech.length
+                ? clonerState.detectedTech.map(t => `<span class="px-2.5 py-1 rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800 font-bold text-[11px]">${escapeHtml(t)}</span>`).join('')
+                : `<span class="text-slate-500">ไม่พบ Library ภายนอกมาตรฐาน (อาจเป็น Vanilla HTML/CSS/JS)</span>`;
+
+            const headingsHtml = clonerState.headings.length
+                ? clonerState.headings.map(h => `<div class="flex items-baseline gap-2 py-1 border-b border-slate-200/70 dark:border-zinc-800 last:border-0"><span class="px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-mono text-[10px] font-bold shrink-0">${escapeHtml(h.tag)}</span><span class="truncate">${escapeHtml(h.text)}</span></div>`).join('')
+                : '<span class="text-slate-500">ไม่พบหัวข้อ H1-H3</span>';
+
+            const failed = clonerState.assets.filter(a => a.status === 'error');
+            const failedHtml = failed.length
+                ? failed.map(f => `<li class="text-rose-700 dark:text-rose-300 font-mono text-[11px] break-all">• ${escapeHtml(f.url)} (${escapeHtml(f.error || 'Error')})</li>`).join('')
+                : '<li class="text-emerald-700 dark:text-emerald-300">ไม่มีไฟล์ที่โหลดไม่สำเร็จ (100% Success)</li>';
+
+            box.innerHTML = `
+                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 space-y-2">
+                    <div class="font-bold text-slate-800 dark:text-white">เทคโนโลยี &amp; Framework ที่ตรวจพบ</div>
+                    <div class="flex flex-wrap gap-1.5">${techBadges}</div>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div><span class="font-bold text-slate-500">Title:</span> <span class="text-slate-900 dark:text-white">${escapeHtml(meta.title || '-')}</span></div>
+                    <div><span class="font-bold text-slate-500">Charset / SVG:</span> <span class="font-mono">${escapeHtml(meta.charset)} • ${meta.inlineSvgCount} SVG • ${meta.inlineScriptCount} Inline Script</span></div>
+                    <div class="sm:col-span-2"><span class="font-bold text-slate-500">Description:</span> <span>${escapeHtml(meta.desc || '-')}</span></div>
+                    <div class="sm:col-span-2"><span class="font-bold text-slate-500">Canonical URL:</span> <span class="font-mono break-all">${escapeHtml(meta.canonical || '-')}</span></div>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 space-y-1.5">
+                    <div class="font-bold text-slate-800 dark:text-white">ลำดับหัวข้อบนหน้าเว็บ (Headings H1–H3)</div>
+                    <div>${headingsHtml}</div>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 space-y-1.5">
+                    <div class="font-bold text-slate-800 dark:text-white">สรุปไฟล์ที่มีข้อจำกัด CORS / Timeout (${failed.length} รายการ)</div>
+                    <ul class="space-y-1">${failedHtml}</ul>
+                </div>
+            `;
+        }
+
+        function updateAllUiAfterClone() {
+            updateKpisAndZipSummary();
+            renderAssetList();
+            renderSelectedAssetViewer();
+            renderImageGallery();
+            renderSandboxedPreview();
+            renderTechAnalysis();
+        }
+
+        function switchInspectorView(mode) {
+            clonerState.viewMode = mode;
+            for (const m of ['source', 'gallery', 'preview', 'tech']) {
+                document.getElementById(`view-${m}`)?.classList.toggle('hidden', m !== mode);
+            }
+            document.querySelectorAll('.viewtab-btn').forEach(btn => {
+                const active = btn.dataset.viewtab === mode;
+                btn.className = active
+                    ? 'viewtab-btn px-3 py-1.5 rounded-xl bg-cyan-600 text-white text-xs font-bold whitespace-nowrap cursor-pointer'
+                    : 'viewtab-btn px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-zinc-800 text-xs font-semibold whitespace-nowrap cursor-pointer';
+            });
+            if (mode === 'preview') renderSandboxedPreview();
+        }
+
+        function setPreviewViewport(vp) {
+            const iframe = document.getElementById('preview-iframe');
+            const dBtn = document.getElementById('prev-vp-desktop');
+            const mBtn = document.getElementById('prev-vp-mobile');
+            if (vp === 'mobile') {
+                iframe.style.width = '390px';
+                dBtn.className = 'px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 text-[11px] font-semibold cursor-pointer';
+                mBtn.className = 'px-2.5 py-1 rounded-lg bg-cyan-600 text-white text-[11px] font-bold cursor-pointer';
+            } else {
+                iframe.style.width = '100%';
+                dBtn.className = 'px-2.5 py-1 rounded-lg bg-cyan-600 text-white text-[11px] font-bold cursor-pointer';
+                mBtn.className = 'px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 text-[11px] font-semibold cursor-pointer';
+            }
+        }
+
+        function togglePrettyCode() {
+            clonerState.prettyCode = !clonerState.prettyCode;
+            const btn = document.getElementById('btn-pretty-code');
+            btn.className = clonerState.prettyCode
+                ? 'px-2 py-1 rounded-lg bg-cyan-600 text-white text-[11px] font-bold cursor-pointer'
+                : 'px-2 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-[11px] font-semibold cursor-pointer';
+            renderSelectedAssetViewer();
+        }
+
+        function toggleWordWrap() {
+            clonerState.wordWrap = !clonerState.wordWrap;
+            const pre = document.getElementById('code-viewer-pre');
+            const btn = document.getElementById('btn-wrap-code');
+            pre.classList.toggle('whitespace-pre-wrap', clonerState.wordWrap);
+            pre.classList.toggle('break-all', clonerState.wordWrap);
+            pre.classList.toggle('whitespace-pre', !clonerState.wordWrap);
+            btn.className = clonerState.wordWrap
+                ? 'px-2 py-1 rounded-lg bg-cyan-600 text-white text-[11px] font-bold cursor-pointer'
+                : 'px-2 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-[11px] font-semibold cursor-pointer';
+        }
+
+        function refreshRewrittenPreviewAndView() {
+            rewriteAssetsInHtmlAndCss();
+            renderSelectedAssetViewer();
+            renderAssetList();
+            updateKpisAndZipSummary();
+        }
+
+        function copyAssetUrlById(assetId) {
+            const asset = clonerState.assets.find(a => a.id === assetId);
+            if (!asset || !asset.url) {
+                showToast('ไม่พบลิงก์ของไฟล์นี้', 'error');
+                return;
+            }
+            copyTextValue(asset.url, 'คัดลอกลิงก์ไฟล์แล้ว');
+        }
+
+        async function copyTextValue(text, toastMsg = 'คัดลอกแล้ว') {
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast(toastMsg);
+            } catch {
+                showToast('คัดลอกไม่สำเร็จ (กรุณาคัดลอกด้วยตนเอง)', 'warning');
+            }
+        }
+
+        function copySelectedAssetCode() {
+            const asset = clonerState.assets.find(a => a.id === clonerState.selectedAssetId) || clonerState.assets[0];
+            if (!asset || asset.status !== 'ok') {
+                showToast('ยังไม่มีโค้ดพร้อมคัดลอก', 'error');
+                return;
+            }
+            const verMode = document.getElementById('code-version-mode')?.value || 'rewritten';
+            const out = (asset.type === 'html' || asset.type === 'css') && verMode === 'original' && asset.originalText != null
+                ? asset.originalText
+                : (asset.text || asset.url);
+            copyTextValue(out, `คัดลอก ${asset.zipPath} แล้ว`);
+        }
+
+        function downloadSelectedAssetFile() {
+            const asset = clonerState.assets.find(a => a.id === clonerState.selectedAssetId) || clonerState.assets[0];
+            if (!asset || asset.status !== 'ok' || !asset.bytes) {
+                showToast('ไม่มีข้อมูลไฟล์สำหรับดาวน์โหลด', 'error');
+                return;
+            }
+            const blob = new Blob([asset.bytes], { type: asset.mime || 'application/octet-stream' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = asset.zipPath.split('/').pop() || 'download.txt';
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+            showToast(`ดาวน์โหลด ${a.download} แล้ว`);
+        }
+
+        // ==========================================
+        // 7. PURE CLIENT-SIDE PKZIP BUILDER (.ZIP)
+        // ==========================================
+        const CRC32_TABLE = (() => {
+            const table = new Uint32Array(256);
+            for (let n = 0; n < 256; n++) {
+                let c = n;
+                for (let k = 0; k < 8; k++) {
+                    c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+                }
+                table[n] = c >>> 0;
+            }
+            return table;
+        })();
+
+        function crc32(bytes) {
+            let crc = 0xffffffff;
+            for (let i = 0; i < bytes.length; i++) {
+                crc = CRC32_TABLE[(crc ^ bytes[i]) & 0xff] ^ (crc >>> 8);
+            }
+            return (crc ^ 0xffffffff) >>> 0;
+        }
+
+        function buildZipUint8Array(files) {
+            const encoder = new TextEncoder();
+            const localChunks = [];
+            const centralChunks = [];
+            let offset = 0;
+
+            for (const f of files) {
+                const nameBytes = encoder.encode(f.name);
+                const data = f.data;
+                const crc = crc32(data);
+                const size = data.length;
+
+                const local = new Uint8Array(30 + nameBytes.length);
+                const lv = new DataView(local.buffer);
+                lv.setUint32(0, 0x04034b50, true);
+                lv.setUint16(4, 20, true);
+                lv.setUint16(6, 0x0800, true); // UTF-8 filename flag
+                lv.setUint16(8, 0, true);      // STORE method
+                lv.setUint16(10, 0, true);
+                lv.setUint16(12, 0x5421, true);
+                lv.setUint32(14, crc, true);
+                lv.setUint32(18, size, true);
+                lv.setUint32(22, size, true);
+                lv.setUint16(26, nameBytes.length, true);
+                lv.setUint16(28, 0, true);
+                local.set(nameBytes, 30);
+
+                localChunks.push(local, data);
+
+                const central = new Uint8Array(46 + nameBytes.length);
+                const cv = new DataView(central.buffer);
+                cv.setUint32(0, 0x02014b50, true);
+                cv.setUint16(4, 20, true);
+                cv.setUint16(6, 20, true);
+                cv.setUint16(8, 0x0800, true);
+                cv.setUint16(10, 0, true);
+                cv.setUint16(12, 0, true);
+                cv.setUint16(14, 0x5421, true);
+                cv.setUint32(16, crc, true);
+                cv.setUint32(20, size, true);
+                cv.setUint32(24, size, true);
+                cv.setUint16(28, nameBytes.length, true);
+                cv.setUint16(30, 0, true);
+                cv.setUint16(32, 0, true);
+                cv.setUint16(34, 0, true);
+                cv.setUint16(36, 0, true);
+                cv.setUint32(38, 0, true);
+                cv.setUint32(42, offset, true);
+                central.set(nameBytes, 46);
+
+                centralChunks.push(central);
+                offset += local.length + size;
+            }
+
+            const centralSize = centralChunks.reduce((s, c) => s + c.length, 0);
+            const eocd = new Uint8Array(22);
+            const ev = new DataView(eocd.buffer);
+            ev.setUint32(0, 0x06054b50, true);
+            ev.setUint16(4, 0, true);
+            ev.setUint16(6, 0, true);
+            ev.setUint16(8, files.length, true);
+            ev.setUint16(10, files.length, true);
+            ev.setUint32(12, centralSize, true);
+            ev.setUint32(16, offset, true);
+            ev.setUint16(20, 0, true);
+
+            const totalLen = offset + centralSize + eocd.length;
+            const out = new Uint8Array(totalLen);
+            let pos = 0;
+            for (const c of localChunks) { out.set(c, pos); pos += c.length; }
+            for (const c of centralChunks) { out.set(c, pos); pos += c.length; }
+            out.set(eocd, pos);
+            return out;
+        }
+
+        function downloadClonedZip() {
+            rewriteAssetsInHtmlAndCss();
+            const selected = clonerState.assets.filter(a => a.include && a.status === 'ok' && a.bytes);
+            if (selected.length === 0) {
+                showToast('กรุณาเลือกอย่างน้อย 1 ไฟล์ก่อนสร้าง .ZIP', 'error');
+                return;
+            }
+
+            const zipEntries = selected.map(a => ({ name: a.zipPath, data: a.bytes }));
+            const manifest = {
+                tool: 'Web Source Cloner & ZIP Packer (feel-ochre.vercel.app)',
+                sourceUrl: clonerState.finalUrl || clonerState.targetUrl,
+                title: clonerState.title,
+                engineUsed: clonerState.engineUsed,
+                exportedAt: new Date().toISOString(),
+                files: clonerState.assets.map(a => ({
+                    zipPath: a.zipPath,
+                    type: a.type,
+                    url: a.url,
+                    status: a.status,
+                    included: a.include && a.status === 'ok',
+                    size: a.size
+                }))
+            };
+            zipEntries.push({
+                name: 'manifest-cloner.json',
+                data: new TextEncoder().encode(JSON.stringify(manifest, null, 2))
+            });
+
+            const zipBytes = buildZipUint8Array(zipEntries);
+            if (clonerState.lastZipUrl) URL.revokeObjectURL(clonerState.lastZipUrl);
+            const zipBlob = new Blob([zipBytes], { type: 'application/zip' });
+            const url = URL.createObjectURL(zipBlob);
+            clonerState.lastZipUrl = url;
+
+            let hostSlug = 'cloned-site';
+            try {
+                hostSlug = new URL(clonerState.finalUrl || clonerState.targetUrl || 'https://cloned-site.local').hostname.replace(/[^a-zA-Z0-9.-]+/g, '-');
+            } catch {}
+            const filename = `${hostSlug}-source.zip`;
+
+            window.__lastZipExport = {
+                filename,
+                fileCount: zipEntries.length,
+                byteLength: zipBytes.byteLength,
+                filenames: zipEntries.map(z => z.name),
+                bytes: zipBytes
+            };
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+            showToast(`แพ็ก ${zipEntries.length} ไฟล์ลง ${filename} สำเร็จ (${formatBytes(zipBytes.byteLength)})`);
+        }
+
+        // ==========================================
+        // 8. BOOKMARKLET BUILDER & PAYLOAD HANDLER
+        // ==========================================
+        function buildBookmarkletCode(clonerUrl) {
+            const inner = `(function(){function msg(t){try{if(document.body){var b=document.createElement('div');b.style.cssText='position:fixed;bottom:16px;right:16px;z-index:2147483647;background:#0f172a;color:#fff;padding:12px 16px;border-radius:12px;font:600 13px/1.4 sans-serif;box-shadow:0 10px 25px rgba(0,0,0,.35);max-width:340px;cursor:pointer';b.textContent=t;b.onclick=function(){b.remove();};document.body.appendChild(b);setTimeout(function(){b.remove();},6000);return;}}catch(_){}try{alert(t);}catch(_){}}try{var d='<!DOCTYPE html>\\n'+document.documentElement.outerHTML;var ss=[];document.querySelectorAll('link[rel~="stylesheet"][href]').forEach(function(l){ss.push(l.href);});var cd=[];try{Array.from(document.styleSheets).forEach(function(st){if(!st.href)return;try{var r=Array.from(st.cssRules||[]).map(function(x){return x.cssText;}).join('\\n');if(r)cd.push({url:st.href,text:r});}catch(_){}});}catch(_){}var sc=[];document.querySelectorAll('script[src]').forEach(function(s){sc.push(s.src);});var im=[];document.querySelectorAll('img').forEach(function(g){var u=g.currentSrc||g.src||g.getAttribute('data-src')||'';if(u)im.push({url:u,alt:g.alt||'',w:g.naturalWidth||0,h:g.naturalHeight||0});});var p={__type:'FEEL_WEB_CLONER_CAPTURE',version:1,url:location.href,title:document.title||location.hostname,html:d,stylesheets:ss,cssomDump:cd,scripts:sc,images:im,capturedAt:new Date().toISOString()};var js=JSON.stringify(p);try{navigator.clipboard&&navigator.clipboard.writeText(js);}catch(_){}var tu=${JSON.stringify(clonerUrl)}+'#bookmarklet=1';var w=window.open(tu,'_blank');if(!w){msg('Popup ถูกบล็อก แต่คัดลอกข้อมูลเว็บลง Clipboard แล้ว — กลับไปกด "วาง HTML / JSON" ใน Web Cloner ได้เลยครับ');return;}var sent=false;var to=new URL(${JSON.stringify(clonerUrl)}).origin;function onM(e){if(e.source===w&&e.data&&e.data.type==='FEEL_CLONER_READY'){sent=true;w.postMessage(p,to);window.removeEventListener('message',onM);}}window.addEventListener('message',onM);setTimeout(function(){if(!sent){try{w.postMessage(p,to);}catch(_){}}},900);setTimeout(function(){if(!sent){try{w.postMessage(p,to);}catch(_){}}},2200);}catch(err){msg('Web Cloner Error: '+(err&&err.message?err.message:err));}})();`;
+            return 'javascript:' + inner;
+        }
+
+        function initBookmarkletUi() {
+            const clonerUrl = window.location.origin + window.location.pathname;
+            const bmCode = buildBookmarkletCode(clonerUrl);
+            const dragEl = document.getElementById('bookmarklet-drag-link');
+            const previewArea = document.getElementById('bookmarklet-code-preview');
+            if (dragEl) dragEl.href = bmCode;
+            if (previewArea) previewArea.value = bmCode;
+        }
+
+        function handleBookmarkletLinkClick(e) {
+            e.preventDefault();
+            openBookmarkletModal();
+            showToast('ลากปุ่มนี้ขึ้นไปวางบนแถบ Bookmark ของเบราว์เซอร์เพื่อใช้งานบนเว็บเป้าหมายครับ', 'warning');
+        }
+
+        function copyBookmarkletCode() {
+            const clonerUrl = window.location.origin + window.location.pathname;
+            copyTextValue(buildBookmarkletCode(clonerUrl), 'คัดลอกโค้ด Bookmarklet (javascript:...) แล้ว');
+        }
+
+        function copyConsoleSnippet() {
+            const clonerUrl = window.location.origin + window.location.pathname;
+            const raw = buildBookmarkletCode(clonerUrl).replace(/^javascript:/, '');
+            copyTextValue(raw, 'คัดลอกโค้ดสำหรับวางใน DevTools Console แล้ว');
+        }
+
+        async function importBookmarkletPayload(payload) {
+            if (!payload || payload.__type !== 'FEEL_WEB_CLONER_CAPTURE' || typeof payload.html !== 'string') {
+                showToast('รูปแบบข้อมูล Bookmarklet ไม่ถูกต้อง', 'error');
+                return;
+            }
+            const targetUrl = String(payload.url || 'https://captured-page.local/');
+            document.getElementById('clone-url-input').value = targetUrl;
+            clonerState.targetUrl = targetUrl;
+            clonerState.abortController = new AbortController();
+
+            const preCss = new Map();
+            if (Array.isArray(payload.cssomDump)) {
+                for (const item of payload.cssomDump) {
+                    if (item && item.url && typeof item.text === 'string' && item.text.trim()) {
+                        preCss.set(item.url, item.text);
+                    }
+                }
+            }
+
+            // Capture DOM already rendered on authenticated page, plus allow public asset fetch if enabled
+            await runAssetCrawlFromHtml(payload.html, targetUrl, 'bookmarklet-capture', preCss, new Map(), new Map(), true);
+            const okCount = clonerState.assets.filter(a => a.status === 'ok').length;
+            showAlertBanner('success', `รับซอร์สโค้ดหน้าเว็บ <strong>${escapeHtml(payload.title || targetUrl)}</strong> จาก <strong>Bookmarklet</strong> สำเร็จ (${okCount} ไฟล์พร้อมแพ็ก .ZIP)`);
+            showToast(`นำเข้าหน้าเว็บจาก Bookmarklet สำเร็จ (${okCount} ไฟล์)`);
+        }
+
+        function simulateBookmarkletCapture() {
+            closeBookmarkletModal();
+            const samplePayload = {
+                __type: 'FEEL_WEB_CLONER_CAPTURE',
+                version: 1,
+                url: 'https://member-portal.example.com/dashboard',
+                title: 'Member Dashboard (Captured via Bookmarklet)',
+                html: `<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>Member Dashboard (Captured via Bookmarklet)</title><link rel="stylesheet" href="https://member-portal.example.com/static/auth-panel.css"></head><body><main class="dash"><h1>ยินดีต้อนรับสมาชิก: คุณฟีล</h1><p>หน้านี้ถูกดูด DOM หลังล็อกอินด้วย Bookmarklet พร้อมดึงกฎ CSSOM ออกมาโดยตรง</p><div id="secret-kpi">ยอดโครงงาน: 21 ระบบ</div></main></body></html>`,
+                cssomDump: [
+                    {
+                        url: 'https://member-portal.example.com/static/auth-panel.css',
+                        text: 'body { font-family: sans-serif; background: #0f172a; color: #f1f5f9; padding: 24px; } .dash { border: 1px solid #38bdf8; border-radius: 16px; padding: 24px; max-width: 640px; margin: auto; }'
+                    }
+                ],
+                capturedAt: new Date().toISOString()
+            };
+            importBookmarkletPayload(samplePayload);
+        }
+
+        // ==========================================
+        // 9. MODALS, INPUT HELPERS, THEME & SWITCHER
+        // ==========================================
+        function onProxyModeChange() {
+            const mode = document.getElementById('proxy-mode-select')?.value;
+            document.getElementById('custom-proxy-wrap')?.classList.toggle('hidden', mode !== 'custom');
+        }
+
+        function clearUrlInput() {
+            const inp = document.getElementById('clone-url-input');
+            if (inp) {
+                inp.value = '';
+                inp.focus();
+            }
+        }
+
+        function openPasteModal(kind = 'html') {
+            document.getElementById('paste-import-modal')?.classList.remove('hidden');
+            const rawInput = document.getElementById('paste-raw-input');
+            if (kind === 'bookmarklet' && rawInput && !rawInput.value.trim()) {
+                rawInput.placeholder = 'วางข้อมูล JSON ที่ได้จาก Bookmarklet หรือ DevTools Console ที่นี่...';
+            }
+            rawInput?.focus();
+        }
+
+        function closePasteModal() {
+            document.getElementById('paste-import-modal')?.classList.add('hidden');
+        }
+
+        function openBookmarkletModal() {
+            document.getElementById('bookmarklet-guide-modal')?.classList.remove('hidden');
+        }
+
+        function closeBookmarkletModal() {
+            document.getElementById('bookmarklet-guide-modal')?.classList.add('hidden');
+        }
+
+        async function submitPasteImport() {
+            const raw = (document.getElementById('paste-raw-input')?.value || '').trim();
+            const baseRaw = (document.getElementById('paste-base-url')?.value || '').trim();
+            const autoFetch = Boolean(document.getElementById('paste-auto-fetch-assets')?.checked);
+            if (!raw) {
+                showToast('กรุณาวางโค้ด HTML หรือ JSON ก่อนนำเข้า', 'error');
+                return;
+            }
+
+            if (raw.startsWith('{')) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    if (parsed && parsed.__type === 'FEEL_WEB_CLONER_CAPTURE') {
+                        closePasteModal();
+                        await importBookmarkletPayload(parsed);
+                        return;
+                    }
+                } catch {}
+            }
+
+            let baseUrl = 'https://pasted-html.local/';
+            if (baseRaw) {
+                try { baseUrl = normalizeInputUrl(baseRaw); } catch {}
+            }
+            closePasteModal();
+            clonerState.targetUrl = baseUrl;
+            clonerState.abortController = new AbortController();
+            await runAssetCrawlFromHtml(raw, baseUrl, 'pasted-html', new Map(), new Map(), new Map(), autoFetch);
+            showAlertBanner('success', `นำเข้าโค้ด HTML สำเร็จ — แยกไฟล์ได้ ${clonerState.assets.length} รายการ`);
+            showToast('วิเคราะห์โค้ด HTML ที่วางเรียบร้อย');
+        }
+
+        function applyTheme(theme) {
+            const isDark = theme === 'dark';
+            document.documentElement.classList.toggle('dark', isDark);
+            const icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.className = isDark ? 'fa-solid fa-sun text-xs text-amber-400' : 'fa-solid fa-moon text-xs';
+            }
+            try { localStorage.setItem('feel_portfolio_theme', isDark ? 'dark' : 'light'); } catch {}
+        }
+
+        function initTheme() {
+            let saved = 'light';
+            try {
+                saved = localStorage.getItem('feel_portfolio_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            } catch {}
+            applyTheme(saved);
+        }
+
+        function toggleTheme() {
+            applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
+        }
+
+        function toggleSubAppSwitcher(forceState) {
+            const menu = document.getElementById('app-switcher-menu');
+            if (!menu) return;
+            if (typeof forceState === 'boolean') menu.classList.toggle('hidden', !forceState);
+            else menu.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('app-switcher-btn');
+            const menu = document.getElementById('app-switcher-menu');
+            if (menu && !menu.classList.contains('hidden') && !menu.contains(e.target) && (!btn || !btn.contains(e.target))) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                toggleSubAppSwitcher(false);
+                closePasteModal();
+                closeBookmarkletModal();
+            }
+        });
+
+        // Listen for incoming Bookmarklet capture messages via postMessage
+        window.addEventListener('message', (ev) => {
+            if (ev.data && ev.data.__type === 'FEEL_WEB_CLONER_CAPTURE') {
+                const stamp = String(ev.data.capturedAt || '');
+                if (stamp && stamp === clonerState.lastCaptureStamp) return;
+                clonerState.lastCaptureStamp = stamp;
+                importBookmarkletPayload(ev.data);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initBookmarkletUi();
+
+            // Handshake with opener tab when launched by Bookmarklet (#bookmarklet=1)
+            if (window.opener && window.location.hash.includes('bookmarklet=1')) {
+                try {
+                    window.opener.postMessage({ type: 'FEEL_CLONER_READY' }, '*');
+                } catch {}
+            } else {
+                // Pre-populate clean URL placeholder helper if opened cleanly
+                const inp = document.getElementById('clone-url-input');
+                if (inp && !inp.value) {
+                    inp.value = 'https://example.com';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

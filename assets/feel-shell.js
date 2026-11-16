@@ -9,7 +9,7 @@
     var ALT_THEME_KEY_2 = 'theme';
 
     var CATEGORIES = [
-        { id: 'all', label: 'ทั้งหมด (21)', icon: 'fa-grip' },
+        { id: 'all', label: 'ทั้งหมด (22)', icon: 'fa-grip' },
         { id: 'ai-docs', label: 'AI & เอกสาร', icon: 'fa-wand-magic-sparkles' },
         { id: 'media-vault', label: 'รูปภาพ & เซฟ', icon: 'fa-photo-film' },
         { id: 'dev-hw', label: 'Dev & อุปกรณ์', icon: 'fa-code' },
@@ -36,6 +36,7 @@
         { file: 'qr-studio.html', title: 'Custom QR Code Studio', sub: 'QR เว็บ Wi-Fi PromptPay ใส่โลโก้ PNG 2048px/SVG', badge: 'QR/SVG', cat: 'media-vault', icon: 'fa-qrcode', color: '#059669', bg: 'rgba(5,150,105,0.12)', kw: 'qr code studio promptpay wifi emvco svg png คิวอาร์ โลโก้' },
         { file: 'ocr.html', title: 'OCR Image-to-Text', sub: 'ดึงข้อความไทย/อังกฤษจากภาพ & สไลด์ด้วย Tesseract', badge: 'TH / EN', cat: 'ai-docs', icon: 'fa-file-lines', color: '#4f46e5', bg: 'rgba(79,70,229,0.12)', kw: 'ocr image to text tesseract otsu ไทย อังกฤษ ชีทเรียน สไลด์' },
         { file: 'resume-builder.html', title: 'Resume & Portfolio A4 PDF', sub: '20 เทมเพลต A4 + สร้างเองได้, QR พอร์ต & PDF', badge: 'A4 PDF', cat: 'ai-docs', icon: 'fa-id-card', color: '#4f46e5', bg: 'rgba(79,70,229,0.12)', kw: 'resume cv portfolio pdf a4 autofit custom เรซูเม่ พิมพ์' },
+        { file: 'e-portfolio.html', title: 'E-Portfolio & A4 Booklet', sub: 'พอร์ตเรียนต่อวิศวะ 4 ปก 12 ธีม เซ็นชื่อ & รูปเล่ม A4 6–7 หน้า', badge: 'E-Portfolio', cat: 'ai-docs', icon: 'fa-book-open-reader', color: '#4f46e5', bg: 'rgba(79,70,229,0.12)', kw: 'e-portfolio booklet rmutsv มทร ศรีวิชัย พอร์ต วิศวกรรมคอมพิวเตอร์ โควตา ปวส sop gpax pdf a4 custom theme cover signature' },
         { file: 'hardware-tester.html', title: 'Hardware Tester เช็กเครื่อง', sub: 'Dead Pixel 12 สี, ไมค์ FFT, กล้อง & คีย์บอร์ด NKRO', badge: 'Hardware', cat: 'dev-hw', icon: 'fa-microchip', color: '#0284c7', bg: 'rgba(2,132,199,0.12)', kw: 'hardware dead pixel refresh mic fft webcam keyboard nkro' },
         { file: 'web-cloner.html', title: 'Web Source Cloner & ZIP', sub: 'ดึง HTML/CSS/JS/รูปภาพผ่าน Proxy/Bookmarklet -> .ZIP', badge: 'Cloner', cat: 'dev-hw', icon: 'fa-file-zipper', color: '#0284c7', bg: 'rgba(2,132,199,0.12)', kw: 'web cloner source html css js zip proxy bookmarklet' }
     ];
@@ -661,7 +662,7 @@
         var hubBtn = el('button', 'feel-unified-footer-btn');
         hubBtn.type = 'button';
         hubBtn.appendChild(iconNode('fa-grip', 'var(--feel-blue)'));
-        hubBtn.appendChild(document.createTextNode('สลับเว็บแอป (21)'));
+        hubBtn.appendChild(document.createTextNode('สลับเว็บแอป (22)'));
         hubBtn.addEventListener('click', function () { openHub(); });
         actions.appendChild(hubBtn);
 

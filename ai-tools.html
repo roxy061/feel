@@ -692,6 +692,38 @@
         let activeCategory = 'all';
         let activeAttrFilter = 'all';
         let viewMode = 'grid';
+        const expandedAllCategories = new Set();
+
+        function toggleExpandCategory(catId) {
+            if (expandedAllCategories.has(catId)) {
+                expandedAllCategories.delete(catId);
+            } else {
+                expandedAllCategories.add(catId);
+            }
+            renderDirectory();
+        }
+
+        function renderCategoryGridContent(cat, items, hasAnyFilter) {
+            const limitCount = 6;
+            const isExpanded = hasAnyFilter || expandedAllCategories.has(cat.id) || items.length <= limitCount;
+            const visibleItems = isExpanded ? items : items.slice(0, limitCount);
+            const toggleBar = (!hasAnyFilter && items.length > limitCount) ? `
+                <div class="mt-3 flex justify-center">
+                    <button type="button" onclick="toggleExpandCategory('${escapeHtml(cat.id)}')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-google-dark-subtle dark:hover:bg-google-dark-border/60 border border-google-border dark:border-google-dark-border text-xs font-heading font-bold text-google-text dark:text-white transition flex items-center gap-2 cursor-pointer">
+                        <i class="fa-solid ${expandedAllCategories.has(cat.id) ? 'fa-chevron-up' : 'fa-angles-down'} text-[11px] text-google-blue"></i>
+                        <span>${expandedAllCategories.has(cat.id)
+                            ? `ย่อหมวดนี้กลับ (แสดง 6 เด่น จาก ${items.length})`
+                            : `แสดงครบทั้ง ${items.length} เว็บในหมวดนี้ (+อีก ${items.length - limitCount} รายการ)`}</span>
+                    </button>
+                </div>
+            ` : '';
+            return `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    ${visibleItems.map(renderToolCard).join('')}
+                </div>
+                ${toggleBar}
+            `;
+        }
         function loadFavorites() {
             try {
                 const parsed = JSON.parse(localStorage.getItem(STORAGE_FAVS) || '[]');
@@ -1056,9 +1088,7 @@
                             ` : ''}
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            ${items.map(renderToolCard).join('')}
-                        </div>
+                        ${renderCategoryGridContent(cat, items, hasAnyFilter)}
                     </section>
                 `;
             }).join('');

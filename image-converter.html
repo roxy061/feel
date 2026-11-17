@@ -385,9 +385,12 @@
                         <input id="compare-slider" type="range" min="0" max="100" value="50" oninput="updateCompareSplit(this.value)" aria-label="เปรียบเทียบภาพก่อนและหลัง" class="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-10">
                     </div>
 
-                    <div id="compare-empty" class="h-36 rounded-2xl border-2 border-dashed border-google-border/80 dark:border-google-dark-border bg-google-bg/50 dark:bg-google-dark-bg/40 flex flex-col items-center justify-center text-center p-4">
-                        <p class="text-xs text-google-text-muted dark:text-google-dark-text-muted">
-                            ยังไม่มีรูปในคิว — กดปุ่ม <strong>"สร้างรูปตัวอย่างทดสอบ"</strong> หรืออัปโหลดรูปด้านซ้าย เพื่อดูตัวเทียบ Before/After และผลลัพธ์ทันที
+                    <div id="compare-empty" onclick="document.getElementById('image-file-input').click()" class="h-52 sm:h-56 rounded-2xl border-2 border-dashed border-google-border/80 dark:border-google-dark-border hover:border-teal-500 bg-google-bg/50 dark:bg-google-dark-bg/40 flex flex-col items-center justify-center text-center p-5 gap-2.5 cursor-pointer transition">
+                        <div class="w-11 h-11 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-images"></i>
+                        </div>
+                        <p class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted max-w-md leading-relaxed">
+                            ยังไม่มีรูปในคิว — คลิกที่นี่เพื่อเลือกรูปภาพ หรือกด <strong>"สร้างรูปตัวอย่างทดสอบ"</strong> ด้านซ้าย เพื่อดูสไลด์เปรียบเทียบความคมชัด Before/After ทันที
                         </p>
                     </div>
                 </div>
@@ -405,8 +408,9 @@
                     </div>
 
                     <div id="image-list" class="space-y-2.5">
-                        <div class="py-10 text-center text-xs text-google-text-muted dark:text-google-dark-text-muted border border-dashed border-google-border/70 dark:border-google-dark-border rounded-2xl">
-                            ยังไม่มีไฟล์รูปภาพในคิว
+                        <div class="py-16 px-4 text-center text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted border border-dashed border-google-border/70 dark:border-google-dark-border rounded-2xl space-y-1.5">
+                            <div class="font-heading font-bold text-google-text dark:text-white">ยังไม่มีไฟล์รูปภาพในคิว</div>
+                            <p class="text-xs opacity-85">รองรับการย่อ/แปลง WebP • JPG • PNG พร้อมกันหลายรูป และดาวน์โหลดเป็นไฟล์ .ZIP ในคลิกเดียว</p>
                         </div>
                     </div>
                 </div>

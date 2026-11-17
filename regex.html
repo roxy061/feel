@@ -275,7 +275,7 @@
                                 <button type="button" onclick="clearTestText()" class="px-2 py-0.5 rounded border border-google-border dark:border-google-dark-border hover:border-rose-400 text-[11px] font-semibold text-google-text-muted hover:text-rose-600 transition cursor-pointer">ล้างข้อความ</button>
                             </div>
                         </div>
-                        <textarea id="test-input" rows="5" spellcheck="false" oninput="evaluateRegex()" placeholder="วางข้อความยาวๆ หรือข้อมูลฟอร์มหลายบรรทัดที่นี่..." class="w-full p-3 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border font-mono text-xs sm:text-sm leading-relaxed text-google-text dark:text-white outline-none focus:border-fuchsia-500 resize-y"></textarea>
+                        <textarea id="test-input" rows="8" spellcheck="false" oninput="evaluateRegex()" placeholder="วางข้อความยาวๆ หรือข้อมูลฟอร์มหลายบรรทัดที่นี่..." class="w-full p-3 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border font-mono text-xs sm:text-sm leading-relaxed text-google-text dark:text-white outline-none focus:border-fuchsia-500 resize-y"></textarea>
                     </div>
 
                     <!-- Highlight & Line-Validation Preview Card -->
@@ -293,7 +293,7 @@
 
                         <div id="truncation-note" class="hidden px-4 py-1.5 bg-amber-50 dark:bg-amber-950/50 border-b border-amber-200 dark:border-amber-800 text-[11px] font-semibold text-amber-800 dark:text-amber-300"></div>
 
-                        <div id="highlight-output" class="p-4 font-mono text-xs sm:text-sm leading-relaxed whitespace-pre-wrap break-words min-h-[110px] max-h-80 overflow-y-auto bg-white dark:bg-google-dark-surface"></div>
+                        <div id="highlight-output" class="p-4 font-mono text-xs sm:text-sm leading-relaxed whitespace-pre-wrap break-words min-h-[160px] lg:min-h-[210px] max-h-80 overflow-y-auto bg-white dark:bg-google-dark-surface"></div>
                     </div>
 
                     <!-- Find & Replace Card -->
@@ -311,7 +311,7 @@
                             <input id="replace-input" type="text" value="[$1] (โดเมน: $2)" spellcheck="false" oninput="evaluateRegex()" placeholder="ข้อความแทนที่ รองรับ $1, $2, $&, $<name>, \n" class="flex-1 px-3 py-2 rounded-xl bg-google-subtle/60 dark:bg-google-dark-subtle/60 border border-google-border dark:border-google-dark-border font-mono text-xs sm:text-sm text-google-text dark:text-white outline-none focus:border-emerald-500">
                             <span class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted shrink-0">ใช้ <code>$1</code>, <code>$2</code>, <code>$&amp;</code>, <code>\n</code> ได้</span>
                         </div>
-                        <pre id="replace-output" class="p-3 rounded-xl bg-slate-900 text-emerald-300 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words max-h-48 overflow-y-auto"></pre>
+                        <pre id="replace-output" class="p-3 rounded-xl bg-slate-900 text-emerald-300 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words min-h-[110px] max-h-56 overflow-y-auto"></pre>
                     </div>
                 </div>
 

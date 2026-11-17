@@ -848,26 +848,36 @@
                 }
             }
 
-            // Try Vercel Serverless Proxy (/api/proxy or root-relative /api/proxy)
-            for (const vercelEp of ['/api/proxy', 'api/proxy']) {
+            // Try local XAMPP PHP Proxy or Vercel Serverless Proxy based on host (cache dead endpoints to prevent repeated 404 noise)
+            const deadProxies = (smartFetchResource._deadProxies = smartFetchResource._deadProxies || new Set());
+            const preferLocalPhp = /^(localhost|127\.0\.0\.1|::1|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/i.test(window.location.hostname);
+            const proxyOrder = preferLocalPhp
+                ? [
+                    { ep: 'web_proxy.php', engine: 'php-proxy', label: 'PHP' },
+                    { ep: '/api/proxy', engine: 'vercel-serverless', label: 'Vercel(/api/proxy)' },
+                    { ep: 'api/proxy', engine: 'vercel-serverless', label: 'Vercel(api/proxy)' }
+                ]
+                : [
+                    { ep: '/api/proxy', engine: 'vercel-serverless', label: 'Vercel(/api/proxy)' },
+                    { ep: 'api/proxy', engine: 'vercel-serverless', label: 'Vercel(api/proxy)' },
+                    { ep: 'web_proxy.php', engine: 'php-proxy', label: 'PHP' }
+                ];
+
+            for (const proxyCfg of proxyOrder) {
+                if (deadProxies.has(proxyCfg.ep)) continue;
                 try {
-                    return await fetchViaJsonProxyEndpoint(vercelEp, targetUrl, 'vercel-serverless', signal);
+                    return await fetchViaJsonProxyEndpoint(proxyCfg.ep, targetUrl, proxyCfg.engine, signal);
                 } catch (e) {
                     if (e.name === 'AbortError') throw e;
-                    // If proxy endpoint actually ran and returned upstream HTTP/SSRF status (e.g. 403 SSRF), don't mask unless 404/non-JSON
+                    // If proxy endpoint actually ran and returned upstream HTTP/SSRF status (e.g. 403 SSRF), don't mask
                     if (e.fromProxy && e.statusCode === 403 && e.message.includes('blocked')) {
                         throw e;
                     }
-                    errors.push(`Vercel(${vercelEp}): ${e.message}`);
+                    if (!e.fromProxy && /404|ไม่ใช่ JSON|Not Found/i.test(String(e.message || ''))) {
+                        deadProxies.add(proxyCfg.ep);
+                    }
+                    errors.push(`${proxyCfg.label}: ${e.message}`);
                 }
-            }
-
-            // Try local XAMPP PHP Proxy (web_proxy.php)
-            try {
-                return await fetchViaJsonProxyEndpoint('web_proxy.php', targetUrl, 'php-proxy', signal);
-            } catch (e) {
-                if (e.name === 'AbortError') throw e;
-                errors.push(`PHP: ${e.message}`);
             }
 
             // Final Direct CORS fallback for CORS-enabled APIs / CDNs

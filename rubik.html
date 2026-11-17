@@ -167,9 +167,14 @@
                 <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-600 text-white whitespace-nowrap">WCA 3x3x3</span>
                 <span class="text-xs sm:text-sm font-bold text-google-text dark:text-google-dark-text font-heading truncate">จับเวลา Speedcubing + ลูกบาศก์ 3D</span>
             </div>
-            <a href="#cfop-guide" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-emerald-500 text-xs font-bold font-heading text-emerald-700 dark:text-emerald-400 transition inline-flex items-center gap-1.5 whitespace-nowrap shrink-0">
-                <i class="fa-solid fa-book-open"></i> คู่มือ CFOP
-            </a>
+            <div class="flex items-center gap-1.5 flex-wrap shrink-0">
+                <a href="#color-solver" class="px-3 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold font-heading transition inline-flex items-center gap-1.5 whitespace-nowrap shadow-xs">
+                    <i class="fa-solid fa-palette"></i> ตัวช่วยแก้ใส่สี
+                </a>
+                <a href="#cfop-guide" class="px-3 py-1.5 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:border-emerald-500 text-xs font-bold font-heading text-emerald-700 dark:text-emerald-400 transition inline-flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-book-open"></i> คู่มือ CFOP
+                </a>
+            </div>
         </div>
 
         <!-- 2. Main Interactive Workspace: Left = WCA Timer & Scramble (7 cols), Right = 3D Cube Visualizer & Stats (5 cols) -->
@@ -263,6 +268,22 @@
                     </div>
                 </div>
 
+                <!-- Solve History Table Card (Moved to Left Column to balance workspace height) -->
+                <div class="g-card p-4 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm sm:text-base font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-google-blue"></i>
+                            ประวัติการจับเวลาล่าสุด
+                        </h3>
+                        <button type="button" onclick="clearAllSolves()" class="text-xs text-rose-600 dark:text-rose-400 hover:underline font-medium cursor-pointer">
+                            ล้างประวัติทั้งหมด
+                        </button>
+                    </div>
+                    <div id="solves-list" class="max-h-36 overflow-y-auto space-y-1.5 pr-1">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+
             </div>
 
             <!-- Right Column: Interactive Cube Simulator & Solve History (5 cols) -->
@@ -281,9 +302,14 @@
                                 ลากบนตัวรูบิคเพื่อหมุนดู 3D ครบทั้ง 6 ด้าน • หันสีเขียว (F) เข้าหาตัว และสีขาว (U) ไว้ด้านบน
                             </p>
                         </div>
-                        <button type="button" onclick="resetCubeToSolved()" class="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 text-xs font-heading font-bold transition cursor-pointer shrink-0">
-                            ✨ รีเซ็ตเป็นแก้สำเร็จ
-                        </button>
+                        <div class="flex items-center gap-1.5 flex-wrap justify-end shrink-0">
+                            <button type="button" onclick="loadFromMainCubeToSolver(true)" class="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-600 hover:text-white text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 text-xs font-heading font-bold transition cursor-pointer" title="ดึงสีจากลูก 3D นี้ไปยังตัวช่วยแก้แบบใส่สีด้านล่าง">
+                                🎨 ใส่สีแก้ลูกนี้
+                            </button>
+                            <button type="button" onclick="resetCubeToSolved()" class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 text-xs font-heading font-bold transition cursor-pointer">
+                                ✨ รีเซ็ต
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Interactive 3D Cube Stage (plus optional collapsible 2D Net) -->
@@ -359,50 +385,254 @@
                         </div>
                     </div>
 
-                    <!-- Interactive Manual Move Buttons (ลองกดหมุนรูบิค 3D ด้วยตัวเอง) -->
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between text-xs gap-2">
-                            <span class="font-heading font-semibold text-google-text-muted dark:text-google-dark-text-muted">ลองกดหมุนรูบิค 3D ทีละจังหวะ:</span>
-                            <button type="button" onclick="runSexyMoveDemo()" class="text-xs font-heading font-bold text-google-blue dark:text-sky-400 hover:underline cursor-pointer shrink-0">
-                                ▶ ลองรันสูตร Sexy Move (R U R' U')
-                            </button>
+                    <!-- Interactive Manual Move Buttons (ลองกดหมุนรูบิค 3D ด้วยตัวเอง + คู่มือภาษาไทย) -->
+                    <div class="space-y-2.5">
+                        <div class="flex flex-wrap items-center justify-between text-xs gap-2">
+                            <span class="font-heading font-semibold text-google-text-muted dark:text-google-dark-text-muted">ลองกดหมุนรูบิค 3D ทีละจังหวะ (พร้อมทิศทาง):</span>
+                            <div class="flex items-center gap-2.5 shrink-0">
+                                <button type="button" id="toggle-basic-moves-btn" onclick="toggleBasicMovesGuide()" aria-expanded="false" class="text-xs font-heading font-bold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer">
+                                    <i class="fa-solid fa-book-open mr-1"></i>ตารางสรุป R–B' (12 ท่า)
+                                </button>
+                                <button type="button" onclick="runSexyMoveDemo()" class="text-xs font-heading font-bold text-google-blue dark:text-sky-400 hover:underline cursor-pointer">
+                                    ▶ Sexy Move
+                                </button>
+                            </div>
                         </div>
-                        <div class="grid grid-cols-6 gap-1.5">
-                            <button type="button" onclick="manualMove('R')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">R</button>
-                            <button type="button" onclick="manualMove('R\'')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">R'</button>
-                            <button type="button" onclick="manualMove('U')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">U</button>
-                            <button type="button" onclick="manualMove('U\'')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">U'</button>
-                            <button type="button" onclick="manualMove('F')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">F</button>
-                            <button type="button" onclick="manualMove('F\'')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">F'</button>
-                            <button type="button" onclick="manualMove('L')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">L</button>
-                            <button type="button" onclick="manualMove('L\'')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">L'</button>
-                            <button type="button" onclick="manualMove('D')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">D</button>
-                            <button type="button" onclick="manualMove('D\'')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">D'</button>
-                            <button type="button" onclick="manualMove('B')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">B</button>
-                            <button type="button" onclick="manualMove('B\'')" class="py-1.5 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white font-mono text-xs font-bold transition cursor-pointer">B'</button>
+
+                        <div id="manual-moves-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-1.5"></div>
+
+                        <!-- Live Move Explanation Pill -->
+                        <div id="manual-move-guide" class="p-2.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-[11px] sm:text-xs text-google-text-body dark:text-google-dark-text-body leading-relaxed flex items-start gap-2">
+                            <i class="fa-solid fa-compass text-google-blue dark:text-sky-400 mt-0.5 shrink-0"></i>
+                            <span><strong>วิธีอ่านสัญลักษณ์:</strong> หันหน้า<span class="text-emerald-600 dark:text-emerald-400 font-bold">สีเขียว (F)</span> เข้าหาตัว, <span class="font-bold">สีขาว (U)</span> อยู่ด้านบน • <strong>ไม่มี '</strong> = หมุนตามเข็ม 90° (เมื่อมองด้านนั้นตรงๆ) • <strong>มี '</strong> = หมุนทวนเข็ม 90° (กดปุ่มด้านบนเพื่อดูวิธีหมุนของแต่ละท่า)</span>
+                        </div>
+
+                        <!-- Collapsible Full 12-Move Thai Reference Table -->
+                        <div id="basic-moves-guide-panel" class="hidden p-3 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2">
+                            <div class="flex items-center justify-between gap-2 pb-1.5 border-b border-google-border/70 dark:border-google-dark-border/70">
+                                <span class="text-xs font-heading font-bold text-google-text dark:text-white">สรุปการหมุนทั้ง 12 ท่า (อ้างอิงเมื่อหันสีเขียว F เข้าหาตัว • สีขาว U อยู่บน)</span>
+                                <button type="button" onclick="toggleBasicMovesGuide(false)" class="text-[11px] font-bold text-google-text-muted hover:text-rose-500 cursor-pointer shrink-0">ย่อเก็บ</button>
+                            </div>
+                            <div id="basic-moves-guide-list" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Solve History Table Card -->
-                <div class="g-card p-4 sm:p-5 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-sm sm:text-base font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
-                            <i class="fa-solid fa-clock-rotate-left text-google-blue"></i>
-                            ประวัติการจับเวลาล่าสุด
+                <!-- Compact WCA Shortcuts & Notation Reference (Right Column Balance) -->
+                <div class="g-card p-4 space-y-2.5 bg-slate-50/70 dark:bg-google-dark-subtle/40">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="text-xs sm:text-sm font-bold font-heading text-google-text dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-keyboard text-google-blue"></i>
+                            ปุ่มลัด &amp; กติกาจับเวลา (WCA)
                         </h3>
-                        <button type="button" onclick="clearAllSolves()" class="text-xs text-rose-600 dark:text-rose-400 hover:underline font-medium cursor-pointer">
-                            ล้างประวัติทั้งหมด
-                        </button>
+                        <a href="#color-solver" class="text-[11px] font-heading font-bold text-indigo-600 dark:text-indigo-400 hover:underline whitespace-nowrap">
+                            ไปตัวช่วยใส่สี ↓
+                        </a>
                     </div>
-                    <div id="solves-list" class="max-h-48 overflow-y-auto space-y-1.5 pr-1">
-                        <!-- Populated via JS -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px] text-google-text-body dark:text-google-dark-text-body">
+                        <div class="p-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border">
+                            <span class="font-mono font-bold text-google-blue block">Spacebar</span>
+                            <span>ค้างรอเขียว → ปล่อยเพื่อจับเวลา</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border">
+                            <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400 block">ปุ่ม F R U L D B</span>
+                            <span>มี ' = ทวนเข็ม 90°</span>
+                        </div>
+                        <div class="col-span-2 sm:col-span-1 p-2 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border">
+                            <span class="font-mono font-bold text-amber-600 dark:text-amber-400 block">แกนกลางสีมาตรฐาน</span>
+                            <span>บนขาว • หน้าเขียว • ขวาแดง</span>
+                        </div>
                     </div>
                 </div>
 
             </div>
 
         </div>
+
+        <!-- ========================================== -->
+        <!-- 2.5 REAL-WORLD COLOR-INPUT 3x3 CUBE SOLVER -->
+        <!-- ========================================== -->
+        <section id="color-solver" class="g-card p-4 sm:p-6 space-y-5 scroll-mt-20">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-google-border dark:border-google-dark-border pb-4">
+                <div class="space-y-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full bg-indigo-600 text-white text-[11px] font-heading font-bold">Color-Input 3x3 Solver</span>
+                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 text-[11px] font-heading font-bold">
+                            <i class="fa-solid fa-lock mr-1 text-[10px]"></i>ล็อกสีแกนกลางทั้ง 6 ด้านให้แล้ว
+                        </span>
+                    </div>
+                    <h2 class="text-lg sm:text-2xl font-extrabold font-heading text-google-text dark:text-white">
+                        ตัวช่วยแก้รูบิค 3x3 แบบใส่สีจริง (พร้อมตัวจำลอง 3D &amp; แนะนำทีละท่า)
+                    </h2>
+                    <p class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted">
+                        จับรูบิคจริงโดยหันแกนกลาง <strong class="text-emerald-600 dark:text-emerald-400">สีเขียว (F) เข้าหาตัว</strong> และ <strong class="text-google-text dark:text-white">สีขาว (U) อยู่ด้านบน</strong> — แตะหรือลากระบาย 48 ช่องรอบนอกแล้วคำนวณท่าหมุน ~30 ท่าทันที
+                    </p>
+                </div>
+
+                <!-- Quick Setup Presets -->
+                <div class="flex flex-wrap items-center gap-1.5 shrink-0">
+                    <button type="button" onclick="resetSolverToCenters()" class="px-3 py-1.5 rounded-full bg-google-subtle dark:bg-google-dark-subtle hover:bg-slate-200 dark:hover:bg-zinc-700 text-xs font-heading font-semibold text-google-text dark:text-google-dark-text transition cursor-pointer" title="ล้างเหลือเฉพาะสีแกนกลาง 6 ด้าน (48 ช่องว่าง)">
+                        <i class="fa-solid fa-eraser mr-1 text-slate-500"></i>เคลียร์เหลือแกนกลาง
+                    </button>
+                    <button type="button" onclick="loadFromMainCubeToSolver(false)" class="px-3 py-1.5 rounded-full bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-600 hover:text-white text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 text-xs font-heading font-bold transition cursor-pointer" title="ดึงสีจากลูกบาศก์ 3D ด้านบนมาใส่">
+                        <i class="fa-solid fa-download mr-1"></i>ดึงจาก 3D ด้านบน
+                    </button>
+                    <button type="button" onclick="fillSolverSolved()" class="px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-600 hover:text-white text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-heading font-bold transition cursor-pointer" title="เติมให้ครบ 6 สีสมบูรณ์ (เหมาะสำหรับแก้เฉพาะ 1-2 ชั้น)">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>เติมสีฐานตั้งต้น
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                <!-- Left Column: Color Brush Palette + 6-Face Interactive Net (7 cols) -->
+                <div class="lg:col-span-7 space-y-3.5">
+                    <!-- Brush Palette & Paint Mode Strip -->
+                    <div class="p-3 sm:p-3.5 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2.5">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-xs font-heading font-bold text-google-text dark:text-white flex items-center gap-1.5">
+                                <i class="fa-solid fa-paintbrush text-indigo-600 dark:text-indigo-400"></i>
+                                <span>1. เลือกสีพู่กัน (กดคีย์ 1–6 หรือ 0 เพื่อลบ)</span>
+                            </span>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <button type="button" id="solver-input-mode-btn" onclick="toggleSolverInputMode()" class="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/70 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-[11px] font-heading font-bold transition cursor-pointer" title="สลับระหว่างแตะ/ลากระบายสี กับ แตะซ้ำที่ช่องเดียวเพื่อวนสี">
+                                    🖌️ โหมดแตะ &amp; ลากระบาย
+                                </button>
+                                <button type="button" id="btn-autofill-last" onclick="autoFillRemainingColor()" class="px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-500 hover:text-white text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-[11px] font-heading font-bold transition cursor-pointer" title="เติมสีสุดท้ายที่ขาดให้อัตโนมัติเมื่อเหลือช่องว่างเฉพาะ 1 สี">
+                                    ✨ เติมสีที่เหลืออัตโนมัติ
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="solver-brush-palette" class="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
+                            <!-- Populated by renderSolverBrushPalette() -->
+                        </div>
+                    </div>
+
+                    <!-- Face Holding Tip Banner -->
+                    <div id="solver-face-orientation-tip" class="px-3.5 py-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-900/50 text-xs text-google-text-body dark:text-google-dark-text-body flex items-start gap-2">
+                        <i class="fa-solid fa-hands text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0"></i>
+                        <span><strong>วิธีดูช่องใส่สี:</strong> แตะที่ป้ายชื่อด้าน (<code class="font-mono font-bold">U / L / F / R / B / D</code>) เพื่อหมุนภาพตัวอย่าง 3D ไปด้านนั้นแล้วตรวจสีให้ตรงกับลูกจริงในมือ</span>
+                    </div>
+
+                    <!-- 6-Face Unfolded Interactive Grid (2 cols on mobile for big touch targets, 4x3 Unfolded Cross on sm:+) -->
+                    <div class="p-3 sm:p-4 rounded-2xl bg-slate-100/80 dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border select-none touch-manipulation">
+                        <div id="solver-net-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 max-w-[520px] mx-auto">
+                            <!-- Populated by renderSolverNetGrid() -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Live 3D Verification Preview + Validation + Step Player (5 cols) -->
+                <div class="lg:col-span-5 space-y-3.5">
+                    <!-- Mini 3D Live Preview Card -->
+                    <div class="rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden shadow-inner">
+                        <div class="flex items-center justify-between gap-2 px-3 pt-2.5">
+                            <span class="inline-flex items-center gap-1.5 text-[11px] font-heading font-bold text-slate-300">
+                                <i class="fa-solid fa-cube text-indigo-400"></i>
+                                <span>พรีวิว 3D สถานะสีของคุณ</span>
+                            </span>
+                            <span class="text-[10px] text-slate-400">ลากหมุนดูได้ 360°</span>
+                        </div>
+
+                        <canvas id="solver-3d-canvas" class="w-full h-[215px] sm:h-[235px] block cursor-grab active:cursor-grabbing touch-none" aria-label="ภาพจำลอง 3 มิติของสถานะสีที่ใส่ในตัวช่วยแก้รูบิค"></canvas>
+
+                        <div class="px-3 pb-2.5 pt-2 border-t border-slate-800/80 bg-slate-900/60 flex flex-wrap items-center justify-center gap-1">
+                            <button type="button" onclick="focusSolverFace('U')" class="px-2 py-0.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] font-bold transition cursor-pointer">⬜ บน (U)</button>
+                            <button type="button" onclick="focusSolverFace('L')" class="px-2 py-0.5 rounded-full bg-slate-800 hover:bg-slate-700 text-orange-300 text-[10px] font-bold transition cursor-pointer">🟧 ซ้าย (L)</button>
+                            <button type="button" onclick="focusSolverFace('F')" class="px-2 py-0.5 rounded-full bg-slate-800 hover:bg-slate-700 text-emerald-300 text-[10px] font-bold transition cursor-pointer">🟩 หน้า (F)</button>
+                            <button type="button" onclick="focusSolverFace('R')" class="px-2 py-0.5 rounded-full bg-slate-800 hover:bg-slate-700 text-rose-300 text-[10px] font-bold transition cursor-pointer">🟥 ขวา (R)</button>
+                            <button type="button" onclick="focusSolverFace('B')" class="px-2 py-0.5 rounded-full bg-slate-800 hover:bg-slate-700 text-sky-300 text-[10px] font-bold transition cursor-pointer">🟦 หลัง (B)</button>
+                            <button type="button" onclick="focusSolverFace('D')" class="px-2 py-0.5 rounded-full bg-slate-800 hover:bg-slate-700 text-yellow-300 text-[10px] font-bold transition cursor-pointer">🟨 ล่าง (D)</button>
+                        </div>
+                    </div>
+
+                    <!-- Real-Time Validation Banner & Solve CTA -->
+                    <div class="p-3.5 rounded-2xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border space-y-2.5">
+                        <div id="solver-validation-banner" class="p-2.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs leading-relaxed">
+                            <!-- Updated by updateSolverValidationBanner() -->
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="button" id="btn-solve-color-cube" onclick="solveColorInputCube()" class="flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-heading font-bold text-sm shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fa-solid fa-wand-sparkles"></i>
+                                <span>คำนวณวิธีแก้รูบิค</span>
+                            </button>
+                            <button type="button" onclick="sendSolverColorsToMainCube()" class="py-2.5 px-3 rounded-xl bg-white dark:bg-google-dark-surface hover:bg-slate-100 dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border text-xs font-heading font-bold text-google-text dark:text-white transition cursor-pointer shrink-0" title="ส่งชุดสีนี้ขึ้นไปแสดงบนลูกบาศก์ 3D หลักด้านบน">
+                                ⬆ ขึ้นจอ 3D
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Idle Workflow Guide (Visible before solving, hides when solution box appears) -->
+                    <div id="solver-idle-tips" class="p-4 rounded-2xl bg-slate-50/90 dark:bg-google-dark-subtle/45 border border-google-border dark:border-google-dark-border space-y-2.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-xs font-heading font-bold text-google-text dark:text-white flex items-center gap-1.5">
+                                <i class="fa-solid fa-compass text-indigo-600 dark:text-indigo-400"></i>
+                                ขั้นตอนการใช้งานจริง 3 ขั้น (ไม่ต้องจำสูตร)
+                            </span>
+                            <span class="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">แกนกลางล็อกสีแท้แล้ว</span>
+                        </div>
+                        <ol class="space-y-1.5 text-[11px] sm:text-xs text-google-text-body dark:text-google-dark-text-body">
+                            <li class="flex items-start gap-2">
+                                <span class="w-4 h-4 rounded-full bg-indigo-600 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+                                <span>ถือรูบิคจริงให้ <strong>หน้าสีเขียว (F)</strong> หันเข้าหาตัว และ <strong>สีขาว (U)</strong> อยู่ด้านบน</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-4 h-4 rounded-full bg-indigo-600 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+                                <span>เลือกสีจากถาดด้านซ้าย แล้ว <strong>คลิก/แตะระบาย</strong> ลงบนแผ่นคลี่ให้ครบทั้ง 6 ด้าน (สีละ 9 ช่อง)</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-4 h-4 rounded-full bg-indigo-600 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
+                                <span>กด <strong>คำนวณวิธีแก้รูบิค</strong> แล้วกด <strong>ถัดไป</strong> หรือ <strong>เล่น</strong> เพื่อหมุนตามลูกบาศก์ 3D ทีละท่า</span>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <!-- Guided Step-by-Step Solution Console -->
+                    <div id="solver-result-box" class="hidden p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/25 border border-emerald-200 dark:border-emerald-800/70 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                                <span id="solver-result-summary" class="text-xs sm:text-sm font-heading font-extrabold text-emerald-800 dark:text-emerald-300 block"></span>
+                                <span id="solver-result-time" class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted"></span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="copySolverSolution()" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-emerald-200 dark:border-emerald-800 text-[11px] font-heading font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-600 hover:text-white transition cursor-pointer">
+                                    <i class="fa-regular fa-copy mr-1"></i>คัดลอกสูตร
+                                </button>
+                                <button type="button" onclick="playSolverOnMainCube()" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-heading font-bold transition cursor-pointer">
+                                    ▶ รันบน 3D หลัก
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Current Move Spotlight -->
+                        <div id="solver-current-step-card" class="p-3 rounded-xl bg-white dark:bg-google-dark-surface border border-emerald-200 dark:border-emerald-800/80 shadow-xs space-y-1">
+                            <!-- Updated by renderSolverStepState() -->
+                        </div>
+
+                        <!-- Step Playback Controls -->
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="solverResetStep()" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-slate-100 text-xs font-bold cursor-pointer" title="ย้อนกลับท่าเริ่มต้น (0)"><i class="fa-solid fa-backward-fast"></i></button>
+                                <button type="button" onclick="solverPrevStep()" class="px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border hover:bg-slate-100 text-xs font-heading font-bold cursor-pointer"><i class="fa-solid fa-chevron-left mr-1"></i>ย้อน</button>
+                                <button type="button" onclick="solverNextStep()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-heading font-bold cursor-pointer">ถัดไป<i class="fa-solid fa-chevron-right ml-1"></i></button>
+                                <button type="button" id="btn-solver-autoplay" onclick="solverTogglePlay()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-heading font-bold cursor-pointer"><i class="fa-solid fa-play mr-1"></i>เล่น</button>
+                            </div>
+                            <select id="solver-speed-select" class="px-2 py-1 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-[11px] font-heading font-semibold text-google-text dark:text-white cursor-pointer" title="ความเร็วเล่นอัตโนมัติ">
+                                <option value="900">ช้า (0.9 วิ)</option>
+                                <option value="550" selected>ปกติ (0.55 วิ)</option>
+                                <option value="280">เร็ว (0.28 วิ)</option>
+                            </select>
+                        </div>
+
+                        <!-- Interactive Clickable Move Sequence Ribbon -->
+                        <div id="solver-steps-strip" class="flex flex-wrap gap-1 max-h-32 overflow-y-auto p-2 rounded-xl bg-white/80 dark:bg-google-dark-bg border border-emerald-200/70 dark:border-emerald-900/50">
+                            <!-- Updated by renderSolverStepState() -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- ========================================== -->
         <!-- 3. READABLE ARTICLE: 4 ขั้นตอนการแก้รูบิค CFOP & สูตรพื้นฐาน -->
@@ -608,7 +838,8 @@
             F: '#10b981', // Green
             R: '#ef4444', // Red
             B: '#3b82f6', // Blue
-            D: '#facc15'  // Yellow
+            D: '#facc15', // Yellow
+            '?': '#475569' // Unpainted neutral slot
         };
 
         let cubeState = {};
@@ -640,8 +871,7 @@
             x: ['R', "M'", "L'"], y: ['U', "E'", "D'"], z: ['F', 'S', "B'"]
         };
 
-        function applyBaseMoveCW(move) {
-            const s = cubeState;
+        function applyBaseMoveCWOn(s, move) {
             let temp;
             switch (move) {
                 case 'U':
@@ -716,6 +946,10 @@
             }
         }
 
+        function applyBaseMoveCW(move) {
+            applyBaseMoveCWOn(cubeState, move);
+        }
+
         function parseMoveTokens(seqStr) {
             return String(seqStr || '').replace(/[()]/g, ' ').trim().split(/\s+/).filter(Boolean);
         }
@@ -729,7 +963,7 @@
             }).join(' ');
         }
 
-        function executeMoveToken(token) {
+        function executeMoveTokenOn(stateObj, token) {
             const clean = String(token || '').replace(/[()]/g, '').trim();
             if (!clean) return;
             const base = clean[0];
@@ -737,9 +971,13 @@
             const times = mod.startsWith('2') ? 2 : (mod === "'" ? 3 : 1);
             const composite = COMPOSITE_MOVES[base];
             for (let i = 0; i < times; i++) {
-                if (composite) composite.forEach(executeMoveToken);
-                else applyBaseMoveCW(base);
+                if (composite) composite.forEach(subTok => executeMoveTokenOn(stateObj, subTok));
+                else applyBaseMoveCWOn(stateObj, base);
             }
+        }
+
+        function executeMoveToken(token) {
+            executeMoveTokenOn(cubeState, token);
         }
 
         function applyMoveSequence(seqStr) {
@@ -889,8 +1127,8 @@
             ctx.closePath();
         }
 
-        function buildQuad2D(center, u, v, halfSize, projectFn) {
-            return [[-1, 1], [1, 1], [1, -1], [-1, -1]].map(([su, sv]) => projectFn(transformVecMat3(camMat, [
+        function buildQuad2D(center, u, v, halfSize, projectFn, camM = camMat) {
+            return [[-1, 1], [1, 1], [1, -1], [-1, -1]].map(([su, sv]) => projectFn(transformVecMat3(camM, [
                 center[0] + u[0]*su*halfSize + v[0]*sv*halfSize,
                 center[1] + u[1]*su*halfSize + v[1]*sv*halfSize,
                 center[2] + u[2]*su*halfSize + v[2]*sv*halfSize
@@ -899,7 +1137,13 @@
 
         const CAMERA_PRESETS = {
             front: makePresetMat(-35, 25),
-            back: makePresetMat(145, -24)
+            back: makePresetMat(145, -24),
+            F: makePresetMat(-20, 18),
+            R: makePresetMat(-74, 18),
+            B: makePresetMat(158, 18),
+            L: makePresetMat(74, 18),
+            U: makePresetMat(-14, 66),
+            D: makePresetMat(-14, -66)
         };
 
         let cubeCanvas = null;
@@ -1055,15 +1299,15 @@
             ctx.restore();
         }
 
-        function renderCenterLabel(ctx, stickerCenterModel, uRot, vRot, nViewZ, colorKey, fKey, projectFn) {
+        function renderCenterLabel(ctx, stickerCenterModel, uRot, vRot, nViewZ, colorKey, fKey, projectFn, camM = camMat) {
             if (!showCenterLabels || nViewZ <= 0.22) return;
-            const c2 = projectFn(transformVecMat3(camMat, stickerCenterModel));
-            const r2 = projectFn(transformVecMat3(camMat, [
+            const c2 = projectFn(transformVecMat3(camM, stickerCenterModel));
+            const r2 = projectFn(transformVecMat3(camM, [
                 stickerCenterModel[0] + uRot[0]*0.17,
                 stickerCenterModel[1] + uRot[1]*0.17,
                 stickerCenterModel[2] + uRot[2]*0.17
             ]));
-            const d2 = projectFn(transformVecMat3(camMat, [
+            const d2 = projectFn(transformVecMat3(camM, [
                 stickerCenterModel[0] - vRot[0]*0.17,
                 stickerCenterModel[1] - vRot[1]*0.17,
                 stickerCenterModel[2] - vRot[2]*0.17
@@ -1089,21 +1333,20 @@
             return Math.abs(eCoord + 1) >= Math.abs(eCoord - 1) ? [-1, 1, 0] : [1, -1, 0];
         }
 
-        function drawCube3D() {
-            if (!cubeCanvas || !cubeCtx) return;
-            const w = cubeCanvas.clientWidth;
-            const h = cubeCanvas.clientHeight;
+        function render3DCubeScene(canvas, ctx, stateObj, camM, sliceAnim) {
+            if (!canvas || !ctx) return;
+            const w = canvas.clientWidth;
+            const h = canvas.clientHeight;
             if (!w || !h) return;
 
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
             const targetW = Math.round(w * dpr);
             const targetH = Math.round(h * dpr);
-            if (cubeCanvas.width !== targetW || cubeCanvas.height !== targetH) {
-                cubeCanvas.width = targetW;
-                cubeCanvas.height = targetH;
+            if (canvas.width !== targetW || canvas.height !== targetH) {
+                canvas.width = targetW;
+                canvas.height = targetH;
             }
 
-            const ctx = cubeCtx;
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             ctx.clearRect(0, 0, w, h);
 
@@ -1122,9 +1365,9 @@
 
             drawCubeShadow(ctx, cx, cy, fovScale, camDist);
 
-            // Inverse of orthonormal camMat is its transpose, so eye in model space = row 2 * camDist
-            const eyeModel = [camMat[6] * camDist, camMat[7] * camDist, camMat[8] * camDist];
-            const splitCoordIdx = activeSliceAnim ? activeSliceAnim.def.coordIdx : 0;
+            // Inverse of orthonormal camM is its transpose, so eye in model space = row 2 * camDist
+            const eyeModel = [camM[6] * camDist, camM[7] * camDist, camM[8] * camDist];
+            const splitCoordIdx = sliceAnim ? sliceAnim.def.coordIdx : 0;
             const slabOrder = getSlabDrawOrder(eyeModel[splitCoordIdx]);
 
             const slabs = { '-1': [], '0': [], '1': [] };
@@ -1132,9 +1375,9 @@
 
             slabOrder.forEach(slabVal => {
                 const list = slabs[String(slabVal)].map(basePos => {
-                    const inSlice = activeSliceAnim && activeSliceAnim.def.layers.includes(basePos[activeSliceAnim.def.coordIdx]);
-                    const angle = inSlice ? activeSliceAnim.curAngle : 0;
-                    const axis = inSlice ? activeSliceAnim.def.axis : null;
+                    const inSlice = sliceAnim && sliceAnim.def.layers.includes(basePos[sliceAnim.def.coordIdx]);
+                    const angle = inSlice ? sliceAnim.curAngle : 0;
+                    const axis = inSlice ? sliceAnim.def.axis : null;
                     const centerModel = angle ? rotatePointAxis(basePos, axis, angle) : basePos;
                     const dx = centerModel[0] - eyeModel[0];
                     const dy = centerModel[1] - eyeModel[1];
@@ -1150,17 +1393,17 @@
                         const uRot = angle ? rotatePointAxis(f.u, axis, angle) : f.u;
                         const vRot = angle ? rotatePointAxis(f.v, axis, angle) : f.v;
 
-                        const nView = transformVecMat3(camMat, nRot);
+                        const nView = transformVecMat3(camM, nRot);
                         const faceCenterModel = [
                             centerModel[0] + nRot[0] * halfCubie,
                             centerModel[1] + nRot[1] * halfCubie,
                             centerModel[2] + nRot[2] * halfCubie
                         ];
-                        const fcView = transformVecMat3(camMat, faceCenterModel);
+                        const fcView = transformVecMat3(camM, faceCenterModel);
                         if (nView[0]*(-fcView[0]) + nView[1]*(-fcView[1]) + nView[2]*(camDist - fcView[2]) <= 0) return;
 
                         const lightDot = Math.max(0, nView[0]*lightDir[0] + nView[1]*lightDir[1] + nView[2]*lightDir[2]);
-                        const bodyPts = buildQuad2D(faceCenterModel, uRot, vRot, halfCubie, projectFn);
+                        const bodyPts = buildQuad2D(faceCenterModel, uRot, vRot, halfCubie, projectFn, camM);
                         const shade = Math.round(18 + lightDot * 18);
                         ctx.fillStyle = `rgb(${shade}, ${shade + 3}, ${shade + 9})`;
                         ctx.strokeStyle = 'rgba(2, 6, 23, 0.9)';
@@ -1177,27 +1420,31 @@
                         if (basePos[f.axisIdx] !== f.val) return;
                         const col = basePos[0]*f.u[0] + basePos[1]*f.u[1] + basePos[2]*f.u[2] + 1;
                         const row = 1 - (basePos[0]*f.v[0] + basePos[1]*f.v[1] + basePos[2]*f.v[2]);
-                        const colorKey = cubeState[fKey]?.[row * 3 + col] || fKey;
+                        const colorKey = stateObj[fKey]?.[row * 3 + col] || fKey;
                         const stickerCenterModel = [
                             centerModel[0] + nRot[0] * stickerLift,
                             centerModel[1] + nRot[1] * stickerLift,
                             centerModel[2] + nRot[2] * stickerLift
                         ];
 
-                        const stickerPts = buildQuad2D(stickerCenterModel, uRot, vRot, halfSticker, projectFn);
+                        const stickerPts = buildQuad2D(stickerCenterModel, uRot, vRot, halfSticker, projectFn, camM);
                         drawRoundedQuad(ctx, stickerPts, 0.19);
-                        ctx.fillStyle = shadeStickerColor(FACE_COLORS[colorKey], lightDot);
+                        ctx.fillStyle = shadeStickerColor(FACE_COLORS[colorKey] || FACE_COLORS['?'], lightDot);
                         ctx.fill();
                         ctx.lineWidth = 0.9;
                         ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
                         ctx.stroke();
 
                         if (col === 1 && row === 1) {
-                            renderCenterLabel(ctx, stickerCenterModel, uRot, vRot, nView[2], colorKey, fKey, projectFn);
+                            renderCenterLabel(ctx, stickerCenterModel, uRot, vRot, nView[2], colorKey, fKey, projectFn, camM);
                         }
                     });
                 });
             });
+        }
+
+        function drawCube3D() {
+            render3DCubeScene(cubeCanvas, cubeCtx, cubeState, camMat, activeSliceAnim);
         }
 
         function setCameraPreset(presetName) {
@@ -1259,51 +1506,67 @@
             showToast('กำลังเล่นแอนิเมชัน 3D ตามโจทย์ Scramble...');
         }
 
+        function attachCubeDragHandlers(canvas, opts) {
+            if (!canvas) return;
+            let dragging = false;
+            let lastPtr = { x: 0, y: 0, t: 0 };
+
+            canvas.addEventListener('pointerdown', e => {
+                dragging = true;
+                if (opts.onStart) opts.onStart();
+                opts.setVel(0, 0);
+                lastPtr = { x: e.clientX, y: e.clientY, t: performance.now() };
+                canvas.setPointerCapture(e.pointerId);
+            });
+
+            canvas.addEventListener('pointermove', e => {
+                if (!dragging) return;
+                const now = performance.now();
+                const dx = e.clientX - lastPtr.x;
+                const dy = e.clientY - lastPtr.y;
+                const dt = Math.max(0.008, (now - lastPtr.t) / 1000);
+                const sens = 0.0105;
+                opts.setMat(orthonormalizeMat3(mulMat3(rotXMat3(dy * sens), mulMat3(rotYMat3(dx * sens), opts.getMat()))));
+                opts.setVel(Math.max(-7, Math.min(7, (dx * sens) / dt)), Math.max(-7, Math.min(7, (dy * sens) / dt)));
+                lastPtr = { x: e.clientX, y: e.clientY, t: now };
+                opts.requestRender();
+            });
+
+            const endDrag = () => {
+                if (!dragging) return;
+                dragging = false;
+                if (opts.onEnd) opts.onEnd();
+            };
+            canvas.addEventListener('pointerup', endDrag);
+            canvas.addEventListener('pointercancel', endDrag);
+            if (opts.onDblClick) canvas.addEventListener('dblclick', opts.onDblClick);
+        }
+
         function initCube3D() {
             cubeCanvas = document.getElementById('cube-3d-canvas');
             if (!cubeCanvas) return;
             cubeCtx = cubeCanvas.getContext('2d');
 
-            cubeCanvas.addEventListener('pointerdown', e => {
-                isDraggingCube = true;
-                camTargetMat = null;
-                if (autoOrbitOn) {
-                    autoOrbitOn = false;
-                    syncAutoOrbitButton();
-                }
-                camVel.vx = 0;
-                camVel.vy = 0;
-                lastPointer = { x: e.clientX, y: e.clientY, t: performance.now() };
-                cubeCanvas.setPointerCapture(e.pointerId);
+            attachCubeDragHandlers(cubeCanvas, {
+                onStart: () => {
+                    isDraggingCube = true;
+                    camTargetMat = null;
+                    if (autoOrbitOn) {
+                        autoOrbitOn = false;
+                        syncAutoOrbitButton();
+                    }
+                },
+                getMat: () => camMat,
+                setMat: m => { camMat = m; },
+                setVel: (vx, vy) => { camVel.vx = vx; camVel.vy = vy; },
+                requestRender: request3DRender,
+                onEnd: () => {
+                    isDraggingCube = false;
+                    if (Math.hypot(camVel.vx, camVel.vy) > 0.08) request3DRender();
+                    else { camVel.vx = 0; camVel.vy = 0; }
+                },
+                onDblClick: () => setCameraPreset('front')
             });
-
-            cubeCanvas.addEventListener('pointermove', e => {
-                if (!isDraggingCube) return;
-                const now = performance.now();
-                const dx = e.clientX - lastPointer.x;
-                const dy = e.clientY - lastPointer.y;
-                const dt = Math.max(0.008, (now - lastPointer.t) / 1000);
-                const sens = 0.0105;
-                camMat = orthonormalizeMat3(mulMat3(rotXMat3(dy * sens), mulMat3(rotYMat3(dx * sens), camMat)));
-                camVel.vx = Math.max(-7, Math.min(7, (dx * sens) / dt));
-                camVel.vy = Math.max(-7, Math.min(7, (dy * sens) / dt));
-                lastPointer = { x: e.clientX, y: e.clientY, t: now };
-                request3DRender();
-            });
-
-            const endDrag = () => {
-                if (!isDraggingCube) return;
-                isDraggingCube = false;
-                if (Math.hypot(camVel.vx, camVel.vy) > 0.08) {
-                    request3DRender();
-                } else {
-                    camVel.vx = 0;
-                    camVel.vy = 0;
-                }
-            };
-            cubeCanvas.addEventListener('pointerup', endDrag);
-            cubeCanvas.addEventListener('pointercancel', endDrag);
-            cubeCanvas.addEventListener('dblclick', () => setCameraPreset('front'));
 
             window.addEventListener('resize', () => request3DRender());
             request3DRender();
@@ -1343,7 +1606,71 @@
             showToast('รีเซ็ตรูบิค 3D เป็นสถานะเรียงสีสมบูรณ์ทั้ง 6 ด้านแล้ว!');
         }
 
+        const BASIC_MOVE_GUIDE = [
+            { move: 'R',  shortDir: 'ขวาขึ้น ↑',    face: 'ด้านขวา (Right — สีแดง)',      detail: 'ดันแถวขวาขึ้นบนไปด้านหลัง (หมุนตามเข็ม 90° เมื่อมองด้านขวาตรงๆ)' },
+            { move: "R'", shortDir: 'ขวาลง ↓',     face: 'ด้านขวา (Right — สีแดง)',      detail: 'ดึงแถวขวาลงล่างเข้าหาตัว (หมุนทวนเข็ม 90° เมื่อมองด้านขวาตรงๆ)' },
+            { move: 'U',  shortDir: 'บนไปซ้าย ←',  face: 'ด้านบน (Up — สีขาว)',          detail: 'ปัดแถวบนจากขวาไปซ้ายทางด้านหน้า (หมุนตามเข็ม 90° เมื่อมองจากด้านบน)' },
+            { move: "U'", shortDir: 'บนไปขวา →',   face: 'ด้านบน (Up — สีขาว)',          detail: 'ปัดแถวบนจากซ้ายไปขวาทางด้านหน้า (หมุนทวนเข็ม 90° เมื่อมองจากด้านบน)' },
+            { move: 'F',  shortDir: 'หน้าตามเข็ม ↻', face: 'ด้านหน้า (Front — สีเขียว)',   detail: 'หมุนแผ่นหน้าตามเข็ม 90° (ขอบบนเอียงลงทางขวา / ขอบล่างไปทางซ้าย)' },
+            { move: "F'", shortDir: 'หน้าทวนเข็ม ↺', face: 'ด้านหน้า (Front — สีเขียว)',   detail: 'หมุนแผ่นหน้าทวนเข็ม 90° (ขอบบนเอียงลงทางซ้าย / ขอบล่างไปทางขวา)' },
+            { move: 'L',  shortDir: 'ซ้ายลง ↓',    face: 'ด้านซ้าย (Left — สีส้ม)',       detail: 'ดึงแถวซ้ายลงล่างเข้าหาตัว [ตรงข้าม R] (ตามเข็ม 90° เมื่อมองด้านซ้ายตรงๆ)' },
+            { move: "L'", shortDir: 'ซ้ายขึ้น ↑',   face: 'ด้านซ้าย (Left — สีส้ม)',       detail: 'ดันแถวซ้ายขึ้นบนไปด้านหลัง [ตรงข้าม R\'] (ทวนเข็ม 90° เมื่อมองด้านซ้ายตรงๆ)' },
+            { move: 'D',  shortDir: 'ล่างไปขวา →',  face: 'ด้านล่าง (Down — สีเหลือง)',    detail: 'ปัดแถวล่างจากซ้ายไปขวาทางด้านหน้า [ตรงข้าม U] (ตามเข็ม 90° เมื่อมองจากด้านล่าง)' },
+            { move: "D'", shortDir: 'ล่างไปซ้าย ←', face: 'ด้านล่าง (Down — สีเหลือง)',    detail: 'ปัดแถวล่างจากขวาไปซ้ายทางด้านหน้า [ตรงข้าม U\'] (ทวนเข็ม 90° เมื่อมองจากด้านล่าง)' },
+            { move: 'B',  shortDir: 'หลังไปซ้าย ←', face: 'ด้านหลัง (Back — สีน้ำเงิน)',   detail: 'ตามเข็ม 90° เมื่อมองจากด้านหลัง (ถ้ามองจากด้านหน้า ขอบบนแถวหลังจะเลื่อนไปทางซ้าย)' },
+            { move: "B'", shortDir: 'หลังไปขวา →',  face: 'ด้านหลัง (Back — สีน้ำเงิน)',   detail: 'ทวนเข็ม 90° เมื่อมองจากด้านหลัง (ถ้ามองจากด้านหน้า ขอบบนแถวหลังจะเลื่อนไปทางขวา)' }
+        ];
+
+        function updateManualMoveGuide(token) {
+            const box = document.getElementById('manual-move-guide');
+            if (!box) return;
+            const clean = String(token || '').trim();
+            const entry = BASIC_MOVE_GUIDE.find(item => item.move === clean);
+            if (!entry) return;
+            box.innerHTML = `
+                <i class="fa-solid fa-compass text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0"></i>
+                <span><strong class="font-mono text-google-blue dark:text-sky-300">${escapeCfopHtml(entry.move)}</strong> — <strong>${escapeCfopHtml(entry.face)} (${escapeCfopHtml(entry.shortDir)}):</strong> ${escapeCfopHtml(entry.detail)}</span>
+            `;
+        }
+
+        function renderManualMovesPanel() {
+            const grid = document.getElementById('manual-moves-grid');
+            if (grid) {
+                grid.innerHTML = BASIC_MOVE_GUIDE.map(item => `
+                    <button type="button" data-manual-move="${item.move}" onclick="manualMove(this.dataset.manualMove)" title="${item.move} — ${item.face}: ${item.detail}" class="py-1.5 px-1 rounded-lg bg-google-subtle dark:bg-google-dark-subtle hover:bg-google-blue hover:text-white transition cursor-pointer flex flex-col items-center justify-center leading-tight group">
+                        <span class="font-mono text-xs font-extrabold">${item.move}</span>
+                        <span class="text-[9px] font-heading opacity-80 group-hover:opacity-100 whitespace-nowrap">${item.shortDir}</span>
+                    </button>
+                `).join('');
+            }
+            const list = document.getElementById('basic-moves-guide-list');
+            if (list) {
+                list.innerHTML = BASIC_MOVE_GUIDE.map(item => `
+                    <div class="p-2 rounded-lg bg-white dark:bg-google-dark-surface border border-google-border/80 dark:border-google-dark-border flex items-start justify-between gap-2">
+                        <div class="flex items-start gap-2 min-w-0">
+                            <span class="w-8 h-8 rounded-lg bg-slate-900 dark:bg-slate-800 text-white font-mono text-xs font-extrabold flex items-center justify-center shrink-0">${item.move}</span>
+                            <div class="min-w-0 text-[11px] leading-snug">
+                                <div class="font-heading font-bold text-google-text dark:text-white">${item.face} <span class="text-emerald-600 dark:text-emerald-400">(${item.shortDir})</span></div>
+                                <div class="text-google-text-muted dark:text-google-dark-text-muted">${item.detail}</div>
+                            </div>
+                        </div>
+                        <button type="button" data-manual-move="${item.move}" onclick="manualMove(this.dataset.manualMove)" class="px-2 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-600 hover:text-white text-emerald-700 dark:text-emerald-300 font-mono text-[10px] font-bold transition cursor-pointer shrink-0">▶ ลอง</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function toggleBasicMovesGuide(forceOpen) {
+            const panel = document.getElementById('basic-moves-guide-panel');
+            const btn = document.getElementById('toggle-basic-moves-btn');
+            if (!panel) return;
+            const willOpen = typeof forceOpen === 'boolean' ? forceOpen : panel.classList.contains('hidden');
+            panel.classList.toggle('hidden', !willOpen);
+            if (btn) btn.setAttribute('aria-expanded', String(willOpen));
+        }
+
         function manualMove(token) {
+            updateManualMoveGuide(token);
             enqueueMove3D(token, 520);
         }
 
@@ -1385,17 +1712,17 @@
         // ==================== COMPLETE CFOP FORMULA ENCYCLOPEDIA DATA (129 ALGORITHMS) ====================
         const CFOP_NOTATION_GROUPS = [
             {
-                title: 'หมุน 1 ชั้นด้านนอก (ตามเข็มนาฬิกา 90°)',
+                title: 'หมุน 1 ชั้นด้านนอก (ตามเข็มนาฬิกา 90° เมื่อมองด้านนั้นตรงๆ)',
                 badge: 'Basic Turns',
                 color: 'bg-google-blue text-white',
-                desc: "เติมเครื่องหมาย ' = หมุนทวนเข็มนาฬิกา 90° • เติมเลข 2 = หมุน 2 ครั้ง (180°)",
+                desc: "อักษรปกติ = ตามเข็ม 90° • เติม ' (Prime) = ทวนเข็ม 90° • เติม 2 = หมุน 180° (มุมมองอ้างอิง: สีเขียว F เข้าหาตัว, สีขาว U อยู่บน)",
                 items: [
-                    { sym: 'U', name: 'Up (บน)', tip: 'หมุนชั้นบนตามเข็ม (มองจากด้านบน)', demo: 'U' },
-                    { sym: 'D', name: 'Down (ล่าง)', tip: 'หมุนชั้นล่างตามเข็ม (มองจากด้านล่าง)', demo: 'D' },
-                    { sym: 'R', name: 'Right (ขวา)', tip: 'หมุนชั้นขวาขึ้น (ตามเข็มด้านขวา)', demo: 'R' },
-                    { sym: 'L', name: 'Left (ซ้าย)', tip: 'หมุนชั้นซ้ายลง (ตามเข็มด้านซ้าย)', demo: 'L' },
-                    { sym: 'F', name: 'Front (หน้า)', tip: 'หมุนด้านหน้าตามเข็ม', demo: 'F' },
-                    { sym: 'B', name: 'Back (หลัง)', tip: 'หมุนด้านหลังตามเข็ม', demo: 'B' }
+                    { sym: 'R', name: 'Right (ขวา — สีแดง)', tip: "R = ดันแถวขวาขึ้น • R' = ดึงแถวขวาลง", demo: 'R' },
+                    { sym: 'U', name: 'Up (บน — สีขาว)', tip: "U = ปัดแถวบนไปซ้าย • U' = ปัดแถวบนไปขวา", demo: 'U' },
+                    { sym: 'F', name: 'Front (หน้า — สีเขียว)', tip: "F = หมุนหน้าตามเข็ม (บนลงขวา) • F' = ทวนเข็ม (บนลงซ้าย)", demo: 'F' },
+                    { sym: 'L', name: 'Left (ซ้าย — สีส้ม)', tip: "L = ดึงแถวซ้ายลง [ตรงข้าม R] • L' = ดันแถวซ้ายขึ้น", demo: 'L' },
+                    { sym: 'D', name: 'Down (ล่าง — สีเหลือง)', tip: "D = ปัดแถวล่างไปขวา [ตรงข้าม U] • D' = ปัดแถวล่างไปซ้าย", demo: 'D' },
+                    { sym: 'B', name: 'Back (หลัง — สีน้ำเงิน)', tip: "B = ตามเข็มด้านหลัง (ขอบบนไปซ้าย) • B' = ทวนเข็ม (ขอบบนไปขวา)", demo: 'B' }
                 ]
             },
             {
@@ -2220,9 +2547,1024 @@
             setTimeout(() => toast.remove(), 2600);
         }
 
+        // ==================== REAL-WORLD COLOR-INPUT 3x3 CUBE SOLVER ====================
+        const SOLVER_FACES = ['U', 'L', 'F', 'R', 'B', 'D'];
+        const SOLVER_BRUSHES = [
+            { key: 'U', name: 'ขาว',    shortcut: '1', bg: '#ffffff', text: '#0f172a', border: '#cbd5e1' },
+            { key: 'L', name: 'ส้ม',    shortcut: '2', bg: '#f97316', text: '#ffffff', border: '#ea580c' },
+            { key: 'F', name: 'เขียว',  shortcut: '3', bg: '#10b981', text: '#ffffff', border: '#059669' },
+            { key: 'R', name: 'แดง',    shortcut: '4', bg: '#ef4444', text: '#ffffff', border: '#dc2626' },
+            { key: 'B', name: 'น้ำเงิน', shortcut: '5', bg: '#3b82f6', text: '#ffffff', border: '#2563eb' },
+            { key: 'D', name: 'เหลือง', shortcut: '6', bg: '#facc15', text: '#0f172a', border: '#eab308' },
+            { key: '?', name: 'ลบช่อง', shortcut: '0', bg: '#475569', text: '#ffffff', border: '#64748b' }
+        ];
+        const SOLVER_FACE_INFO = {
+            U: { title: 'บน (U)',   colorName: 'ขาว',    gridCls: 'sm:col-start-2 sm:row-start-1', holdTip: 'หน้าบน (U — ขาว): มองหน้า F สีเขียวแล้วเอียงด้านบนลงมาหาตัว (ขอบล่างของหน้าขาวจะติดกับหน้าเขียว)' },
+            L: { title: 'ซ้าย (L)', colorName: 'ส้ม',    gridCls: 'sm:col-start-1 sm:row-start-2', holdTip: 'หน้าซ้าย (L — ส้ม): หมุนรูบิคในมือไปทางขวาเพื่อดูด้านซ้าย โดยให้สีขาวยังอยู่ด้านบนเหมือนเดิม' },
+            F: { title: 'หน้า (F)', colorName: 'เขียว',  gridCls: 'sm:col-start-2 sm:row-start-2', holdTip: 'หน้าหน้า (F — เขียว): ท่าหลัก — หันหน้าแกนกลางสีเขียวเข้าหาตัว และสีขาว (U) อยู่ด้านบน' },
+            R: { title: 'ขวา (R)',  colorName: 'แดง',    gridCls: 'sm:col-start-3 sm:row-start-2', holdTip: 'หน้าขวา (R — แดง): หมุนรูบิคในมือไปทางซ้ายเพื่อดูด้านขวา โดยให้สีขาวยังอยู่ด้านบนเหมือนเดิม' },
+            B: { title: 'หลัง (B)', colorName: 'น้ำเงิน', gridCls: 'sm:col-start-4 sm:row-start-2', holdTip: 'หน้าหลัง (B — น้ำเงิน): หมุนรูบิคในมือแนวนอนอ้อมไปด้านหลัง (ให้สีขาว U ยังอยู่ด้านบน อย่าพลิกกลับหัว!)' },
+            D: { title: 'ล่าง (D)', colorName: 'เหลือง', gridCls: 'sm:col-start-2 sm:row-start-3', holdTip: 'หน้าล่าง (D — เหลือง): จากหน้า F สีเขียว ให้พลิกด้านล่างเงยขึ้นมาหาตัว (ขอบบนของหน้าเหลืองจะติดกับหน้าเขียว)' }
+        };
+
+        const EDGE_SPECS = [
+            ['U',7,'F',1], ['U',5,'R',1], ['U',1,'B',1], ['U',3,'L',1],
+            ['D',1,'F',7], ['D',5,'R',7], ['D',7,'B',7], ['D',3,'L',7],
+            ['F',5,'R',3], ['F',3,'L',5], ['B',3,'R',5], ['B',5,'L',3]
+        ];
+        const CORNER_SPECS = [
+            ['U',8,'R',0,'F',2], ['U',2,'B',0,'R',2], ['U',0,'L',0,'B',2], ['U',6,'F',0,'L',2],
+            ['D',2,'F',8,'R',6], ['D',8,'R',8,'B',6], ['D',6,'B',8,'L',6], ['D',0,'L',8,'F',6]
+        ];
+
+        function cloneAnyCubeState(s) {
+            return { U: [...s.U], L: [...s.L], F: [...s.F], R: [...s.R], B: [...s.B], D: [...s.D] };
+        }
+        function isCubeStateSolved(s) {
+            return SOLVER_FACES.every(f => s[f].every(c => c === f));
+        }
+
+        function countPermInversions(perm) {
+            let inv = 0;
+            for (let i = 0; i < perm.length; i++) {
+                for (let j = i + 1; j < perm.length; j++) if (perm[i] > perm[j]) inv++;
+            }
+            return inv;
+        }
+
+        function validateSolverCubeState(s) {
+            const counts = { U: 0, L: 0, F: 0, R: 0, B: 0, D: 0 };
+            let emptyCount = 0;
+            for (const f of SOLVER_FACES) {
+                if (!Array.isArray(s[f]) || s[f].length !== 9) return { ok: false, stage: 'shape', reason: 'ข้อมูลหน้าไม่ครบ 9 ช่อง' };
+                if (s[f][4] !== f) return { ok: false, stage: 'center', reason: `สีแกนกลางด้าน ${f} ต้องคงเป็น ${SOLVER_FACE_INFO[f].colorName}` };
+                for (const c of s[f]) {
+                    if (!c || c === '?') emptyCount++;
+                    else if (counts[c] !== undefined) counts[c]++;
+                }
+            }
+            const over = SOLVER_FACES.filter(f => counts[f] > 9);
+            const under = SOLVER_FACES.filter(f => counts[f] < 9);
+            if (emptyCount > 0) {
+                const hintAuto = (over.length === 0 && under.length === 1 && emptyCount === 9 - counts[under[0]])
+                    ? ` (เหลือสี${SOLVER_FACE_INFO[under[0]].colorName}เพียงสีเดียว กด "เติมสีที่เหลืออัตโนมัติ" ได้ทันที!)`
+                    : '';
+                return { ok: false, stage: 'incomplete', emptyCount, counts, reason: `ยังใส่สีไม่ครบ เหลืออีก ${emptyCount} ช่องว่าง${hintAuto}` };
+            }
+            if (over.length > 0 || under.length > 0) {
+                const msgs = [];
+                over.forEach(f => msgs.push(`สี${SOLVER_FACE_INFO[f].colorName}เกิน ${counts[f]}/9`));
+                under.forEach(f => msgs.push(`สี${SOLVER_FACE_INFO[f].colorName}ขาด ${counts[f]}/9`));
+                return { ok: false, stage: 'counts', counts, reason: `จำนวนสีไม่สมดุล: ${msgs.join(' • ')}` };
+            }
+
+            const edgePerm = [];
+            const seenEdge = new Set();
+            let edgeOriSum = 0;
+            for (let i = 0; i < EDGE_SPECS.length; i++) {
+                const [fa, ia, fb, ib] = EDGE_SPECS[i];
+                const ca = s[fa][ia], cb = s[fb][ib];
+                const matchIdx = EDGE_SPECS.findIndex(([ea, , eb]) => (ea === ca && eb === cb) || (ea === cb && eb === ca));
+                if (matchIdx === -1) return { ok: false, stage: 'piece', reason: `ชิ้นขอบที่ ${fa}${fb} (${SOLVER_FACE_INFO[ca].colorName}-${SOLVER_FACE_INFO[cb].colorName}) เป็นคู่สีตรงข้ามที่เป็นไปไม่ได้` };
+                if (seenEdge.has(matchIdx)) {
+                    const [ea, , eb] = EDGE_SPECS[matchIdx];
+                    return { ok: false, stage: 'piece', reason: `พบชิ้นขอบ ${SOLVER_FACE_INFO[ea].colorName}-${SOLVER_FACE_INFO[eb].colorName} ซ้ำกัน กรุณาตรวจสอบช่องขอบอีกครั้ง` };
+                }
+                seenEdge.add(matchIdx);
+                edgePerm.push(matchIdx);
+                edgeOriSum += (EDGE_SPECS[matchIdx][0] === ca ? 0 : 1);
+            }
+
+            const cornerPerm = [];
+            const seenCorner = new Set();
+            let cornerOriSum = 0;
+            for (let i = 0; i < CORNER_SPECS.length; i++) {
+                const [f0, i0, f1, i1, f2, i2] = CORNER_SPECS[i];
+                const c0 = s[f0][i0], c1 = s[f1][i1], c2 = s[f2][i2];
+                let matched = -1, ori = -1;
+                for (let j = 0; j < CORNER_SPECS.length; j++) {
+                    const [t0, , t1, , t2] = CORNER_SPECS[j];
+                    if (c0 === t0 && c1 === t1 && c2 === t2) { matched = j; ori = 0; break; }
+                    if (c0 === t1 && c1 === t2 && c2 === t0) { matched = j; ori = 2; break; }
+                    if (c0 === t2 && c1 === t0 && c2 === t1) { matched = j; ori = 1; break; }
+                }
+                if (matched === -1) return { ok: false, stage: 'piece', reason: `ชิ้นมุมที่ ${f0}${f1}${f2} สีผิดลำดับหรือเป็นสีด้านตรงข้าม` };
+                if (seenCorner.has(matched)) return { ok: false, stage: 'piece', reason: `พบชิ้นมุมซ้ำกัน กรุณาตรวจสอบมุมทั้ง 8 มุม` };
+                seenCorner.add(matched);
+                cornerPerm.push(matched);
+                cornerOriSum += ori;
+            }
+
+            if (edgeOriSum % 2 !== 0) return { ok: false, stage: 'parity', reason: 'Edge Flip Parity: มีชิ้นขอบพลิกกลับด้าน 1 ชิ้น (ตรวจสอบสีขอบ หรือรูบิคจริงอาจถูกถอดชิ้นขอบใส่กลับด้าน)' };
+            if (cornerOriSum % 3 !== 0) return { ok: false, stage: 'parity', reason: 'Corner Twist Parity: มีชิ้นมุมบิดผิดทิศ (ตรวจสอบสีมุม หรือมีมุมบิดค้างบนลูกจริง)' };
+            if ((countPermInversions(edgePerm) & 1) !== (countPermInversions(cornerPerm) & 1)) {
+                return { ok: false, stage: 'parity', reason: 'Permutation Parity: ตำแหน่งชิ้นขอบและมุมสลับคี่ (มักเกิดจากใส่สีสลับคู่ หรือรูบิคเคยถูกถอดประกอบผิดตำแหน่ง)' };
+            }
+            return { ok: true, counts };
+        }
+
+        // Fast Lazy-Initialized 4-Phase Thistlethwaite Solver (~30 moves avg, <=38 moves max, ~1.5ms/solve)
+        let cachedShortSolver = null;
+        function getShortSolver() {
+            if (cachedShortSolver) return cachedShortSolver;
+
+            function stateToCubie(s) {
+                const ep = new Int8Array(12), eo = new Int8Array(12);
+                for (let i = 0; i < 12; i++) {
+                    const [fa, ia, fb, ib] = EDGE_SPECS[i];
+                    const ca = s[fa][ia], cb = s[fb][ib];
+                    const idx = EDGE_SPECS.findIndex(([ea, , eb]) => (ea === ca && eb === cb) || (ea === cb && eb === ca));
+                    ep[i] = idx;
+                    eo[i] = EDGE_SPECS[idx][0] === ca ? 0 : 1;
+                }
+                const cp = new Int8Array(8), co = new Int8Array(8);
+                for (let i = 0; i < 8; i++) {
+                    const [f0, i0, f1, i1, f2, i2] = CORNER_SPECS[i];
+                    const c0 = s[f0][i0], c1 = s[f1][i1], c2 = s[f2][i2];
+                    for (let j = 0; j < 8; j++) {
+                        const [t0, , t1, , t2] = CORNER_SPECS[j];
+                        if (c0 === t0 && c1 === t1 && c2 === t2) { cp[i] = j; co[i] = 0; break; }
+                        if (c0 === t1 && c1 === t2 && c2 === t0) { cp[i] = j; co[i] = 2; break; }
+                        if (c0 === t2 && c1 === t0 && c2 === t1) { cp[i] = j; co[i] = 1; break; }
+                    }
+                }
+                return { ep, eo, cp, co };
+            }
+
+            const BASE_FACES = ['U', 'D', 'R', 'L', 'F', 'B'];
+            const MOVE_NAMES = [];
+            const MOVE_CUBIES = [];
+            for (let f = 0; f < 6; f++) {
+                for (let p = 1; p <= 3; p++) {
+                    MOVE_NAMES.push(BASE_FACES[f] + (p === 1 ? '' : p === 2 ? '2' : "'"));
+                    const s = { U: Array(9).fill('U'), L: Array(9).fill('L'), F: Array(9).fill('F'), R: Array(9).fill('R'), B: Array(9).fill('B'), D: Array(9).fill('D') };
+                    for (let k = 0; k < p; k++) applyBaseMoveCWOn(s, BASE_FACES[f]);
+                    MOVE_CUBIES.push(stateToCubie(s));
+                }
+            }
+            function mulCubie(a, m) {
+                const ep = new Int8Array(12), eo = new Int8Array(12), cp = new Int8Array(8), co = new Int8Array(8);
+                for (let i = 0; i < 12; i++) { const src = m.ep[i]; ep[i] = a.ep[src]; eo[i] = (a.eo[src] + m.eo[i]) & 1; }
+                for (let i = 0; i < 8; i++) { const src = m.cp[i]; cp[i] = a.cp[src]; co[i] = (a.co[src] + m.co[i]) % 3; }
+                return { ep, eo, cp, co };
+            }
+            const FACT = [1, 1, 2, 6, 24, 120, 720, 5040, 40320];
+            function permToIdx(arr, n) {
+                let idx = 0, used = 0;
+                for (let i = 0; i < n; i++) {
+                    let smaller = 0;
+                    for (let v = 0; v < arr[i]; v++) if (!(used & (1 << v))) smaller++;
+                    idx += smaller * FACT[n - 1 - i];
+                    used |= (1 << arr[i]);
+                }
+                return idx;
+            }
+            function idxToPerm(idx, n) {
+                const pool = Array.from({ length: n }, (_, i) => i);
+                const arr = new Int8Array(n);
+                for (let i = 0; i < n; i++) {
+                    const f = FACT[n - 1 - i];
+                    const q = Math.floor(idx / f);
+                    idx %= f;
+                    arr[i] = pool.splice(q, 1)[0];
+                }
+                return arr;
+            }
+            const C = Array.from({ length: 13 }, () => new Int32Array(13));
+            for (let n = 0; n <= 12; n++) { C[n][0] = 1; for (let k = 1; k <= n; k++) C[n][k] = C[n - 1][k - 1] + C[n - 1][k]; }
+
+            // Phase 1: EO
+            const eoToId = eo => { let v = 0; for (let i = 0; i < 11; i++) v = (v << 1) | eo[i]; return v; };
+            const idToEo = v => { const eo = new Int8Array(12); let p = 0; for (let i = 10; i >= 0; i--) { eo[i] = v & 1; p ^= eo[i]; v >>= 1; } eo[11] = p; return eo; };
+            const dist1 = new Int8Array(2048).fill(-1), parentMove1 = new Int8Array(2048).fill(-1);
+            dist1[0] = 0;
+            const q1 = [0];
+            for (let qi = 0; qi < q1.length; qi++) {
+                const u = q1[qi], eo = idToEo(u);
+                for (let m = 0; m < 18; m++) {
+                    const mc = MOVE_CUBIES[m], neo = new Int8Array(12);
+                    for (let i = 0; i < 12; i++) neo[i] = (eo[mc.ep[i]] + mc.eo[i]) & 1;
+                    const v = eoToId(neo);
+                    if (dist1[v] === -1) { dist1[v] = dist1[u] + 1; parentMove1[v] = m; q1.push(v); }
+                }
+            }
+
+            // Phase 2: CO & E-slice
+            const G1_MOVES = [0,1,2, 3,4,5, 6,7,8, 9,10,11, 13, 16];
+            const coToId = co => { let v = 0; for (let i = 0; i < 7; i++) v = v * 3 + co[i]; return v; };
+            const idToCo = v => { const co = new Int8Array(8); let s = 0; for (let i = 6; i >= 0; i--) { co[i] = v % 3; s += co[i]; v = Math.floor(v / 3); } co[7] = (3 - (s % 3)) % 3; return co; };
+            const esToId = ep => { let id = 0, k = 3; for (let i = 11; i >= 0 && k >= 0; i--) { if (ep[i] >= 8) k--; else id += C[i][k]; } return id; };
+            const coTrans = new Int16Array(2187 * 18), esTrans = new Int16Array(495 * 18);
+            for (let u = 0; u < 2187; u++) {
+                const co = idToCo(u);
+                for (let m = 0; m < 18; m++) {
+                    const mc = MOVE_CUBIES[m], nco = new Int8Array(8);
+                    for (let i = 0; i < 8; i++) nco[i] = (co[mc.cp[i]] + mc.co[i]) % 3;
+                    coTrans[u * 18 + m] = coToId(nco);
+                }
+            }
+            for (let u = 0; u < 495; u++) {
+                const mask = new Int8Array(12);
+                let tmpId = u, k = 3;
+                for (let i = 11; i >= 0 && k >= 0; i--) { if (tmpId >= C[i][k]) tmpId -= C[i][k]; else { mask[i] = 1; k--; } }
+                const fake = new Int8Array(12);
+                let eIdx = 8, oIdx = 0;
+                for (let i = 0; i < 12; i++) fake[i] = mask[i] ? eIdx++ : oIdx++;
+                for (let m = 0; m < 18; m++) {
+                    const mc = MOVE_CUBIES[m], nep = new Int8Array(12);
+                    for (let i = 0; i < 12; i++) nep[i] = fake[mc.ep[i]];
+                    esTrans[u * 18 + m] = esToId(nep);
+                }
+            }
+            const dist2 = new Int8Array(2187 * 495).fill(-1);
+            dist2[0] = 0;
+            const q2 = new Int32Array(1082565);
+            let q2H = 0, q2T = 1;
+            while (q2H < q2T) {
+                const idx = q2[q2H++], d = dist2[idx] + 1, coId = Math.floor(idx / 495), esId = idx % 495;
+                for (let mi = 0; mi < G1_MOVES.length; mi++) {
+                    const m = G1_MOVES[mi];
+                    const nIdx = coTrans[coId * 18 + m] * 495 + esTrans[esId * 18 + m];
+                    if (dist2[nIdx] === -1) { dist2[nIdx] = d; q2[q2T++] = nIdx; }
+                }
+            }
+
+            // Phase 3: G2 -> G3 & Phase 4: G3 -> Solved
+            const G3_MOVES = [1, 4, 7, 10, 13, 16];
+            const G2_MOVES = [0,1,2, 3,4,5, 7, 10, 13, 16];
+            const cpG3 = new Uint8Array(40320), cpTo96 = new Int8Array(40320).fill(-1);
+            {
+                cpG3[0] = 1;
+                const q = [0];
+                for (let qi = 0; qi < q.length; qi++) {
+                    const u = q[qi], cp = idxToPerm(u, 8);
+                    for (const m of G3_MOVES) {
+                        const mc = MOVE_CUBIES[m], ncp = new Int8Array(8);
+                        for (let i = 0; i < 8; i++) ncp[i] = cp[mc.cp[i]];
+                        const v = permToIdx(ncp, 8);
+                        if (!cpG3[v]) { cpG3[v] = 1; q.push(v); }
+                    }
+                }
+                let cnt = 0;
+                for (let i = 0; i < 40320; i++) if (cpG3[i]) cpTo96[i] = cnt++;
+            }
+            const cpG2Trans = new Int32Array(40320 * 10), dist3cp = new Int8Array(40320).fill(-1);
+            for (let u = 0; u < 40320; u++) {
+                const cp = idxToPerm(u, 8);
+                for (let mi = 0; mi < 10; mi++) {
+                    const mc = MOVE_CUBIES[G2_MOVES[mi]], ncp = new Int8Array(8);
+                    for (let i = 0; i < 8; i++) ncp[i] = cp[mc.cp[i]];
+                    cpG2Trans[u * 10 + mi] = permToIdx(ncp, 8);
+                }
+            }
+            {
+                const q = [];
+                for (let i = 0; i < 40320; i++) if (cpG3[i]) { dist3cp[i] = 0; q.push(i); }
+                for (let qi = 0; qi < q.length; qi++) {
+                    const u = q[qi], d = dist3cp[u] + 1;
+                    for (let mi = 0; mi < 10; mi++) {
+                        const v = cpG2Trans[u * 10 + mi];
+                        if (dist3cp[v] === -1) { dist3cp[v] = d; q.push(v); }
+                    }
+                }
+            }
+            const msToId = ep => { let id = 0, k = 3; for (let i = 7; i >= 0 && k >= 0; i--) { if (ep[i] % 2 === 0) k--; else id += C[i][k]; } return id; };
+            const MS_GOAL = msToId([0,1,2,3,4,5,6,7]);
+            const msMasks = [];
+            for (let b = 0; b < 256; b++) {
+                let cnt = 0; for (let i = 0; i < 8; i++) if (b & (1 << i)) cnt++;
+                if (cnt === 4) {
+                    const fake = new Int8Array(8); let mi = 0, si = 1;
+                    for (let i = 0; i < 8; i++) { if (b & (1 << i)) { fake[i] = mi; mi += 2; } else { fake[i] = si; si += 2; } }
+                    msMasks[msToId(fake)] = fake;
+                }
+            }
+            const msG2Trans = new Int8Array(70 * 10), dist3ms = new Int8Array(70).fill(-1);
+            for (let u = 0; u < 70; u++) {
+                const ep = msMasks[u];
+                for (let mi = 0; mi < 10; mi++) {
+                    const mc = MOVE_CUBIES[G2_MOVES[mi]], nep = new Int8Array(8);
+                    for (let i = 0; i < 8; i++) nep[i] = ep[mc.ep[i]];
+                    msG2Trans[u * 10 + mi] = msToId(nep);
+                }
+            }
+            {
+                dist3ms[MS_GOAL] = 0;
+                const q = [MS_GOAL];
+                for (let qi = 0; qi < q.length; qi++) {
+                    const u = q[qi], d = dist3ms[u] + 1;
+                    for (let mi = 0; mi < 10; mi++) {
+                        const v = msG2Trans[u * 10 + mi];
+                        if (dist3ms[v] === -1) { dist3ms[v] = d; q.push(v); }
+                    }
+                }
+            }
+
+            const cp96Trans = new Int8Array(96 * 6), rev96 = new Int32Array(96);
+            for (let i = 0; i < 40320; i++) if (cpTo96[i] !== -1) rev96[cpTo96[i]] = i;
+            for (let u = 0; u < 96; u++) {
+                const cp = idxToPerm(rev96[u], 8);
+                for (let mi = 0; mi < 6; mi++) {
+                    const mc = MOVE_CUBIES[G3_MOVES[mi]], ncp = new Int8Array(8);
+                    for (let i = 0; i < 8; i++) ncp[i] = cp[mc.cp[i]];
+                    cp96Trans[u * 6 + mi] = cpTo96[permToIdx(ncp, 8)];
+                }
+            }
+            const mPermTrans = new Int8Array(24 * 6), sPermTrans = new Int8Array(24 * 6), ePermTrans = new Int8Array(24 * 6);
+            for (let u = 0; u < 24; u++) {
+                const p = idxToPerm(u, 4);
+                for (let mi = 0; mi < 6; mi++) {
+                    const mc = MOVE_CUBIES[G3_MOVES[mi]], nm = new Int8Array(4), ns = new Int8Array(4), ne = new Int8Array(4);
+                    for (let k = 0; k < 4; k++) {
+                        nm[k] = p[mc.ep[k * 2] >> 1];
+                        ns[k] = p[(mc.ep[k * 2 + 1] - 1) >> 1];
+                        ne[k] = p[mc.ep[8 + k] - 8];
+                    }
+                    mPermTrans[u * 6 + mi] = permToIdx(nm, 4);
+                    sPermTrans[u * 6 + mi] = permToIdx(ns, 4);
+                    ePermTrans[u * 6 + mi] = permToIdx(ne, 4);
+                }
+            }
+            const TOTAL_G3 = 96 * 13824;
+            const dist4 = new Int8Array(TOTAL_G3).fill(-1), parentMove4 = new Int8Array(TOTAL_G3).fill(-1), parentState4 = new Int32Array(TOTAL_G3).fill(-1);
+            {
+                const q = new Int32Array(700000);
+                let h = 0, tail = 1;
+                dist4[0] = 0;
+                while (h < tail) {
+                    const idx = q[h++], d = dist4[idx] + 1;
+                    const c96 = idx % 96, t = Math.floor(idx / 96), mI = t % 24, t2 = Math.floor(t / 24), sI = t2 % 24, eI = Math.floor(t2 / 24);
+                    for (let mi = 0; mi < 6; mi++) {
+                        const nIdx = cp96Trans[c96 * 6 + mi] + 96 * (mPermTrans[mI * 6 + mi] + 24 * (sPermTrans[sI * 6 + mi] + 24 * ePermTrans[eI * 6 + mi]));
+                        if (dist4[nIdx] === -1) {
+                            dist4[nIdx] = d;
+                            parentMove4[nIdx] = G3_MOVES[mi];
+                            parentState4[nIdx] = idx;
+                            q[tail++] = nIdx;
+                        }
+                    }
+                }
+            }
+
+            function cubieToG3Idx(c) {
+                const c96 = cpTo96[permToIdx(c.cp, 8)];
+                if (c96 === -1) return -1;
+                for (let k = 0; k < 4; k++) {
+                    if (c.ep[k * 2] % 2 !== 0 || c.ep[k * 2] >= 8) return -1;
+                    if (c.ep[k * 2 + 1] % 2 !== 1 || c.ep[k * 2 + 1] >= 8) return -1;
+                    if (c.ep[8 + k] < 8) return -1;
+                }
+                const mPerm = [0,2,4,6].map(i => c.ep[i] >> 1);
+                const sPerm = [1,3,5,7].map(i => (c.ep[i] - 1) >> 1);
+                const ePerm = [8,9,10,11].map(i => c.ep[i] - 8);
+                return c96 + 96 * (permToIdx(mPerm, 4) + 24 * (permToIdx(sPerm, 4) + 24 * permToIdx(ePerm, 4)));
+            }
+
+            function simplifyMoveList(moves) {
+                const stack = [];
+                const pow = m => (m === '2' ? 2 : (m === "'" ? 3 : 1));
+                const fmt = (b, p) => (p === 1 ? b : p === 2 ? b + '2' : p === 3 ? b + "'" : null);
+                for (const raw of moves) {
+                    const b = raw[0], p = pow(raw.slice(1));
+                    if (stack.length > 0 && stack[stack.length - 1][0] === b) {
+                        const np = (pow(stack[stack.length - 1].slice(1)) + p) % 4;
+                        stack.pop();
+                        const f = fmt(b, np);
+                        if (f) stack.push(f);
+                    } else stack.push(raw);
+                }
+                return stack;
+            }
+
+            cachedShortSolver = stateObj => {
+                let c = stateToCubie(stateObj);
+                const moves = [];
+                let eoId = eoToId(c.eo);
+                while (eoId !== 0) {
+                    const m = parentMove1[eoId];
+                    const invM = Math.floor(m / 3) * 3 + (2 - (m % 3));
+                    moves.push(MOVE_NAMES[invM]);
+                    c = mulCubie(c, MOVE_CUBIES[invM]);
+                    eoId = eoToId(c.eo);
+                }
+                let idx2 = coToId(c.co) * 495 + esToId(c.ep);
+                while (idx2 !== 0) {
+                    const curD = dist2[idx2], coId = Math.floor(idx2 / 495), esId = idx2 % 495;
+                    for (let mi = 0; mi < G1_MOVES.length; mi++) {
+                        const m = G1_MOVES[mi];
+                        const nIdx = coTrans[coId * 18 + m] * 495 + esTrans[esId * 18 + m];
+                        if (dist2[nIdx] === curD - 1) { moves.push(MOVE_NAMES[m]); c = mulCubie(c, MOVE_CUBIES[m]); idx2 = nIdx; break; }
+                    }
+                }
+                const p3Stack = [];
+                function verifyStackInG3(baseC) {
+                    let tc = baseC;
+                    for (let i = 0; i < p3Stack.length; i++) tc = mulCubie(tc, MOVE_CUBIES[p3Stack[i]]);
+                    const idx = cubieToG3Idx(tc);
+                    return idx !== -1 && dist4[idx] !== -1;
+                }
+                function dfs3Fast(cpId, msId, depth, bound, lastFace, startC) {
+                    const h = Math.max(dist3cp[cpId], dist3ms[msId]);
+                    if (depth + h > bound) return depth + h;
+                    if (h === 0 && verifyStackInG3(startC)) return -1;
+                    let minNext = 99;
+                    for (let mi = 0; mi < G2_MOVES.length; mi++) {
+                        const f = Math.floor(G2_MOVES[mi] / 3);
+                        if (f === lastFace) continue;
+                        p3Stack.push(G2_MOVES[mi]);
+                        const r = dfs3Fast(cpG2Trans[cpId * 10 + mi], msG2Trans[msId * 10 + mi], depth + 1, bound, f, startC);
+                        if (r === -1) return -1;
+                        if (r < minNext) minNext = r;
+                        p3Stack.pop();
+                    }
+                    return minNext;
+                }
+                const startCpId = permToIdx(c.cp, 8), startMsId = msToId(c.ep);
+                let bound = Math.max(dist3cp[startCpId], dist3ms[startMsId]);
+                while (bound <= 16) {
+                    const r = dfs3Fast(startCpId, startMsId, 0, bound, -1, c);
+                    if (r === -1) break;
+                    bound = r;
+                }
+                for (const m of p3Stack) { moves.push(MOVE_NAMES[m]); c = mulCubie(c, MOVE_CUBIES[m]); }
+                let idx4 = cubieToG3Idx(c);
+                while (idx4 !== 0) {
+                    const m = parentMove4[idx4];
+                    moves.push(MOVE_NAMES[m]);
+                    c = mulCubie(c, MOVE_CUBIES[m]);
+                    idx4 = parentState4[idx4];
+                }
+                return simplifyMoveList(moves);
+            };
+            return cachedShortSolver;
+        }
+
+        function describeAnyMoveThai(token) {
+            const clean = String(token || '').trim();
+            if (!clean) return null;
+            const exact = BASIC_MOVE_GUIDE.find(item => item.move === clean);
+            if (exact) return exact;
+            const baseEntry = BASIC_MOVE_GUIDE.find(item => item.move === clean[0]);
+            if (baseEntry && clean.endsWith('2')) {
+                return {
+                    move: clean,
+                    shortDir: `${baseEntry.face.split('(')[0].trim()} 180° (2 ครั้ง)`,
+                    face: baseEntry.face,
+                    detail: 'หมุนครึ่งรอบ 180° (2 ครั้ง — จะหมุนตามเข็มหรือทวนเข็ม 2 ทีก็ได้ผลเหมือนกัน)'
+                };
+            }
+            return { move: clean, shortDir: clean, face: '', detail: `หมุนตามสัญลักษณ์ ${clean}` };
+        }
+
+        // Color Solver Interactive State & Guided Mini-3D Preview
+        let solverInputState = {};
+        let solverBrush = 'F';
+        let solverCycleMode = false;
+        let isSolverPainting = false;
+        let solverActiveFace = 'F';
+
+        let solverSolutionMoves = [];
+        let solverSolutionStart = null;
+        let solverPlayState = null;
+        let solverCursor = 0;
+        let solverAutoplayTimer = null;
+
+        let solverCanvas = null;
+        let solverCtx = null;
+        let solverCamMat = [...CAMERA_PRESETS.F];
+        let solverCamTargetMat = null;
+        let solverCamVel = { vx: 0, vy: 0 };
+        let isDraggingSolverCube = false;
+        let solverSliceAnim = null;
+        let solverRafId = null;
+        let solverLastTs = 0;
+
+        function requestSolver3DRender() {
+            if (solverRafId !== null) return;
+            solverLastTs = performance.now();
+            solverRafId = requestAnimationFrame(stepSolver3DFrame);
+        }
+
+        function finalizeSolverSliceAnim() {
+            if (!solverSliceAnim) return;
+            const finished = solverSliceAnim;
+            solverSliceAnim = null;
+            if (finished.onDone) finished.onDone();
+        }
+
+        function stepSolver3DFrame(now) {
+            solverRafId = null;
+            const dt = Math.min(0.05, Math.max(0.001, (now - solverLastTs) / 1000));
+            solverLastTs = now;
+            let keep = false;
+
+            if (solverSliceAnim) {
+                const p = Math.min(1, (now - solverSliceAnim.startMs) / solverSliceAnim.duration);
+                solverSliceAnim.curAngle = solverSliceAnim.targetAngle * (1 - Math.pow(1 - p, 3));
+                if (p >= 1) finalizeSolverSliceAnim();
+                else keep = true;
+            }
+
+            if (solverCamTargetMat) {
+                const alpha = 1 - Math.exp(-12 * dt);
+                solverCamMat = orthonormalizeMat3(solverCamMat.map((v, i) => v + (solverCamTargetMat[i] - v) * alpha));
+                if (solverCamMat.reduce((acc, v, i) => acc + Math.abs(v - solverCamTargetMat[i]), 0) < 0.015) {
+                    solverCamMat = [...solverCamTargetMat];
+                    solverCamTargetMat = null;
+                } else {
+                    keep = true;
+                }
+            } else if (!isDraggingSolverCube && Math.hypot(solverCamVel.vx, solverCamVel.vy) > 0.002) {
+                solverCamMat = orthonormalizeMat3(mulMat3(rotXMat3(solverCamVel.vy * dt), mulMat3(rotYMat3(solverCamVel.vx * dt), solverCamMat)));
+                const decay = Math.exp(-7 * dt);
+                solverCamVel.vx *= decay;
+                solverCamVel.vy *= decay;
+                keep = true;
+            }
+
+            const renderState = solverSolutionMoves.length > 0 && solverPlayState ? solverPlayState : solverInputState;
+            render3DCubeScene(solverCanvas, solverCtx, renderState, solverCamMat, solverSliceAnim);
+            if (keep) solverRafId = requestAnimationFrame(stepSolver3DFrame);
+        }
+
+        function stopSolverAutoplay() {
+            if (solverAutoplayTimer) {
+                clearInterval(solverAutoplayTimer);
+                solverAutoplayTimer = null;
+            }
+            const btn = document.getElementById('btn-solver-autoplay');
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-play mr-1"></i>เล่น';
+        }
+
+        function invalidateSolverSolution() {
+            stopSolverAutoplay();
+            solverSliceAnim = null;
+            solverSolutionMoves = [];
+            solverSolutionStart = null;
+            solverPlayState = null;
+            solverCursor = 0;
+            const box = document.getElementById('solver-result-box');
+            if (box) box.classList.add('hidden');
+            const idleTips = document.getElementById('solver-idle-tips');
+            if (idleTips) idleTips.classList.remove('hidden');
+        }
+
+        function makeCenteredEmptyState() {
+            const st = {};
+            SOLVER_FACES.forEach(f => {
+                st[f] = Array(9).fill('?');
+                st[f][4] = f; // Fixed locked center color!
+            });
+            return st;
+        }
+
+        function resetSolverToCenters(silent = false) {
+            invalidateSolverSolution();
+            solverInputState = makeCenteredEmptyState();
+            renderSolverUI();
+            if (!silent) showToast('เคลียร์เหลือเฉพาะสีแกนกลางทั้ง 6 ด้านแล้ว (พร้อมใส่สี 48 ช่องรอบนอก)');
+        }
+
+        function fillSolverSolved() {
+            invalidateSolverSolution();
+            solverInputState = {
+                U: Array(9).fill('U'), L: Array(9).fill('L'), F: Array(9).fill('F'),
+                R: Array(9).fill('R'), B: Array(9).fill('B'), D: Array(9).fill('D')
+            };
+            renderSolverUI();
+            showToast('เติมสีครบสมบูรณ์ทั้ง 6 ด้านแล้ว (เหมาะสำหรับปรับเฉพาะชิ้นที่สลับ)');
+        }
+
+        function loadFromMainCubeToSolver(scrollToSection = false) {
+            invalidateSolverSolution();
+            solverInputState = cloneAnyCubeState(cubeState);
+            renderSolverUI();
+            if (scrollToSection) {
+                const sec = document.getElementById('color-solver');
+                if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            showToast('ดึงสีจากลูกบาศก์ 3D ด้านบนเข้าสู่ตัวช่วยแก้แล้ว');
+        }
+
+        function autoFillRemainingColor() {
+            const counts = { U: 0, L: 0, F: 0, R: 0, B: 0, D: 0 };
+            let empty = 0;
+            SOLVER_FACES.forEach(f => solverInputState[f].forEach(c => {
+                if (!c || c === '?') empty++;
+                else if (counts[c] !== undefined) counts[c]++;
+            }));
+            if (empty === 0) { showToast('ใส่สีครบทั้ง 54 ช่องเรียบร้อยแล้ว!'); return; }
+            const over = SOLVER_FACES.filter(f => counts[f] > 9);
+            if (over.length > 0) {
+                showToast(`ไม่สามารถเติมอัตโนมัติได้: สี${SOLVER_FACE_INFO[over[0]].colorName}เกิน 9 ช่อง`);
+                return;
+            }
+            const missing = SOLVER_FACES.filter(f => counts[f] < 9);
+            if (missing.length !== 1) {
+                showToast(`ยังขาดอยู่ ${missing.length} สี (${missing.map(f => SOLVER_FACE_INFO[f].colorName).join(', ')}) — ใส่เพิ่มจนเหลือสีเดียวก่อนครับ`);
+                return;
+            }
+            const lastColor = missing[0];
+            SOLVER_FACES.forEach(f => {
+                for (let i = 0; i < 9; i++) {
+                    if (i !== 4 && (!solverInputState[f][i] || solverInputState[f][i] === '?')) solverInputState[f][i] = lastColor;
+                }
+            });
+            invalidateSolverSolution();
+            renderSolverUI();
+            showToast(`เติมสี${SOLVER_FACE_INFO[lastColor].colorName}ลงช่องว่างที่เหลือให้ครบ 9/9 อัตโนมัติแล้ว!`);
+        }
+
+        function selectSolverBrush(key) {
+            solverBrush = key;
+            renderSolverBrushPalette();
+        }
+
+        function toggleSolverInputMode() {
+            solverCycleMode = !solverCycleMode;
+            const btn = document.getElementById('solver-input-mode-btn');
+            if (btn) {
+                btn.innerHTML = solverCycleMode ? '🔄 โหมดกดวนสีในช่องเดียว' : '🖌️ โหมดแตะ &amp; ลากระบาย';
+            }
+            showToast(solverCycleMode ? 'เปิดโหมดแตะซ้ำเพื่อวน 6 สีทีละช่อง' : 'เปิดโหมดแตะหรือลากเพื่อระบายสี');
+        }
+
+        function focusSolverFace(faceKey) {
+            solverActiveFace = faceKey;
+            if (CAMERA_PRESETS[faceKey]) {
+                solverCamTargetMat = [...CAMERA_PRESETS[faceKey]];
+                solverCamVel = { vx: 0, vy: 0 };
+                requestSolver3DRender();
+            }
+            const tipBox = document.getElementById('solver-face-orientation-tip');
+            const info = SOLVER_FACE_INFO[faceKey];
+            if (tipBox && info) {
+                tipBox.innerHTML = `<i class="fa-solid fa-hands text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0"></i><span><strong>${escapeCfopHtml(info.holdTip)}</strong></span>`;
+            }
+            renderSolverNetGrid();
+        }
+
+        function paintSolverSticker(faceKey, idx, explicitColor) {
+            if (idx === 4) {
+                focusSolverFace(faceKey);
+                showToast(`แกนกลางด้าน ${faceKey} (${SOLVER_FACE_INFO[faceKey].colorName}) ถูกล็อกไว้อัตโนมัติเพื่อเป็นหลักอ้างอิงครับ`);
+                return;
+            }
+            let nextColor = explicitColor;
+            if (!nextColor) {
+                if (solverCycleMode) {
+                    const order = ['?', 'U', 'L', 'F', 'R', 'B', 'D'];
+                    const curIdx = order.indexOf(solverInputState[faceKey][idx] || '?');
+                    nextColor = order[(curIdx + 1) % order.length];
+                } else {
+                    nextColor = solverBrush;
+                }
+            }
+            if (solverInputState[faceKey][idx] === nextColor) return;
+            solverInputState[faceKey][idx] = nextColor;
+            invalidateSolverSolution();
+            renderSolverUI();
+        }
+
+        function renderSolverBrushPalette() {
+            const el = document.getElementById('solver-brush-palette');
+            if (!el) return;
+            const counts = { U: 0, L: 0, F: 0, R: 0, B: 0, D: 0, '?': 0 };
+            SOLVER_FACES.forEach(f => solverInputState[f].forEach(c => { counts[c] = (counts[c] || 0) + 1; }));
+
+            el.innerHTML = SOLVER_BRUSHES.map(b => {
+                const active = solverBrush === b.key;
+                const cnt = counts[b.key] || 0;
+                const badgeText = b.key === '?' ? `${cnt} ว่าง` : `${cnt}/9${cnt === 9 ? '✓' : ''}`;
+                const badgeCls = b.key === '?' ? 'opacity-80' : cnt === 9 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : cnt > 9 ? 'text-rose-600 font-bold' : 'opacity-80';
+                return `
+                    <button type="button" data-brush="${b.key}" onclick="selectSolverBrush('${b.key}')" class="p-1.5 rounded-xl border transition cursor-pointer flex flex-col items-center gap-0.5 ${active ? 'ring-2 ring-indigo-600 border-indigo-600 bg-white dark:bg-google-dark-surface shadow-sm scale-[1.03]' : 'bg-white/80 dark:bg-google-dark-surface/80 border-google-border dark:border-google-dark-border hover:border-indigo-400'}">
+                        <span class="w-6 h-6 rounded-md border shadow-2xs flex items-center justify-center text-[10px] font-mono font-bold" style="background:${b.bg}; color:${b.text}; border-color:${b.border};">${b.shortcut}</span>
+                        <span class="text-[11px] font-heading font-bold text-google-text dark:text-white leading-none">${b.name}</span>
+                        <span class="text-[10px] font-mono ${badgeCls}">${badgeText}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderSolverNetGrid() {
+            const container = document.getElementById('solver-net-grid');
+            if (!container) return;
+            container.innerHTML = SOLVER_FACES.map(fKey => {
+                const info = SOLVER_FACE_INFO[fKey];
+                const isFocused = solverActiveFace === fKey;
+                const cells = solverInputState[fKey].map((colKey, idx) => {
+                    const isCenter = idx === 4;
+                    const hex = FACE_COLORS[colKey] || FACE_COLORS['?'];
+                    const isDarkTxt = colKey === 'U' || colKey === 'D';
+                    const txtColor = isDarkTxt ? '#0f172a' : '#ffffff';
+                    if (isCenter) {
+                        return `
+                            <div onclick="focusSolverFace('${fKey}')" title="แกนกลางด้าน ${fKey} (${info.colorName}) — ล็อกไว้แล้ว" class="aspect-square rounded-md border-2 border-slate-900/25 dark:border-white/30 flex flex-col items-center justify-center cursor-not-allowed shadow-2xs" style="background:${hex}; color:${txtColor};">
+                                <span class="font-mono text-[10px] sm:text-xs font-extrabold leading-none">${fKey}</span>
+                                <i class="fa-solid fa-lock text-[7px] opacity-65 mt-0.5"></i>
+                            </div>
+                        `;
+                    }
+                    return `
+                        <button type="button" data-face="${fKey}" data-idx="${idx}"
+                            onpointerdown="isSolverPainting = !solverCycleMode; paintSolverSticker('${fKey}', ${idx});"
+                            onpointerenter="if(isSolverPainting && !solverCycleMode) paintSolverSticker('${fKey}', ${idx});"
+                            oncontextmenu="event.preventDefault(); paintSolverSticker('${fKey}', ${idx}, '?');"
+                            aria-label="ช่อง ${fKey}${idx}"
+                            class="aspect-square rounded-md border border-black/25 dark:border-white/20 hover:scale-[1.06] active:scale-95 transition-transform cursor-pointer flex items-center justify-center text-[10px] font-mono font-bold shadow-2xs"
+                            style="background:${hex}; color:${txtColor};">${colKey === '?' ? '' : ''}</button>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="${info.gridCls} p-1.5 rounded-xl bg-white dark:bg-google-dark-surface border ${isFocused ? 'border-indigo-500 ring-2 ring-indigo-500/30 shadow-sm' : 'border-google-border dark:border-google-dark-border'} space-y-1">
+                        <button type="button" onclick="focusSolverFace('${fKey}')" class="w-full flex items-center justify-between px-1 py-0.5 rounded text-[10px] font-heading font-bold ${isFocused ? 'text-indigo-700 dark:text-indigo-300' : 'text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text'} cursor-pointer">
+                            <span>${info.title}</span>
+                            <span class="opacity-80">${info.colorName}</span>
+                        </button>
+                        <div class="grid grid-cols-3 gap-1">
+                            ${cells}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateSolverValidationBanner() {
+            const box = document.getElementById('solver-validation-banner');
+            const solveBtn = document.getElementById('btn-solve-color-cube');
+            if (!box) return null;
+            const res = validateSolverCubeState(solverInputState);
+            if (res.ok) {
+                const alreadySolved = isCubeStateSolved(solverInputState);
+                box.className = 'p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-200 flex items-start gap-2';
+                box.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0"></i><span><strong>${alreadySolved ? 'ลูกบาศก์แก้สมบูรณ์อยู่แล้ว!' : 'ตรวจสอบสีครบ & ถูกต้อง 100% — พร้อมคำนวณวิธีแก้!'}</strong></span>`;
+                if (solveBtn) solveBtn.disabled = false;
+            } else {
+                const isIncomplete = res.stage === 'incomplete';
+                box.className = isIncomplete
+                    ? 'p-2.5 rounded-xl bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-xs text-google-text-body dark:text-google-dark-text-body flex items-start gap-2'
+                    : 'p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs text-rose-800 dark:text-rose-200 flex items-start gap-2';
+                const icon = isIncomplete ? 'fa-circle-info text-indigo-500' : 'fa-triangle-exclamation text-rose-600 dark:text-rose-400';
+                box.innerHTML = `<i class="fa-solid ${icon} mt-0.5 shrink-0"></i><span>${escapeCfopHtml(res.reason)}</span>`;
+                if (solveBtn) solveBtn.disabled = !res.ok;
+            }
+            return res;
+        }
+
+        function renderSolverUI() {
+            renderSolverBrushPalette();
+            renderSolverNetGrid();
+            updateSolverValidationBanner();
+            requestSolver3DRender();
+        }
+
+        function solveColorInputCube() {
+            const valid = validateSolverCubeState(solverInputState);
+            if (!valid.ok) {
+                showToast(valid.reason);
+                return;
+            }
+            if (isCubeStateSolved(solverInputState)) {
+                invalidateSolverSolution();
+                document.getElementById('solver-result-box').classList.remove('hidden');
+                const idleTips = document.getElementById('solver-idle-tips');
+                if (idleTips) idleTips.classList.add('hidden');
+                document.getElementById('solver-result-summary').textContent = '🎉 รูบิคสมบูรณ์อยู่แล้ว (0 ท่า)';
+                document.getElementById('solver-result-time').textContent = 'ไม่ต้องหมุนเพิ่มเลยครับ';
+                document.getElementById('solver-current-step-card').innerHTML = '<div class="text-xs font-heading font-bold text-emerald-700 dark:text-emerald-300">✅ ทั้ง 6 ด้านเรียงสีตรงแกนกลางเรียบร้อยแล้ว</div>';
+                document.getElementById('solver-steps-strip').innerHTML = '';
+                return;
+            }
+            const t0 = performance.now();
+            const solverFn = getShortSolver();
+            const moves = solverFn(solverInputState);
+            const ms = Math.max(1, Math.round(performance.now() - t0));
+
+            // Double-verify solution before displaying!
+            const testVerify = cloneAnyCubeState(solverInputState);
+            moves.forEach(tok => executeMoveTokenOn(testVerify, tok));
+            if (!isCubeStateSolved(testVerify)) {
+                showToast('เกิดข้อผิดพลาดในการคำนวณ กรุณาตรวจสอบสีอีกครั้ง');
+                return;
+            }
+
+            stopSolverAutoplay();
+            solverSliceAnim = null;
+            solverSolutionMoves = moves;
+            solverSolutionStart = cloneAnyCubeState(solverInputState);
+            solverPlayState = cloneAnyCubeState(solverInputState);
+            solverCursor = 0;
+
+            document.getElementById('solver-result-box').classList.remove('hidden');
+            const idleTips = document.getElementById('solver-idle-tips');
+            if (idleTips) idleTips.classList.add('hidden');
+            document.getElementById('solver-result-summary').textContent = `แก้สำเร็จใน ${moves.length} ท่า!`;
+            document.getElementById('solver-result-time').textContent = `คำนวณเสร็จใน ${ms} ms • อ้างอิง: หน้า F เขียวเข้าหาตัว, U ขาวอยู่บน`;
+            renderSolverStepState();
+            requestSolver3DRender();
+            showToast(`พบวิธีแก้สั้น ${moves.length} ท่าแล้ว! กด "ถัดไป" หรือ "เล่น" ได้เลย`);
+        }
+
+        function renderSolverStepState() {
+            const card = document.getElementById('solver-current-step-card');
+            const strip = document.getElementById('solver-steps-strip');
+            const total = solverSolutionMoves.length;
+            if (!card || !strip) return;
+
+            if (solverCursor >= total) {
+                card.innerHTML = `
+                    <div class="flex items-center justify-between gap-2">
+                        <div>
+                            <span class="text-xs font-heading font-bold text-emerald-700 dark:text-emerald-300 block">🎉 เสร็จสมบูรณ์ (${total}/${total} ท่า)</span>
+                            <span class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">รูบิคครบทั้ง 6 ด้านแล้ว กด ⏮ เพื่อเล่นซ้ำอีกครั้ง</span>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-mono text-sm font-extrabold">DONE</span>
+                    </div>
+                `;
+            } else {
+                const tok = solverSolutionMoves[solverCursor];
+                const info = describeAnyMoveThai(tok);
+                card.innerHTML = `
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-[11px] font-heading font-bold text-indigo-600 dark:text-indigo-400">ท่าที่ ${solverCursor + 1} / ${total}</span>
+                                <span class="text-[11px] font-bold text-google-text dark:text-white">${escapeCfopHtml(info.face)} • ${escapeCfopHtml(info.shortDir)}</span>
+                            </div>
+                            <p class="text-xs text-google-text-body dark:text-google-dark-text-body mt-0.5">${escapeCfopHtml(info.detail)}</p>
+                        </div>
+                        <span class="px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-indigo-600 text-white font-mono text-lg font-extrabold shrink-0 shadow-xs">${escapeCfopHtml(tok)}</span>
+                    </div>
+                `;
+            }
+
+            strip.innerHTML = solverSolutionMoves.map((tok, i) => {
+                const cls = i === solverCursor
+                    ? 'bg-emerald-600 text-white ring-2 ring-emerald-400 shadow-xs scale-105'
+                    : i < solverCursor
+                        ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 opacity-75'
+                        : 'bg-white dark:bg-google-dark-surface text-google-text dark:text-white border border-google-border dark:border-google-dark-border hover:border-indigo-400';
+                return `<button type="button" onclick="solverJumpToStep(${i})" class="px-2 py-0.5 rounded-md font-mono text-xs font-bold transition cursor-pointer ${cls}">${escapeCfopHtml(tok)}</button>`;
+            }).join('');
+        }
+
+        function animateSolverMoveToken(tok, onCommit) {
+            finalizeSolverSliceAnim();
+            const base = tok[0], mod = tok.slice(1);
+            const def = SLICE_DEFS[base];
+            if (!def) { onCommit(); return; }
+            const targetAngle = mod === '2' ? -Math.PI : (mod === "'" ? Math.PI / 2 : -Math.PI / 2);
+            const dur = Math.min(260, Math.round(Number(document.getElementById('solver-speed-select')?.value || 550) * 0.52));
+            solverSliceAnim = {
+                def,
+                targetAngle,
+                curAngle: 0,
+                startMs: performance.now(),
+                duration: dur,
+                onDone: () => {
+                    onCommit();
+                    renderSolverStepState();
+                    requestSolver3DRender();
+                }
+            };
+            requestSolver3DRender();
+        }
+
+        function solverNextStep() {
+            if (!solverSolutionMoves.length || solverCursor >= solverSolutionMoves.length) {
+                stopSolverAutoplay();
+                return;
+            }
+            const tok = solverSolutionMoves[solverCursor];
+            solverCursor++;
+            renderSolverStepState();
+            animateSolverMoveToken(tok, () => executeMoveTokenOn(solverPlayState, tok));
+            playBeep(560 + (solverCursor % 5) * 40, 0.04, 0.04);
+        }
+
+        function solverPrevStep() {
+            stopSolverAutoplay();
+            if (!solverSolutionMoves.length || solverCursor <= 0) return;
+            solverCursor--;
+            const inv = invertAlgorithm(solverSolutionMoves[solverCursor]);
+            renderSolverStepState();
+            animateSolverMoveToken(inv, () => executeMoveTokenOn(solverPlayState, inv));
+            playBeep(440, 0.04, 0.04);
+        }
+
+        function solverResetStep() {
+            stopSolverAutoplay();
+            solverSliceAnim = null;
+            if (!solverSolutionStart) return;
+            solverPlayState = cloneAnyCubeState(solverSolutionStart);
+            solverCursor = 0;
+            renderSolverStepState();
+            requestSolver3DRender();
+        }
+
+        function solverJumpToStep(idx) {
+            stopSolverAutoplay();
+            solverSliceAnim = null;
+            if (!solverSolutionStart) return;
+            const target = Math.max(0, Math.min(solverSolutionMoves.length, idx));
+            solverPlayState = cloneAnyCubeState(solverSolutionStart);
+            for (let i = 0; i < target; i++) executeMoveTokenOn(solverPlayState, solverSolutionMoves[i]);
+            solverCursor = target;
+            renderSolverStepState();
+            requestSolver3DRender();
+        }
+
+        function solverTogglePlay() {
+            if (!solverSolutionMoves.length) return;
+            if (solverAutoplayTimer) {
+                stopSolverAutoplay();
+                return;
+            }
+            if (solverCursor >= solverSolutionMoves.length) solverResetStep();
+            const btn = document.getElementById('btn-solver-autoplay');
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-pause mr-1"></i>หยุด';
+            const speed = Number(document.getElementById('solver-speed-select')?.value || 550);
+            solverNextStep();
+            solverAutoplayTimer = setInterval(() => {
+                if (solverCursor >= solverSolutionMoves.length) {
+                    stopSolverAutoplay();
+                    return;
+                }
+                solverNextStep();
+            }, speed);
+        }
+
+        function copySolverSolution() {
+            if (!solverSolutionMoves.length) return;
+            navigator.clipboard.writeText(solverSolutionMoves.join(' ')).then(() => {
+                showToast(`คัดลอกสูตรแก้ ${solverSolutionMoves.length} ท่าแล้ว!`);
+            });
+        }
+
+        function sendSolverColorsToMainCube() {
+            const valid = validateSolverCubeState(solverInputState);
+            if (!valid.ok) { showToast(valid.reason); return; }
+            clearMoveQueue();
+            cubeState = cloneAnyCubeState(solverInputState);
+            renderCubeVisualizer();
+            document.getElementById('cube-visualizer-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            showToast('ส่งสีที่ใส่ขึ้นแสดงบนลูกบาศก์ 3D หลักเรียบร้อยแล้ว');
+        }
+
+        function playSolverOnMainCube() {
+            if (!solverSolutionMoves.length || !solverSolutionStart) return;
+            clearMoveQueue();
+            cubeState = cloneAnyCubeState(solverSolutionStart);
+            renderCubeVisualizer();
+            activeDemoMeta = { label: `แก้ตามสีที่ใส่ (${solverSolutionMoves.length} ท่า)`, tokens: [...solverSolutionMoves] };
+            updateDemoBanner(0);
+            solverSolutionMoves.forEach((t, idx) => enqueueMove3D(t, 480 + (idx % 6) * 40, idx));
+            document.getElementById('cube-visualizer-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            showToast(`กำลังเล่นวิธีแก้ ${solverSolutionMoves.length} ท่าบนลูกบาศก์ 3D หลัก...`);
+        }
+
+        function initColorSolver() {
+            solverCanvas = document.getElementById('solver-3d-canvas');
+            if (solverCanvas) {
+                solverCtx = solverCanvas.getContext('2d');
+                attachCubeDragHandlers(solverCanvas, {
+                    onStart: () => { isDraggingSolverCube = true; solverCamTargetMat = null; },
+                    getMat: () => solverCamMat,
+                    setMat: m => { solverCamMat = m; },
+                    setVel: (vx, vy) => { solverCamVel.vx = vx; solverCamVel.vy = vy; },
+                    requestRender: requestSolver3DRender,
+                    onEnd: () => {
+                        isDraggingSolverCube = false;
+                        if (Math.hypot(solverCamVel.vx, solverCamVel.vy) > 0.08) requestSolver3DRender();
+                        else { solverCamVel.vx = 0; solverCamVel.vy = 0; }
+                    },
+                    onDblClick: () => focusSolverFace('F')
+                });
+                window.addEventListener('resize', () => requestSolver3DRender());
+            }
+
+            const endPaint = () => { isSolverPainting = false; };
+            window.addEventListener('pointerup', endPaint);
+            window.addEventListener('pointercancel', endPaint);
+
+            window.addEventListener('keydown', e => {
+                if (e.ctrlKey || e.metaKey || e.altKey || timerState !== 'idle') return;
+                if (e.target && e.target.closest('input, textarea, select')) return;
+                const mapKey = { '1': 'U', '2': 'L', '3': 'F', '4': 'R', '5': 'B', '6': 'D', '0': '?' };
+                if (mapKey[e.key]) selectSolverBrush(mapKey[e.key]);
+            });
+
+            resetSolverToCenters(true);
+            focusSolverFace('F');
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
             initCube3D();
+            renderManualMovesPanel();
+            initColorSolver();
             renderCfopLibrary();
             loadSolves();
             generateNewScramble();

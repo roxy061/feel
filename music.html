@@ -187,10 +187,10 @@
                             <span class="text-xs font-heading font-bold text-google-text dark:text-white">กำลังเล่นอยู่</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <span id="player-source-pill" class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
+                            <span id="player-source-pill" class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">
                                 ไร้โฆษณา 100%
                             </span>
-                            <span id="mediasession-badge" class="px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 text-[10px] font-bold" title="เบราว์เซอร์เชื่อมต่อปุ่มควบคุมบนหน้าจอล็อกแล้ว">
+                            <span id="mediasession-badge" class="px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 text-[11px] font-bold" title="เบราว์เซอร์เชื่อมต่อปุ่มควบคุมบนหน้าจอล็อกแล้ว">
                                 🔒 ปิดหน้าจอฟังได้
                             </span>
                         </div>
@@ -206,7 +206,7 @@
                         </div>
 
                         <div class="min-w-0 flex-1 space-y-1">
-                            <span id="player-genre" class="inline-block px-2 py-0.5 rounded-md bg-slate-100 dark:bg-google-dark-subtle text-[10px] font-heading font-bold text-google-text-muted dark:text-google-dark-text-muted">
+                            <span id="player-genre" class="inline-block px-2 py-0.5 rounded-md bg-slate-100 dark:bg-google-dark-subtle text-[11px] font-heading font-bold text-google-text-muted dark:text-google-dark-text-muted">
                                 เลือกเพลงเพื่อเริ่มฟัง
                             </span>
                             <h2 id="player-title" class="text-base sm:text-lg font-heading font-bold text-google-text dark:text-white leading-snug line-clamp-2 break-words">
@@ -215,12 +215,12 @@
                             <p id="player-artist" class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted truncate">
                                 กดเลือกเพลงจากด้านขวา หรือนำเข้าไฟล์ MP3
                             </p>
-                            <div class="pt-1 flex items-center gap-2">
-                                <button type="button" id="btn-fav-current" onclick="toggleFavoriteCurrent()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-google-dark-subtle hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted transition cursor-pointer" title="บันทึกเป็นเพลงโปรด">
+                            <div class="pt-1 flex flex-wrap items-center gap-2">
+                                <button type="button" id="btn-fav-current" onclick="toggleFavoriteCurrent()" class="min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-google-dark-subtle hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-semibold text-google-text-muted dark:text-google-dark-text-muted transition cursor-pointer" title="บันทึกเป็นเพลงโปรด">
                                     <i id="fav-current-icon" class="fa-regular fa-heart"></i>
                                     <span>ถูกใจ</span>
                                 </button>
-                                <span id="sleep-countdown" class="hidden px-2 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-mono text-[10px] font-bold"></span>
+                                <span id="sleep-countdown" class="hidden px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-mono text-[11px] font-bold"></span>
                             </div>
                         </div>
                     </div>
@@ -261,7 +261,7 @@
                     <!-- Volume, Speed & Sleep Timer Utility Strip -->
                     <div class="pt-3 border-t border-google-border dark:border-google-dark-border grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center text-xs">
                         <div class="sm:col-span-5 flex items-center gap-2">
-                            <button type="button" id="btn-mute" onclick="toggleMute()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-google-dark-subtle hover:bg-slate-200 text-google-text-muted dark:text-google-dark-text flex items-center justify-center shrink-0 cursor-pointer" title="ปิด/เปิดเสียง">
+                            <button type="button" id="btn-mute" onclick="toggleMute()" class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-google-dark-subtle hover:bg-slate-200 text-google-text-muted dark:text-google-dark-text flex items-center justify-center shrink-0 cursor-pointer" title="ปิด/เปิดเสียง" aria-label="ปิดหรือเปิดเสียง">
                                 <i id="volume-icon" class="fa-solid fa-volume-high text-xs"></i>
                             </button>
                             <input type="range" id="volume-slider" min="0" max="100" value="85" oninput="onVolumeChange(this.value)" class="w-full accent-emerald-600 cursor-pointer h-1.5" aria-label="ระดับเสียง">
@@ -300,11 +300,11 @@
                             <span>คิวเล่นต่อเนื่อง (<span id="queue-count">0</span>)</span>
                         </h3>
                         <div class="flex items-center gap-1.5">
-                            <button type="button" onclick="document.getElementById('local-audio-input').click()" class="px-2.5 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 border border-sky-200 dark:border-sky-800 text-[11px] font-heading font-bold text-sky-700 dark:text-sky-300 transition flex items-center gap-1 cursor-pointer">
+                            <button type="button" onclick="document.getElementById('local-audio-input').click()" class="min-h-[36px] px-3 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 border border-sky-200 dark:border-sky-800 text-xs font-heading font-bold text-sky-700 dark:text-sky-300 transition inline-flex items-center gap-1.5 cursor-pointer">
                                 <i class="fa-solid fa-folder-plus"></i>
                                 <span>เพิ่ม MP3 ในเครื่อง</span>
                             </button>
-                            <button type="button" onclick="clearPlayQueue()" class="px-2 py-1.5 rounded-lg text-[11px] font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer">
+                            <button type="button" onclick="clearPlayQueue()" class="min-h-[36px] px-3 py-1.5 rounded-lg text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition inline-flex items-center cursor-pointer">
                                 ล้างคิว
                             </button>
                         </div>
@@ -325,14 +325,20 @@
                     <!-- Top Bar Tabs -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="feel-tabs-scroll inline-flex items-center p-1 rounded-2xl bg-slate-100 dark:bg-google-dark-subtle border border-google-border dark:border-google-dark-border overflow-x-auto no-scrollbar max-w-full">
-                            <button type="button" id="tab-audius" onclick="switchLibraryTab('audius')" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-heading font-bold bg-white dark:bg-google-dark-surface text-emerald-700 dark:text-emerald-300 shadow-xs transition whitespace-nowrap cursor-pointer">
-                                🎧 ค้นหา Audius
+                            <button type="button" id="tab-audius" onclick="switchLibraryTab('audius')" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-heading font-bold bg-white dark:bg-google-dark-surface text-emerald-700 dark:text-emerald-300 shadow-xs transition whitespace-nowrap cursor-pointer">
+                                🎧 เพลง Audius
                             </button>
-                            <button type="button" id="tab-favs" onclick="switchLibraryTab('favs')" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-heading font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition whitespace-nowrap cursor-pointer">
-                                ♥ เพลงโปรด (<span id="fav-count-tab">0</span>)
+                            <button type="button" id="tab-thai" onclick="switchLibraryTab('thai')" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-heading font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition whitespace-nowrap cursor-pointer">
+                                🇹🇭 เพลงไทย 5 ยุค (<span id="thai-count-tab">242</span>)
                             </button>
-                            <button type="button" id="tab-local" onclick="switchLibraryTab('local')" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-heading font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition whitespace-nowrap cursor-pointer">
-                                💾 MP3 ออฟไลน์ (<span id="local-count-tab">0</span>)
+                            <button type="button" id="tab-playlists" onclick="switchLibraryTab('playlists')" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-heading font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition whitespace-nowrap cursor-pointer">
+                                📀 เพลย์ลิสต์ฮิต
+                            </button>
+                            <button type="button" id="tab-favs" onclick="switchLibraryTab('favs')" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-heading font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition whitespace-nowrap cursor-pointer">
+                                ♥ โปรด (<span id="fav-count-tab">0</span>)
+                            </button>
+                            <button type="button" id="tab-local" onclick="switchLibraryTab('local')" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-heading font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition whitespace-nowrap cursor-pointer">
+                                💾 MP3 (<span id="local-count-tab">0</span>)
                             </button>
                         </div>
 
@@ -347,34 +353,77 @@
                     <form id="music-search-form" onsubmit="event.preventDefault(); searchAudiusFromInput();" class="flex gap-2">
                         <div class="relative flex-1 min-w-0">
                             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-google-text-muted text-xs pointer-events-none"></i>
-                            <input type="search" id="music-search-input" placeholder="ค้นหาชื่อเพลง, แนวเพลง หรือชื่อศิลปินบน Audius เช่น lofi, chill, synthwave..." class="w-full h-11 pl-9 pr-9 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-sm text-google-text dark:text-white focus:outline-none focus:border-emerald-500">
-                            <button type="button" id="btn-clear-music-search" onclick="clearMusicSearch()" class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full text-google-text-muted hover:text-google-text items-center justify-center cursor-pointer" title="ล้างคำค้นหา">
+                            <input type="search" id="music-search-input" placeholder="ค้นหาชื่อเพลง, เพลย์ลิสต์, แนวเพลง หรือศิลปิน เช่น lofi, chill, synthwave..." class="w-full h-11 pl-9 pr-9 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-sm text-google-text dark:text-white focus:outline-none focus:border-emerald-500">
+                            <button type="button" id="btn-clear-music-search" onclick="clearMusicSearch()" class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full text-google-text-muted hover:text-google-text items-center justify-center cursor-pointer" title="ล้างคำค้นหา" aria-label="ล้างคำค้นหา">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                             </button>
                         </div>
                         <button type="submit" id="btn-search-audius" class="px-4 sm:px-5 h-11 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-heading font-bold text-xs sm:text-sm shadow-xs transition flex items-center gap-1.5 shrink-0 cursor-pointer">
                             <i class="fa-solid fa-search"></i>
-                            <span>ค้นหา</span>
+                            <span id="search-submit-label">ค้นหา</span>
                         </button>
                     </form>
 
-                    <!-- Genre Chips (Audius Discovery) -->
+                    <!-- Genre Chips + Time Window Filter (Audius Discovery) -->
                     <div id="genre-chips-row" class="feel-tabs-scroll flex items-center gap-1.5 overflow-x-auto no-scrollbar sm:flex-wrap pb-0.5">
                         <!-- Rendered dynamically -->
                     </div>
 
+                    <div id="audius-time-row" class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <span class="text-[11px] font-heading font-semibold text-google-text-muted dark:text-google-dark-text-muted">
+                            <i class="fa-solid fa-chart-line text-emerald-600 mr-1"></i>จัดอันดับชาร์ตช่วง:
+                        </span>
+                        <div class="feel-tabs-scroll inline-flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-google-dark-subtle border border-google-border/70 dark:border-google-dark-border overflow-x-auto no-scrollbar max-w-full">
+                            <button type="button" id="time-btn-week" onclick="setAudiusTime('week')" class="min-h-[36px] inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-heading font-bold bg-white dark:bg-google-dark-surface text-emerald-700 dark:text-emerald-300 shadow-xs transition whitespace-nowrap cursor-pointer">สัปดาห์นี้</button>
+                            <button type="button" id="time-btn-month" onclick="setAudiusTime('month')" class="min-h-[36px] inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-heading font-bold text-google-text-muted hover:text-google-text dark:hover:text-white transition whitespace-nowrap cursor-pointer">เดือนนี้</button>
+                            <button type="button" id="time-btn-allTime" onclick="setAudiusTime('allTime')" class="min-h-[36px] inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-heading font-bold text-google-text-muted hover:text-google-text dark:hover:text-white transition whitespace-nowrap cursor-pointer">ฮิตตลอดกาล / ปีนี้</button>
+                        </div>
+                    </div>
+
+                    <!-- Thai 5-Era Controls Panel -->
+                    <div id="thai-controls-panel" class="hidden space-y-2.5">
+                        <div class="p-3 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5">
+                            <i class="fa-solid fa-compact-disc text-amber-600 dark:text-amber-400 mt-0.5 shrink-0"></i>
+                            <div class="leading-relaxed">
+                                <span class="font-heading font-bold">คลังเพลงไทย 5 ยุค:</span> กดเล่นเพื่อฟัง <strong>ตัวอย่างแท้ ~30 วิ/เพลง</strong> (Apple iTunes TH ไร้โฆษณา &amp; ปิดหน้าจอฟังได้) + ลิงก์เปิดเต็มเพลงบน Spotify / YT Music และหากนำเข้า <strong>.mp3</strong> ลงแท็บ <button type="button" onclick="switchLibraryTab('local')" class="underline font-bold cursor-pointer">💾 MP3</button> ระบบจะจับคู่เล่นเต็มเพลงให้อัตโนมัติ
+                            </div>
+                        </div>
+
+                        <div id="thai-era-chips" class="feel-tabs-scroll flex items-center gap-1.5 overflow-x-auto no-scrollbar sm:flex-wrap pb-0.5">
+                            <!-- Rendered dynamically -->
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="flex items-center gap-2 flex-1 min-w-0">
+                                <label for="thai-artist-select" class="text-xs font-heading font-bold text-google-text-muted dark:text-google-dark-text-muted shrink-0">ศิลปิน:</label>
+                                <select id="thai-artist-select" onchange="setThaiArtistFilter(this.value)" class="w-full sm:max-w-xs px-3 py-1.5 rounded-xl bg-google-bg dark:bg-google-dark-bg border border-google-border dark:border-google-dark-border text-xs font-medium text-google-text dark:text-white cursor-pointer" aria-label="เลือกศิลปินเพลงไทย">
+                                    <option value="all">ทุกศิลปินในหมวดนี้</option>
+                                </select>
+                            </div>
+                            <button type="button" id="btn-search-itunes-more" onclick="searchThaiItunes(document.getElementById('music-search-input')?.value || '')" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-heading font-bold shadow-xs transition inline-flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <span>ค้นหาเพิ่มจาก iTunes ไทย</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Action Bar for Current List -->
                     <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-google-border/70 dark:border-google-dark-border/80">
-                        <div class="min-w-0">
-                            <h3 id="results-heading" class="text-sm font-heading font-bold text-google-text dark:text-white truncate">
-                                เพลงฮิตติดชาร์ต (Audius Trending)
-                            </h3>
-                            <p id="results-sub" class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted">
-                                คลิกเพลงเพื่อเล่นทันทีแบบ Direct Stream (ไม่มีโฆษณาคั่น)
-                            </p>
+                        <div class="min-w-0 flex items-center gap-2">
+                            <button type="button" id="btn-playlist-back" onclick="closeSelectedPlaylist()" class="hidden px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-google-dark-subtle hover:bg-slate-200 text-xs font-heading font-bold text-google-text dark:text-white shrink-0 cursor-pointer">
+                                <i class="fa-solid fa-arrow-left mr-1"></i>กลับ
+                            </button>
+                            <div class="min-w-0">
+                                <h3 id="results-heading" class="text-sm font-heading font-bold text-google-text dark:text-white truncate">
+                                    เพลงฮิตติดชาร์ต (Audius Trending)
+                                </h3>
+                                <p id="results-sub" class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted truncate">
+                                    คลิกเพลงเพื่อเล่นทันทีแบบ Direct Stream (ไม่มีโฆษณาคั่น)
+                                </p>
+                            </div>
                         </div>
                         <div class="flex items-center gap-1.5 shrink-0">
-                            <button type="button" onclick="queueAndPlayAllDisplayed()" class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 border border-emerald-200 dark:border-emerald-800 text-xs font-heading font-bold text-emerald-700 dark:text-emerald-300 transition flex items-center gap-1.5 cursor-pointer">
+                            <button type="button" id="btn-play-all-displayed" onclick="queueAndPlayAllDisplayed()" class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 border border-emerald-200 dark:border-emerald-800 text-xs font-heading font-bold text-emerald-700 dark:text-emerald-300 transition flex items-center gap-1.5 cursor-pointer">
                                 <i class="fa-solid fa-play"></i>
                                 <span>เล่นทั้งชุด</span>
                             </button>
@@ -387,6 +436,17 @@
                     <!-- Track List -->
                     <div id="track-list" class="space-y-2 min-h-[340px]">
                         <!-- Populated via JS -->
+                    </div>
+
+                    <!-- Unlimited Load More Pagination Bar -->
+                    <div id="audius-load-more-wrap" class="hidden pt-1 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-google-border/60 dark:border-google-dark-border/70">
+                        <span id="audius-loaded-summary" class="text-[11px] text-google-text-muted dark:text-google-dark-text-muted font-mono">
+                            กำลังแสดง 24 เพลง
+                        </span>
+                        <button type="button" id="btn-load-more-audius" onclick="loadMoreAudiusItems()" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-heading font-bold shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-plus-circle"></i>
+                            <span id="load-more-label">โหลดเพลงเพิ่มอีก 24 เพลง</span>
+                        </button>
                     </div>
 
                     <!-- Pagination / Local Import CTA Footer inside Right Panel -->
@@ -449,6 +509,120 @@
             '</svg>'
         );
 
+        const STORAGE_ITUNES_CACHE = 'feel_music_itunes_cache_v1';
+
+        const THAI_ERAS = [
+            { id: 'all', label: 'ทั้งหมด' },
+            { id: '80s-90s', label: '📼 80s - 90s ตำนาน' },
+            { id: '2000s', label: '🎸 2000s อัลเทอร์ & ร็อก' },
+            { id: '2010s', label: '🔥 2010s ร้อยล้านวิว' },
+            { id: '2020s', label: '✨ 2020s - T-Pop' },
+            { id: 'lukthung', label: '🌾 ลูกทุ่ง - เพื่อชีวิต' }
+        ];
+
+        const THAI_ERA_GROUPS = [
+            // 1. ยุค 80s - 90s
+            { era: '80s-90s', artist: 'อัสนี-วสันต์', hint: 'Asanee Wasan', songs: ['ยินยอม', 'ร่ำไร', 'ได้อย่างเสียอย่าง', 'บังเอิญติดดิน', 'กุ้มใจ'] },
+            { era: '80s-90s', artist: 'เบิร์ด ธงไชย', hint: 'Bird Thongchai', songs: ['ด้วยรักและผูกพัน', 'คู่กัด', 'หมอกหรือควัน', 'บูมเมอแรง', 'เงียบๆ คนเดียว'] },
+            { era: '80s-90s', artist: 'นูโว', hint: 'Nuvo', songs: ['บอกอย่างงั้นอย่างงี้เลย', 'สุดสุดไปเลย', 'หลอกกันเล่นเลย', 'นิยามรัก'] },
+            { era: '80s-90s', artist: 'ไมโคร', hint: 'Micro', songs: ['เอาไปเลย', 'รักปอนปอน', 'เติมน้ำมัน', 'ส้มหล่น', 'ใจโทรมๆ'] },
+            { era: '80s-90s', artist: 'คาราบาว', hint: 'Carabao', songs: ['มนต์เพลงคาราบาว', 'วณิพก', 'เมดอินไทยแลนด์', 'ทะเลใจ', 'บัวลอย'] },
+            { era: '80s-90s', artist: 'พงษ์สิทธิ์ คำภีร์', hint: 'Pongsit Kamphee', songs: ['ตลอดเวลา', 'เสมอ', 'แค่นั้น', 'สุดใจ', 'ไถ่เธอคืนมา'] },
+            { era: '80s-90s', artist: 'มาลีฮวนน่า', hint: 'Maleehuana', songs: ['แสงจันทร์', 'เรือรักกระดาษ', 'ลมเพ ลมพัด', 'หัวใจพรือโฉ้'] },
+            { era: '80s-90s', artist: 'คริสติน่า อากีล่าร์', hint: 'Christina Aguilar', songs: ['นินจา', 'พลิกล็อค', 'ประวัติศาสตร์', 'พูดอีกที', 'รักเธอที่สุด'] },
+            { era: '80s-90s', artist: 'เจ เจตริน', hint: 'J Jetrin', songs: ['ฝากเลี้ยง', 'กองไว้', 'คาใจ', 'ประมาณนี้หรือเปล่า', 'แววตา'] },
+            { era: '80s-90s', artist: 'ทัช ณ ตะกั่วทุ่ง', hint: 'ทัช ณ ตะกั่วทุ่ง', songs: ['เท้าไฟ', 'มือที่สาม', 'ไม่มีที่ไป', 'ลื่น'] },
+            { era: '80s-90s', artist: 'แร็พเตอร์', hint: 'Raptor', songs: ['เกรงใจ', 'คิดถึงเธอ', 'อย่าพูดเลย', 'รู้ตัวหรือเปล่า'] },
+            { era: '80s-90s', artist: 'ลิฟท์-ออย', hint: 'Lift-Oil', songs: ['รมณ์บ่จอย', 'ดูมั้ย', 'สวนทาง'] },
+            { era: '80s-90s', artist: 'ทาทา ยัง', hint: 'Tata Young', songs: ['โอ๊ะ...โอ๊ย', 'พรุ่งนี้ไม่สาย', 'รบกวนมารักกัน', 'ซักกะนิด'] },
+            { era: '80s-90s', artist: 'มอส ปฏิภาณ', hint: 'Mos Patiparn', songs: ['เหลวไหล', 'ด้วยรักและปลาทู', 'สลัดสะบัด', 'ฮัลโหล'] },
+            { era: '80s-90s', artist: 'อ้อม สุนิสา', hint: 'อ้อม สุนิสา', songs: ['ถอยดีกว่า', 'อย่ายอมแพ้', 'หน่อไม้'] },
+
+            // 2. ยุค 2000s
+            { era: '2000s', artist: 'บอดี้สแลม', hint: 'Bodyslam', songs: ['งมงาย', 'ขอบฟ้า', 'ความเชื่อ', 'ยาพิษ', 'แสงสุดท้าย', 'คราม'] },
+            { era: '2000s', artist: 'บิ๊กแอส', hint: 'Big Ass', songs: ['เล่นของสูง', 'คนไม่เอาถ่าน', 'พรหมลิขิต', 'อย่างน้อย', 'ลมเปลี่ยนทิศ'] },
+            { era: '2000s', artist: 'ซิลลี่ ฟูลส์', hint: 'Silly Fools', songs: ['จิ๊จ๊ะ', 'วัดใจ', 'น้ำลาย', 'ขี้หึง', 'แกล้ง', 'ผิดที่ไว้ใจ'] },
+            { era: '2000s', artist: 'โลโซ', hint: 'Loso', songs: ['ซมซาน', 'ใจสั่งมา', 'อะไรก็ยอม', 'พันธ์ทิพย์', 'เราและนาย'] },
+            { era: '2000s', artist: 'โปเตโต้', hint: 'Potato', songs: ['กล้าพอไหม', 'ปากดี', 'ขอบใจ', 'รักแท้ดูแลไม่ได้', 'เพียงพอ'] },
+            { era: '2000s', artist: 'แคลช', hint: 'Clash', songs: ['กอด', 'ขอเช็ดน้ำตา', 'ไฟรัก', 'ยิ้มเข้าไว้', 'ละครรักแท้'] },
+            { era: '2000s', artist: 'พาราด็อกซ์', hint: 'Paradox', songs: ['ฤดูร้อน', 'นักมายากล', 'ผงาดง้ำค้ำโลก', 'ปลายสายรุ้ง'] },
+            { era: '2000s', artist: 'โมเดิร์นด็อก', hint: 'Moderndog', songs: ['บุษบา', 'ก่อน', 'ตาสว่าง', 'ติ๋ม'] },
+            { era: '2000s', artist: 'ปาล์มมี่', hint: 'Palmy', songs: ['อยากร้องดังดัง', 'ทำเป็นไม่ทัก', 'ความทรงจำสีจาง', 'กา กา กา', 'ซ่อนกลิ่น'] },
+            { era: '2000s', artist: 'ดา เอ็นโดรฟิน', hint: 'Da Endorphine', songs: ['เพื่อนสนิท', 'น้ำเต็มแก้ว', 'ได้ยินไหม', 'สิ่งสำคัญ', 'แสนล้านนาที'] },
+            { era: '2000s', artist: 'D2B', hint: 'D2B', songs: ['ต่อหน้าฉัน (เธอทำอย่างนั้นได้อย่างไร)', 'ซ่าส์...(สั่นๆ)', 'ไม่เปลี่ยนใจ (เธอคนเดียว)'] },
+            { era: '2000s', artist: 'กอล์ฟ-ไมค์', hint: 'Golf-Mike', songs: ['Bounce', 'เรื่องเล็กของเธอ', 'Fight For You'] },
+            { era: '2000s', artist: 'โฟร์-มด', hint: 'Four-Mod', songs: ['หายใจเป็นเธอ', 'เด็กมีปัญหา', 'ละลาย'] },
+            { era: '2000s', artist: 'เฟย์ ฟาง แก้ว', hint: 'Faye Fang Kaew', songs: ['นะครับ นะคร้าบ', 'คำถาม', 'แฟนคนนึง'] },
+            { era: '2000s', artist: 'กามิกาเซ่ (รวมศิลปิน)', hint: 'Kamikaze', songs: ['ขัดใจ', 'รักฉันเรียกว่าเธอ', 'เด็กวุ่นวาย'] },
+
+            // 3. ยุค 2010s
+            { era: '2010s', artist: 'ค็อกเทล', hint: 'Cocktail', songs: ['คุกเข่า', 'เธอ', 'คู่ชีวิต', 'ช่างมัน', 'ดึงดัน'] },
+            { era: '2010s', artist: 'ลาบานูน', hint: 'Labanoon', songs: ['เชือกวิเศษ', 'แพ้ทาง', 'พลังงานจน', '191'] },
+            { era: '2010s', artist: 'เคลียร์', hint: 'Klear', songs: ['คำยินดี', 'สิ่งของ', 'กระโดดกอด', 'พันหมื่นเหตุผล'] },
+            { era: '2010s', artist: 'เก็ตสึโนวา', hint: 'Getsunova', songs: ['ไกลแค่ไหน คือ ใกล้', 'คำถามซึ่งไร้คนตอบ', 'อยู่ตรงนี้นานกว่านี้'] },
+            { era: '2010s', artist: 'รูม 39', hint: 'Room39', songs: ['หน่วง', 'ความจริง', 'เป็นทุกอย่าง', 'อย่าให้ฉันคิด'] },
+            { era: '2010s', artist: 'แสตมป์ อภิวัชร์', hint: 'Stamp', songs: ['ความคิด', 'มันคงเป็นความรัก', 'โอมจงเงย', 'ชายกลาง'] },
+            { era: '2010s', artist: 'สิงโต นำโชค', hint: 'Singto Numchok', songs: ['อยู่ต่อเลยได้ไหม', 'อาย', 'ทิ้ง', 'อยู่นี่ไง'] },
+            { era: '2010s', artist: 'อะตอม ชนกันต์', hint: 'Atom Chanakan', songs: ['Please', 'อ้าว', 'ทางของฝุ่น', 'ช่วงนี้'] },
+            { era: '2010s', artist: 'เดอะทอยส์', hint: 'The TOYS', songs: ['หน้าหนาวที่แล้ว', 'ก่อนฤดูฝน', 'ลาลาลอย (100%)'] },
+            { era: '2010s', artist: 'โพลีแคท', hint: 'POLYCAT', songs: ['พบกันใหม่', 'เวลาเธอยิ้ม', 'ดูดี', 'อาวรณ์'] },
+            { era: '2010s', artist: 'ป้าง นครินทร์', hint: 'Pang Nakarin', songs: ['ภูมิแพ้กรุงเทพ', 'คนมีเสน่ห์', 'ทำอะไรสักอย่าง'] },
+            { era: '2010s', artist: 'ก้อง ห้วยไร่', hint: 'ก้อง ห้วยไร่', songs: ['ไสว่าสิบ่ถิ่มกัน', 'คู่คอง', 'โอ้ละน้อ'] },
+            { era: '2010s', artist: 'ลำไย ไหทองคำ', hint: 'ลำไย ไหทองคำ', songs: ['ผู้สาวขาเลาะ', 'เด๋อเดี่ยงด่าง'] },
+            { era: '2010s', artist: 'เบิ้ล ปทุมราช', hint: 'เบิ้ล ปทุมราช', songs: ['อ้ายมีเหตุผล', 'ให้น้องไปสา'] },
+
+            // 4. ยุค 2020s - ปัจจุบัน
+            { era: '2020s', artist: 'ทรี แมน ดาวน์', hint: 'Three Man Down', songs: ['ฝนตกไหม', 'ข้างกัน', 'ถ้าเธอรักฉันจริง', 'เดาไม่เก่ง'] },
+            { era: '2020s', artist: 'ทิลลี่ เบิร์ดส์', hint: 'Tilly Birds', songs: ['คิด(แต่ไม่)ถึง', 'เพื่อนเล่น ไม่เล่นเพื่อน', 'จนกว่าเราจะพบกัน'] },
+            { era: '2020s', artist: 'โบกี้ไลอ้อน', hint: 'BOWKYLION', songs: ['ลงใจ', 'วาดไว้', 'บานปลาย', 'ทราบแล้วเปลี่ยน'] },
+            { era: '2020s', artist: 'นนท์ ธนนท์', hint: 'NONT TANONT', songs: ['พิง', 'โต๊ะริม', 'รักแรก', 'มีผลต่อหัวใจ'] },
+            { era: '2020s', artist: 'อิ้งค์ วรันธร', hint: 'Ink Waruntorn', songs: ['สายตาหลอกกันไม่ได้', 'ลบไม่ได้ช่วยให้ลืม', 'เกี่ยวกันไหม'] },
+            { era: '2020s', artist: 'เจฟ ซาเตอร์', hint: 'Jeff Satur', songs: ['ลืมไปแล้วว่าลืมยังไง', 'แค่เธอ', 'ซ่อน(ไม่)หา'] },
+            { era: '2020s', artist: 'โฟร์อีฟ (4EVE)', hint: '4EVE', songs: ['วัดปะหล่ะ?', 'ข้อยกเว้น', 'หยดน้ำตา'] },
+            { era: '2020s', artist: 'พิกซี่ (PiXXiE)', hint: 'PiXXiE', songs: ['มูเตลู', 'เกินต้าน', 'ไม่ได้ก็ไม่เอา'] },
+            { era: '2020s', artist: 'บัส (BUS)', hint: 'BUS', songs: ['Because of You, I Shine', 'Watch Your Step', 'ฟีลลิ่งแบบว่าอู้วว!'] },
+            { era: '2020s', artist: 'เปเปอร์ เพลนส์', hint: 'Paper Planes', songs: ['ทรงอย่างแบด (Bad Boy)', 'เสแสร้ง'] },
+            { era: '2020s', artist: 'โจอี้ ภูวศิษฐ์', hint: 'Joey Phuwasit', songs: ['นะหน้าทอง', 'ดวงเดือน', 'สัญญาเดือนหก'] },
+            { era: '2020s', artist: 'ปราง ปรางทิพย์ / วง TaitosmitH', hint: 'TaitosmitH', songs: ['แดงกับเขียว', 'นักเลงเก่า', 'ผ้าเช็ดหน้า'] },
+            { era: '2020s', artist: 'มนต์แคน แก่นคูน', hint: 'มนต์แคน แก่นคูน', songs: ['วอนหลวงพ่อรวย', 'คำว่าฮักกัน มันเหี่ยถิ่มไส'] },
+            { era: '2020s', artist: 'ยังโอม (YOUNGOHM)', hint: 'YOUNGOHM', songs: ['ธาตุทองซาวด์', 'เฉยเมย', 'ธารารัตน์'] },
+            { era: '2020s', artist: 'มิลลิ (MILLI)', hint: 'MILLI', songs: ['พักก่อน', 'สุดปัง', 'Mango Sticky Rice'] },
+
+            // 5. ลูกทุ่งและเพื่อชีวิตอมตะ
+            { era: 'lukthung', artist: 'พุ่มพวง ดวงจันทร์', hint: 'Phumphuang Duangchan', songs: ['กระแซะเข้ามาซิ', 'นักร้องบ้านนอก', 'สาวนาสั่งแฟน', 'ผู้ชายในฝัน'] },
+            { era: 'lukthung', artist: 'สายัณห์ สัญญา', hint: 'สายัณห์ สัญญา', songs: ['ไก่จ๋า', 'รักเธอเท่าฟ้า', 'ล้นเกล้าเผ่าไทย'] },
+            { era: 'lukthung', artist: 'ยอดรัก สลักใจ', hint: 'ยอดรัก สลักใจ', songs: ['สามสิบยังแจ๋ว', 'ทหารเรือมาแล้ว', 'จักรยานคนจน'] },
+            { era: 'lukthung', artist: 'ไมค์ ภิรมย์พร', hint: 'ไมค์ ภิรมย์พร', songs: ['ยาใจคนจน', 'เหนื่อยไหมคนดี', 'กลับคำสาหล่า'] },
+            { era: 'lukthung', artist: 'ไผ่ พงศธร', hint: 'ไผ่ พงศธร', songs: ['คนบ้านเดียวกัน', 'สุดท้ายคืออ้ายเจ็บ', 'ถิ่มอ้ายไว้ตรงนี้ล่ะ'] },
+            { era: 'lukthung', artist: 'ต่าย อรทัย', hint: 'Tai Orathai', songs: ['ดอกหญ้าในป่าปูน', 'โทรหาแหน่เด๊อ', 'ซังได้ซังแล้ว'] }
+        ];
+
+        const THAI_CATALOG_TRACKS = (() => {
+            const list = [];
+            let seq = 0;
+            for (const grp of THAI_ERA_GROUPS) {
+                for (const song of grp.songs) {
+                    const uid = 'thai_' + seq++;
+                    list.push({
+                        uid,
+                        id: uid,
+                        source: 'thai',
+                        era: grp.era,
+                        title: song,
+                        artist: grp.artist,
+                        artistHint: grp.hint || grp.artist,
+                        genre: grp.era === 'lukthung' ? 'ลูกทุ่ง-เพื่อชีวิต' : ('ไทย ' + grp.era),
+                        duration: 30,
+                        plays: 0,
+                        artwork: DEFAULT_COVER_SVG,
+                        artworkLarge: DEFAULT_COVER_SVG,
+                        streamUrl: ''
+                    });
+                }
+            }
+            return list;
+        })();
+
         const AUDIUS_GENRES = [
             { id: 'trending', label: '🔥 ฮิตติดชาร์ต', genre: '', searchFallback: '' },
             { id: 'lofi', label: '🎧 Lo-Fi', genre: 'Lo-Fi', searchFallback: 'lofi beats' },
@@ -464,11 +638,26 @@
         const state = {
             audiusHost: 'https://api.audius.co',
             hostResolved: false,
-            activeTab: 'audius', // audius | favs | local
+            activeTab: 'audius', // audius | thai | playlists | favs | local
             activeGenre: 'trending',
+            activeTime: 'week', // week | month | year | allTime
             searchQuery: '',
+            thaiEra: 'all',
+            thaiArtist: 'all',
+            thaiQuery: '',
+            thaiLiveResults: null,
+            itunesCache: loadItunesCache(),
             isLoading: false,
+            isLoadingMore: false,
             audiusTracks: [],
+            audiusOffset: 0,
+            audiusHasMore: true,
+            audiusUsingSearchFallback: false,
+            playlists: [],
+            playlistQuery: '',
+            playlistOffset: 0,
+            playlistHasMore: true,
+            selectedPlaylist: null, // { id, name, owner, artwork, tracks: [] }
             favTracks: loadSavedFavs(),
             localTracks: [], // populated from IndexedDB + ObjectURLs
             localObjectUrls: new Map(),
@@ -541,7 +730,26 @@
             }, 2600);
         }
 
-        // ==================== LOCALSTORAGE FAVORITES ====================
+        // ==================== LOCALSTORAGE FAVORITES & ITUNES CACHE ====================
+        function loadItunesCache() {
+            try {
+                const raw = JSON.parse(localStorage.getItem(STORAGE_ITUNES_CACHE) || '{}');
+                return (raw && typeof raw === 'object' && !Array.isArray(raw)) ? raw : {};
+            } catch (_) {
+                return {};
+            }
+        }
+
+        function saveItunesCache() {
+            try {
+                const keys = Object.keys(state.itunesCache || {});
+                if (keys.length > 320) {
+                    keys.slice(0, keys.length - 300).forEach(k => delete state.itunesCache[k]);
+                }
+                localStorage.setItem(STORAGE_ITUNES_CACHE, JSON.stringify(state.itunesCache));
+            } catch (_) {}
+        }
+
         function loadSavedFavs() {
             try {
                 const raw = JSON.parse(localStorage.getItem(STORAGE_FAVS) || '[]');
@@ -595,6 +803,8 @@
             if (state.currentTrack && state.currentTrack.uid === uid) return state.currentTrack;
             return state.displayedTracks.find(t => t.uid === uid)
                 || state.audiusTracks.find(t => t.uid === uid)
+                || THAI_CATALOG_TRACKS.find(t => t.uid === uid)
+                || (Array.isArray(state.thaiLiveResults) ? state.thaiLiveResults.find(t => t.uid === uid) : null)
                 || state.favTracks.find(t => t.uid === uid)
                 || state.localTracks.find(t => t.uid === uid)
                 || state.queue.find(t => t.uid === uid)
@@ -650,7 +860,7 @@
                     };
                 });
                 updateBadges();
-                if (state.activeTab === 'local') renderTrackList();
+                if (state.activeTab === 'local' || state.activeTab === 'thai') renderTrackList();
             } catch (err) {
                 console.warn('IndexedDB music load:', err);
             }
@@ -789,10 +999,63 @@
             return state.audiusHost;
         }
 
+        const failedArtHosts = new Set();
+
+        function buildArtworkCandidates(artworkObj, sizeKey) {
+            if (!artworkObj || typeof artworkObj !== 'object') return [DEFAULT_COVER_SVG];
+            const primary = sanitizeMediaUrl(artworkObj[sizeKey] || artworkObj['480x480'] || artworkObj['150x150']);
+            if (!primary || primary === DEFAULT_COVER_SVG || primary.startsWith('data:')) return [DEFAULT_COVER_SVG];
+            const out = [];
+            try {
+                const u = new URL(primary);
+                const contentMatch = u.pathname.match(/\/content\/.+$/);
+                const mirrors = Array.isArray(artworkObj.mirrors) ? artworkObj.mirrors : [];
+                if (!failedArtHosts.has(u.hostname)) out.push(primary);
+                if (contentMatch) {
+                    for (const m of mirrors) {
+                        if (typeof m === 'string' && m.startsWith('https://')) {
+                            const mClean = m.replace(/\/+$/, '') + contentMatch[0];
+                            try {
+                                const mu = new URL(mClean);
+                                if (!failedArtHosts.has(mu.hostname) && !out.includes(mClean)) out.push(mClean);
+                            } catch (_) {}
+                        }
+                    }
+                }
+                if (!out.includes(primary)) out.push(primary);
+            } catch (_) {
+                out.push(primary);
+            }
+            out.push(DEFAULT_COVER_SVG);
+            return out;
+        }
+
+        function handleArtworkError(imgEl) {
+            if (!imgEl) return;
+            try {
+                if (imgEl.src && imgEl.src.startsWith('http')) {
+                    failedArtHosts.add(new URL(imgEl.src).hostname);
+                }
+            } catch (_) {}
+            const listRaw = imgEl.getAttribute('data-fallbacks') || '';
+            const candidates = listRaw ? listRaw.split('||').filter(Boolean) : [];
+            const idx = Number(imgEl.getAttribute('data-fb-idx') || '0');
+            if (idx < candidates.length) {
+                imgEl.setAttribute('data-fb-idx', String(idx + 1));
+                imgEl.src = candidates[idx];
+            } else {
+                imgEl.onerror = null;
+                imgEl.src = DEFAULT_COVER_SVG;
+            }
+        }
+
         function normalizeAudiusTrack(raw, host) {
             if (!raw || !raw.id) return null;
-            const art150 = sanitizeMediaUrl(raw.artwork?.['150x150'] || raw.artwork?.['480x480']);
-            const art480 = sanitizeMediaUrl(raw.artwork?.['480x480'] || raw.artwork?.['1000x1000'] || raw.artwork?.['150x150']);
+            if (raw.is_streamable === false || raw.is_available === false || raw.is_delete === true || raw.is_stream_gated === true) {
+                return null;
+            }
+            const artCandidates = buildArtworkCandidates(raw.artwork, '150x150');
+            const artLargeCandidates = buildArtworkCandidates(raw.artwork, '480x480');
             const cleanHost = (host || state.audiusHost || 'https://api.audius.co').replace(/\/+$/, '');
             return {
                 uid: 'audius_' + String(raw.id),
@@ -803,8 +1066,9 @@
                 genre: String(raw.genre || 'Music').trim(),
                 duration: Number(raw.duration) || 0,
                 plays: Number(raw.play_count) || 0,
-                artwork: art150,
-                artworkLarge: art480,
+                artwork: artCandidates[0],
+                artworkFallbacks: artCandidates.slice(1),
+                artworkLarge: artLargeCandidates[0],
                 streamUrl: `${cleanHost}/v1/tracks/${encodeURIComponent(raw.id)}/stream?app_name=${APP_NAME}`
             };
         }
@@ -817,10 +1081,50 @@
             return await res.json();
         }
 
+        const PAGE_SIZE_TRACKS = 24;
+        const PAGE_SIZE_PLAYLISTS = 8;
+
+        function getTrackTimeParam() {
+            return ['week', 'month', 'allTime'].includes(state.activeTime) ? state.activeTime : 'week';
+        }
+
+        function getPlaylistTimeParam() {
+            // Audius playlists/trending supports week, month, year (allTime maps cleanly to year)
+            if (state.activeTime === 'allTime' || state.activeTime === 'year') return 'year';
+            return ['week', 'month'].includes(state.activeTime) ? state.activeTime : 'week';
+        }
+
+        async function setAudiusTime(timeKey) {
+            const valid = ['week', 'month', 'allTime'].includes(timeKey) ? timeKey : 'week';
+            state.activeTime = valid;
+            ['week', 'month', 'allTime'].forEach(k => {
+                const btn = document.getElementById(`time-btn-${k}`);
+                if (!btn) return;
+                const active = k === valid;
+                btn.className = active
+                    ? 'min-h-[36px] inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-heading font-bold bg-white dark:bg-google-dark-surface text-emerald-700 dark:text-emerald-300 shadow-xs transition whitespace-nowrap cursor-pointer'
+                    : 'min-h-[36px] inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-heading font-bold text-google-text-muted hover:text-google-text dark:hover:text-white transition whitespace-nowrap cursor-pointer';
+            });
+            if (state.activeTab === 'playlists') {
+                state.playlistQuery = '';
+                state.selectedPlaylist = null;
+                return await loadAudiusPlaylists(true);
+            }
+            return await loadAudiusGenre(state.activeGenre);
+        }
+
+        function getTimeLabelThai(timeKey) {
+            return { week: 'สัปดาห์นี้', month: 'เดือนนี้', allTime: 'ฮิตตลอดกาล / ปีนี้' }[timeKey] || 'สัปดาห์นี้';
+        }
+
         async function loadAudiusGenre(genreId) {
+            const reqSeq = (state.audiusReqSeq = (state.audiusReqSeq || 0) + 1);
             const cfg = AUDIUS_GENRES.find(g => g.id === genreId) || AUDIUS_GENRES[0];
             state.activeGenre = cfg.id;
             state.searchQuery = '';
+            state.audiusOffset = 0;
+            state.audiusHasMore = true;
+            state.audiusUsingSearchFallback = false;
             const searchInp = document.getElementById('music-search-input');
             if (searchInp) searchInp.value = '';
             toggleClearSearchBtn();
@@ -828,61 +1132,524 @@
 
             if (state.activeTab !== 'audius') switchLibraryTab('audius', false);
             setAudiusLoading(true);
+            const timeLabel = getTimeLabelThai(state.activeTime);
+            const trackTime = getTrackTimeParam();
             updateResultsHeading(
-                cfg.genre ? `แนวเพลง ${cfg.label.replace(/^[^\s]+\s*/, '')} (Audius)` : 'เพลงฮิตติดชาร์ต (Audius Trending)',
-                'สตรีมเพลงจริงจาก Audius Public API ไร้โฆษณาคั่น'
+                cfg.genre ? `แนวเพลง ${cfg.label.replace(/^[^\s]+\s*/, '')} • ${timeLabel}` : `เพลงฮิตติดชาร์ต (${timeLabel})`,
+                'สตรีมเพลงจริงจาก Audius Public API ไร้โฆษณาคั่น — กดโหลดเพิ่มได้ไม่จำกัด'
             );
 
             try {
                 const host = await resolveAudiusHost();
                 const q = cfg.genre
-                    ? `/v1/tracks/trending?genre=${encodeURIComponent(cfg.genre)}&limit=24&app_name=${APP_NAME}`
-                    : `/v1/tracks/trending?limit=24&app_name=${APP_NAME}`;
+                    ? `/v1/tracks/trending?genre=${encodeURIComponent(cfg.genre)}&time=${encodeURIComponent(trackTime)}&limit=${PAGE_SIZE_TRACKS}&offset=0&app_name=${APP_NAME}`
+                    : `/v1/tracks/trending?time=${encodeURIComponent(trackTime)}&limit=${PAGE_SIZE_TRACKS}&offset=0&app_name=${APP_NAME}`;
                 let json = await fetchAudiusJson(q);
                 let list = Array.isArray(json?.data) ? json.data : [];
 
                 if (list.length < 4 && cfg.searchFallback) {
-                    const sJson = await fetchAudiusJson(`/v1/tracks/search?query=${encodeURIComponent(cfg.searchFallback)}&limit=24&app_name=${APP_NAME}`);
+                    const sJson = await fetchAudiusJson(`/v1/tracks/search?query=${encodeURIComponent(cfg.searchFallback)}&limit=${PAGE_SIZE_TRACKS}&offset=0&app_name=${APP_NAME}`);
                     if (Array.isArray(sJson?.data) && sJson.data.length > list.length) {
                         list = sJson.data;
+                        state.audiusUsingSearchFallback = true;
                     }
                 }
+                if (reqSeq !== state.audiusReqSeq) return;
 
                 state.audiusTracks = list.map(t => normalizeAudiusTrack(t, host)).filter(Boolean);
+                state.audiusOffset = list.length;
+                state.audiusHasMore = list.length >= PAGE_SIZE_TRACKS;
             } catch (err) {
+                if (reqSeq !== state.audiusReqSeq) return;
                 console.warn('Audius load error:', err);
                 state.audiusTracks = [];
+                state.audiusHasMore = false;
                 showToast('เชื่อมต่อ Audius ชั่วคราวไม่สำเร็จ ลองกดรีเฟรชอีกครั้ง', 'error');
             } finally {
-                setAudiusLoading(false);
-                renderTrackList();
+                if (reqSeq === state.audiusReqSeq) {
+                    setAudiusLoading(false);
+                    renderTrackList();
+                }
             }
         }
 
         async function searchAudiusFromInput() {
             const q = (document.getElementById('music-search-input')?.value || '').trim();
             toggleClearSearchBtn();
-            if (!q) {
-                loadAudiusGenre(state.activeGenre);
+            if (state.activeTab === 'thai') {
+                state.thaiQuery = q;
+                if (!q) {
+                    state.thaiLiveResults = null;
+                    renderTrackList();
+                } else {
+                    await searchThaiItunes(q);
+                }
                 return;
             }
+            if (state.activeTab === 'playlists') {
+                if (!q) {
+                    state.playlistQuery = '';
+                    await loadAudiusPlaylists(true);
+                } else {
+                    await searchAudiusPlaylists(q);
+                }
+                return;
+            }
+            if (!q) {
+                await loadAudiusGenre(state.activeGenre);
+                return;
+            }
+            const reqSeq = (state.audiusReqSeq = (state.audiusReqSeq || 0) + 1);
             state.searchQuery = q;
+            state.audiusOffset = 0;
+            state.audiusHasMore = true;
+            state.audiusUsingSearchFallback = false;
             if (state.activeTab !== 'audius') switchLibraryTab('audius', false);
             setAudiusLoading(true);
-            updateResultsHeading(`ผลการค้นหา "${q}" บน Audius`, 'เรียงตามความนิยมจากศิลปินอิสระทั่วโลก');
+            updateResultsHeading(`ผลการค้นหา "${q}" บน Audius`, 'เรียงตามความนิยมจากศิลปินอิสระทั่วโลก — กดโหลดเพิ่มได้');
 
             try {
                 const host = await resolveAudiusHost();
-                const json = await fetchAudiusJson(`/v1/tracks/search?query=${encodeURIComponent(q)}&limit=24&app_name=${APP_NAME}`);
+                const json = await fetchAudiusJson(`/v1/tracks/search?query=${encodeURIComponent(q)}&limit=${PAGE_SIZE_TRACKS}&offset=0&app_name=${APP_NAME}`);
+                if (reqSeq !== state.audiusReqSeq) return;
                 const list = Array.isArray(json?.data) ? json.data : [];
                 state.audiusTracks = list.map(t => normalizeAudiusTrack(t, host)).filter(Boolean);
+                state.audiusOffset = list.length;
+                state.audiusHasMore = list.length >= PAGE_SIZE_TRACKS;
             } catch (err) {
+                if (reqSeq !== state.audiusReqSeq) return;
                 console.warn('Audius search error:', err);
                 state.audiusTracks = [];
+                state.audiusHasMore = false;
                 showToast('ค้นหา Audius ไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต', 'error');
+            } finally {
+                if (reqSeq === state.audiusReqSeq) {
+                    setAudiusLoading(false);
+                    renderTrackList();
+                }
+            }
+        }
+
+        async function loadMoreAudiusItems() {
+            if (state.isLoadingMore) return;
+            if (state.activeTab === 'playlists') {
+                await loadMoreAudiusPlaylists();
+                return;
+            }
+            if (state.activeTab !== 'audius' || !state.audiusHasMore) return;
+
+            state.isLoadingMore = true;
+            updateLoadMoreUI();
+            try {
+                const host = await resolveAudiusHost();
+                const offset = state.audiusOffset;
+                const trackTime = getTrackTimeParam();
+                let pathUrl = '';
+                if (state.searchQuery) {
+                    pathUrl = `/v1/tracks/search?query=${encodeURIComponent(state.searchQuery)}&limit=${PAGE_SIZE_TRACKS}&offset=${offset}&app_name=${APP_NAME}`;
+                } else {
+                    const cfg = AUDIUS_GENRES.find(g => g.id === state.activeGenre) || AUDIUS_GENRES[0];
+                    if (state.audiusUsingSearchFallback && cfg.searchFallback) {
+                        pathUrl = `/v1/tracks/search?query=${encodeURIComponent(cfg.searchFallback)}&limit=${PAGE_SIZE_TRACKS}&offset=${offset}&app_name=${APP_NAME}`;
+                    } else if (cfg.genre) {
+                        pathUrl = `/v1/tracks/trending?genre=${encodeURIComponent(cfg.genre)}&time=${encodeURIComponent(trackTime)}&limit=${PAGE_SIZE_TRACKS}&offset=${offset}&app_name=${APP_NAME}`;
+                    } else {
+                        pathUrl = `/v1/tracks/trending?time=${encodeURIComponent(trackTime)}&limit=${PAGE_SIZE_TRACKS}&offset=${offset}&app_name=${APP_NAME}`;
+                    }
+                }
+                const json = await fetchAudiusJson(pathUrl);
+                const list = Array.isArray(json?.data) ? json.data : [];
+                const seen = new Set(state.audiusTracks.map(t => t.uid));
+                const nextTracks = list.map(t => normalizeAudiusTrack(t, host)).filter(t => t && !seen.has(t.uid));
+                state.audiusTracks.push(...nextTracks);
+                state.audiusOffset += list.length;
+                state.audiusHasMore = list.length >= PAGE_SIZE_TRACKS;
+                if (nextTracks.length > 0) {
+                    showToast(`โหลดเพิ่มอีก ${nextTracks.length} เพลง (รวม ${state.audiusTracks.length} เพลง)`, 'success');
+                }
+            } catch (err) {
+                console.warn('Load more error:', err);
+                showToast('โหลดเพลงเพิ่มไม่สำเร็จ กรุณาลองอีกครั้ง', 'error');
+            } finally {
+                state.isLoadingMore = false;
+                renderTrackList();
+            }
+        }
+
+        // ==================== AUDIUS PLAYLISTS EXPLORER ====================
+        function normalizeAudiusPlaylist(raw, host) {
+            if (!raw || !raw.id) return null;
+            if (raw.is_private === true || raw.is_delete === true || raw.is_stream_gated === true) return null;
+            const embedded = Array.isArray(raw.tracks)
+                ? raw.tracks.map(t => normalizeAudiusTrack(t, host)).filter(Boolean)
+                : [];
+            const artCands = buildArtworkCandidates(raw.artwork, '480x480');
+            return {
+                id: String(raw.id),
+                name: String(raw.playlist_name || 'Untitled Playlist').trim(),
+                owner: String(raw.user?.name || raw.user?.handle || 'Curator').trim(),
+                trackCount: Number(raw.track_count) || embedded.length,
+                plays: Number(raw.total_play_count) || 0,
+                artwork: artCands[0],
+                artworkFallbacks: artCands.slice(1),
+                embeddedTracks: embedded
+            };
+        }
+
+        async function loadAudiusPlaylists(reset = true) {
+            const reqSeq = (state.audiusReqSeq = (state.audiusReqSeq || 0) + 1);
+            if (reset) {
+                state.playlistOffset = 0;
+                state.playlistHasMore = true;
+                state.selectedPlaylist = null;
+                state.playlists = [];
+            }
+            setAudiusLoading(true);
+            const timeLabel = getTimeLabelThai(state.activeTime);
+            const plTime = getPlaylistTimeParam();
+            updateResultsHeading(`เพลย์ลิสต์ฮิตบน Audius (${timeLabel})`, 'กดเปิดเพลย์ลิสต์เพื่อฟังรวมเพลงฮิตยกอัลบั้ม (ปิดหน้าจอฟังต่อได้)');
+            try {
+                const host = await resolveAudiusHost();
+                const json = await fetchAudiusJson(`/v1/playlists/trending?time=${encodeURIComponent(plTime)}&limit=${PAGE_SIZE_PLAYLISTS}&offset=0&app_name=${APP_NAME}`);
+                if (reqSeq !== state.audiusReqSeq) return;
+                const list = Array.isArray(json?.data) ? json.data : [];
+                state.playlists = list.map(p => normalizeAudiusPlaylist(p, host)).filter(Boolean);
+                state.playlistOffset = list.length;
+                state.playlistHasMore = list.length >= PAGE_SIZE_PLAYLISTS;
+            } catch (err) {
+                if (reqSeq !== state.audiusReqSeq) return;
+                console.warn('Playlists load error:', err);
+                showToast('โหลดเพลย์ลิสต์ไม่สำเร็จ', 'error');
+            } finally {
+                if (reqSeq === state.audiusReqSeq) {
+                    setAudiusLoading(false);
+                    renderTrackList();
+                }
+            }
+        }
+
+        async function searchAudiusPlaylists(q) {
+            const reqSeq = (state.audiusReqSeq = (state.audiusReqSeq || 0) + 1);
+            state.playlistQuery = q;
+            state.selectedPlaylist = null;
+            state.playlistOffset = 0;
+            state.playlistHasMore = true;
+            setAudiusLoading(true);
+            updateResultsHeading(`เพลย์ลิสต์ "${q}" บน Audius`, 'กดเปิดดูรายชื่อเพลงทั้งหมดในเพลย์ลิสต์');
+            try {
+                const host = await resolveAudiusHost();
+                const json = await fetchAudiusJson(`/v1/playlists/search?query=${encodeURIComponent(q)}&limit=${PAGE_SIZE_PLAYLISTS}&offset=0&app_name=${APP_NAME}`);
+                if (reqSeq !== state.audiusReqSeq) return;
+                const list = Array.isArray(json?.data) ? json.data : [];
+                state.playlists = list.map(p => normalizeAudiusPlaylist(p, host)).filter(Boolean);
+                state.playlistOffset = list.length;
+                state.playlistHasMore = list.length >= PAGE_SIZE_PLAYLISTS;
+            } catch (err) {
+                if (reqSeq !== state.audiusReqSeq) return;
+                console.warn('Playlists search error:', err);
+                state.playlists = [];
+                showToast('ค้นหาเพลย์ลิสต์ไม่สำเร็จ', 'error');
+            } finally {
+                if (reqSeq === state.audiusReqSeq) {
+                    setAudiusLoading(false);
+                    renderTrackList();
+                }
+            }
+        }
+
+        async function loadMoreAudiusPlaylists() {
+            if (!state.playlistHasMore || state.isLoadingMore) return;
+            state.isLoadingMore = true;
+            updateLoadMoreUI();
+            try {
+                const host = await resolveAudiusHost();
+                const offset = state.playlistOffset;
+                const plTime = getPlaylistTimeParam();
+                const url = state.playlistQuery
+                    ? `/v1/playlists/search?query=${encodeURIComponent(state.playlistQuery)}&limit=${PAGE_SIZE_PLAYLISTS}&offset=${offset}&app_name=${APP_NAME}`
+                    : `/v1/playlists/trending?time=${encodeURIComponent(plTime)}&limit=${PAGE_SIZE_PLAYLISTS}&offset=${offset}&app_name=${APP_NAME}`;
+                const json = await fetchAudiusJson(url);
+                const list = Array.isArray(json?.data) ? json.data : [];
+                const seen = new Set(state.playlists.map(p => p.id));
+                const next = list.map(p => normalizeAudiusPlaylist(p, host)).filter(p => p && !seen.has(p.id));
+                state.playlists.push(...next);
+                state.playlistOffset += list.length;
+                state.playlistHasMore = list.length >= PAGE_SIZE_PLAYLISTS;
+            } catch (err) {
+                showToast('โหลดเพลย์ลิสต์เพิ่มไม่สำเร็จ', 'error');
+            } finally {
+                state.isLoadingMore = false;
+                renderTrackList();
+            }
+        }
+
+        async function openAudiusPlaylist(playlistId) {
+            const pl = state.playlists.find(p => p.id === playlistId) || { id: playlistId, name: 'เพลย์ลิสต์', owner: 'Audius', trackCount: 0, embeddedTracks: [] };
+            if (pl.embeddedTracks && pl.embeddedTracks.length > 0 && pl.embeddedTracks.length >= pl.trackCount) {
+                state.selectedPlaylist = { ...pl, tracks: pl.embeddedTracks };
+                updateResultsHeading(`📀 ${pl.name} (${pl.embeddedTracks.length} เพลง)`, `โดย ${pl.owner} • คลิกเพลงเพื่อฟังหรือกดเล่นทั้งชุด`);
+                renderTrackList();
+                return;
+            }
+            setAudiusLoading(true);
+            updateResultsHeading(`📀 ${pl.name}`, `โดย ${pl.owner} — กำลังโหลดรายชื่อเพลง...`);
+            try {
+                const host = await resolveAudiusHost();
+                const json = await fetchAudiusJson(`/v1/playlists/${encodeURIComponent(playlistId)}/tracks?app_name=${APP_NAME}`);
+                const tracks = (Array.isArray(json?.data) ? json.data : []).map(t => normalizeAudiusTrack(t, host)).filter(Boolean);
+                state.selectedPlaylist = { ...pl, tracks: tracks.length ? tracks : (pl.embeddedTracks || []) };
+                const finalLen = state.selectedPlaylist.tracks.length;
+                updateResultsHeading(`📀 ${pl.name} (${finalLen} เพลง)`, `โดย ${pl.owner} • คลิกเพลงเพื่อฟังหรือกดเล่นทั้งชุด`);
+            } catch (err) {
+                if (pl.embeddedTracks && pl.embeddedTracks.length > 0) {
+                    state.selectedPlaylist = { ...pl, tracks: pl.embeddedTracks };
+                    updateResultsHeading(`📀 ${pl.name} (${pl.embeddedTracks.length} เพลง)`, `โดย ${pl.owner} • คลิกเพลงเพื่อฟังหรือกดเล่นทั้งชุด`);
+                } else {
+                    console.warn('Open playlist error:', err);
+                    showToast('เปิดดูเพลงในเพลย์ลิสต์ไม่สำเร็จ', 'error');
+                    state.selectedPlaylist = null;
+                }
             } finally {
                 setAudiusLoading(false);
                 renderTrackList();
+            }
+        }
+
+        function closeSelectedPlaylist() {
+            state.selectedPlaylist = null;
+            const timeLabel = getTimeLabelThai(state.activeTime);
+            updateResultsHeading(
+                state.playlistQuery ? `เพลย์ลิสต์ "${state.playlistQuery}" บน Audius` : `เพลย์ลิสต์ฮิตบน Audius (${timeLabel})`,
+                'กดเปิดเพลย์ลิสต์เพื่อฟังรวมเพลงฮิตยกอัลบั้ม (ปิดหน้าจอฟังต่อได้)'
+            );
+            renderTrackList();
+        }
+
+        function normalizeSongText(str) {
+            return String(str || '').toLowerCase().replace(/[\s.\-_()[\]!?'"/•&,]+/g, '');
+        }
+
+        function matchLocalTrackForThai(track) {
+            if (!track || !state.localTracks.length) return null;
+            const normTitle = normalizeSongText(track.title);
+            if (normTitle.length < 2) return null;
+            const stripParen = normalizeSongText(String(track.title).replace(/\(.*?\)/g, ''));
+            for (const loc of state.localTracks) {
+                const normLoc = normalizeSongText(loc.title);
+                if (!normLoc) continue;
+                if (normLoc === normTitle || normLoc.includes(normTitle) || (stripParen.length >= 3 && normLoc.includes(stripParen))) {
+                    return loc;
+                }
+            }
+            return null;
+        }
+
+        function upgradeItunesArtwork(url, size = 300) {
+            const raw = String(url || '').trim();
+            if (!raw) return DEFAULT_COVER_SVG;
+            return sanitizeMediaUrl(raw.replace(/\/\d+x\d+bb\./i, `/${size}x${size}bb.`));
+        }
+
+        async function fetchItunesSearch(term, limit = 8) {
+            const clean = String(term || '').trim();
+            if (!clean) return [];
+            const url = `https://itunes.apple.com/search?term=${encodeURIComponent(clean)}&country=th&media=music&entity=song&limit=${limit}`;
+            const res = await fetch(url);
+            if (!res.ok) return [];
+            const json = await res.json();
+            return Array.isArray(json?.results) ? json.results.filter(r => r && r.previewUrl) : [];
+        }
+
+        function pickBestItunesResult(results, track) {
+            if (!results.length) return null;
+            const wantTitle = normalizeSongText(track.title);
+            const wantCore = normalizeSongText(String(track.title).replace(/\(.*?\)/g, ''));
+            const wantArtist = normalizeSongText(track.artistHint || track.artist);
+            let best = results[0];
+            let bestScore = -1;
+            for (const r of results) {
+                const rt = normalizeSongText(r.trackName);
+                const ra = normalizeSongText(r.artistName);
+                let score = 0;
+                if (rt === wantTitle) score += 10;
+                else if (wantCore && rt.includes(wantCore)) score += 6;
+                else if (wantTitle && rt.includes(wantTitle)) score += 5;
+                if (wantArtist && (ra.includes(wantArtist) || wantArtist.includes(ra))) score += 4;
+                if (score > bestScore) {
+                    bestScore = score;
+                    best = r;
+                }
+            }
+            return best;
+        }
+
+        async function resolveThaiTrackStream(track) {
+            if (!track) return null;
+            const localMatch = matchLocalTrackForThai(track);
+            if (localMatch && localMatch.streamUrl) {
+                return {
+                    streamUrl: localMatch.streamUrl,
+                    artwork: localMatch.artwork || DEFAULT_COVER_SVG,
+                    artworkLarge: localMatch.artworkLarge || DEFAULT_COVER_SVG,
+                    duration: localMatch.duration || 0,
+                    matchedSource: 'local'
+                };
+            }
+            const cached = state.itunesCache[track.uid];
+            if (cached && cached.streamUrl) {
+                return { ...cached, matchedSource: 'itunes' };
+            }
+            if (track.streamUrl && track.streamUrl !== DEFAULT_COVER_SVG) {
+                return {
+                    streamUrl: track.streamUrl,
+                    artwork: track.artwork,
+                    artworkLarge: track.artworkLarge,
+                    duration: track.duration || 30,
+                    matchedSource: 'itunes'
+                };
+            }
+            const coreTitle = String(track.title || '').replace(/\(.*?\)/g, ' ').replace(/\s+/g, ' ').trim();
+            const firstArtist = String(track.artist || '').split(/[/•(]/)[0].trim();
+            const queries = [
+                `${track.title} ${track.artistHint || firstArtist}`,
+                `${coreTitle} ${track.artist}`,
+                coreTitle
+            ];
+            let hit = null;
+            for (const q of queries) {
+                try {
+                    const list = await fetchItunesSearch(q, 8);
+                    hit = pickBestItunesResult(list, track);
+                    if (hit) break;
+                } catch (_) {}
+            }
+            if (!hit) return null;
+            const resolved = {
+                streamUrl: sanitizeMediaUrl(hit.previewUrl),
+                artwork: upgradeItunesArtwork(hit.artworkUrl100, 240),
+                artworkLarge: upgradeItunesArtwork(hit.artworkUrl100, 600),
+                duration: Math.max(15, Math.round((Number(hit.trackTimeMillis) || 30000) > 45000 ? 30 : (Number(hit.trackTimeMillis) || 30000) / 1000)),
+                matchedSource: 'itunes'
+            };
+            state.itunesCache[track.uid] = {
+                streamUrl: resolved.streamUrl,
+                artwork: resolved.artwork,
+                artworkLarge: resolved.artworkLarge,
+                duration: resolved.duration
+            };
+            saveItunesCache();
+            track.artwork = resolved.artwork;
+            track.artworkLarge = resolved.artworkLarge;
+            track.streamUrl = resolved.streamUrl;
+            return resolved;
+        }
+
+        function setThaiEra(eraId) {
+            state.thaiEra = eraId || 'all';
+            state.thaiArtist = 'all';
+            state.thaiLiveResults = null;
+            renderThaiControls();
+            switchLibraryTab('thai');
+        }
+
+        function setThaiArtistFilter(artistName) {
+            state.thaiArtist = artistName || 'all';
+            renderThaiControls();
+            switchLibraryTab('thai');
+        }
+
+        function renderThaiControls() {
+            const chipsWrap = document.getElementById('thai-era-chips');
+            if (chipsWrap) {
+                chipsWrap.innerHTML = THAI_ERAS.map(e => {
+                    const active = e.id === state.thaiEra;
+                    const count = e.id === 'all'
+                        ? THAI_CATALOG_TRACKS.length
+                        : THAI_CATALOG_TRACKS.filter(t => t.era === e.id).length;
+                    const cls = active
+                        ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                        : 'bg-white dark:bg-google-dark-surface text-google-text-body dark:text-google-dark-text-body border-google-border dark:border-google-dark-border hover:border-amber-500';
+                    return `<button type="button" onclick="setThaiEra('${escapeHtml(e.id)}')" class="px-3 py-1.5 rounded-full border text-xs font-heading font-semibold whitespace-nowrap transition cursor-pointer shrink-0 ${cls}">${escapeHtml(e.label)} (${count})</button>`;
+                }).join('');
+            }
+            const artistSel = document.getElementById('thai-artist-select');
+            if (artistSel) {
+                const groupsInEra = state.thaiEra === 'all'
+                    ? THAI_ERA_GROUPS
+                    : THAI_ERA_GROUPS.filter(g => g.era === state.thaiEra);
+                const opts = [`<option value="all">ทุกศิลปินในหมวดนี้ (${groupsInEra.length} ศิลปิน)</option>`]
+                    .concat(groupsInEra.map(g => `<option value="${escapeHtml(g.artist)}"${state.thaiArtist === g.artist ? ' selected' : ''}>${escapeHtml(g.artist)} (${g.songs.length} เพลง)</option>`));
+                artistSel.innerHTML = opts.join('');
+            }
+        }
+
+        function getFilteredThaiTracks() {
+            const q = normalizeSongText(state.thaiQuery);
+            const rawQ = String(state.thaiQuery || '').trim().toLowerCase();
+            let base = THAI_CATALOG_TRACKS.filter(t => {
+                if (state.thaiEra !== 'all' && t.era !== state.thaiEra) return false;
+                if (state.thaiArtist !== 'all' && t.artist !== state.thaiArtist) return false;
+                if (rawQ) {
+                    const hay = `${t.title} ${t.artist} ${t.artistHint} ${t.genre}`.toLowerCase();
+                    if (!hay.includes(rawQ) && !normalizeSongText(hay).includes(q)) return false;
+                }
+                return true;
+            }).map(t => {
+                const cached = state.itunesCache[t.uid];
+                const localMatch = matchLocalTrackForThai(t);
+                return {
+                    ...t,
+                    artwork: (cached && cached.artwork) || t.artwork,
+                    artworkLarge: (cached && cached.artworkLarge) || t.artworkLarge,
+                    streamUrl: (localMatch && localMatch.streamUrl) || (cached && cached.streamUrl) || t.streamUrl,
+                    hasLocalMatch: Boolean(localMatch)
+                };
+            });
+            if (Array.isArray(state.thaiLiveResults) && state.thaiLiveResults.length > 0 && rawQ) {
+                const seenTitles = new Set(base.map(t => normalizeSongText(t.title)));
+                const extra = state.thaiLiveResults.filter(x => !seenTitles.has(normalizeSongText(x.title)));
+                base = base.concat(extra);
+            }
+            return base;
+        }
+
+        async function searchThaiItunes(queryText) {
+            const q = String(queryText || '').trim();
+            state.thaiQuery = q;
+            if (state.activeTab !== 'thai') switchLibraryTab('thai', false);
+            if (!q) {
+                state.thaiLiveResults = null;
+                switchLibraryTab('thai');
+                return;
+            }
+            setAudiusLoading(true);
+            updateResultsHeading(`ค้นหาเพลงไทย "${q}" บน iTunes TH`, 'ดึงตัวอย่างเพลงไทยเพิ่มเติมจาก Apple iTunes ประเทศไทย');
+            try {
+                const list = await fetchItunesSearch(q, 24);
+                state.thaiLiveResults = list.map(r => ({
+                    uid: 'itunes_' + String(r.trackId),
+                    id: String(r.trackId),
+                    source: 'thai',
+                    era: 'iTunes TH',
+                    title: String(r.trackName || 'Untitled').trim(),
+                    artist: String(r.artistName || 'Thai Artist').trim(),
+                    artistHint: String(r.artistName || '').trim(),
+                    genre: String(r.primaryGenreName || 'Thai Music'),
+                    duration: 30,
+                    plays: 0,
+                    artwork: upgradeItunesArtwork(r.artworkUrl100, 240),
+                    artworkLarge: upgradeItunesArtwork(r.artworkUrl100, 600),
+                    streamUrl: sanitizeMediaUrl(r.previewUrl)
+                }));
+                if (state.thaiLiveResults.length > 0) {
+                    showToast(`พบเพลงเพิ่มเติมบน iTunes TH ${state.thaiLiveResults.length} รายการ`, 'success');
+                }
+            } catch (err) {
+                console.warn('iTunes search error:', err);
+                showToast('ค้นหาจาก iTunes TH ชั่วคราวไม่สำเร็จ — แสดงผลจากคลัง 5 ยุคแทน', 'error');
+            } finally {
+                setAudiusLoading(false);
+                switchLibraryTab('thai');
             }
         }
 
@@ -890,7 +1657,16 @@
             const inp = document.getElementById('music-search-input');
             if (inp) inp.value = '';
             toggleClearSearchBtn();
-            loadAudiusGenre(state.activeGenre);
+            if (state.activeTab === 'thai') {
+                state.thaiQuery = '';
+                state.thaiLiveResults = null;
+                switchLibraryTab('thai');
+            } else if (state.activeTab === 'playlists') {
+                state.playlistQuery = '';
+                loadAudiusPlaylists(true);
+            } else {
+                loadAudiusGenre(state.activeGenre);
+            }
         }
 
         function toggleClearSearchBtn() {
@@ -910,9 +1686,16 @@
         }
 
         function reloadCurrentLibrary() {
-            if (state.activeTab === 'audius') {
+            if (state.activeTab === 'thai') {
+                if (state.thaiQuery) searchThaiItunes(state.thaiQuery);
+                else renderTrackList();
+            } else if (state.activeTab === 'audius') {
                 if (state.searchQuery) searchAudiusFromInput();
                 else loadAudiusGenre(state.activeGenre);
+            } else if (state.activeTab === 'playlists') {
+                if (state.selectedPlaylist) openAudiusPlaylist(state.selectedPlaylist.id);
+                else if (state.playlistQuery) searchAudiusPlaylists(state.playlistQuery);
+                else loadAudiusPlaylists(true);
             } else if (state.activeTab === 'local') {
                 loadLocalTracksFromDb();
             } else {
@@ -923,27 +1706,68 @@
         // ==================== UI TABS & RENDERERS ====================
         function switchLibraryTab(tab, reloadRender = true) {
             state.activeTab = tab;
-            ['audius', 'favs', 'local'].forEach(t => {
+            ['audius', 'thai', 'playlists', 'favs', 'local'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
                 if (!btn) return;
                 const active = t === tab;
                 btn.className = active
-                    ? 'px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-heading font-bold bg-white dark:bg-google-dark-surface text-emerald-700 dark:text-emerald-300 shadow-xs transition whitespace-nowrap cursor-pointer'
-                    : 'px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-heading font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition whitespace-nowrap cursor-pointer';
+                    ? 'px-3 py-1.5 rounded-xl text-xs sm:text-sm font-heading font-bold bg-white dark:bg-google-dark-surface text-emerald-700 dark:text-emerald-300 shadow-xs transition whitespace-nowrap cursor-pointer'
+                    : 'px-3 py-1.5 rounded-xl text-xs sm:text-sm font-heading font-bold text-google-text-muted dark:text-google-dark-text-muted hover:text-google-text dark:hover:text-white transition whitespace-nowrap cursor-pointer';
             });
 
             document.getElementById('genre-chips-row')?.classList.toggle('hidden', tab !== 'audius');
-            document.getElementById('music-search-form')?.classList.toggle('hidden', tab !== 'audius');
+            document.getElementById('audius-time-row')?.classList.toggle('hidden', (tab !== 'audius' && tab !== 'playlists') || Boolean(tab === 'audius' && state.searchQuery) || Boolean(tab === 'playlists' && state.selectedPlaylist));
+            document.getElementById('thai-controls-panel')?.classList.toggle('hidden', tab !== 'thai');
+            document.getElementById('music-search-form')?.classList.toggle('hidden', tab !== 'audius' && tab !== 'playlists' && tab !== 'thai');
             document.getElementById('local-dropzone-bar')?.classList.toggle('hidden', tab !== 'local');
 
-            if (tab === 'favs') {
+            const searchInp = document.getElementById('music-search-input');
+            const badge = document.getElementById('audius-node-badge');
+            if (searchInp) {
+                if (tab === 'thai') {
+                    searchInp.placeholder = 'ค้นหาเพลงไทย / ศิลปิน เช่น ยินยอม, บอดี้สแลม, ทรงอย่างแบด...';
+                } else {
+                    searchInp.placeholder = 'ค้นหาชื่อเพลง, เพลย์ลิสต์, แนวเพลง หรือศิลปิน เช่น lofi, chill, synthwave...';
+                }
+            }
+            if (badge && tab === 'thai') {
+                badge.textContent = 'Apple iTunes TH + MP3 Match';
+            }
+
+            if (tab === 'thai') {
+                renderThaiControls();
+                const items = getFilteredThaiTracks();
+                const eraObj = THAI_ERAS.find(e => e.id === state.thaiEra) || THAI_ERAS[0];
+                const scopeTitle = state.thaiQuery
+                    ? `เพลงไทย "${state.thaiQuery}" (${items.length} เพลง)`
+                    : (state.thaiArtist !== 'all'
+                        ? `🇹🇭 ศิลปิน ${state.thaiArtist} (${items.length} เพลง)`
+                        : `🇹🇭 คลังเพลงไทย ${eraObj.label.replace(/^[^\s]+\s*/, '')} (${items.length} เพลง)`);
+                updateResultsHeading(scopeTitle, 'กดฟังตัวอย่าง ~30 วิ (iTunes TH) หรือจับคู่ไฟล์ MP3 ในเครื่องเล่นเต็มเพลง');
+            } else if (tab === 'playlists') {
+                if (!state.playlists.length && reloadRender) {
+                    loadAudiusPlaylists(true);
+                    return;
+                }
+                if (state.selectedPlaylist) {
+                    const pl = state.selectedPlaylist;
+                    updateResultsHeading(`📀 ${pl.name} (${pl.tracks.length} เพลง)`, `โดย ${pl.owner} • คลิกเพลงเพื่อฟังหรือกดเล่นทั้งชุด`);
+                } else {
+                    const timeLabel = getTimeLabelThai(state.activeTime);
+                    updateResultsHeading(
+                        state.playlistQuery ? `เพลย์ลิสต์ "${state.playlistQuery}" บน Audius` : `เพลย์ลิสต์ฮิตบน Audius (${timeLabel})`,
+                        'กดเปิดเพลย์ลิสต์เพื่อฟังรวมเพลงฮิตยกอัลบั้ม (ปิดหน้าจอฟังต่อได้)'
+                    );
+                }
+            } else if (tab === 'favs') {
                 updateResultsHeading(`เพลงโปรดที่บันทึกไว้ (${state.favTracks.length} เพลง)`, 'เก็บถาวรในเบราว์เซอร์ เปิดกลับมาฟังต่อได้ทันที');
             } else if (tab === 'local') {
                 updateResultsHeading(`MP3 ออฟไลน์ในเครื่อง (${state.localTracks.length} เพลง)`, 'เล่นตรงจากไฟล์ใน IndexedDB ไม่ใช้เน็ตและปิดหน้าจอฟังต่อได้');
             } else {
                 const cfg = AUDIUS_GENRES.find(g => g.id === state.activeGenre) || AUDIUS_GENRES[0];
+                const timeLabel = getTimeLabelThai(state.activeTime);
                 updateResultsHeading(
-                    state.searchQuery ? `ผลการค้นหา "${state.searchQuery}" บน Audius` : (cfg.genre ? `แนวเพลง ${cfg.label.replace(/^[^\s]+\s*/, '')} (Audius)` : 'เพลงฮิตติดชาร์ต (Audius Trending)'),
+                    state.searchQuery ? `ผลการค้นหา "${state.searchQuery}" บน Audius` : (cfg.genre ? `แนวเพลง ${cfg.label.replace(/^[^\s]+\s*/, '')} • ${timeLabel}` : `เพลงฮิตติดชาร์ต (${timeLabel})`),
                     'สตรีมเพลงจริงจาก Audius Public API ไร้โฆษณาคั่น'
                 );
             }
@@ -984,13 +1808,86 @@
             `).join('');
         }
 
+        function updateLoadMoreUI() {
+            const wrap = document.getElementById('audius-load-more-wrap');
+            const summary = document.getElementById('audius-loaded-summary');
+            const btn = document.getElementById('btn-load-more-audius');
+            const lbl = document.getElementById('load-more-label');
+            if (!wrap) return;
+
+            const showTracksMore = state.activeTab === 'audius' && !state.isLoading && state.audiusTracks.length > 0;
+            const showPlaylistsMore = state.activeTab === 'playlists' && !state.selectedPlaylist && !state.isLoading && state.playlists.length > 0;
+            const visible = showTracksMore || showPlaylistsMore;
+            wrap.classList.toggle('hidden', !visible);
+            if (!visible) return;
+
+            if (showTracksMore) {
+                if (summary) summary.textContent = `กำลังแสดง ${state.audiusTracks.length} เพลง`;
+                if (btn) {
+                    btn.disabled = state.isLoadingMore || !state.audiusHasMore;
+                    btn.classList.toggle('hidden', !state.audiusHasMore);
+                }
+                if (lbl) lbl.textContent = state.isLoadingMore ? 'กำลังโหลดเพลงเพิ่ม...' : `โหลดเพลงเพิ่มอีก ${PAGE_SIZE_TRACKS} เพลง`;
+            } else if (showPlaylistsMore) {
+                if (summary) summary.textContent = `กำลังแสดง ${state.playlists.length} เพลย์ลิสต์`;
+                if (btn) {
+                    btn.disabled = state.isLoadingMore || !state.playlistHasMore;
+                    btn.classList.toggle('hidden', !state.playlistHasMore);
+                }
+                if (lbl) lbl.textContent = state.isLoadingMore ? 'กำลังโหลดเพิ่ม...' : `โหลดเพลย์ลิสต์เพิ่มอีก ${PAGE_SIZE_PLAYLISTS} ชุด`;
+            }
+        }
+
         function renderTrackList() {
             const listEl = document.getElementById('track-list');
             if (!listEl) return;
-            if (state.isLoading && state.activeTab === 'audius') return;
+            const inPlaylistBrowse = state.activeTab === 'playlists' && !state.selectedPlaylist;
+            document.getElementById('btn-playlist-back')?.classList.toggle('hidden', !(state.activeTab === 'playlists' && state.selectedPlaylist));
+            document.getElementById('btn-play-all-displayed')?.classList.toggle('hidden', inPlaylistBrowse);
+            document.getElementById('audius-time-row')?.classList.toggle('hidden', (state.activeTab !== 'audius' && state.activeTab !== 'playlists') || Boolean(state.activeTab === 'audius' && state.searchQuery) || Boolean(state.activeTab === 'playlists' && state.selectedPlaylist));
+
+            if (state.isLoading && (state.activeTab === 'audius' || state.activeTab === 'playlists')) {
+                updateLoadMoreUI();
+                return;
+            }
+
+            // Playlists Grid View
+            if (inPlaylistBrowse) {
+                if (!state.playlists.length) {
+                    listEl.innerHTML = `
+                        <div class="py-12 px-4 text-center rounded-2xl border border-dashed border-google-border dark:border-google-dark-border bg-google-bg/60 dark:bg-google-dark-bg/40 space-y-3">
+                            <p class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted">ไม่พบเพลย์ลิสต์ที่ตรงกับคำค้นหา</p>
+                            <button type="button" onclick="loadAudiusPlaylists(true)" class="px-4 py-2 rounded-full bg-emerald-600 text-white text-xs font-heading font-bold cursor-pointer">ดูเพลย์ลิสต์ฮิตติดชาร์ต</button>
+                        </div>
+                    `;
+                    updateLoadMoreUI();
+                    return;
+                }
+                listEl.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${state.playlists.map(p => {
+                    const pFb = Array.isArray(p.artworkFallbacks) ? p.artworkFallbacks.join('||') : '';
+                    return `
+                    <button type="button" onclick="openAudiusPlaylist('${escapeHtml(p.id)}')" class="p-3 rounded-xl border border-google-border/80 dark:border-google-dark-border hover:border-emerald-500 bg-white dark:bg-google-dark-bg/40 flex items-center gap-3 text-left transition group cursor-pointer">
+                        <img src="${escapeHtml(p.artwork)}" alt="" data-fallbacks="${escapeHtml(pFb)}" onerror="handleArtworkError(this)" class="w-14 h-14 rounded-xl object-cover shrink-0 bg-slate-200 dark:bg-zinc-800" loading="lazy">
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs sm:text-sm font-heading font-bold text-google-text dark:text-white truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400">${escapeHtml(p.name)}</div>
+                            <div class="text-[11px] text-google-text-muted truncate">${escapeHtml(p.owner)}</div>
+                            <div class="flex items-center gap-2 mt-1 text-[10px] font-mono text-google-text-muted">
+                                <span class="px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold">${p.trackCount} เพลง</span>
+                                ${p.plays > 0 ? `<span>▶ ${formatPlays(p.plays)}</span>` : ''}
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-xs text-google-text-muted group-hover:text-emerald-600 shrink-0"></i>
+                    </button>
+                `;
+                }).join('')}</div>`;
+                updateLoadMoreUI();
+                return;
+            }
 
             let items = [];
-            if (state.activeTab === 'favs') items = state.favTracks;
+            if (state.activeTab === 'playlists' && state.selectedPlaylist) items = state.selectedPlaylist.tracks || [];
+            else if (state.activeTab === 'thai') items = getFilteredThaiTracks();
+            else if (state.activeTab === 'favs') items = state.favTracks;
             else if (state.activeTab === 'local') items = state.localTracks;
             else items = state.audiusTracks;
 
@@ -1001,7 +1898,9 @@
                     ? 'ยังไม่มีเพลงโปรด — กดไอคอน ♥ ที่เพลงใดก็ได้เพื่อบันทึก'
                     : (state.activeTab === 'local'
                         ? 'ยังไม่มีไฟล์ MP3 ในคลังออฟไลน์ — กดปุ่มเลือกไฟล์ด้านล่างเพื่อเพิ่มเพลงจากเครื่อง'
-                        : 'ไม่พบเพลงที่ตรงกับคำค้นหานี้ ลองเปลี่ยนคำค้นหาหรือกดรีเฟรช');
+                        : (state.activeTab === 'thai'
+                            ? 'ไม่พบเพลงไทยในตัวกรองนี้ — กดปุ่มด้านล่างเพื่อค้นหาเพิ่มเติมจาก iTunes ไทย หรือล้างตัวกรอง'
+                            : 'ไม่พบเพลงที่ตรงกับคำค้นหานี้ ลองเปลี่ยนคำค้นหาหรือกดรีเฟรช'));
                 listEl.innerHTML = `
                     <div class="py-12 px-4 text-center rounded-2xl border border-dashed border-google-border dark:border-google-dark-border bg-google-bg/60 dark:bg-google-dark-bg/40 space-y-3">
                         <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 mx-auto flex items-center justify-center">
@@ -1009,8 +1908,15 @@
                         </div>
                         <p class="text-xs sm:text-sm text-google-text-muted dark:text-google-dark-text-muted">${escapeHtml(emptyText)}</p>
                         ${state.activeTab === 'audius' ? `<button type="button" onclick="loadAudiusGenre('trending')" class="px-4 py-2 rounded-full bg-emerald-600 text-white text-xs font-heading font-bold cursor-pointer">ดูเพลงฮิตติดชาร์ต</button>` : ''}
+                        ${state.activeTab === 'thai' ? `
+                            <div class="flex flex-wrap items-center justify-center gap-2">
+                                ${state.thaiQuery ? `<button type="button" onclick="searchThaiItunes(state.thaiQuery)" class="px-4 py-2 rounded-full bg-amber-600 text-white text-xs font-heading font-bold cursor-pointer">ค้นหา "${escapeHtml(state.thaiQuery)}" บน iTunes ไทย</button>` : ''}
+                                <button type="button" onclick="state.thaiQuery=''; document.getElementById('music-search-input').value=''; setThaiEra('all');" class="px-4 py-2 rounded-full bg-slate-200 dark:bg-zinc-700 text-google-text dark:text-white text-xs font-heading font-bold cursor-pointer">ดูทั้ง ${THAI_CATALOG_TRACKS.length} เพลง</button>
+                            </div>
+                        ` : ''}
                     </div>
                 `;
+                updateLoadMoreUI();
                 return;
             }
 
@@ -1018,13 +1924,23 @@
                 const isCur = state.currentTrack && state.currentTrack.uid === t.uid;
                 const isFav = isTrackFavorited(t);
                 const art = sanitizeMediaUrl(t.artwork, true);
+                const tFb = Array.isArray(t.artworkFallbacks) ? t.artworkFallbacks.join('||') : '';
                 const rowBorder = isCur
                     ? 'border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/30 ring-1 ring-emerald-500/40'
                     : 'border-google-border/80 dark:border-google-dark-border hover:border-emerald-400 bg-white dark:bg-google-dark-bg/40';
+                const isThai = t.source === 'thai';
+                const thaiQueryText = `${t.title} ${t.artist}`;
+                const spUrl = isThai ? `https://open.spotify.com/search/${encodeURIComponent(thaiQueryText)}` : '';
+                const ytmUrl = isThai ? `https://music.youtube.com/search?q=${encodeURIComponent(thaiQueryText)}` : '';
+                const sourceBadge = isThai
+                    ? (t.hasLocalMatch
+                        ? '<span class="px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold shrink-0">💾 เต็มเพลงในเครื่อง</span>'
+                        : '<span class="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 text-[11px] font-bold shrink-0">🎵 ตัวอย่าง 30วิ</span>')
+                    : '';
                 return `
                     <div class="p-2.5 sm:p-3 rounded-xl border ${rowBorder} flex items-center gap-3 transition group">
                         <button type="button" onclick="playTrackFromDisplayed('${escapeHtml(t.uid)}')" class="relative w-12 h-12 rounded-xl overflow-hidden bg-slate-200 dark:bg-zinc-800 shrink-0 cursor-pointer" title="เล่นเพลงนี้">
-                            <img src="${escapeHtml(art)}" alt="" onerror="this.onerror=null;this.src=DEFAULT_COVER_SVG;" class="w-full h-full object-cover" loading="lazy">
+                            <img src="${escapeHtml(art)}" alt="" data-fallbacks="${escapeHtml(tFb)}" onerror="handleArtworkError(this)" class="w-full h-full object-cover" loading="lazy">
                             <span class="absolute inset-0 bg-black/40 flex items-center justify-center text-white ${isCur ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity">
                                 <i class="fa-solid ${isCur && !mainAudio.paused ? 'fa-volume-high' : 'fa-play'} text-xs"></i>
                             </span>
@@ -1032,28 +1948,36 @@
 
                         <button type="button" onclick="playTrackFromDisplayed('${escapeHtml(t.uid)}')" class="min-w-0 flex-1 text-left cursor-pointer">
                             <div class="flex items-center gap-1.5">
-                                <span class="text-[10px] font-mono text-google-text-muted shrink-0">${String(idx + 1).padStart(2, '0')}</span>
+                                <span class="text-[11px] font-mono text-google-text-muted shrink-0">${String(idx + 1).padStart(2, '0')}</span>
                                 <span class="text-xs sm:text-sm font-heading font-bold text-google-text dark:text-white truncate">${escapeHtml(t.title)}</span>
                             </div>
-                            <div class="flex items-center gap-2 text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5">
-                                <span class="truncate max-w-[160px] sm:max-w-[220px]">${escapeHtml(t.artist)}</span>
+                            <div class="flex flex-wrap items-center gap-1.5 text-[11px] text-google-text-muted dark:text-google-dark-text-muted mt-0.5">
+                                <span class="truncate max-w-[150px] sm:max-w-[210px]">${escapeHtml(t.artist)}</span>
                                 <span>•</span>
-                                <span class="px-1.5 py-0.2 rounded bg-slate-100 dark:bg-google-dark-subtle text-[10px] shrink-0">${escapeHtml(t.genre)}</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-google-dark-subtle text-[11px] shrink-0">${escapeHtml(t.genre)}</span>
+                                ${sourceBadge}
                                 ${t.plays > 0 ? `<span class="hidden sm:inline shrink-0">▶ ${formatPlays(t.plays)}</span>` : ''}
                             </div>
                         </button>
 
                         <div class="flex items-center gap-1 shrink-0">
-                            <span class="hidden sm:inline font-mono text-[11px] text-google-text-muted mr-1">${t.duration > 0 ? formatSeconds(t.duration) : '--:--'}</span>
-                            <button type="button" onclick="enqueueTrackByUid('${escapeHtml(t.uid)}')" class="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-google-dark-subtle text-google-text-muted hover:text-emerald-600 flex items-center justify-center transition cursor-pointer" title="เพิ่มเข้าคิวเล่นต่อ">
+                            ${!isThai ? `<span class="hidden sm:inline font-mono text-[11px] text-google-text-muted mr-1">${t.duration > 0 ? formatSeconds(t.duration) : '--:--'}</span>` : `
+                                <a href="${spUrl}" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex w-9 h-9 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 items-center justify-center transition" title="เปิดฟังเต็มเพลงบน Spotify" aria-label="เปิดฟังเต็มเพลง ${escapeHtml(t.title)} บน Spotify">
+                                    <i class="fa-brands fa-spotify text-sm"></i>
+                                </a>
+                                <a href="${ytmUrl}" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex w-9 h-9 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 items-center justify-center transition" title="เปิดฟังเต็มเพลงบน YouTube Music" aria-label="เปิดฟังเต็มเพลง ${escapeHtml(t.title)} บน YouTube Music">
+                                    <i class="fa-brands fa-youtube text-sm"></i>
+                                </a>
+                            `}
+                            <button type="button" onclick="enqueueTrackByUid('${escapeHtml(t.uid)}')" class="w-9 h-9 rounded-lg hover:bg-slate-100 dark:hover:bg-google-dark-subtle text-google-text-muted hover:text-emerald-600 flex items-center justify-center transition cursor-pointer" title="เพิ่มเข้าคิวเล่นต่อ" aria-label="เพิ่มเข้าคิวเล่นต่อ">
                                 <i class="fa-solid fa-plus text-xs"></i>
                             </button>
                             ${t.source === 'local' ? `
-                                <button type="button" onclick="deleteLocalTrack('${escapeHtml(t.uid)}')" class="w-8 h-8 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-google-text-muted hover:text-rose-600 flex items-center justify-center transition cursor-pointer" title="ลบออกจากคลังออฟไลน์">
+                                <button type="button" onclick="deleteLocalTrack('${escapeHtml(t.uid)}')" class="w-9 h-9 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-google-text-muted hover:text-rose-600 flex items-center justify-center transition cursor-pointer" title="ลบออกจากคลังออฟไลน์" aria-label="ลบออกจากคลังออฟไลน์">
                                     <i class="fa-solid fa-trash-can text-xs"></i>
                                 </button>
                             ` : `
-                                <button type="button" onclick="toggleFavoriteByUid('${escapeHtml(t.uid)}')" class="w-8 h-8 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 ${isFav ? 'text-rose-500' : 'text-google-text-muted'} flex items-center justify-center transition cursor-pointer" title="${isFav ? 'เอาออกจากเพลงโปรด' : 'บันทึกเพลงโปรด'}">
+                                <button type="button" onclick="toggleFavoriteByUid('${escapeHtml(t.uid)}')" class="w-9 h-9 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 ${isFav ? 'text-rose-500' : 'text-google-text-muted'} flex items-center justify-center transition cursor-pointer" title="${isFav ? 'เอาออกจากเพลงโปรด' : 'บันทึกเพลงโปรด'}" aria-label="${isFav ? 'เอาออกจากเพลงโปรด' : 'บันทึกเพลงโปรด'}">
                                     <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart text-xs"></i>
                                 </button>
                             `}
@@ -1061,6 +1985,7 @@
                     </div>
                 `;
             }).join('');
+            updateLoadMoreUI();
         }
 
         function renderQueueList() {
@@ -1078,14 +2003,14 @@
                 const active = idx === state.queueIndex;
                 return `
                     <div class="px-2.5 py-2 rounded-xl border ${active ? 'border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/35' : 'border-google-border/70 dark:border-google-dark-border/80 bg-google-bg/50 dark:bg-google-dark-bg/40'} flex items-center gap-2">
-                        <button type="button" onclick="playQueueIndex(${idx})" class="flex-1 min-w-0 flex items-center gap-2 text-left cursor-pointer">
-                            <span class="w-5 text-[10px] font-mono ${active ? 'text-emerald-600 font-bold' : 'text-google-text-muted'} shrink-0">${active ? '▶' : idx + 1}</span>
+                        <button type="button" onclick="playQueueIndex(${idx})" class="flex-1 min-w-0 min-h-[36px] flex items-center gap-2 text-left cursor-pointer">
+                            <span class="w-5 text-[11px] font-mono ${active ? 'text-emerald-600 font-bold' : 'text-google-text-muted'} shrink-0">${active ? '▶' : idx + 1}</span>
                             <div class="min-w-0 flex-1">
                                 <div class="text-xs font-heading font-bold text-google-text dark:text-white truncate">${escapeHtml(t.title)}</div>
-                                <div class="text-[10px] text-google-text-muted truncate">${escapeHtml(t.artist)}</div>
+                                <div class="text-[11px] text-google-text-muted truncate">${escapeHtml(t.artist)}</div>
                             </div>
                         </button>
-                        <button type="button" onclick="removeFromQueue(${idx})" class="w-7 h-7 rounded-lg text-google-text-muted hover:text-rose-500 flex items-center justify-center shrink-0 cursor-pointer" title="นำออกจากคิว">
+                        <button type="button" onclick="removeFromQueue(${idx})" class="w-9 h-9 rounded-lg text-google-text-muted hover:text-rose-500 flex items-center justify-center shrink-0 cursor-pointer" title="นำออกจากคิว" aria-label="นำออกจากคิว">
                             <i class="fa-solid fa-xmark text-xs"></i>
                         </button>
                     </div>
@@ -1096,29 +2021,30 @@
         function updateBadges() {
             const fc = document.getElementById('fav-count-tab');
             const lc = document.getElementById('local-count-tab');
+            const tc = document.getElementById('thai-count-tab');
             if (fc) fc.textContent = String(state.favTracks.length);
             if (lc) lc.textContent = String(state.localTracks.length);
+            if (tc) tc.textContent = String(THAI_CATALOG_TRACKS.length);
         }
 
         // ==================== PLAYBACK ENGINE + MEDIA SESSION API ====================
         function queueAndPlayAllDisplayed() {
             if (!state.displayedTracks.length) {
                 showToast('ยังไม่มีรายการเพลงให้เล่น');
-                return;
+                return Promise.resolve();
             }
             state.queue = state.displayedTracks.map(t => ({ ...t }));
-            playQueueIndex(0);
+            return playQueueIndex(0);
         }
 
         function playTrackFromDisplayed(uid) {
             const list = state.displayedTracks;
             const idx = list.findIndex(t => t.uid === uid);
             if (idx === -1) {
-                playTrackByUid(uid, true);
-                return;
+                return playTrackByUid(uid, true);
             }
             state.queue = list.map(t => ({ ...t }));
-            playQueueIndex(idx);
+            return playQueueIndex(idx);
         }
 
         function enqueueTrackByUid(uid) {
@@ -1150,17 +2076,16 @@
         function playTrackByUid(uid, replaceQueueIfSingle = false) {
             const existingIdx = state.queue.findIndex(t => t.uid === uid);
             if (existingIdx >= 0) {
-                playQueueIndex(existingIdx);
-                return;
+                return playQueueIndex(existingIdx);
             }
             const track = findKnownTrack(uid);
-            if (!track) return;
+            if (!track) return Promise.resolve();
             if (replaceQueueIfSingle || !state.queue.length) {
                 state.queue = [{ ...track }];
-                playQueueIndex(0);
+                return playQueueIndex(0);
             } else {
                 state.queue.push({ ...track });
-                playQueueIndex(state.queue.length - 1);
+                return playQueueIndex(state.queue.length - 1);
             }
         }
 
@@ -1172,6 +2097,25 @@
             updatePlayerMetaUI(track);
             renderQueueList();
             renderTrackList();
+
+            if (track.source === 'thai') {
+                setBuffering(true);
+                const resolved = await resolveThaiTrackStream(track);
+                if (state.currentTrack !== track) return;
+                if (!resolved || !resolved.streamUrl) {
+                    setBuffering(false);
+                    setPlayStateUI(false);
+                    showToast(`ไม่พบตัวอย่าง iTunes TH ของ "${track.title}" — กดเปิดเต็มเพลงบน Spotify / YT Music ได้`, 'error');
+                    return;
+                }
+                track.streamUrl = resolved.streamUrl;
+                track.artwork = resolved.artwork || track.artwork;
+                track.artworkLarge = resolved.artworkLarge || track.artworkLarge;
+                if (resolved.duration) track.duration = resolved.duration;
+                track._matchedSource = resolved.matchedSource;
+                updatePlayerMetaUI(track);
+                renderTrackList();
+            }
 
             const streamUrl = sanitizeMediaUrl(track.streamUrl, true);
             if (!streamUrl || streamUrl === DEFAULT_COVER_SVG) {
@@ -1448,7 +2392,10 @@
             document.getElementById('player-title').textContent = track?.title || 'ยังไม่ได้เลือกเพลง';
             document.getElementById('player-artist').textContent = track?.artist || 'กดเลือกเพลงจากรายการ';
             document.getElementById('player-genre').textContent = track?.genre || 'Music';
-            document.getElementById('player-source-pill').textContent = track?.source === 'local' ? '💾 MP3 ในเครื่อง' : '🎧 Audius Direct Stream';
+            document.getElementById('player-source-pill').textContent =
+                (track?.source === 'local' || track?._matchedSource === 'local')
+                    ? '💾 MP3 เต็มเพลงในเครื่อง'
+                    : (track?.source === 'thai' ? '🇹🇭 ตัวอย่าง 30 วิ (iTunes)' : '🎧 Audius Direct Stream');
             document.getElementById('time-duration').textContent = formatSeconds(track?.duration || 0);
             document.getElementById('time-current').textContent = '0:00';
             document.getElementById('seek-slider').value = '0';
@@ -1553,10 +2500,18 @@
             registerMediaSessionHandlers();
             updateBadges();
             renderGenreChips();
+            renderThaiControls();
             renderQueueList();
             loadLocalTracksFromDb();
             loadAudiusGenre('trending');
-            document.getElementById('music-search-input')?.addEventListener('input', toggleClearSearchBtn);
+            document.getElementById('music-search-input')?.addEventListener('input', (e) => {
+                toggleClearSearchBtn();
+                if (state.activeTab === 'thai') {
+                    state.thaiQuery = (e.target?.value || '').trim();
+                    state.thaiLiveResults = null;
+                    switchLibraryTab('thai');
+                }
+            });
         });
     </script>
 </body>

@@ -604,11 +604,11 @@
     <!-- HEADER / NAVIGATION (Clean & Easy to Use)  -->
     <!-- ========================================== -->
     <header class="fixed top-0 left-0 right-0 z-40 g-navbar transition-colors duration-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
             
             <!-- Brand Logo & Official Affiliation -->
-            <a href="#home" class="flex items-center gap-3 group shrink-0">
-                <div class="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-google-blue-light dark:bg-google-dark-subtle border border-google-blue/30 dark:border-google-blue/40 flex items-center justify-center font-bold text-google-blue dark:text-sky-400 text-lg shadow-sm group-hover:scale-105 transition-transform">
+            <a href="#home" class="flex items-center gap-2 sm:gap-3 group min-w-0 flex-1 lg:flex-initial">
+                <div class="relative w-9 h-9 sm:w-11 sm:h-11 shrink-0 rounded-full bg-google-blue-light dark:bg-google-dark-subtle border border-google-blue/30 dark:border-google-blue/40 flex items-center justify-center font-bold text-google-blue dark:text-sky-400 text-base sm:text-lg shadow-sm group-hover:scale-105 transition-transform">
                     <i class="fa-solid fa-graduation-cap"></i>
                     <div class="absolute -bottom-0.5 -right-0.5 flex gap-0.5 p-0.5 rounded-full bg-white dark:bg-google-dark-surface shadow-xs">
                         <span class="w-1.5 h-1.5 rounded-full bg-google-blue"></span>
@@ -617,16 +617,16 @@
                         <span class="w-1.5 h-1.5 rounded-full bg-google-green"></span>
                     </div>
                 </div>
-                <div class="flex flex-col">
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-base sm:text-lg font-bold tracking-tight text-google-text dark:text-google-dark-text group-hover:text-google-blue transition-colors font-heading">
+                <div class="flex flex-col min-w-0">
+                    <div class="flex items-center gap-1.5 min-w-0">
+                        <span class="text-sm sm:text-lg font-bold tracking-tight text-google-text dark:text-google-dark-text group-hover:text-google-blue transition-colors font-heading truncate">
                             นายภคพล สมัยแก้ว
                         </span>
-                        <span class="text-xs px-2 py-0.5 rounded-full bg-google-blue-light dark:bg-blue-950/60 text-google-blue dark:text-sky-300 font-semibold border border-google-blue/20">
+                        <span class="shrink-0 text-[11px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-google-blue-light dark:bg-blue-950/60 text-google-blue dark:text-sky-300 font-semibold border border-google-blue/20">
                             ฟีล
                         </span>
                     </div>
-                    <span class="text-[11px] sm:text-xs text-google-text-muted dark:text-google-dark-text-muted">
+                    <span class="text-[11px] sm:text-xs text-google-text-muted dark:text-google-dark-text-muted truncate">
                         วิทยาลัยอาชีวศึกษานครศรีธรรมราช (ปวส.1)
                     </span>
                 </div>
@@ -642,22 +642,22 @@
             </nav>
 
             <!-- Right Actions: Single Web Apps Dropdown + Theme Switcher + Mobile Hamburger -->
-            <div class="flex items-center gap-2 shrink-0">
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 
                 <!-- Responsive App Hub Trigger (Spotlight / Bottom Sheet) -->
-                <button onclick="toggleGoogleAppsMenu()" id="google-apps-btn" aria-expanded="false" aria-controls="feel-app-hub" class="whitespace-nowrap shrink-0 min-w-[40px] h-10 sm:px-3.5 rounded-full text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border shadow-xs inline-flex items-center justify-center gap-2 cursor-pointer transition-all" title="ศูนย์รวมเว็บแอปเสริม (Ctrl+K)">
+                <button onclick="toggleGoogleAppsMenu()" id="google-apps-btn" aria-expanded="false" aria-controls="feel-app-hub" class="whitespace-nowrap shrink-0 min-w-[36px] h-9 sm:min-w-[40px] sm:h-10 sm:px-3.5 rounded-full text-xs sm:text-sm font-semibold text-google-text dark:text-google-dark-text bg-white dark:bg-google-dark-surface hover:bg-google-subtle dark:hover:bg-google-dark-subtle border border-google-border dark:border-google-dark-border shadow-xs inline-flex items-center justify-center gap-2 cursor-pointer transition-all" title="ศูนย์รวมเว็บแอปเสริม (Ctrl+K)" aria-label="ศูนย์รวมเว็บแอปเสริม">
                     <i class="fa-solid fa-grip text-google-blue"></i>
                     <span class="hidden sm:inline">เว็บแอป 23 ระบบ</span>
                     <span class="hidden xl:inline feel-kbd">Ctrl+K</span>
                 </button>
 
                 <!-- Theme Switcher (Light / Dark) -->
-                <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors shadow-sm cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด">
+                <button onclick="toggleTheme()" class="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors shadow-sm cursor-pointer" title="สลับโหมดสว่าง / โหมดมืด" aria-label="สลับโหมดสว่าง / โหมดมืด">
                     <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
                 </button>
 
                 <!-- Mobile Menu Hamburger Button -->
-                <button onclick="toggleMobileMenu()" class="lg:hidden w-10 h-10 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors shadow-sm cursor-pointer" title="เปิดเมนูนำทาง">
+                <button id="mobile-menu-btn" onclick="toggleMobileMenu()" aria-expanded="false" aria-controls="mobile-menu" class="lg:hidden w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full bg-white dark:bg-google-dark-surface border border-google-border dark:border-google-dark-border text-google-text-body dark:text-google-dark-text flex items-center justify-center hover:bg-google-subtle dark:hover:bg-google-dark-subtle transition-colors shadow-sm cursor-pointer" title="เปิดเมนูนำทาง" aria-label="เปิดเมนูนำทาง">
                     <i class="fa-solid fa-bars text-sm"></i>
                 </button>
             </div>
@@ -665,25 +665,25 @@
 
         <!-- Mobile Navigation Menu Drawer -->
         <div id="mobile-menu" class="hidden lg:hidden border-t border-google-border dark:border-google-dark-border bg-white dark:bg-google-dark-bg px-4 pt-3 pb-5 space-y-1 shadow-lg">
-            <a href="#home" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
+            <a href="#home" onclick="toggleMobileMenu()" class="min-h-[44px] flex items-center gap-2 px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
                 <i class="fa-solid fa-house w-6 text-google-blue"></i> หน้าแรก
             </a>
-            <a href="#about" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
+            <a href="#about" onclick="toggleMobileMenu()" class="min-h-[44px] flex items-center gap-2 px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
                 <i class="fa-solid fa-id-card w-6 text-google-blue"></i> ประวัติส่วนตัว & การศึกษา
             </a>
-            <a href="#skills" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
+            <a href="#skills" onclick="toggleMobileMenu()" class="min-h-[44px] flex items-center gap-2 px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
                 <i class="fa-solid fa-microchip w-6 text-google-green"></i> ทักษะความสามารถ
             </a>
-            <a href="#projects" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
+            <a href="#projects" onclick="toggleMobileMenu()" class="min-h-[44px] flex items-center gap-2 px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
                 <i class="fa-solid fa-award w-6 text-amber-500"></i> ผลงาน & เกียรติบัตร
             </a>
-            <a href="#gallery" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
+            <a href="#gallery" onclick="toggleMobileMenu()" class="min-h-[44px] flex items-center gap-2 px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
                 <i class="fa-solid fa-images w-6 text-amber-500"></i> คลังภาพกิจกรรม
             </a>
-            <a href="#contact" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
+            <a href="#contact" onclick="toggleMobileMenu()" class="min-h-[44px] flex items-center gap-2 px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
                 <i class="fa-solid fa-envelope w-6 text-google-blue"></i> ติดต่อ
             </a>
-            <a href="#live-services" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
+            <a href="#live-services" onclick="toggleMobileMenu()" class="min-h-[44px] flex items-center gap-2 px-4 py-2.5 rounded-xl text-google-text dark:text-google-dark-text hover:bg-google-blue-light dark:hover:bg-google-dark-surface text-sm font-medium">
                 <i class="fa-solid fa-layer-group w-6 text-indigo-500"></i> เว็บแอปเสริม (23 ระบบ)
             </a>
             <div class="pt-3 mt-2 border-t border-google-border dark:border-google-dark-border">
@@ -746,7 +746,7 @@
                         </div>
 
                         <!-- Clear Concise Bio Description -->
-                        <p id="hero-bio" class="text-google-text-body dark:text-google-dark-text-body text-sm sm:text-base leading-relaxed max-w-xl mx-auto lg:mx-0 font-normal line-clamp-3">
+                        <p id="hero-bio" class="text-google-text-body dark:text-google-dark-text-body text-sm sm:text-base leading-relaxed max-w-xl mx-auto lg:mx-0 font-normal">
                             นักศึกษา ปวส.1 วิทยาลัยอาชีวศึกษานครศรีธรรมราช มุ่งเน้นพัฒนาโครงงานสมองกลฝังตัว ESP32 / IoT, การประยุกต์ใช้ AI พัฒนาเว็บแอปพลิเคชัน และการผลิตสื่อดิจิทัล
                         </p>
 
@@ -3568,7 +3568,7 @@
                     if (sliderContainer) {
                         const slidesHtml = h.slides.map((s, idx) => `
                             <div class="hero-slide ${idx === 0 ? 'active' : ''}">
-                                <img src="${s.src}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80'" alt="${s.title || ''}" class="w-full h-full object-cover object-center">
+                                <img src="${s.src}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80'" alt="${s.title || ''}" ${idx === 0 ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'} class="w-full h-full object-cover object-center">
                                 <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 text-white">
                                     <p class="text-sm font-bold">${s.title || h.name || 'ภคพล สมัยแก้ว'}</p>
                                     <p class="text-xs text-slate-200">${s.subtitle || ''}</p>
@@ -3577,10 +3577,10 @@
                         `).join('');
 
                         const navBtnsHtml = `
-                            <button onclick="prevHeroSlide()" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-google-text border border-google-border flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-sm" title="รูปก่อนหน้า">
+                            <button type="button" onclick="prevHeroSlide()" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-google-text border border-google-border flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-sm" title="รูปก่อนหน้า" aria-label="ดูรูปก่อนหน้า">
                                 <i class="fa-solid fa-chevron-left text-xs"></i>
                             </button>
-                            <button onclick="nextHeroSlide()" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-google-text border border-google-border flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-sm" title="รูปถัดไป">
+                            <button type="button" onclick="nextHeroSlide()" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-google-text border border-google-border flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-sm" title="รูปถัดไป" aria-label="ดูรูปถัดไป">
                                 <i class="fa-solid fa-chevron-right text-xs"></i>
                             </button>
                         `;
@@ -3847,7 +3847,7 @@
                 if (hasImage) {
                     headerHtml = `
                         <div class="relative h-48 sm:h-52 overflow-hidden bg-slate-100 dark:bg-zinc-800 border-b border-google-border dark:border-google-dark-border cursor-pointer group/thumb" onclick="openPdfModal('${p.title.replace(/'/g, "\\'")}', '${targetUrl}')" title="คลิกเพื่อเปิดดูเอกสารฉบับเต็ม">
-                            <img src="${coverImg}" alt="${p.title}" class="w-full h-full object-cover object-top group-hover/thumb:scale-105 transition-transform duration-300">
+                            <img src="${coverImg}" alt="${p.title}" loading="lazy" decoding="async" class="w-full h-full object-cover object-top group-hover/thumb:scale-105 transition-transform duration-300">
                             <!-- Overlay on hover -->
                             <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
                                 <span class="px-4 py-2 rounded-full bg-white/95 dark:bg-zinc-900/95 text-google-blue dark:text-sky-400 text-xs font-bold shadow-lg flex items-center gap-2 scale-95 group-hover/thumb:scale-100 transition-transform">
@@ -3903,7 +3903,7 @@
 
                 headerHtml = `
                     <div class="relative h-48 sm:h-52 overflow-hidden bg-slate-100 dark:bg-slate-800 border-b border-google-border dark:border-google-dark-border ${clickAction ? 'cursor-pointer group/thumb' : ''}" ${clickAction}>
-                        <img src="${projectImg}" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80'" alt="${p.title}" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300">
+                        <img src="${projectImg}" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80'" alt="${p.title}" loading="lazy" decoding="async" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300">
                         ${overlayLabel ? `
                             <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
                                 <span class="px-4 py-2 rounded-full bg-white/95 dark:bg-zinc-900/95 text-google-blue dark:text-sky-400 text-xs font-bold shadow-lg flex items-center gap-2 scale-95 group-hover/thumb:scale-100 transition-transform">
@@ -4019,7 +4019,7 @@
                         <div class="grid grid-cols-4 gap-2">
                             ${imgList.slice(0, 4).map((img, i) => `
                                 <div onclick="openProjectPhotos('${p.id}', ${i})" class="relative aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-zinc-800 border border-google-border dark:border-google-dark-border cursor-pointer group/th hover:border-google-blue shadow-2xs transition-all" title="ดูภาพที่ ${i + 1}">
-                                    <img src="${img}" alt="${p.title}" class="w-full h-full object-cover group-hover/th:scale-110 transition-transform duration-200">
+                                    <img src="${img}" alt="${p.title}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover/th:scale-110 transition-transform duration-200">
                                     ${i === 3 && imgList.length > 4 ? `
                                         <div class="absolute inset-0 bg-black/65 backdrop-blur-xs flex items-center justify-center text-white text-xs font-bold">
                                             +${imgList.length - 4}
@@ -4147,7 +4147,7 @@
                     workGrid.innerHTML = `
                         <div class="col-span-full g-card overflow-hidden grid grid-cols-1 lg:grid-cols-12">
                             <div class="lg:col-span-5 relative min-h-[260px] sm:min-h-[320px] bg-slate-100 dark:bg-zinc-800 border-b lg:border-b-0 lg:border-r border-google-border dark:border-google-dark-border cursor-pointer group/thumb" onclick="openProjectPhotos('${p.id}', 0)">
-                                <img src="${coverImg}" alt="${p.title}" class="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-300">
+                                <img src="${coverImg}" alt="${p.title}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-300">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
                                     <span class="px-4 py-2 rounded-full bg-white text-google-blue text-xs font-bold shadow-lg flex items-center gap-2">
                                         <i class="fa-solid fa-images text-amber-500"></i> คลิกดูรูปภาพโครงงาน (${imgList.length} ภาพ)
@@ -4178,7 +4178,7 @@
                                         <div class="grid grid-cols-4 sm:grid-cols-6 gap-2">
                                             ${imgList.slice(0, 6).map((img, i) => `
                                                 <div onclick="openProjectPhotos('${p.id}', ${i})" class="relative aspect-square rounded-lg overflow-hidden border border-google-border dark:border-google-dark-border cursor-pointer group/th">
-                                                    <img src="${img}" alt="${p.title}" class="w-full h-full object-cover group-hover/th:scale-110 transition-transform">
+                                                    <img src="${img}" alt="${p.title}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover/th:scale-110 transition-transform">
                                                     ${i === 5 && imgList.length > 6 ? `
                                                         <div class="absolute inset-0 bg-black/65 flex items-center justify-center text-white text-xs font-bold">+${imgList.length - 6}</div>
                                                     ` : ''}
@@ -4242,6 +4242,27 @@
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
             el.textContent = `${h}:${m}:${s} น.`;
+        }
+
+        // Mobile Menu A11y Sync (aria-expanded & Escape key)
+        function initMobileMenuA11y() {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('mobile-menu-btn');
+            if (!menu || !btn) return;
+            const sync = () => btn.setAttribute('aria-expanded', menu.classList.contains('hidden') ? 'false' : 'true');
+            new MutationObserver(sync).observe(menu, { attributes: true, attributeFilter: ['class'] });
+            sync();
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !menu.classList.contains('hidden') && typeof toggleMobileMenu === 'function') {
+                    toggleMobileMenu();
+                    btn.focus();
+                }
+            });
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMobileMenuA11y);
+        } else {
+            initMobileMenuA11y();
         }
 
         // Modal Backdrop Click Listeners

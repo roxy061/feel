@@ -1,8 +1,50 @@
 {
-    "770956": {
-        "code": "770956",
-        "createdAt": 1794937467,
-        "expiresAt": 1794938067,
+    "458591": {
+        "code": "458591",
+        "createdAt": 1794941928,
+        "expiresAt": 1794942528,
+        "ttlSeconds": 600,
+        "scope": "all",
+        "label": "ทั้งตู้เซฟ (3 รายการ)",
+        "itemCount": 3,
+        "payloadSha256": "8e0d6169a4b47329e69d0ec0e1e4c8313678cdab3b75c9a0b5dd0bf1601b5cf3",
+        "items": [
+            {
+                "id": "starter-link-drive",
+                "type": "link",
+                "title": "อัลบั้ม Google Drive รวมภาพกิจกรรมและโครงงาน (ต้นฉบับ)",
+                "url": "https://drive.google.com/drive/folders/13JPid47x7QZvmnHwQI0uZ5hVPatEi3Ow?usp=sharing",
+                "note": "ลิงก์โฟลเดอร์หลักเก็บภาพถ่ายกิจกรรมและการฝึกงานของ นายภคพล สมัยแก้ว",
+                "size": 128,
+                "sha256": "c5b7122b313702858332438101e045fa8e76da5ba3bd1cc12ca3f9476496846a",
+                "createdAt": "ข้อมูลตั้งต้นของระบบ"
+            },
+            {
+                "id": "starter-link-portfolio",
+                "type": "link",
+                "title": "เว็บไซต์แฟ้มสะสมผลงานออนไลน์ (Vercel Official Link)",
+                "url": "https://feel-ochre.vercel.app/",
+                "note": "ลิงก์หลักสำหรับส่งให้อาจารย์หรือสถานประกอบการเปิดดูแฟ้มสะสมผลงานออนไลน์",
+                "size": 96,
+                "sha256": "4f9ed48d143bed2ed2681f485fe50f9205ff2b65069650b851fe702aab60452f",
+                "createdAt": "ข้อมูลตั้งต้นของระบบ"
+            },
+            {
+                "id": "starter-note-contact",
+                "type": "note",
+                "title": "ข้อมูลติดต่อและพิกัดสถานศึกษา (นายภคพล สมัยแก้ว)",
+                "content": "ชื่อ-นามสกุล: นายภคพล สมัยแก้ว (ฟีล)\nระดับชั้น: ปวส.1 วิทยาลัยอาชีวศึกษานครศรีธรรมราช\nอีเมล: feel0627546143@gmail.com\nLINE ID: CdqbkYbcUv\nโครงงานเด่น: ตู้กดผ้าอนามัยอัตโนมัติควบคุมด้วยไมโครคอนโทรลเลอร์",
+                "note": "โน้ตข้อมูลสำคัญสำหรับคัดลอกไปใช้งานได้ทันที",
+                "size": 340,
+                "sha256": "26da28ec2d3d1e4ee32f0a5344a1decc23b95e77347d0a2f0f04e15c69601ba4",
+                "createdAt": "ข้อมูลตั้งต้นของระบบ"
+            }
+        ]
+    },
+    "186446": {
+        "code": "186446",
+        "createdAt": 1794942030,
+        "expiresAt": 1794942630,
         "ttlSeconds": 600,
         "scope": "all",
         "label": "ทั้งตู้เซฟ (3 รายการ)",

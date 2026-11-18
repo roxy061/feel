@@ -209,7 +209,7 @@
         hubOverlay.id = 'feel-app-hub';
         hubOverlay.setAttribute('role', 'dialog');
         hubOverlay.setAttribute('aria-modal', 'true');
-        hubOverlay.setAttribute('aria-label', 'ศูนย์รวมเว็บแอปทั้ง 21 รายการ');
+        hubOverlay.setAttribute('aria-label', 'เมนูนำทางและศูนย์รวมเว็บแอปทั้ง ' + APPS.length + ' รายการ');
         hubOverlay.setAttribute('aria-hidden', 'true');
 
         var dialog = el('div', 'feel-dialog');
@@ -222,8 +222,8 @@
         var brandIco = el('span', 'w-8 h-8 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0');
         brandIco.appendChild(iconNode('fa-grip'));
         var titleText = el('div', 'min-w-0');
-        var titleMain = el('div', 'text-sm font-semibold leading-tight', 'ศูนย์รวมเว็บแอป');
-        var titleSub = el('div', 'text-xs opacity-70 truncate', 'ค้นหาและสลับใช้งานได้ทันทีทั้ง 21 เครื่องมือ');
+        var titleMain = el('div', 'text-sm font-semibold leading-tight', 'ศูนย์รวม ' + APPS.length + ' เว็บแอป');
+        var titleSub = el('div', 'text-xs opacity-70 truncate', 'ค้นหา แยกหมวดหมู่ และสลับใช้งานได้ทันที');
         titleText.appendChild(titleMain);
         titleText.appendChild(titleSub);
         titleWrap.appendChild(brandIco);
@@ -372,6 +372,43 @@
 
         var q = hubState.query;
         var cat = hubState.category;
+
+        if (!q && cat === 'all' && currentFile !== 'index.html') {
+            var navSec = el('div');
+            navSec.appendChild(el('div', 'feel-hub-section-label', 'เมนูด่วนหน้าหลัก & เครื่องมือ'));
+            var navRow = el('div', 'feel-hub-quicknav');
+            var quickSections = [
+                { href: 'index.html#home', icon: 'fa-house', label: 'หน้าหลัก' },
+                { href: 'index.html#about', icon: 'fa-id-card', label: 'ประวัติ & การศึกษา' },
+                { href: 'index.html#skills', icon: 'fa-microchip', label: 'ทักษะ' },
+                { href: 'index.html#projects', icon: 'fa-award', label: 'ผลงาน & รางวัล' },
+                { href: 'index.html#gallery', icon: 'fa-images', label: 'คลังภาพ' },
+                { href: 'index.html#contact', icon: 'fa-envelope', label: 'ติดต่อ' }
+            ];
+            for (var ns = 0; ns < quickSections.length; ns++) {
+                var qs = quickSections[ns];
+                var qLink = el('a', 'feel-hub-navpill');
+                qLink.href = qs.href;
+                qLink.appendChild(iconNode(qs.icon, 'var(--feel-blue)'));
+                qLink.appendChild(document.createTextNode(qs.label));
+                qLink.addEventListener('click', closeHub);
+                navRow.appendChild(qLink);
+            }
+            var infoTrigger = document.querySelector('[data-feel-info-title]');
+            if (infoTrigger) {
+                var qInfoBtn = el('button', 'feel-hub-navpill');
+                qInfoBtn.type = 'button';
+                qInfoBtn.appendChild(iconNode('fa-circle-info', 'var(--feel-blue)'));
+                qInfoBtn.appendChild(document.createTextNode('คู่มือหน้านี้'));
+                qInfoBtn.addEventListener('click', function () {
+                    closeHub();
+                    infoTrigger.click();
+                });
+                navRow.appendChild(qInfoBtn);
+            }
+            navSec.appendChild(navRow);
+            hubBody.appendChild(navSec);
+        }
 
         if (!q && cat === 'all') {
             var recent = getRecentApps().filter(function (a) { return a.file !== currentFile; });
@@ -613,10 +650,59 @@
         }
     }
 
+    function ensureSkipLink() {
+        try {
+            var mainEl = document.querySelector('main');
+            if (mainEl) {
+                if (!mainEl.id) mainEl.id = 'main-content';
+                if (!mainEl.hasAttribute('tabindex')) mainEl.setAttribute('tabindex', '-1');
+            }
+            if (mainEl && !document.querySelector('.feel-skip-link')) {
+                var skip = el('a', 'feel-skip-link no-print', 'ข้ามไปยังเนื้อหาหลัก');
+                skip.href = '#' + mainEl.id;
+                document.body.insertBefore(skip, document.body.firstChild);
+            }
+        } catch (_) {}
+    }
+
     function ensureUnifiedSubAppChrome() {
         var hdr = document.querySelector('header');
         if (hdr && !hdr.classList.contains('feel-header-refined')) {
             hdr.classList.add('feel-header-refined');
+        }
+        if (hdr && currentFile && currentFile !== 'index.html') {
+            hdr.classList.add('feel-subapp-hdr');
+            try {
+                var h1 = hdr.querySelector('h1');
+                if (h1 && h1.parentElement) {
+                    var sibs = h1.parentElement.children;
+                    for (var s = 0; s < sibs.length; s++) {
+                        if (sibs[s] !== h1 && sibs[s].tagName === 'SPAN') {
+                            sibs[s].classList.add('feel-hdr-badge');
+                        }
+                    }
+                }
+                var leftZone = hdr.querySelector(':scope > div:first-child') || hdr;
+                var iconBoxes = leftZone.querySelectorAll('div.w-9.h-9, div.w-10.h-10');
+                for (var b = 0; b < iconBoxes.length; b++) {
+                    var box = iconBoxes[b];
+                    if (!box.querySelector('a, button, h1, input') && box.querySelector('i')) {
+                        box.classList.add('feel-hdr-app-icon');
+                    }
+                }
+                var switcher = document.getElementById('app-switcher-btn');
+                if (switcher) {
+                    switcher.setAttribute('title', 'เปิดเมนูและศูนย์รวมเว็บแอป ' + APPS.length + ' ระบบ (Ctrl+K)');
+                    switcher.setAttribute('aria-label', 'เปิดเมนูและศูนย์รวมเว็บแอป ' + APPS.length + ' ระบบ');
+                    var gripIcon = switcher.querySelector('i.fa-grip');
+                    if (gripIcon && !switcher.querySelector('.feel-mob-hamburger')) {
+                        gripIcon.classList.add('hidden', 'sm:inline-block');
+                        var bars = el('i', 'fa-solid fa-bars text-google-blue dark:text-sky-400 sm:hidden feel-mob-hamburger');
+                        bars.setAttribute('aria-hidden', 'true');
+                        switcher.insertBefore(bars, gripIcon);
+                    }
+                }
+            } catch (_) {}
         }
         if (!currentFile || currentFile === 'index.html' || currentFile === 'cctv.html') return;
         if (document.body && document.body.dataset.feelNoFooter === '1') return;
@@ -683,12 +769,86 @@
         document.body.appendChild(footer);
     }
 
+    function ensureAccessibleControls() {
+        try {
+            const cleanText = (node) => {
+                if (!node) return '';
+                const clone = node.cloneNode(true);
+                clone.querySelectorAll('select, input, textarea, option').forEach((el) => el.remove());
+                return (clone.textContent || '').replace(/\s+/g, ' ').trim();
+            };
+
+            const fields = document.querySelectorAll('input, select, textarea');
+            fields.forEach((el) => {
+                if (el.type === 'hidden' || el.getAttribute('aria-hidden') === 'true') return;
+                if (el.getAttribute('aria-label') || el.getAttribute('aria-labelledby')) return;
+                if (el.id) {
+                    const escId = (window.CSS && CSS.escape) ? CSS.escape(el.id) : el.id.replace(/([^\w-])/g, '\\$1');
+                    const explicitLabel = document.querySelector(`label[for="${escId}"]`);
+                    if (explicitLabel && cleanText(explicitLabel)) return;
+                }
+                if (el.getAttribute('title') || el.getAttribute('placeholder')) return;
+
+                let labelText = '';
+                const wrappingLabel = el.closest('label');
+                if (wrappingLabel) labelText = cleanText(wrappingLabel);
+                if (!labelText && el.previousElementSibling) {
+                    labelText = cleanText(el.previousElementSibling);
+                }
+                if (!labelText && el.parentElement) {
+                    const sib = el.parentElement.querySelector('label, span, p, h3, h4');
+                    if (sib && sib !== el) labelText = cleanText(sib);
+                }
+                if (!labelText) {
+                    const box = el.closest('section, form, div');
+                    const lbl = box && box.querySelector('label, h3, h4');
+                    if (lbl && !lbl.contains(el)) labelText = cleanText(lbl);
+                }
+                if (labelText.length > 60) labelText = labelText.slice(0, 60).trim();
+                if (!labelText) {
+                    if (el.tagName === 'SELECT') labelText = 'เลือกตัวเลือก';
+                    else if (el.type === 'checkbox' || el.type === 'radio') labelText = 'เลือกตัวเลือก';
+                    else labelText = 'กรอกข้อมูล';
+                }
+                el.setAttribute('aria-label', labelText);
+            });
+
+            const buttons = document.querySelectorAll('button, [role="button"], a[href]');
+            buttons.forEach((btn) => {
+                if (btn.getAttribute('aria-hidden') === 'true') return;
+                const text = (btn.textContent || '').replace(/\s+/g, ' ').trim();
+                const hasImgAlt = Array.from(btn.querySelectorAll('img')).some((img) => (img.getAttribute('alt') || '').trim());
+                if (text || hasImgAlt || btn.getAttribute('aria-label') || btn.getAttribute('aria-labelledby') || btn.getAttribute('title')) {
+                    return;
+                }
+                const icon = btn.querySelector('i[class*="fa-"]');
+                const cls = icon ? icon.className : '';
+                let fallback = 'ปุ่มดำเนินการ';
+                if (/times|xmark|close/.test(cls)) fallback = 'ปิด';
+                else if (/bars|menu/.test(cls)) fallback = 'เปิดเมนูนำทาง';
+                else if (/moon|sun/.test(cls)) fallback = 'สลับโหมดสีหน้าจอ';
+                else if (/trash|delete/.test(cls)) fallback = 'ลบรายการ';
+                else if (/copy/.test(cls)) fallback = 'คัดลอก';
+                else if (/heart/.test(cls)) fallback = 'ถูกใจ';
+                else if (/play/.test(cls)) fallback = 'เล่น';
+                else if (/pause/.test(cls)) fallback = 'หยุดชั่วคราว';
+                else if (/plus|add/.test(cls)) fallback = 'เพิ่ม';
+                else if (/minus/.test(cls)) fallback = 'ลด';
+                else if (/download/.test(cls)) fallback = 'ดาวน์โหลด';
+                btn.setAttribute('aria-label', fallback);
+            });
+        } catch (_) {}
+    }
+
     function initDom() {
+        ensureSkipLink();
         syncThemeStorage();
         installThemeHooks();
         recordRecentVisit();
         wireInfoButtons();
         ensureUnifiedSubAppChrome();
+        ensureAccessibleControls();
+        setTimeout(ensureAccessibleControls, 450);
 
         window.addEventListener('storage', function (ev) {
             if (ev.key === THEME_KEY || ev.key === LEGACY_DARK_KEY) {

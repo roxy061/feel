@@ -255,10 +255,10 @@
                     </span>
 
                     <div class="inline-flex rounded-xl bg-google-subtle dark:bg-google-dark-subtle p-1 border border-google-border dark:border-google-dark-border text-xs">
-                        <button type="button" id="view-btn-grid" onclick="setViewMode('grid')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface font-bold text-google-text dark:text-white shadow-xs cursor-pointer transition">
+                        <button type="button" id="view-btn-grid" onclick="setViewMode('grid')" class="min-h-[36px] inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface font-bold text-google-text dark:text-white shadow-xs cursor-pointer transition">
                             <i class="fa-solid fa-grip mr-1"></i> การ์ด
                         </button>
-                        <button type="button" id="view-btn-table" onclick="setViewMode('table')" class="px-2.5 py-1 rounded-lg font-medium text-google-text-muted hover:text-google-text cursor-pointer transition">
+                        <button type="button" id="view-btn-table" onclick="setViewMode('table')" class="min-h-[36px] inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium text-google-text-muted hover:text-google-text cursor-pointer transition">
                             <i class="fa-solid fa-table-list mr-1"></i> ตารางย่อ
                         </button>
                     </div>
@@ -784,11 +784,11 @@
             const gridBtn = document.getElementById('view-btn-grid');
             const tableBtn = document.getElementById('view-btn-table');
             if (mode === 'grid') {
-                gridBtn.className = 'px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface font-bold text-google-text dark:text-white shadow-xs cursor-pointer transition';
-                tableBtn.className = 'px-2.5 py-1 rounded-lg font-medium text-google-text-muted hover:text-google-text cursor-pointer transition';
+                gridBtn.className = 'min-h-[36px] inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface font-bold text-google-text dark:text-white shadow-xs cursor-pointer transition';
+                tableBtn.className = 'min-h-[36px] inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium text-google-text-muted hover:text-google-text cursor-pointer transition';
             } else {
-                tableBtn.className = 'px-2.5 py-1 rounded-lg bg-white dark:bg-google-dark-surface font-bold text-google-text dark:text-white shadow-xs cursor-pointer transition';
-                gridBtn.className = 'px-2.5 py-1 rounded-lg font-medium text-google-text-muted hover:text-google-text cursor-pointer transition';
+                tableBtn.className = 'min-h-[36px] inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white dark:bg-google-dark-surface font-bold text-google-text dark:text-white shadow-xs cursor-pointer transition';
+                gridBtn.className = 'min-h-[36px] inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium text-google-text-muted hover:text-google-text cursor-pointer transition';
             }
             renderDirectory();
         }
@@ -872,8 +872,8 @@
                     ? 'bg-google-blue text-white border-google-blue shadow-xs'
                     : 'bg-white dark:bg-google-dark-surface text-google-text-body dark:text-google-dark-text-body border-google-border dark:border-google-dark-border hover:border-sky-400';
                 return `
-                    <button type="button" data-cat="${escapeHtml(t.id)}" onclick="setCategory(this.dataset.cat)" class="shrink-0 px-3 py-1.5 rounded-full text-xs font-heading font-semibold border transition cursor-pointer flex items-center gap-1.5 ${cls}">
-                        <i class="fa-solid ${escapeHtml(t.icon)} text-[11px]"></i>
+                    <button type="button" data-cat="${escapeHtml(t.id)}" onclick="setCategory(this.dataset.cat)" class="shrink-0 min-h-[38px] px-3.5 py-2 rounded-full text-xs font-heading font-semibold border transition cursor-pointer inline-flex items-center gap-1.5 ${cls}">
+                        <i class="fa-solid ${escapeHtml(t.icon)} text-xs"></i>
                         <span>${escapeHtml(t.label)}</span>
                     </button>
                 `;
@@ -882,15 +882,15 @@
 
         function getPricingBadgeHtml(pricing) {
             if (pricing === 'free') {
-                return '<span class="px-2 py-0.5 rounded-md bg-teal-100 dark:bg-teal-950/70 text-teal-800 dark:text-teal-300 text-[10px] font-bold">ฟรีหลัก / Open</span>';
+                return '<span class="px-2 py-0.5 rounded-md bg-teal-100 dark:bg-teal-950/70 text-teal-800 dark:text-teal-300 text-[11px] font-bold">ฟรีหลัก / Open</span>';
             }
             if (pricing === 'freemium') {
-                return '<span class="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">ใช้ฟรี + อัปเกรดได้</span>';
+                return '<span class="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">ใช้ฟรี + อัปเกรดได้</span>';
             }
             if (pricing === 'credit') {
-                return '<span class="px-2 py-0.5 rounded-md bg-sky-100 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 text-[10px] font-bold">ทดลองฟรี / เครดิต</span>';
+                return '<span class="px-2 py-0.5 rounded-md bg-sky-100 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 text-[11px] font-bold">ทดลองฟรี / เครดิต</span>';
             }
-            return '<span class="px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 text-[10px] font-bold">เสียเงินเป็นหลัก</span>';
+            return '<span class="px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 text-[11px] font-bold">เสียเงินเป็นหลัก</span>';
         }
 
         function renderToolCard(tool) {
@@ -900,12 +900,12 @@
             const cleanDomain = escapeHtml(tool.domain);
             const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(tool.domain.split('/')[0])}&sz=64`;
             const extraBadge = tool.isExtra
-                ? '<span class="px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold">✨ แนะนำเพิ่ม</span>'
+                ? '<span class="px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-[11px] font-bold">✨ แนะนำเพิ่ม</span>'
                 : (tool.cat === 'hosting'
-                    ? '<span class="px-2 py-0.5 rounded-md bg-cyan-100 dark:bg-cyan-950/70 text-cyan-800 dark:text-cyan-300 text-[10px] font-bold">🌐 รันไฟล์/เว็บฟรี</span>'
+                    ? '<span class="px-2 py-0.5 rounded-md bg-cyan-100 dark:bg-cyan-950/70 text-cyan-800 dark:text-cyan-300 text-[11px] font-bold">🌐 รันไฟล์/เว็บฟรี</span>'
                     : '');
             const thaiBadge = tool.thai
-                ? '<span class="px-2 py-0.5 rounded-md bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body text-[10px] font-semibold">🇹🇭 ไทยดี</span>'
+                ? '<span class="px-2 py-0.5 rounded-md bg-google-subtle dark:bg-google-dark-subtle text-google-text-body dark:text-google-dark-text-body text-[11px] font-semibold">🇹🇭 ไทยดี</span>'
                 : '';
 
             return `
@@ -927,10 +927,10 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-1 shrink-0">
-                                <button type="button" onclick="toggleFavorite(${tool.id})" class="w-7 h-7 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/50 flex items-center justify-center cursor-pointer transition ${isFav ? 'text-amber-500' : 'text-google-text-muted'}" title="${isFav ? 'นำออกจากรายการโปรด' : 'ปักหมุดรายการโปรด'}">
+                                <button type="button" onclick="toggleFavorite(${tool.id})" class="w-9 h-9 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/50 flex items-center justify-center cursor-pointer transition ${isFav ? 'text-amber-500' : 'text-google-text-muted'}" title="${isFav ? 'นำออกจากรายการโปรด' : 'ปักหมุดรายการโปรด'}" aria-label="${isFav ? 'นำออกจากรายการโปรด' : 'ปักหมุดรายการโปรด'}">
                                     <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-star text-xs"></i>
                                 </button>
-                                <button type="button" data-url="${escapeHtml(safeUrl)}" data-name="${escapeHtml(tool.name)}" onclick="copyToolUrl(this.dataset.url, this.dataset.name)" class="w-7 h-7 rounded-lg hover:bg-google-subtle dark:hover:bg-google-dark-subtle flex items-center justify-center text-google-text-muted hover:text-google-blue cursor-pointer transition" title="คัดลอกลิงก์เว็บไซต์">
+                                <button type="button" data-url="${escapeHtml(safeUrl)}" data-name="${escapeHtml(tool.name)}" onclick="copyToolUrl(this.dataset.url, this.dataset.name)" class="w-9 h-9 rounded-lg hover:bg-google-subtle dark:hover:bg-google-dark-subtle flex items-center justify-center text-google-text-muted hover:text-google-blue cursor-pointer transition" title="คัดลอกลิงก์เว็บไซต์" aria-label="คัดลอกลิงก์เว็บไซต์ ${escapeHtml(tool.name)}">
                                     <i class="fa-regular fa-copy text-xs"></i>
                                 </button>
                             </div>

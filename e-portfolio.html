@@ -1534,7 +1534,7 @@
                         a4DecorOverlay(th) +
                         '<div style="background:linear-gradient(135deg,' + th.dark + ' 0%,' + th.primary + ' 65%,' + th.secondary + ' 100%);color:#ffffff;padding:34px 40px 28px 40px;text-align:center;position:relative;z-index:2;">' +
                             '<p style="font-size:11px;font-weight:800;letter-spacing:2.4px;color:#fde68a;margin:0 0 8px 0;">ENGINEERING ACADEMIC E-PORTFOLIO • ' + escHtml(state.academicYear) + '</p>' +
-                            '<h1 style="font-family:' + fonts.heading + ';font-size:34px;font-weight:800;margin:0;line-height:1.15;">' + escHtml(state.fullName) + '</h1>' +
+                            '<div role="heading" aria-level="2" style="font-family:' + fonts.heading + ';font-size:34px;font-weight:800;margin:0;line-height:1.15;">' + escHtml(state.fullName) + '</div>' +
                             '<p style="font-family:JetBrains Mono,monospace;font-size:12px;color:#e2e8f0;margin:5px 0 18px 0;">' + escHtml(state.englishName) + ' • ' + escHtml(state.admissionRound) + '</p>' +
                             '<div style="overflow:hidden;border:5px solid #ffffff;box-shadow:0 16px 32px rgba(0,0,0,0.28);margin:0 auto;' + frameCss + '">' +
                                 '<img src="' + escHtml(state.photo || './ตัวเอง.jpg') + '" style="width:100%;height:100%;object-fit:cover;object-position:top;">' +
@@ -1565,7 +1565,7 @@
                         '<div style="padding:30px 40px;display:grid;grid-template-columns:230px 1fr;gap:28px;align-items:center;">' +
                             '<div style="overflow:hidden;border:4px solid ' + th.primary + ';box-shadow:0 0 32px ' + th.primary + '55;margin:0 auto;' + frameCss + '"><img src="' + escHtml(state.photo || './ตัวเอง.jpg') + '" style="width:100%;height:100%;object-fit:cover;object-position:top;"></div>' +
                             '<div>' +
-                                '<h1 style="font-family:' + fonts.heading + ';font-size:32px;font-weight:800;color:#ffffff;margin:0;">' + escHtml(state.fullName) + '</h1>' +
+                                '<div role="heading" aria-level="2" style="font-family:' + fonts.heading + ';font-size:32px;font-weight:800;color:#ffffff;margin:0;">' + escHtml(state.fullName) + '</div>' +
                                 '<p style="font-family:JetBrains Mono,monospace;font-size:12px;color:#38bdf8;margin:4px 0 14px 0;">' + escHtml(state.englishName) + '</p>' +
                                 '<div style="background:linear-gradient(135deg,' + th.primary + ' 0%,#1e293b 100%);border:1px solid ' + th.secondary + ';padding:16px 20px;border-radius:14px;margin-bottom:14px;">' +
                                     '<p style="font-size:10px;color:#fde68a;font-weight:700;margin:0 0 4px 0;">TARGET FACULTY & PROGRAM</p>' +
@@ -1599,7 +1599,7 @@
                         '</div>' +
                         '<div>' +
                             '<p style="font-size:12px;font-weight:700;color:' + th.secondary + ';margin:0 0 6px 0;text-transform:uppercase;letter-spacing:1.2px;">แฟ้มสะสมผลงานวิชาการและวิศวกรรม</p>' +
-                            '<h1 style="font-family:' + fonts.heading + ';font-size:31px;font-weight:800;color:#0f172a;margin:0;line-height:1.18;">' + escHtml(state.fullName) + '</h1>' +
+                            '<div role="heading" aria-level="2" style="font-family:' + fonts.heading + ';font-size:31px;font-weight:800;color:#0f172a;margin:0;line-height:1.18;">' + escHtml(state.fullName) + '</div>' +
                             '<p style="font-family:JetBrains Mono,monospace;font-size:12px;color:#475569;margin:4px 0 16px 0;">' + escHtml(state.englishName) + '</p>' +
                             '<div style="background:linear-gradient(135deg,' + th.primary + ' 0%,' + th.dark + ' 100%);color:#ffffff;padding:16px 20px;border-radius:14px;margin-bottom:16px;">' +
                                 '<p style="font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#fde68a;font-weight:700;margin:0 0 4px 0;">ยื่นสมัครเข้าศึกษาต่อ (TARGET ADMISSION)</p>' +
